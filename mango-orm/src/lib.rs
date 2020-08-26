@@ -6,7 +6,23 @@
 pub mod fields {
     /// Fields (field types)
     pub enum Fields {
-        //
+        BooleanField(bool),
+        DateField(String),
+        DateTimeField(String),
+        CharField(String),
+        EmailField(String),
+        FileField(String),
+        FloatField(f64),
+        ImageField(String),
+        IntegerField(i64),
+        PositiveIntegerField(u64),
+        SlugField(String),
+        TextField(String),
+        TimeField(String),
+        URLField(String),
+        ForeignKeyField(String),
+        ManyToManyField(String),
+        OneToOneField(String),
     }
 }
 
