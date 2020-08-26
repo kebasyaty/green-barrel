@@ -26,7 +26,7 @@ mod tests {
         Client,
     };
 
-    // Testing of Client
+    // Testing of Client ---------------------------------------------------------------------------
     // cargo test test_client -- --nocapture
     #[tokio::test]
     async fn test_client() -> Result<(), Box<dyn std::error::Error>> {
