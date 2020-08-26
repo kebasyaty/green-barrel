@@ -8,7 +8,6 @@ pub mod fields {
     pub enum Fields {
         BooleanField(bool),
         DateField(String),
-        CharField(String),
         EmailField(String),
         FileField(String),
         FloatField(f64),
@@ -17,6 +16,7 @@ pub mod fields {
         PositiveIntegerField(u64),
         SlugField(String),
         TextField(String),
+        TextAreaField(String),
         TimeField(String),
         URLField(String),
         ForeignKeyField(String),
