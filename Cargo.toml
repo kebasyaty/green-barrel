@@ -1,12 +1,6 @@
-[package]
-authors = ["kebasyaty <kebasyaty@gmail.com>"]
-description = "ORM-like API MongoDB for Rust"
-edition = "2018"
-keywords = ["database", "mongo", "orm"]
-license = "MIT OR Apache-2.0"
-name = "mango-orm"
-readme = "README.md"
-repository = "https://github.com/kebasyaty/mango-orm"
-version = "0.1.0-pre-alpha.0"
+[workspace]
 
-[dependencies]
+members = [
+  "test-drive",
+  "mango-orm",
+]
