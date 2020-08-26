@@ -8,7 +8,6 @@ pub mod fields {
     pub enum Fields {
         BooleanField(bool),
         DateField(String),
-        DateTimeField(String),
         CharField(String),
         EmailField(String),
         FileField(String),
