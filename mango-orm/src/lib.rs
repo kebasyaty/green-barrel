@@ -9,21 +9,46 @@ pub mod widgets {
         CheckboxInput,
         RadioInput,
     }
+    impl Default for BooleanWidget {
+        fn default() -> Self {
+            BooleanWidget::CheckboxInput
+        }
+    }
     /// Color widgets
     pub enum ColorWidget {
         ColorInput,
+    }
+    impl Default for ColorWidget {
+        fn default() -> Self {
+            ColorWidget::ColorInput
+        }
     }
     /// Date widgets
     pub enum DateWidget {
         DateInput,
     }
+    impl Default for DateWidget {
+        fn default() -> Self {
+            DateWidget::DateInput
+        }
+    }
     /// Email widgets
     pub enum EmailWidget {
         EmailInput,
     }
+    impl Default for EmailWidget {
+        fn default() -> Self {
+            EmailWidget::EmailInput
+        }
+    }
     /// File widgets
     pub enum FileWidget {
         FileInput,
+    }
+    impl Default for FileWidget {
+        fn default() -> Self {
+            FileWidget::FileInput
+        }
     }
     /// Float widgets
     pub enum FloatWidget {
@@ -31,9 +56,19 @@ pub mod widgets {
         RangeInput,
         Select,
     }
+    impl Default for FloatWidget {
+        fn default() -> Self {
+            FloatWidget::NumberInput
+        }
+    }
     /// Image widgets
     pub enum ImageWidget {
         FileInput,
+    }
+    impl Default for ImageWidget {
+        fn default() -> Self {
+            ImageWidget::FileInput
+        }
     }
     /// Integer widgets
     pub enum IntegerWidget {
@@ -41,9 +76,19 @@ pub mod widgets {
         RangeInput,
         Select,
     }
+    impl Default for IntegerWidget {
+        fn default() -> Self {
+            IntegerWidget::NumberInput
+        }
+    }
     /// IPAddress widgets
     pub enum IPAddressWidget {
         TextInput,
+    }
+    impl Default for IPAddressWidget {
+        fn default() -> Self {
+            IPAddressWidget::TextInput
+        }
     }
     /// Positive Integer widgets
     pub enum PositiveIntegerWidget {
@@ -51,46 +96,101 @@ pub mod widgets {
         RangeInput,
         Select,
     }
+    impl Default for PositiveIntegerWidget {
+        fn default() -> Self {
+            PositiveIntegerWidget::NumberInput
+        }
+    }
     /// Slug widgets
     pub enum SlugWidget {
         TextInput,
+    }
+    impl Default for SlugWidget {
+        fn default() -> Self {
+            SlugWidget::TextInput
+        }
     }
     /// Text widgets
     pub enum TextWidget {
         TextInput,
         Select,
     }
+    impl Default for TextWidget {
+        fn default() -> Self {
+            TextWidget::TextInput
+        }
+    }
     /// TextArea widgets
     pub enum TextAreaWidget {
         TextArea,
+    }
+    impl Default for TextAreaWidget {
+        fn default() -> Self {
+            TextAreaWidget::TextArea
+        }
     }
     /// Time widgets
     pub enum TimeWidget {
         TimeInput,
     }
+    impl Default for TimeWidget {
+        fn default() -> Self {
+            TimeWidget::TimeInput
+        }
+    }
     /// URL widgets
     pub enum URLWidget {
         UrlInput,
+    }
+    impl Default for URLWidget {
+        fn default() -> Self {
+            URLWidget::UrlInput
+        }
     }
     /// Password widgets
     pub enum PasswordWidget {
         PasswordInput,
     }
+    impl Default for PasswordWidget {
+        fn default() -> Self {
+            PasswordWidget::PasswordInput
+        }
+    }
     /// Phone widgets
     pub enum PhoneWidget {
         TelInput,
+    }
+    impl Default for PhoneWidget {
+        fn default() -> Self {
+            PhoneWidget::TelInput
+        }
     }
     /// ForeignKey widgets
     pub enum ForeignKeyWidget {
         Select,
     }
+    impl Default for ForeignKeyWidget {
+        fn default() -> Self {
+            ForeignKeyWidget::Select
+        }
+    }
     /// ManyToMany widgets
     pub enum ManyToManyWidget {
         Select,
     }
+    impl Default for ManyToManyWidget {
+        fn default() -> Self {
+            ManyToManyWidget::Select
+        }
+    }
     /// OneToOne widgets
     pub enum OneToOneWidget {
         Select,
+    }
+    impl Default for OneToOneWidget {
+        fn default() -> Self {
+            OneToOneWidget::Select
+        }
     }
 }
 
@@ -112,6 +212,7 @@ pub mod fields {
     }
 
     /// Boolean type field
+    #[derive(Default)]
     pub struct BooleanField {
         pub widget: BooleanWidget,
         pub label: String,
@@ -122,6 +223,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Color type field
+    #[derive(Default)]
     pub struct ColorField {
         pub widget: ColorWidget,
         pub label: String,
@@ -133,6 +235,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Date type field
+    #[derive(Default)]
     pub struct DateField {
         pub widget: DateWidget,
         pub label: String,
@@ -144,6 +247,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Email type field
+    #[derive(Default)]
     pub struct EmailField {
         pub widget: EmailWidget,
         pub label: String,
@@ -155,6 +259,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// File type field
+    #[derive(Default)]
     pub struct FileField {
         pub widget: FileWidget,
         pub label: String,
@@ -165,6 +270,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Float type field
+    #[derive(Default)]
     pub struct FloatField {
         pub widget: FloatWidget,
         pub label: String,
@@ -177,6 +283,7 @@ pub mod fields {
         pub choices: Option<Choices>,
     }
     /// Image type field
+    #[derive(Default)]
     pub struct ImageField {
         pub widget: ImageWidget,
         pub label: String,
@@ -187,6 +294,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Integer type field
+    #[derive(Default)]
     pub struct IntegerField {
         pub widget: IntegerWidget,
         pub label: String,
@@ -199,6 +307,7 @@ pub mod fields {
         pub choices: Option<Choices>,
     }
     /// IPAddress type field
+    #[derive(Default)]
     pub struct IPAddressField {
         pub widget: IPAddressWidget,
         pub label: String,
@@ -210,6 +319,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Positive Integer type field
+    #[derive(Default)]
     pub struct PositiveIntegerField {
         pub widget: PositiveIntegerWidget,
         pub label: String,
@@ -222,6 +332,7 @@ pub mod fields {
         pub choices: Option<Choices>,
     }
     /// Slug type field
+    #[derive(Default)]
     pub struct SlugField {
         pub widget: SlugWidget,
         pub label: String,
@@ -233,6 +344,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Text type field
+    #[derive(Default)]
     pub struct TextField {
         pub widget: TextWidget,
         pub label: String,
@@ -245,6 +357,7 @@ pub mod fields {
         pub choices: Option<Choices>,
     }
     /// TextArea type field
+    #[derive(Default)]
     pub struct TextAreaField {
         pub widget: TextAreaWidget,
         pub label: String,
@@ -256,6 +369,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Time type field
+    #[derive(Default)]
     pub struct TimeField {
         pub widget: TimeWidget,
         pub label: String,
@@ -267,6 +381,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// URL type field
+    #[derive(Default)]
     pub struct URLField {
         pub widget: URLWidget,
         pub label: String,
@@ -278,6 +393,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Password type field
+    #[derive(Default)]
     pub struct PasswordField {
         pub widget: PasswordWidget,
         pub label: String,
@@ -289,6 +405,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Phone type field
+    #[derive(Default)]
     pub struct PhoneField {
         pub widget: PhoneWidget,
         pub label: String,
@@ -300,6 +417,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ForeignKey type field
+    #[derive(Default)]
     pub struct ForeignKeyField {
         pub widget: ForeignKeyWidget,
         pub label: String,
@@ -309,6 +427,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ManyToMany type field
+    #[derive(Default)]
     pub struct ManyToManyField {
         pub widget: ManyToManyWidget,
         pub label: String,
@@ -318,6 +437,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// OneToOne type field
+    #[derive(Default)]
     pub struct OneToOneField {
         pub widget: OneToOneWidget,
         pub label: String,
