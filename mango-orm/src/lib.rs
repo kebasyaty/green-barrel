@@ -230,7 +230,7 @@ pub mod fields {
     pub struct TimeField {
         pub widget: TimeWidget,
         pub label: String,
-        pub default: String, // Date in UNIX format "00:00:00" or blank line
+        pub default: String, // date in UNIX format "00:00:00" or blank line
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
@@ -252,7 +252,7 @@ pub mod fields {
     pub struct PasswordField {
         pub widget: PasswordWidget,
         pub label: String,
-        pub default: String, // some text line or blank line
+        pub default: String, // password text line or blank line
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
@@ -263,7 +263,7 @@ pub mod fields {
     pub struct PhoneField {
         pub widget: PhoneWidget,
         pub label: String,
-        pub default: String, // some text line or blank line
+        pub default: String, //  phone number text line or blank line
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
