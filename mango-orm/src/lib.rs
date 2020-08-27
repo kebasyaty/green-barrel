@@ -9,6 +9,10 @@ pub mod widgets {
         CheckboxInput,
         RadioInput,
     }
+    /// Color widgets
+    pub enum ColorWidget {
+        ColorInput,
+    }
     /// Date widgets
     pub enum DateWidget {
         DateInput,
@@ -66,9 +70,9 @@ pub mod widgets {
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
-        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, IPAddressWidget,
-        ImageWidget, IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget,
-        TimeWidget, URLWidget,
+        BooleanWidget, ColorWidget, DateWidget, EmailWidget, FileWidget, FloatWidget,
+        IPAddressWidget, ImageWidget, IntegerWidget, PositiveIntegerWidget, SlugWidget,
+        TextAreaWidget, TextWidget, TimeWidget, URLWidget,
     };
 
     /// Boolean type field
@@ -78,6 +82,16 @@ pub mod fields {
         pub default: bool, // true or false
         pub required: bool,
         pub hint: String,
+        pub hidden: bool,
+    }
+    /// Color type field
+    pub struct ColorField {
+        pub widget: ColorWidget,
+        pub label: String,
+        pub default: String, // example: "#ffffff" or blank line
+        pub required: bool,
+        pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Date type field
@@ -172,7 +186,7 @@ pub mod fields {
     pub struct TextField {
         pub widget: TextWidget,
         pub label: String,
-        pub default: String, // some text or blank line
+        pub default: String, // some text line or blank line
         pub required: bool,
         pub hint: String,
         pub unique: bool,
