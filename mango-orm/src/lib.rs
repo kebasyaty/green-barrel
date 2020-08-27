@@ -80,14 +80,27 @@ pub mod widgets {
     pub enum PhoneWidget {
         TelInput,
     }
+    /// ForeignKey widgets
+    pub enum ForeignKeyWidget {
+        Select,
+    }
+    /// ManyToMany widgets
+    pub enum ManyToManyWidget {
+        Select,
+    }
+    /// OneToOne widgets
+    pub enum OneToOneWidget {
+        Select,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
         BooleanWidget, ColorWidget, DateWidget, EmailWidget, FileWidget, FloatWidget,
-        IPAddressWidget, ImageWidget, IntegerWidget, PasswordWidget, PhoneWidget,
-        PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget, URLWidget,
+        ForeignKeyWidget, IPAddressWidget, ImageWidget, IntegerWidget, ManyToManyWidget,
+        OneToOneWidget, PasswordWidget, PhoneWidget, PositiveIntegerWidget, SlugWidget,
+        TextAreaWidget, TextWidget, TimeWidget, URLWidget,
     };
 
     /// Choice variations
@@ -286,12 +299,32 @@ pub mod fields {
         pub unique: bool,
         pub hidden: bool,
     }
-
-    /// Fields (field types)
-    pub enum Fields {
-        ForeignKeyField(String),
-        ManyToManyField(String),
-        OneToOneField(String),
+    /// ForeignKey type field
+    pub struct ForeignKeyField {
+        pub widget: ForeignKeyWidget,
+        pub label: String,
+        pub readonly: bool,
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
+    /// ManyToMany type field
+    pub struct ManyToManyField {
+        pub widget: ManyToManyWidget,
+        pub label: String,
+        pub readonly: bool,
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
+    /// OneToOne type field
+    pub struct OneToOneField {
+        pub widget: OneToOneWidget,
+        pub label: String,
+        pub readonly: bool,
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
     }
 }
 
