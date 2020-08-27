@@ -4,20 +4,26 @@
 
 // WIDGET ==========================================================================================
 pub mod widgets {
+    /// Logic widgets
     pub enum BooleanWidget {
         CheckboxInput,
         RadioInput,
     }
-
+    /// Date widgets
     pub enum DateWidget {
         DateInput,
+    }
+    /// Email widgets
+    pub enum EmailWidget {
+        EmailInput,
     }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
-    use super::widgets::{BooleanWidget, DateWidget};
+    use super::widgets::{BooleanWidget, DateWidget, EmailWidget};
 
+    /// Boolean type field
     pub struct BooleanField {
         pub widget: BooleanWidget,
         pub label: String,
@@ -25,9 +31,17 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
-
+    /// Date type field
     pub struct DateField {
         pub widget: DateWidget,
+        pub label: String,
+        pub default: String,
+        pub hint: String,
+        pub hidden: bool,
+    }
+    /// Email type field
+    pub struct EmailField {
+        pub widget: EmailWidget,
         pub label: String,
         pub default: String,
         pub hint: String,
@@ -36,7 +50,6 @@ pub mod fields {
 
     /// Fields (field types)
     pub enum Fields {
-        EmailField(String),
         FileField(String),
         FloatField(f64),
         ImageField(String),
