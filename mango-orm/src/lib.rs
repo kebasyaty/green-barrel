@@ -49,13 +49,17 @@ pub mod widgets {
     pub enum TextAreaWidget {
         TextInput,
     }
+    /// Time widgets
+    pub enum TimeWidget {
+        TimeInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
         BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
-        IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget,
+        IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget,
     };
 
     /// Boolean type field
@@ -157,10 +161,18 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// Time type field
+    pub struct TimeField {
+        pub widget: TimeWidget,
+        pub label: String,
+        pub default: String, // Date in UNIX format "00:00:00" or blank line
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        TimeField(String),
         URLField(String),
         ForeignKeyField(String),
         ManyToManyField(String),
