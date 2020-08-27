@@ -17,17 +17,22 @@ pub mod widgets {
     pub enum EmailWidget {
         EmailInput,
     }
+    /// File widgets
+    pub enum FileWidget {
+        FileInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
-    use super::widgets::{BooleanWidget, DateWidget, EmailWidget};
+    use super::widgets::{BooleanWidget, DateWidget, EmailWidget, FileWidget};
 
     /// Boolean type field
     pub struct BooleanField {
         pub widget: BooleanWidget,
         pub label: String,
         pub default: bool,
+        pub required: bool,
         pub hint: String,
         pub hidden: bool,
     }
@@ -36,6 +41,7 @@ pub mod fields {
         pub widget: DateWidget,
         pub label: String,
         pub default: String,
+        pub required: bool,
         pub hint: String,
         pub hidden: bool,
     }
@@ -43,14 +49,23 @@ pub mod fields {
     pub struct EmailField {
         pub widget: EmailWidget,
         pub label: String,
-        pub default: String,
+        pub default: String, // email address or blank line
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
+    /// File type field
+    pub struct FileField {
+        pub widget: FileWidget,
+        pub label: String,
+        pub default: String, // media_url plus file path or blank line
+        pub required: bool,
         pub hint: String,
         pub hidden: bool,
     }
 
     /// Fields (field types)
     pub enum Fields {
-        FileField(String),
         FloatField(f64),
         ImageField(String),
         IntegerField(i64),
