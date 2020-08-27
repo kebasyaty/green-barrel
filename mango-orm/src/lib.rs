@@ -31,7 +31,7 @@ pub mod fields {
     pub struct BooleanField {
         pub widget: BooleanWidget,
         pub label: String,
-        pub default: bool,
+        pub default: bool, // true or false
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
@@ -40,7 +40,7 @@ pub mod fields {
     pub struct DateField {
         pub widget: DateWidget,
         pub label: String,
-        pub default: String,
+        pub default: String, // Date in UNIX format "0000-00-00" or blank line
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
