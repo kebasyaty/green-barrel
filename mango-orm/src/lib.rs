@@ -80,6 +80,7 @@ pub mod fields {
         pub widget: BooleanWidget,
         pub label: String,
         pub default: bool, // true or false
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
@@ -89,6 +90,7 @@ pub mod fields {
         pub widget: ColorWidget,
         pub label: String,
         pub default: String, // example: "#ffffff" or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -99,6 +101,7 @@ pub mod fields {
         pub widget: DateWidget,
         pub label: String,
         pub default: String, // Date in UNIX format "0000-00-00" or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -109,6 +112,7 @@ pub mod fields {
         pub widget: EmailWidget,
         pub label: String,
         pub default: String, // email address or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -119,6 +123,7 @@ pub mod fields {
         pub widget: FileWidget,
         pub label: String,
         pub default: String, // media_url plus file path or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
@@ -128,6 +133,7 @@ pub mod fields {
         pub widget: FloatWidget,
         pub label: String,
         pub default: f64, // number 0.0
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -138,6 +144,7 @@ pub mod fields {
         pub widget: ImageWidget,
         pub label: String,
         pub default: String, // media_url plus file path or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
@@ -147,6 +154,7 @@ pub mod fields {
         pub widget: IntegerWidget,
         pub label: String,
         pub default: i64, // number 0
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -157,6 +165,7 @@ pub mod fields {
         pub widget: IPAddressWidget,
         pub label: String,
         pub default: String, // IP or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -167,6 +176,7 @@ pub mod fields {
         pub widget: PositiveIntegerWidget,
         pub label: String,
         pub default: u64, // number 0
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -177,6 +187,7 @@ pub mod fields {
         pub widget: SlugWidget,
         pub label: String,
         pub default: String, // slug-line or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -187,6 +198,7 @@ pub mod fields {
         pub widget: TextWidget,
         pub label: String,
         pub default: String, // some text line or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -197,6 +209,7 @@ pub mod fields {
         pub widget: TextAreaWidget,
         pub label: String,
         pub default: String, // some text or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -207,6 +220,7 @@ pub mod fields {
         pub widget: TimeWidget,
         pub label: String,
         pub default: String, // Date in UNIX format "00:00:00" or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
@@ -217,6 +231,7 @@ pub mod fields {
         pub widget: URLWidget,
         pub label: String,
         pub default: String, // URL or blank line
+        pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub unique: bool,
