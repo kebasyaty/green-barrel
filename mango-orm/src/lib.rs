@@ -45,13 +45,17 @@ pub mod widgets {
     pub enum TextWidget {
         TextInput,
     }
+    /// TextArea widgets
+    pub enum TextAreaWidget {
+        TextInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
         BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
-        IntegerWidget, PositiveIntegerWidget, SlugWidget, TextWidget,
+        IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget,
     };
 
     /// Boolean type field
@@ -144,10 +148,18 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// TextArea type field
+    pub struct TextAreaField {
+        pub widget: TextAreaWidget,
+        pub label: String,
+        pub default: String, // some text or blank line
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        TextAreaField(String),
         TimeField(String),
         URLField(String),
         ForeignKeyField(String),
