@@ -12,10 +12,12 @@ pub mod widgets {
     /// Color widgets
     pub enum ColorWidget {
         ColorInput,
+        Select,
     }
     /// Date widgets
     pub enum DateWidget {
         DateInput,
+        Select,
     }
     /// Email widgets
     pub enum EmailWidget {
@@ -38,15 +40,18 @@ pub mod widgets {
     pub enum IntegerWidget {
         NumberInput,
         RangeInput,
+        Select,
     }
     /// IPAddress widgets
     pub enum IPAddressWidget {
         TextInput,
+        Select,
     }
     /// Positive Integer widgets
     pub enum PositiveIntegerWidget {
         NumberInput,
         RangeInput,
+        Select,
     }
     /// Slug widgets
     pub enum SlugWidget {
@@ -55,6 +60,7 @@ pub mod widgets {
     /// Text widgets
     pub enum TextWidget {
         TextInput,
+        Select,
     }
     /// TextArea widgets
     pub enum TextAreaWidget {
@@ -67,6 +73,7 @@ pub mod widgets {
     /// URL widgets
     pub enum URLWidget {
         UrlInput,
+        Select,
     }
     /// Password widgets
     pub enum PasswordWidget {
@@ -75,6 +82,7 @@ pub mod widgets {
     /// Phone widgets
     pub enum PhoneWidget {
         TelInput,
+        Select,
     }
 }
 
