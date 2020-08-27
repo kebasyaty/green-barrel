@@ -94,6 +94,14 @@ pub mod fields {
         PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget, URLWidget,
     };
 
+    /// Choice variations
+    pub enum Choices {
+        StrStr(Vec<(String, String)>),
+        StrI64(Vec<(String, i64)>),
+        StrU64(Vec<(String, u64)>),
+        StrF64(Vec<(String, f64)>),
+    }
+
     /// Boolean type field
     pub struct BooleanField {
         pub widget: BooleanWidget,
