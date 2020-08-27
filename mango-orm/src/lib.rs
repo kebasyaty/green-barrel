@@ -29,12 +29,16 @@ pub mod widgets {
     pub enum ImageWidget {
         FileInput,
     }
+    /// Integer widgets
+    pub enum IntegerWidget {
+        NumberInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
-        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
+        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget, IntegerWidget,
     };
 
     /// Boolean type field
@@ -91,10 +95,18 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// Integer type field
+    pub struct IntegerField {
+        pub widget: IntegerWidget,
+        pub label: String,
+        pub default: i64, // number 0
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        IntegerField(i64),
         PositiveIntegerField(u64),
         SlugField(String),
         TextField(String),
