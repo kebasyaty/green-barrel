@@ -2,12 +2,40 @@
 //!
 //! ORM-like API MongoDB for Rust.
 
+// WIDGET ==========================================================================================
+pub mod widgets {
+    pub enum BooleanWidget {
+        CheckboxInput,
+        RadioInput,
+    }
+
+    pub enum DateWidget {
+        DateInput,
+    }
+}
+
 // FIELDS ==========================================================================================
 pub mod fields {
+    use super::widgets::{BooleanWidget, DateWidget};
+
+    pub struct BooleanField {
+        pub widget: BooleanWidget,
+        pub label: String,
+        pub default: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
+
+    pub struct DateField {
+        pub widget: DateWidget,
+        pub label: String,
+        pub default: String,
+        pub hint: String,
+        pub hidden: bool,
+    }
+
     /// Fields (field types)
     pub enum Fields {
-        BooleanField(bool),
-        DateField(String),
         EmailField(String),
         FileField(String),
         FloatField(f64),
