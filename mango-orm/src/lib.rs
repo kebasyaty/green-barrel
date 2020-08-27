@@ -58,7 +58,7 @@ pub mod widgets {
     }
     /// TextArea widgets
     pub enum TextAreaWidget {
-        TextInput,
+        TextArea,
     }
     /// Time widgets
     pub enum TimeWidget {
