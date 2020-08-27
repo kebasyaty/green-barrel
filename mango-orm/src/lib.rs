@@ -28,6 +28,7 @@ pub mod widgets {
     /// Float widgets
     pub enum FloatWidget {
         NumberInput,
+        RangeInput,
     }
     /// Image widgets
     pub enum ImageWidget {
@@ -36,6 +37,7 @@ pub mod widgets {
     /// Integer widgets
     pub enum IntegerWidget {
         NumberInput,
+        RangeInput,
     }
     /// IPAddress widgets
     pub enum IPAddressWidget {
@@ -44,6 +46,7 @@ pub mod widgets {
     /// Positive Integer widgets
     pub enum PositiveIntegerWidget {
         NumberInput,
+        RangeInput,
     }
     /// Slug widgets
     pub enum SlugWidget {
