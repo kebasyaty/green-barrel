@@ -53,6 +53,10 @@ pub mod widgets {
     pub enum TimeWidget {
         TimeInput,
     }
+    /// URL widgets
+    pub enum URLWidget {
+        TextInput,
+    }
 }
 
 // FIELDS ==========================================================================================
@@ -60,6 +64,7 @@ pub mod fields {
     use super::widgets::{
         BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
         IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget,
+        URLWidget,
     };
 
     /// Boolean type field
@@ -170,10 +175,18 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// URL type field
+    pub struct URLField {
+        pub widget: URLWidget,
+        pub label: String,
+        pub default: String, // url or blank line
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        URLField(String),
         ForeignKeyField(String),
         ManyToManyField(String),
         OneToOneField(String),
