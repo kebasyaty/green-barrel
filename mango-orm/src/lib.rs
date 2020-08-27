@@ -12,12 +12,10 @@ pub mod widgets {
     /// Color widgets
     pub enum ColorWidget {
         ColorInput,
-        Select,
     }
     /// Date widgets
     pub enum DateWidget {
         DateInput,
-        Select,
     }
     /// Email widgets
     pub enum EmailWidget {
@@ -31,6 +29,7 @@ pub mod widgets {
     pub enum FloatWidget {
         NumberInput,
         RangeInput,
+        Select,
     }
     /// Image widgets
     pub enum ImageWidget {
@@ -45,7 +44,6 @@ pub mod widgets {
     /// IPAddress widgets
     pub enum IPAddressWidget {
         TextInput,
-        Select,
     }
     /// Positive Integer widgets
     pub enum PositiveIntegerWidget {
@@ -73,7 +71,6 @@ pub mod widgets {
     /// URL widgets
     pub enum URLWidget {
         UrlInput,
-        Select,
     }
     /// Password widgets
     pub enum PasswordWidget {
@@ -82,7 +79,6 @@ pub mod widgets {
     /// Phone widgets
     pub enum PhoneWidget {
         TelInput,
-        Select,
     }
 }
 
@@ -165,6 +161,7 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub choices: Option<Choices>,
     }
     /// Image type field
     pub struct ImageField {
@@ -186,6 +183,7 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub choices: Option<Choices>,
     }
     /// IPAddress type field
     pub struct IPAddressField {
@@ -208,6 +206,7 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub choices: Option<Choices>,
     }
     /// Slug type field
     pub struct SlugField {
@@ -230,6 +229,7 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub choices: Option<Choices>,
     }
     /// TextArea type field
     pub struct TextAreaField {
