@@ -33,6 +33,10 @@ pub mod widgets {
     pub enum IntegerWidget {
         NumberInput,
     }
+    /// IPAddress widgets
+    pub enum IPAddressWidget {
+        TextInput,
+    }
     /// Positive Integer widgets
     pub enum PositiveIntegerWidget {
         NumberInput,
@@ -55,16 +59,16 @@ pub mod widgets {
     }
     /// URL widgets
     pub enum URLWidget {
-        TextInput,
+        UrlInput,
     }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
-        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
-        IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget,
-        URLWidget,
+        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, IPAddressWidget,
+        ImageWidget, IntegerWidget, PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget,
+        TimeWidget, URLWidget,
     };
 
     /// Boolean type field
@@ -83,6 +87,7 @@ pub mod fields {
         pub default: String, // Date in UNIX format "0000-00-00" or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Email type field
@@ -92,6 +97,7 @@ pub mod fields {
         pub default: String, // email address or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// File type field
@@ -110,6 +116,7 @@ pub mod fields {
         pub default: f64, // number 0.0
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Image type field
@@ -128,6 +135,17 @@ pub mod fields {
         pub default: i64, // number 0
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
+        pub hidden: bool,
+    }
+    /// IPAddress type field
+    pub struct IPAddressField {
+        pub widget: IPAddressWidget,
+        pub label: String,
+        pub default: String, // IP or blank line
+        pub required: bool,
+        pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Positive Integer type field
@@ -137,6 +155,7 @@ pub mod fields {
         pub default: u64, // number 0
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Slug type field
@@ -146,6 +165,7 @@ pub mod fields {
         pub default: String, // slug-line or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Text type field
@@ -155,6 +175,7 @@ pub mod fields {
         pub default: String, // some text or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// TextArea type field
@@ -164,6 +185,7 @@ pub mod fields {
         pub default: String, // some text or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// Time type field
@@ -173,15 +195,17 @@ pub mod fields {
         pub default: String, // Date in UNIX format "00:00:00" or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
     /// URL type field
     pub struct URLField {
         pub widget: URLWidget,
         pub label: String,
-        pub default: String, // url or blank line
+        pub default: String, // URL or blank line
         pub required: bool,
         pub hint: String,
+        pub unique: bool,
         pub hidden: bool,
     }
 
