@@ -4,7 +4,7 @@
 
 // WIDGET ==========================================================================================
 pub mod widgets {
-    /// Logic widgets
+    /// Boolean widgets
     pub enum BooleanWidget {
         CheckboxInput,
         RadioInput,
@@ -21,11 +21,21 @@ pub mod widgets {
     pub enum FileWidget {
         FileInput,
     }
+    /// Float widgets
+    pub enum FloatWidget {
+        NumberInput,
+    }
+    /// Image widgets
+    pub enum ImageWidget {
+        FileInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
-    use super::widgets::{BooleanWidget, DateWidget, EmailWidget, FileWidget};
+    use super::widgets::{
+        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
+    };
 
     /// Boolean type field
     pub struct BooleanField {
@@ -63,11 +73,27 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// Float type field
+    pub struct FloatField {
+        pub widget: FloatWidget,
+        pub label: String,
+        pub default: f64, // number 0.0
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
+    /// Image type field
+    pub struct ImageField {
+        pub widget: ImageWidget,
+        pub label: String,
+        pub default: String, // media_url plus file path or blank line
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        FloatField(f64),
-        ImageField(String),
         IntegerField(i64),
         PositiveIntegerField(u64),
         SlugField(String),
