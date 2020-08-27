@@ -72,14 +72,18 @@ pub mod widgets {
     pub enum PasswordWidget {
         PasswordInput,
     }
+    /// Phone widgets
+    pub enum PhoneWidget {
+        TelInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
         BooleanWidget, ColorWidget, DateWidget, EmailWidget, FileWidget, FloatWidget,
-        IPAddressWidget, ImageWidget, IntegerWidget, PasswordWidget, PositiveIntegerWidget,
-        SlugWidget, TextAreaWidget, TextWidget, TimeWidget, URLWidget,
+        IPAddressWidget, ImageWidget, IntegerWidget, PasswordWidget, PhoneWidget,
+        PositiveIntegerWidget, SlugWidget, TextAreaWidget, TextWidget, TimeWidget, URLWidget,
     };
 
     /// Boolean type field
@@ -247,6 +251,17 @@ pub mod fields {
     /// Password type field
     pub struct PasswordField {
         pub widget: PasswordWidget,
+        pub label: String,
+        pub default: String, // some text line or blank line
+        pub readonly: bool,
+        pub required: bool,
+        pub hint: String,
+        pub unique: bool,
+        pub hidden: bool,
+    }
+    /// Phone type field
+    pub struct PhoneField {
+        pub widget: PhoneWidget,
         pub label: String,
         pub default: String, // some text line or blank line
         pub readonly: bool,
