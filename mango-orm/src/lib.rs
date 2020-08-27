@@ -33,12 +33,17 @@ pub mod widgets {
     pub enum IntegerWidget {
         NumberInput,
     }
+    /// Positive Integer widgets
+    pub enum PositiveIntegerWidget {
+        NumberInput,
+    }
 }
 
 // FIELDS ==========================================================================================
 pub mod fields {
     use super::widgets::{
-        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget, IntegerWidget,
+        BooleanWidget, DateWidget, EmailWidget, FileWidget, FloatWidget, ImageWidget,
+        IntegerWidget, PositiveIntegerWidget,
     };
 
     /// Boolean type field
@@ -104,10 +109,18 @@ pub mod fields {
         pub hint: String,
         pub hidden: bool,
     }
+    /// Positive Integer type field
+    pub struct PositiveIntegerField {
+        pub widget: PositiveIntegerWidget,
+        pub label: String,
+        pub default: u64, // number 0
+        pub required: bool,
+        pub hint: String,
+        pub hidden: bool,
+    }
 
     /// Fields (field types)
     pub enum Fields {
-        PositiveIntegerField(u64),
         SlugField(String),
         TextField(String),
         TextAreaField(String),
