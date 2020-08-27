@@ -5,6 +5,7 @@
 // WIDGET ==========================================================================================
 pub mod widgets {
     /// Boolean widgets
+    #[derive(Debug)]
     pub enum BooleanWidget {
         CheckboxInput,
         RadioInput,
@@ -15,6 +16,7 @@ pub mod widgets {
         }
     }
     /// Color widgets
+    #[derive(Debug)]
     pub enum ColorWidget {
         ColorInput,
     }
@@ -24,6 +26,7 @@ pub mod widgets {
         }
     }
     /// Date widgets
+    #[derive(Debug)]
     pub enum DateWidget {
         DateInput,
     }
@@ -33,6 +36,7 @@ pub mod widgets {
         }
     }
     /// Email widgets
+    #[derive(Debug)]
     pub enum EmailWidget {
         EmailInput,
     }
@@ -42,6 +46,7 @@ pub mod widgets {
         }
     }
     /// File widgets
+    #[derive(Debug)]
     pub enum FileWidget {
         FileInput,
     }
@@ -51,6 +56,7 @@ pub mod widgets {
         }
     }
     /// Float widgets
+    #[derive(Debug)]
     pub enum FloatWidget {
         NumberInput,
         RangeInput,
@@ -62,6 +68,7 @@ pub mod widgets {
         }
     }
     /// Image widgets
+    #[derive(Debug)]
     pub enum ImageWidget {
         FileInput,
     }
@@ -71,6 +78,7 @@ pub mod widgets {
         }
     }
     /// Integer widgets
+    #[derive(Debug)]
     pub enum IntegerWidget {
         NumberInput,
         RangeInput,
@@ -82,6 +90,7 @@ pub mod widgets {
         }
     }
     /// IPAddress widgets
+    #[derive(Debug)]
     pub enum IPAddressWidget {
         TextInput,
     }
@@ -91,6 +100,7 @@ pub mod widgets {
         }
     }
     /// Positive Integer widgets
+    #[derive(Debug)]
     pub enum PositiveIntegerWidget {
         NumberInput,
         RangeInput,
@@ -102,6 +112,7 @@ pub mod widgets {
         }
     }
     /// Slug widgets
+    #[derive(Debug)]
     pub enum SlugWidget {
         TextInput,
     }
@@ -111,6 +122,7 @@ pub mod widgets {
         }
     }
     /// Text widgets
+    #[derive(Debug)]
     pub enum TextWidget {
         TextInput,
         Select,
@@ -121,6 +133,7 @@ pub mod widgets {
         }
     }
     /// TextArea widgets
+    #[derive(Debug)]
     pub enum TextAreaWidget {
         TextArea,
     }
@@ -130,6 +143,7 @@ pub mod widgets {
         }
     }
     /// Time widgets
+    #[derive(Debug)]
     pub enum TimeWidget {
         TimeInput,
     }
@@ -139,6 +153,7 @@ pub mod widgets {
         }
     }
     /// URL widgets
+    #[derive(Debug)]
     pub enum URLWidget {
         UrlInput,
     }
@@ -148,6 +163,7 @@ pub mod widgets {
         }
     }
     /// Password widgets
+    #[derive(Debug)]
     pub enum PasswordWidget {
         PasswordInput,
     }
@@ -157,6 +173,7 @@ pub mod widgets {
         }
     }
     /// Phone widgets
+    #[derive(Debug)]
     pub enum PhoneWidget {
         TelInput,
     }
@@ -166,6 +183,7 @@ pub mod widgets {
         }
     }
     /// ForeignKey widgets
+    #[derive(Debug)]
     pub enum ForeignKeyWidget {
         Select,
     }
@@ -175,6 +193,7 @@ pub mod widgets {
         }
     }
     /// ManyToMany widgets
+    #[derive(Debug)]
     pub enum ManyToManyWidget {
         Select,
     }
@@ -184,6 +203,7 @@ pub mod widgets {
         }
     }
     /// OneToOne widgets
+    #[derive(Debug)]
     pub enum OneToOneWidget {
         Select,
     }
@@ -203,16 +223,8 @@ pub mod fields {
         TextAreaWidget, TextWidget, TimeWidget, URLWidget,
     };
 
-    /// Choice variations
-    pub enum Choices {
-        StrStr(Vec<(String, String)>),
-        StrI64(Vec<(String, i64)>),
-        StrU64(Vec<(String, u64)>),
-        StrF64(Vec<(String, f64)>),
-    }
-
     /// Boolean type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct BooleanField {
         pub widget: BooleanWidget,
         pub label: String,
@@ -223,7 +235,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Color type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct ColorField {
         pub widget: ColorWidget,
         pub label: String,
@@ -235,7 +247,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Date type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct DateField {
         pub widget: DateWidget,
         pub label: String,
@@ -247,7 +259,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Email type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct EmailField {
         pub widget: EmailWidget,
         pub label: String,
@@ -259,7 +271,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// File type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct FileField {
         pub widget: FileWidget,
         pub label: String,
@@ -270,7 +282,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Float type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct FloatField {
         pub widget: FloatWidget,
         pub label: String,
@@ -280,10 +292,10 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub choices: Option<Choices>,
+        pub choices: Vec<(String, f64)>,
     }
     /// Image type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct ImageField {
         pub widget: ImageWidget,
         pub label: String,
@@ -294,7 +306,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Integer type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct IntegerField {
         pub widget: IntegerWidget,
         pub label: String,
@@ -304,10 +316,10 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub choices: Option<Choices>,
+        pub choices: Vec<(String, i64)>,
     }
     /// IPAddress type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct IPAddressField {
         pub widget: IPAddressWidget,
         pub label: String,
@@ -319,7 +331,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Positive Integer type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct PositiveIntegerField {
         pub widget: PositiveIntegerWidget,
         pub label: String,
@@ -329,10 +341,10 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub choices: Option<Choices>,
+        pub choices: Vec<(String, u64)>,
     }
     /// Slug type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct SlugField {
         pub widget: SlugWidget,
         pub label: String,
@@ -344,7 +356,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Text type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct TextField {
         pub widget: TextWidget,
         pub label: String,
@@ -354,10 +366,10 @@ pub mod fields {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub choices: Option<Choices>,
+        pub choices: Vec<(String, String)>,
     }
     /// TextArea type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct TextAreaField {
         pub widget: TextAreaWidget,
         pub label: String,
@@ -369,7 +381,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Time type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct TimeField {
         pub widget: TimeWidget,
         pub label: String,
@@ -381,7 +393,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// URL type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct URLField {
         pub widget: URLWidget,
         pub label: String,
@@ -393,7 +405,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Password type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct PasswordField {
         pub widget: PasswordWidget,
         pub label: String,
@@ -405,7 +417,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Phone type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct PhoneField {
         pub widget: PhoneWidget,
         pub label: String,
@@ -417,7 +429,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ForeignKey type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct ForeignKeyField {
         pub widget: ForeignKeyWidget,
         pub label: String,
@@ -427,7 +439,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ManyToMany type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct ManyToManyField {
         pub widget: ManyToManyWidget,
         pub label: String,
@@ -437,7 +449,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// OneToOne type field
-    #[derive(Default)]
+    #[derive(Default, Debug)]
     pub struct OneToOneField {
         pub widget: OneToOneWidget,
         pub label: String,
