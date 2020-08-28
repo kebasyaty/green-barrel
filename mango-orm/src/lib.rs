@@ -6,6 +6,9 @@
 pub mod fields {
 
     /// Boolean type field
+    /// Use for:
+    /// <input type="checkbox">
+    /// <input type="radio">
     #[derive(Default, Debug)]
     pub struct BooleanField {
         pub label: String,
@@ -16,6 +19,9 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Color type field
+    /// Use for:
+    /// <input type="color">
+    /// <input type="text">
     #[derive(Default, Debug)]
     pub struct ColorField {
         pub label: String,
@@ -27,6 +33,9 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Date type field
+    /// Use for:
+    /// <input type="date">
+    /// <input type="text">
     #[derive(Default, Debug)]
     pub struct DateField {
         pub label: String,
@@ -38,6 +47,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Email type field
+    /// Use for:
+    /// <input type="email">
     #[derive(Default, Debug)]
     pub struct EmailField {
         pub label: String,
@@ -49,6 +60,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// File type field
+    /// Use for:
+    /// <input type="file">
     #[derive(Default, Debug)]
     pub struct FileField {
         pub label: String,
@@ -59,6 +72,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Float type field
+    /// Use for:
+    /// <input type="number">
     #[derive(Default, Debug)]
     pub struct FloatField {
         pub label: String,
@@ -71,6 +86,8 @@ pub mod fields {
         pub choices: Vec<(String, f64)>,
     }
     /// Image type field
+    /// Use for:
+    /// <input type="file">
     #[derive(Default, Debug)]
     pub struct ImageField {
         pub label: String,
@@ -81,6 +98,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Integer type field
+    /// Use for:
+    /// <input type="number">
     #[derive(Default, Debug)]
     pub struct IntegerField {
         pub label: String,
@@ -93,6 +112,11 @@ pub mod fields {
         pub choices: Vec<(String, i64)>,
     }
     /// IPAddress type field
+    /// Use for:
+    /// 1. <input type="text">
+    /// 2. <input type="text" size="16"
+    /// pattern="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$">
+    /// 3. https://stackoverflow.com/questions/49306970/correct-input-type-for-ip-address
     #[derive(Default, Debug)]
     pub struct IPAddressField {
         pub label: String,
@@ -104,6 +128,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Positive Integer type field
+    /// Use for:
+    /// <input type="number">
     #[derive(Default, Debug)]
     pub struct PositiveIntegerField {
         pub label: String,
@@ -116,6 +142,8 @@ pub mod fields {
         pub choices: Vec<(String, u64)>,
     }
     /// Slug type field
+    /// Use for:
+    /// <input type="text">
     #[derive(Default, Debug)]
     pub struct SlugField {
         pub label: String,
@@ -127,6 +155,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Text type field
+    /// Use for:
+    /// <input type="text">
     #[derive(Default, Debug)]
     pub struct TextField {
         pub label: String,
@@ -139,6 +169,8 @@ pub mod fields {
         pub choices: Vec<(String, String)>,
     }
     /// TextArea type field
+    /// Use for:
+    /// <textarea></textarea>
     #[derive(Default, Debug)]
     pub struct TextAreaField {
         pub label: String,
@@ -150,6 +182,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Time type field
+    /// Use for:
+    /// <input type="time">
     #[derive(Default, Debug)]
     pub struct TimeField {
         pub label: String,
@@ -161,6 +195,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// URL type field
+    /// Use for:
+    /// <input type="url">
     #[derive(Default, Debug)]
     pub struct URLField {
         pub label: String,
@@ -172,6 +208,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Password type field
+    /// Use for:
+    /// <input type="password">
     #[derive(Default, Debug)]
     pub struct PasswordField {
         pub label: String,
@@ -183,6 +221,8 @@ pub mod fields {
         pub hidden: bool,
     }
     /// Phone type field
+    /// Use for:
+    /// <input type="tel">
     #[derive(Default, Debug)]
     pub struct PhoneField {
         pub label: String,
@@ -194,6 +234,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ForeignKey type field
+    /// Use for:
     #[derive(Default, Debug)]
     pub struct ForeignKeyField {
         pub label: String,
@@ -203,6 +244,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// ManyToMany type field
+    /// Use for:
     #[derive(Default, Debug)]
     pub struct ManyToManyField {
         pub label: String,
@@ -212,6 +254,7 @@ pub mod fields {
         pub hidden: bool,
     }
     /// OneToOne type field
+    /// Use for:
     #[derive(Default, Debug)]
     pub struct OneToOneField {
         pub label: String,
