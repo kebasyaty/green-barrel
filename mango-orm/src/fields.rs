@@ -326,6 +326,50 @@ mod tests {
     use super::*;
 
     // FIELDS FOR CHOICES ITEMS --------------------------------------------------------------------
+    #[test]
+    fn test_select_string_field() {
+        let field: SelectStringField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.disabled, false);
+        assert_eq!(field.multiple, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.select, vec![]);
+    }
+    #[test]
+    fn test_select_integer_field() {
+        let field: SelectIntegerField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0_i64);
+        assert_eq!(field.disabled, false);
+        assert_eq!(field.multiple, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.select, vec![]);
+    }
+    #[test]
+    fn test_select_positive_integer_field() {
+        let field: SelectPositiveIntegerField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0_u64);
+        assert_eq!(field.disabled, false);
+        assert_eq!(field.multiple, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.select, vec![]);
+    }
+    #[test]
+    fn test_select_float_field() {
+        let field: SelectFloatField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0_f64);
+        assert_eq!(field.disabled, false);
+        assert_eq!(field.multiple, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.select, vec![]);
+    }
 
     // STANDARD FIELDS -----------------------------------------------------------------------------
     #[test]
