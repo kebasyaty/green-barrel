@@ -325,6 +325,9 @@ pub struct OneToOneField {
 mod tests {
     use super::*;
 
+    // FIELDS FOR CHOICES ITEMS --------------------------------------------------------------------
+
+    // STANDARD FIELDS -----------------------------------------------------------------------------
     #[test]
     fn test_boolean_field() {
         let field: BooleanField = Default::default();
@@ -526,6 +529,7 @@ mod tests {
         assert_eq!(field.hidden, false);
     }
 
+    // RELATIONSHIP FIELDS -------------------------------------------------------------------------
     #[test]
     fn test_foreign_key_field() {
         let field: ForeignKeyField = Default::default();
