@@ -2,6 +2,64 @@
 //!
 //! Field types for models.
 
+// FIELDS FOR CHOICES ITEMS ========================================================================
+/// Select string type field
+/// Use for:
+/// <select></select>
+#[derive(Default, Debug)]
+pub struct SelectStringField {
+    pub label: String,
+    pub default: String, // some text
+    pub disabled: bool,
+    pub multiple: bool,
+    pub required: bool,
+    pub hint: String,
+    pub select: Vec<(String, String)>,
+}
+
+/// Select i64 type field
+/// Use for:
+/// <select></select>
+#[derive(Default, Debug)]
+pub struct SelectIntegerField {
+    pub label: String,
+    pub default: i64, // number 0_i64
+    pub disabled: bool,
+    pub multiple: bool,
+    pub required: bool,
+    pub hint: String,
+    pub select: Vec<(String, i64)>,
+}
+
+/// Select u64 type field
+/// Use for:
+/// <select></select>
+#[derive(Default, Debug)]
+pub struct SelectPositiveIntegerField {
+    pub label: String,
+    pub default: u64, // number 0_u64
+    pub disabled: bool,
+    pub multiple: bool,
+    pub required: bool,
+    pub hint: String,
+    pub select: Vec<(String, u64)>,
+}
+
+/// Select f64 type field
+/// Use for:
+/// <select></select>
+#[derive(Default, Debug)]
+pub struct SelectFloatField {
+    pub label: String,
+    pub default: f64, // number 0.0_f64
+    pub disabled: bool,
+    pub multiple: bool,
+    pub required: bool,
+    pub hint: String,
+    pub select: Vec<(String, f64)>,
+}
+
+// STANDARD FIELDS =================================================================================
 /// Boolean type field
 /// Use for:
 /// <input type="checkbox">
@@ -74,13 +132,12 @@ pub struct FileField {
 #[derive(Default, Debug)]
 pub struct FloatField {
     pub label: String,
-    pub default: f64, // number 0.0
+    pub default: f64, // number 0.0_f64
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub select: Vec<(String, f64)>,
 }
 /// Image type field
 /// Use for:
@@ -100,13 +157,12 @@ pub struct ImageField {
 #[derive(Default, Debug)]
 pub struct IntegerField {
     pub label: String,
-    pub default: i64, // number 0
+    pub default: i64, // number 0_i64
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub select: Vec<(String, i64)>,
 }
 /// IPAddress type field
 /// Use for:
@@ -130,13 +186,12 @@ pub struct IPAddressField {
 #[derive(Default, Debug)]
 pub struct PositiveIntegerField {
     pub label: String,
-    pub default: u64, // number 0
+    pub default: u64, // number 0_u64
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub select: Vec<(String, u64)>,
 }
 /// Slug type field
 /// Use for:
@@ -144,7 +199,7 @@ pub struct PositiveIntegerField {
 #[derive(Default, Debug)]
 pub struct SlugField {
     pub label: String,
-    pub default: String, // slug-line or blank line
+    pub default: String, // slug-text or blank line
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
@@ -157,13 +212,12 @@ pub struct SlugField {
 #[derive(Default, Debug)]
 pub struct TextField {
     pub label: String,
-    pub default: String, // some text line or blank line
+    pub default: String, // some text or blank line
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub select: Vec<(String, String)>,
 }
 /// TextArea type field
 /// Use for:
@@ -210,7 +264,7 @@ pub struct URLField {
 #[derive(Default, Debug)]
 pub struct PasswordField {
     pub label: String,
-    pub default: String, // password text line or blank line
+    pub default: String, // password text or blank line
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
@@ -223,13 +277,15 @@ pub struct PasswordField {
 #[derive(Default, Debug)]
 pub struct PhoneField {
     pub label: String,
-    pub default: String, //  phone number text line or blank line
+    pub default: String, //  phone number or blank line
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
 }
+
+// RELATIONSHIP FIELDS =============================================================================
 /// ForeignKey type field
 /// Use for:
 /// <select></select>
@@ -337,7 +393,6 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
-        assert_eq!(field.select, vec![]);
     }
 
     #[test]
@@ -361,7 +416,6 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
-        assert_eq!(field.select, vec![]);
     }
 
     #[test]
@@ -386,7 +440,6 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
-        assert_eq!(field.select, vec![]);
     }
 
     #[test]
@@ -411,7 +464,6 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
-        assert_eq!(field.select, vec![]);
     }
 
     #[test]
