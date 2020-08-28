@@ -2,7 +2,7 @@ use mango_orm::fields::IntegerField;
 
 fn main() {
     let field = IntegerField {
-        label: "Planet numbers".to_string(),
+        label: "Planets".to_string(),
         required: true,
         choices: vec![
             ("Mercury".to_string(), 1),
