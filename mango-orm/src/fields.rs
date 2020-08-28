@@ -80,7 +80,7 @@ pub struct FloatField {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub choices: Vec<(String, f64)>,
+    pub select: Vec<(String, f64)>,
 }
 /// Image type field
 /// Use for:
@@ -106,7 +106,7 @@ pub struct IntegerField {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub choices: Vec<(String, i64)>,
+    pub select: Vec<(String, i64)>,
 }
 /// IPAddress type field
 /// Use for:
@@ -136,7 +136,7 @@ pub struct PositiveIntegerField {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub choices: Vec<(String, u64)>,
+    pub select: Vec<(String, u64)>,
 }
 /// Slug type field
 /// Use for:
@@ -163,7 +163,7 @@ pub struct TextField {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub choices: Vec<(String, String)>,
+    pub select: Vec<(String, String)>,
 }
 /// TextArea type field
 /// Use for:
@@ -267,9 +267,240 @@ pub struct OneToOneField {
 // TESTS ===========================================================================================
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn test_boolean_field() {
+        let field: BooleanField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, false);
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_color_field() {
+        let field: ColorField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_date_field() {
+        let field: DateField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_email_field() {
+        let field: EmailField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_file_field() {
+        let field: FileField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_float_field() {
+        let field: FloatField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0.0_f64);
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+        assert_eq!(field.select, vec![]);
+    }
+
+    #[test]
+    fn test_image_field() {
+        let field: ImageField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_integer_field() {
+        let field: IntegerField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0_i64);
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+        assert_eq!(field.select, vec![]);
+    }
+
+    #[test]
+    fn test_ip_address_field() {
+        let field: IPAddressField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_positive_integer_field() {
+        let field: PositiveIntegerField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, 0_u64);
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+        assert_eq!(field.select, vec![]);
+    }
+
+    #[test]
+    fn test_slug_field() {
+        let field: SlugField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_text_field() {
+        let field: TextField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+        assert_eq!(field.select, vec![]);
+    }
+
+    #[test]
+    fn test_text_area_field() {
+        let field: TextAreaField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_time_field() {
+        let field: TimeField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_url_field() {
+        let field: URLField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_password_field() {
+        let field: PasswordField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_phone_field() {
+        let field: PhoneField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.default, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.unique, false);
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_foreign_key_field() {
+        let field: ForeignKeyField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_many_to_many_field() {
+        let field: ManyToManyField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
+    }
+
+    #[test]
+    fn test_one_to_one_field() {
+        let field: OneToOneField = Default::default();
+        assert_eq!(field.label, "".to_string());
+        assert_eq!(field.readonly, false);
+        assert_eq!(field.required, false);
+        assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.hidden, false);
     }
 }
