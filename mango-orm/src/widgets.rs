@@ -1,4 +1,4 @@
-//! # Fields
+//! # widgets
 //!
 //! Widgets for Forms.
 
@@ -174,354 +174,48 @@ pub mod widgets {
 mod tests {
     use super::*;
 
-    // FIELDS FOR CHOICES ITEMS --------------------------------------------------------------------
+    // Standard widgets ----------------------------------------------------------------------------
+    #[test]
+    fn test_boolean_widget() {
+        let widget: StandardWidget = Default::default();
+        assert_eq!(widget.id, "".to_string());
+        assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.default, false);
+        assert_eq!(widget.readonly, false);
+        assert_eq!(widget.required, false);
+        assert_eq!(widget.hint, "".to_string());
+        assert_eq!(widget.hidden, false);
+        assert_eq!(widget.other_attrs, "".to_string());
+        assert_eq!(widget.other_classes, "".to_string());
+    }
+
+    // Widget for choices items --------------------------------------------------------------------
     #[test]
     fn test_select_string_widget() {
-        let field: SelectStrStrWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.disabled, false);
-        assert_eq!(field.multiple, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-        assert_eq!(field.select, vec![]);
-    }
-    #[test]
-    fn test_select_integer_widget() {
-        let field: SelectStrI64Widget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0_i64);
-        assert_eq!(field.disabled, false);
-        assert_eq!(field.multiple, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-        assert_eq!(field.select, vec![]);
-    }
-    #[test]
-    fn test_select_positive_integer_widget() {
-        let field: SelectStrU64Widget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0_u64);
-        assert_eq!(field.disabled, false);
-        assert_eq!(field.multiple, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-        assert_eq!(field.select, vec![]);
-    }
-    #[test]
-    fn test_select_float_widget() {
-        let field: SelectStrF64Widget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0_f64);
-        assert_eq!(field.disabled, false);
-        assert_eq!(field.multiple, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-        assert_eq!(field.select, vec![]);
+        let widget: SelectionWidget = Default::default();
+        assert_eq!(widget.id, "".to_string());
+        assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.default, "".to_string());
+        assert_eq!(widget.disabled, false);
+        assert_eq!(widget.multiple, false);
+        assert_eq!(widget.required, false);
+        assert_eq!(widget.hint, "".to_string());
+        assert_eq!(widget.other_attrs, "".to_string());
+        assert_eq!(widget.other_classes, "".to_string());
+        assert_eq!(widget.select, vec![]);
     }
 
-    // STANDARD FIELDS -----------------------------------------------------------------------------
+    // Widget for relation fields ------------------------------------------------------------------
     #[test]
-    fn test_boolean_field() {
-        let field: BooleanWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, false);
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_color_field() {
-        let field: ColorWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_date_field() {
-        let field: DateWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_email_field() {
-        let field: EmailWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_file_field() {
-        let field: FileWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_float_field() {
-        let field: FloatWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0.0_f64);
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_image_field() {
-        let field: ImageWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_integer_field() {
-        let field: IntegerWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0_i64);
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_ip_address_field() {
-        let field: IPAddressWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_positive_integer_field() {
-        let field: PositiveIntegerWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, 0_u64);
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_slug_field() {
-        let field: SlugWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_text_field() {
-        let field: TextWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_text_area_field() {
-        let field: TextAreaWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_time_field() {
-        let field: TimeWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_url_field() {
-        let field: URLWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_password_field() {
-        let field: PasswordWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_phone_field() {
-        let field: PhoneWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.default, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.unique, false);
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    // RELATIONSHIP FIELDS -------------------------------------------------------------------------
-    #[test]
-    fn test_foreign_key_field() {
-        let field: ForeignKeyWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_many_to_many_field() {
-        let field: ManyToManyWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
-    }
-
-    #[test]
-    fn test_one_to_one_field() {
-        let field: OneToOneWidget = Default::default();
-        assert_eq!(field.id, "".to_string());
-        assert_eq!(field.label, "".to_string());
-        assert_eq!(field.readonly, false);
-        assert_eq!(field.required, false);
-        assert_eq!(field.hint, "".to_string());
-        assert_eq!(field.hidden, false);
-        assert_eq!(field.other_attrs, "".to_string());
-        assert_eq!(field.other_classes, "".to_string());
+    fn test_foreign_key_widget() {
+        let widget: RelationWidget = Default::default();
+        assert_eq!(widget.id, "".to_string());
+        assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.readonly, false);
+        assert_eq!(widget.required, false);
+        assert_eq!(widget.hint, "".to_string());
+        assert_eq!(widget.hidden, false);
+        assert_eq!(widget.other_attrs, "".to_string());
+        assert_eq!(widget.other_classes, "".to_string());
     }
 }
