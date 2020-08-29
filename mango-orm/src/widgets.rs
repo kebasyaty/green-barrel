@@ -26,6 +26,7 @@ pub mod widgets {
         Text,
         Time,
         Url,
+        TextArea,
     }
 
     impl Default for StandardType {
@@ -34,7 +35,7 @@ pub mod widgets {
         }
     }
     impl StandardType {
-        pub fn to_string(&self) -> String {
+        pub fn get_type(&self) -> String {
             match self {
                 Self::CheckBox => "checkbox".to_string(),
                 Self::Color => "color".to_string(),
@@ -51,8 +52,14 @@ pub mod widgets {
                 Self::Text => "text".to_string(),
                 Self::Time => "time".to_string(),
                 Self::Url => "url".to_string(),
+                Self::TextArea => "textarea".to_string(),
             }
         }
+    }
+
+    /// Default data types
+    pub enum DefaultDataType {
+        //
     }
 
     /// For standard widgets
@@ -72,12 +79,13 @@ pub mod widgets {
     /// <input type="text">
     /// <input type="time">
     /// <input type="url">
+    /// <textarea></textarea>
     #[derive(Default, Debug)]
     pub struct StandardWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
         pub input_type: StandardType,
-        pub default: String, // some text or blank line
+        pub default: String,
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
@@ -155,7 +163,7 @@ pub mod widgets {
         }
     }
     impl RelationType {
-        pub fn to_token(&self) -> String {
+        pub fn get_token(&self) -> String {
             match self {
                 Self::ForeignKey => "m2o".to_string(),
                 Self::ManyToMany => "m2m".to_string(),
@@ -210,7 +218,7 @@ mod tests {
         let widget: StandardWidget = Default::default();
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.input_type, StandardType::Text);
+        assert_eq!(widget.input_type.get_type(), StandardType::Text.get_type());
         assert_eq!(widget.default, false);
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
@@ -244,8 +252,8 @@ mod tests {
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
         assert_eq!(
-            widget.relation_type.to_token(),
-            RelationType::ForeignKey.to_token()
+            widget.relation_type.get_token(),
+            RelationType::ForeignKey.get_token()
         );
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
