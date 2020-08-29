@@ -33,6 +33,27 @@ pub mod widgets {
             StandardType::Text
         }
     }
+    impl StandardType {
+        pub fn to_string(&self) -> String {
+            match self {
+                Self::CheckBox => "checkbox".to_string(),
+                Self::Color => "color".to_string(),
+                Self::Date => "date".to_string(),
+                Self::Email => "email".to_string(),
+                Self::File => "file".to_string(),
+                Self::Hidden => "hidden".to_string(),
+                Self::Image => "image".to_string(),
+                Self::Number => "number".to_string(),
+                Self::Password => "password".to_string(),
+                Self::Radio => "radio".to_string(),
+                Self::Range => "range".to_string(),
+                Self::Tel => "tel".to_string(),
+                Self::Text => "text".to_string(),
+                Self::Time => "time".to_string(),
+                Self::Url => "url".to_string(),
+            }
+        }
+    }
 
     /// For standard widgets
     /// Use for:
@@ -133,6 +154,15 @@ pub mod widgets {
             RelationType::ForeignKey
         }
     }
+    impl RelationType {
+        pub fn to_token(&self) -> String {
+            match self {
+                Self::ForeignKey => "m2o".to_string(),
+                Self::ManyToMany => "m2m".to_string(),
+                Self::OneToOne => "o2o".to_string(),
+            }
+        }
+    }
 
     /// Widget for relation fields
     /// Use for:
@@ -213,7 +243,10 @@ mod tests {
         let widget: RelationWidget = Default::default();
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.relation_type, RelationType::ForeignKey);
+        assert_eq!(
+            widget.relation_type.to_token(),
+            RelationType::ForeignKey.to_token()
+        );
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
         assert_eq!(widget.hint, "".to_string());
