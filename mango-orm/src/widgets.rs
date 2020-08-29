@@ -28,7 +28,6 @@ pub mod widgets {
         Url,
         TextArea,
     }
-
     impl Default for StandardType {
         fn default() -> Self {
             StandardType::Text
@@ -68,6 +67,16 @@ pub mod widgets {
     impl Default for DefaultDataType {
         fn default() -> Self {
             DefaultDataType::Text(String::new())
+        }
+    }
+    impl DefaultDataType {
+        pub fn get_data(&self) -> String {
+            match self {
+                Self::Text(data) => data.to_string(),
+                Self::I64(data) => data.to_string(),
+                Self::U64(data) => data.to_string(),
+                Self::F64(data) => data.to_string(),
+            }
         }
     }
 
@@ -228,7 +237,10 @@ mod tests {
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
         assert_eq!(widget.input_type.get_type(), StandardType::Text.get_type());
-        assert_eq!(widget.default, false);
+        assert_eq!(
+            widget.default.get_data(),
+            DefaultDataType::Text(String::new()).get_data()
+        );
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
         assert_eq!(widget.hint, "".to_string());
