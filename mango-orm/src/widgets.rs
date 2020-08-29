@@ -43,8 +43,21 @@ pub mod widgets {
     }
     // Standard widgets ----------------------------------------------------------------------------
     /// Use for:
+    /// <input type="checkbox">
     /// <input type="color">
+    /// <input type="date">
+    /// <input type="email">
+    /// <input type="file">
+    /// <input type="hidden">
+    /// <input type="image">
+    /// <input type="number">
+    /// <input type="password">
+    /// <input type="radio">
+    /// <input type="range">
+    /// <input type="tel">
     /// <input type="text">
+    /// <input type="time">
+    /// <input type="url">
     #[derive(Default, Debug)]
     pub struct StandardWidget {
         pub id: String, // "id-name" or auto
@@ -94,7 +107,7 @@ pub mod widgets {
     /// <select></select>
     /// <select multiple></select> for ManyToMany type
     #[derive(Default, Debug)]
-    pub struct RelationshipWidget {
+    pub struct RelationWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
         pub relationship_type: RelationshipType, // Default = ForeignKey
@@ -106,7 +119,7 @@ pub mod widgets {
         pub other_classes: String, // "class-name class-name ..."
     }
 
-    impl RelationshipWidget {
+    impl RelationWidget {
         // Get attributes
         pub fn attrs(&self) -> Self {
             Self {
