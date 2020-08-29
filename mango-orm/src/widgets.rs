@@ -175,7 +175,7 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Color type Widget
@@ -192,7 +192,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Date type Widget
@@ -209,7 +209,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Email type Widget
@@ -225,7 +225,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// File type Widget
@@ -240,7 +240,7 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Float type Widget
@@ -256,7 +256,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Image type Widget
@@ -271,7 +271,7 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Integer type Widget
@@ -287,7 +287,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// IPAddress type Widget
@@ -306,7 +306,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Positive Integer type Widget
@@ -322,7 +322,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Slug type Widget
@@ -338,7 +338,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Text type Widget
@@ -354,7 +354,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// TextArea type Widget
@@ -370,7 +370,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Time type Widget
@@ -386,7 +386,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// URL type Widget
@@ -402,7 +402,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Password type Widget
@@ -418,7 +418,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// Phone type Widget
@@ -434,7 +434,7 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
 }
@@ -452,7 +452,7 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// ManyToMany type Widget
@@ -466,7 +466,7 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
     /// OneToOne type Widget
@@ -480,7 +480,7 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
-        pub other_attrs: String,   // "autofocus"
+        pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
 }
