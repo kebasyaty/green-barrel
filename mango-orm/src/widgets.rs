@@ -168,6 +168,7 @@ pub mod standard_widgets {
     /// <input type="radio">
     #[derive(Default, Debug)]
     pub struct BooleanWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: bool, // true or false
         pub readonly: bool,
@@ -181,6 +182,7 @@ pub mod standard_widgets {
     /// <input type="text">
     #[derive(Default, Debug)]
     pub struct ColorWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // example: "#ffffff" or blank line
         pub readonly: bool,
@@ -195,6 +197,7 @@ pub mod standard_widgets {
     /// <input type="text">
     #[derive(Default, Debug)]
     pub struct DateWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // Date in UNIX format "0000-00-00" or blank line
         pub readonly: bool,
@@ -208,6 +211,7 @@ pub mod standard_widgets {
     /// <input type="email">
     #[derive(Default, Debug)]
     pub struct EmailWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // email address or blank line
         pub readonly: bool,
@@ -221,6 +225,7 @@ pub mod standard_widgets {
     /// <input type="file">
     #[derive(Default, Debug)]
     pub struct FileWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // media_url plus file path or blank line
         pub readonly: bool,
@@ -233,6 +238,7 @@ pub mod standard_widgets {
     /// <input type="number">
     #[derive(Default, Debug)]
     pub struct FloatWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: f64, // number 0.0_f64
         pub readonly: bool,
@@ -246,6 +252,7 @@ pub mod standard_widgets {
     /// <input type="file">
     #[derive(Default, Debug)]
     pub struct ImageWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // media_url plus file path or blank line
         pub readonly: bool,
@@ -258,6 +265,7 @@ pub mod standard_widgets {
     /// <input type="number">
     #[derive(Default, Debug)]
     pub struct IntegerWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: i64, // number 0_i64
         pub readonly: bool,
@@ -274,6 +282,7 @@ pub mod standard_widgets {
     /// 3. https://stackoverflow.com/questions/49306970/correct-input-type-for-ip-address
     #[derive(Default, Debug)]
     pub struct IPAddressWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // IP or blank line
         pub readonly: bool,
@@ -287,6 +296,7 @@ pub mod standard_widgets {
     /// <input type="number">
     #[derive(Default, Debug)]
     pub struct PositiveIntegerWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: u64, // number 0_u64
         pub readonly: bool,
@@ -300,6 +310,7 @@ pub mod standard_widgets {
     /// <input type="text">
     #[derive(Default, Debug)]
     pub struct SlugWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // slug-text or blank line
         pub readonly: bool,
@@ -313,6 +324,7 @@ pub mod standard_widgets {
     /// <input type="text">
     #[derive(Default, Debug)]
     pub struct TextWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // some text or blank line
         pub readonly: bool,
@@ -326,6 +338,7 @@ pub mod standard_widgets {
     /// <textarea></textarea>
     #[derive(Default, Debug)]
     pub struct TextAreaWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // some text or blank line
         pub readonly: bool,
@@ -339,6 +352,7 @@ pub mod standard_widgets {
     /// <input type="time">
     #[derive(Default, Debug)]
     pub struct TimeWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // date in UNIX format "00:00:00" or blank line
         pub readonly: bool,
@@ -352,6 +366,7 @@ pub mod standard_widgets {
     /// <input type="url">
     #[derive(Default, Debug)]
     pub struct URLWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // URL or blank line
         pub readonly: bool,
@@ -365,6 +380,7 @@ pub mod standard_widgets {
     /// <input type="password">
     #[derive(Default, Debug)]
     pub struct PasswordWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, // password text or blank line
         pub readonly: bool,
@@ -378,6 +394,7 @@ pub mod standard_widgets {
     /// <input type="tel">
     #[derive(Default, Debug)]
     pub struct PhoneWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String, //  phone number or blank line
         pub readonly: bool,
@@ -395,6 +412,7 @@ pub mod relationship_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct ForeignKeyWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub readonly: bool,
         pub required: bool,
@@ -406,6 +424,7 @@ pub mod relationship_widgets {
     /// <select multiple></select>
     #[derive(Default, Debug)]
     pub struct ManyToManyWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub readonly: bool,
         pub required: bool,
@@ -417,6 +436,7 @@ pub mod relationship_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct OneToOneWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub readonly: bool,
         pub required: bool,
@@ -492,6 +512,7 @@ mod tests {
     #[test]
     fn test_boolean_field() {
         let field: BooleanWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, false);
         assert_eq!(field.readonly, false);
@@ -503,6 +524,7 @@ mod tests {
     #[test]
     fn test_color_field() {
         let field: ColorWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -515,6 +537,7 @@ mod tests {
     #[test]
     fn test_date_field() {
         let field: DateWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -527,6 +550,7 @@ mod tests {
     #[test]
     fn test_email_field() {
         let field: EmailWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -539,6 +563,7 @@ mod tests {
     #[test]
     fn test_file_field() {
         let field: FileWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -550,6 +575,7 @@ mod tests {
     #[test]
     fn test_float_field() {
         let field: FloatWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0.0_f64);
         assert_eq!(field.readonly, false);
@@ -562,6 +588,7 @@ mod tests {
     #[test]
     fn test_image_field() {
         let field: ImageWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -573,6 +600,7 @@ mod tests {
     #[test]
     fn test_integer_field() {
         let field: IntegerWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_i64);
         assert_eq!(field.readonly, false);
@@ -585,6 +613,7 @@ mod tests {
     #[test]
     fn test_ip_address_field() {
         let field: IPAddressWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -597,6 +626,7 @@ mod tests {
     #[test]
     fn test_positive_integer_field() {
         let field: PositiveIntegerWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_u64);
         assert_eq!(field.readonly, false);
@@ -609,6 +639,7 @@ mod tests {
     #[test]
     fn test_slug_field() {
         let field: SlugWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -621,6 +652,7 @@ mod tests {
     #[test]
     fn test_text_field() {
         let field: TextWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -633,6 +665,7 @@ mod tests {
     #[test]
     fn test_text_area_field() {
         let field: TextAreaWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -645,6 +678,7 @@ mod tests {
     #[test]
     fn test_time_field() {
         let field: TimeWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -657,6 +691,7 @@ mod tests {
     #[test]
     fn test_url_field() {
         let field: URLWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -669,6 +704,7 @@ mod tests {
     #[test]
     fn test_password_field() {
         let field: PasswordWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -681,6 +717,7 @@ mod tests {
     #[test]
     fn test_phone_field() {
         let field: PhoneWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -694,6 +731,7 @@ mod tests {
     #[test]
     fn test_foreign_key_field() {
         let field: ForeignKeyWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
@@ -704,6 +742,7 @@ mod tests {
     #[test]
     fn test_many_to_many_field() {
         let field: ManyToManyWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
@@ -714,6 +753,7 @@ mod tests {
     #[test]
     fn test_one_to_one_field() {
         let field: OneToOneWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
