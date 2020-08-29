@@ -1,6 +1,6 @@
 //! # Fields
 //!
-//! Field types for models.
+//! Widgets for Forms.
 
 pub use widgets::*;
 
