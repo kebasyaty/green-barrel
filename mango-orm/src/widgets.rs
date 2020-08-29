@@ -4,7 +4,7 @@
 
 pub use abstractions::*;
 pub use relationship_widgets::*;
-pub use select_widgets::*;
+pub use selection_widgets::*;
 pub use standard_widgets::*;
 
 // ABSTRACTIONS ====================================================================================
@@ -16,7 +16,7 @@ pub mod abstractions {
 }
 
 // WIDGETS FOR CHOICES ITEMS =======================================================================
-pub mod select_widgets {
+pub mod selection_widgets {
     use super::abstractions::Widget;
 
     /// Select StrStr type Widget
@@ -24,6 +24,7 @@ pub mod select_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct SelectStrStrWidget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: String,
         pub disabled: bool,
@@ -39,6 +40,7 @@ pub mod select_widgets {
         // Get field attributes
         fn attrs(&self) -> Self {
             Self {
+                id: self.id.clone(),
                 label: self.label.clone(),
                 default: self.default.clone(),
                 disabled: self.disabled.clone(),
@@ -57,6 +59,7 @@ pub mod select_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct SelectStrI64Widget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: i64,
         pub disabled: bool,
@@ -72,6 +75,7 @@ pub mod select_widgets {
         // Get field attributes
         fn attrs(&self) -> Self {
             Self {
+                id: self.id.clone(),
                 label: self.label.clone(),
                 default: self.default.clone(),
                 disabled: self.disabled.clone(),
@@ -90,6 +94,7 @@ pub mod select_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct SelectStrU64Widget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: u64,
         pub disabled: bool,
@@ -105,6 +110,7 @@ pub mod select_widgets {
         // Get field attributes
         fn attrs(&self) -> Self {
             Self {
+                id: self.id.clone(),
                 label: self.label.clone(),
                 default: self.default.clone(),
                 disabled: self.disabled.clone(),
@@ -123,6 +129,7 @@ pub mod select_widgets {
     /// <select></select>
     #[derive(Default, Debug)]
     pub struct SelectStrF64Widget {
+        pub id: String, // "id-name" or auto
         pub label: String,
         pub default: f64,
         pub disabled: bool,
@@ -138,6 +145,7 @@ pub mod select_widgets {
         // Get field attributes
         fn attrs(&self) -> Self {
             Self {
+                id: self.id.clone(),
                 label: self.label.clone(),
                 default: self.default.clone(),
                 disabled: self.disabled.clone(),
@@ -380,7 +388,7 @@ pub mod standard_widgets {
     }
 }
 
-// RELATIONSHIP WIDGETS ============================================================================
+// WIDGETS  FOR RELATIONSHIP FIELDS ================================================================
 pub mod relationship_widgets {
     /// ForeignKey type Widget
     /// Use for:
@@ -426,45 +434,57 @@ mod tests {
     #[test]
     fn test_select_string_widget() {
         let field: SelectStrStrWidget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.disabled, false);
         assert_eq!(field.multiple, false);
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
         assert_eq!(field.select, vec![]);
     }
     #[test]
     fn test_select_integer_widget() {
         let field: SelectStrI64Widget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_i64);
         assert_eq!(field.disabled, false);
         assert_eq!(field.multiple, false);
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
         assert_eq!(field.select, vec![]);
     }
     #[test]
     fn test_select_positive_integer_widget() {
         let field: SelectStrU64Widget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_u64);
         assert_eq!(field.disabled, false);
         assert_eq!(field.multiple, false);
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
         assert_eq!(field.select, vec![]);
     }
     #[test]
     fn test_select_float_widget() {
         let field: SelectStrF64Widget = Default::default();
+        assert_eq!(field.id, "".to_string());
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_f64);
         assert_eq!(field.disabled, false);
         assert_eq!(field.multiple, false);
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
         assert_eq!(field.select, vec![]);
     }
 
