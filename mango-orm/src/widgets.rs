@@ -122,15 +122,15 @@ pub mod widgets {
     // Widget  for relation fields -----------------------------------------------------------------
     /// Enumeration of relationship types
     #[derive(Debug, Clone)]
-    pub enum RelationshipType {
+    pub enum RelationType {
         ForeignKey,
         ManyToMany,
         OneToOne,
     }
 
-    impl Default for RelationshipType {
+    impl Default for RelationType {
         fn default() -> Self {
-            RelationshipType::ForeignKey
+            RelationType::ForeignKey
         }
     }
 
@@ -142,7 +142,7 @@ pub mod widgets {
     pub struct RelationWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
-        pub relation_type: RelationshipType, // Default = ForeignKey
+        pub relation_type: RelationType, // Default = ForeignKey
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
