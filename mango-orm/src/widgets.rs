@@ -19,13 +19,13 @@ pub mod abstractions {
 pub mod choices_widgets {
     use super::abstractions::Widget;
 
-    /// Select type Widget
+    /// Select StrStr type Widget
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
-    pub struct SelectWidget {
+    pub struct SelectStrStrWidget {
         pub label: String,
-        pub default: String, // some text
+        pub default: String,
         pub disabled: bool,
         pub multiple: bool,
         pub required: bool,
@@ -33,7 +33,94 @@ pub mod choices_widgets {
         pub select: Vec<(String, String)>,
     }
 
-    impl Widget<Self> for SelectWidget {
+    impl Widget<Self> for SelectStrStrWidget {
+        // Get field attributes
+        fn attrs(&self) -> Self {
+            Self {
+                label: self.label.clone(),
+                default: self.default.clone(),
+                disabled: self.disabled.clone(),
+                multiple: self.multiple.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                select: self.select.clone(),
+            }
+        }
+    }
+
+    /// Select StrI64 type Widget
+    /// Use for:
+    /// <select></select>
+    #[derive(Default, Debug)]
+    pub struct SelectStrI64Widget {
+        pub label: String,
+        pub default: i64,
+        pub disabled: bool,
+        pub multiple: bool,
+        pub required: bool,
+        pub hint: String,
+        pub select: Vec<(String, i64)>,
+    }
+
+    impl Widget<Self> for SelectStrI64Widget {
+        // Get field attributes
+        fn attrs(&self) -> Self {
+            Self {
+                label: self.label.clone(),
+                default: self.default.clone(),
+                disabled: self.disabled.clone(),
+                multiple: self.multiple.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                select: self.select.clone(),
+            }
+        }
+    }
+
+    /// Select StrU64 type Widget
+    /// Use for:
+    /// <select></select>
+    #[derive(Default, Debug)]
+    pub struct SelectStrU64Widget {
+        pub label: String,
+        pub default: u64,
+        pub disabled: bool,
+        pub multiple: bool,
+        pub required: bool,
+        pub hint: String,
+        pub select: Vec<(String, u64)>,
+    }
+
+    impl Widget<Self> for SelectStrU64Widget {
+        // Get field attributes
+        fn attrs(&self) -> Self {
+            Self {
+                label: self.label.clone(),
+                default: self.default.clone(),
+                disabled: self.disabled.clone(),
+                multiple: self.multiple.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                select: self.select.clone(),
+            }
+        }
+    }
+
+    /// Select StrF64 type Widget
+    /// Use for:
+    /// <select></select>
+    #[derive(Default, Debug)]
+    pub struct SelectStrF64Widget {
+        pub label: String,
+        pub default: f64,
+        pub disabled: bool,
+        pub multiple: bool,
+        pub required: bool,
+        pub hint: String,
+        pub select: Vec<(String, f64)>,
+    }
+
+    impl Widget<Self> for SelectStrF64Widget {
         // Get field attributes
         fn attrs(&self) -> Self {
             Self {
@@ -322,7 +409,7 @@ mod tests {
     // FIELDS FOR CHOICES ITEMS --------------------------------------------------------------------
     #[test]
     fn test_select_string_widget() {
-        let field: SelectWidget = Default::default();
+        let field: SelectStrStrWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.disabled, false);
@@ -333,7 +420,7 @@ mod tests {
     }
     #[test]
     fn test_select_integer_widget() {
-        let field: SelectWidget = Default::default();
+        let field: SelectStrI64Widget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_i64);
         assert_eq!(field.disabled, false);
@@ -344,7 +431,7 @@ mod tests {
     }
     #[test]
     fn test_select_positive_integer_widget() {
-        let field: SelectWidget = Default::default();
+        let field: SelectStrU64Widget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_u64);
         assert_eq!(field.disabled, false);
@@ -355,7 +442,7 @@ mod tests {
     }
     #[test]
     fn test_select_float_widget() {
-        let field: SelectWidget = Default::default();
+        let field: SelectStrF64Widget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_f64);
         assert_eq!(field.disabled, false);
