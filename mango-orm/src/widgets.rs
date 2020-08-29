@@ -186,7 +186,7 @@ pub mod standard_widgets {
         fn attrs(&self) -> Self {
             Self {
                 id: self.id.clone(),
-                label: self.id.clone(),
+                label: self.label.clone(),
                 default: self.default.clone(),
                 readonly: self.readonly.clone(),
                 required: self.required.clone(),
