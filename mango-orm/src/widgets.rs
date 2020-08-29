@@ -2,11 +2,7 @@
 //!
 //! Widgets for Forms.
 
-pub use widgets::{
-    relation_widgets::{RelationType, RelationWidget},
-    selection_widgets::SelectionWidget,
-    standard_widgets::{DefaultDataType, StandardType, StandardWidget},
-};
+pub use widgets::{relation_widgets::*, selection_widgets::*, standard_widgets::*};
 
 // WIDGETS =========================================================================================
 pub mod widgets {
@@ -85,21 +81,6 @@ pub mod widgets {
             }
         }
 
-        /// Auxiliary structure to reduce load
-        pub struct Attrs {
-            pub id: String,
-            pub label: String,
-            pub input_type: StandardType,
-            pub default: DefaultDataType,
-            pub readonly: bool,
-            pub required: bool,
-            pub hint: String,
-            pub unique: bool,
-            pub hidden: bool,
-            pub other_attrs: String,
-            pub other_classes: String,
-        }
-
         /// For standard widgets
         /// Use for:
         /// <input type="checkbox">
@@ -132,42 +113,9 @@ pub mod widgets {
             pub other_attrs: String,   // "autofocus ..."
             pub other_classes: String, // "class-name class-name ..."
         }
-
-        impl StandardWidget {
-            // Get attributes
-            pub fn get_attrs(&self) -> Attrs {
-                Attrs {
-                    id: self.id.clone(),
-                    label: self.label.clone(),
-                    input_type: self.input_type.clone(),
-                    default: self.default.clone(),
-                    readonly: self.readonly.clone(),
-                    required: self.required.clone(),
-                    hint: self.hint.clone(),
-                    unique: self.unique.clone(),
-                    hidden: self.hidden.clone(),
-                    other_attrs: self.other_attrs.clone(),
-                    other_classes: self.other_classes.clone(),
-                }
-            }
-        }
     }
     // Widget for choices items --------------------------------------------------------------------
     pub mod selection_widgets {
-        /// Auxiliary structure to reduce load
-        pub struct Attrs {
-            pub id: String,
-            pub label: String,
-            pub default: String,
-            pub disabled: bool,
-            pub multiple: bool,
-            pub required: bool,
-            pub hint: String,
-            pub other_attrs: String,
-            pub other_classes: String,
-            pub select: Vec<(String, String)>,
-        }
-
         /// Widget for choices items
         /// Use for:
         /// <select></select>
@@ -183,24 +131,6 @@ pub mod widgets {
             pub other_attrs: String,   // "autofocus size='3'"
             pub other_classes: String, // "class-name class-name ..."
             pub select: Vec<(String, String)>,
-        }
-
-        impl SelectionWidget {
-            // Get attributes
-            pub fn get_attrs(&self) -> Attrs {
-                Attrs {
-                    id: self.id.clone(),
-                    label: self.label.clone(),
-                    default: self.default.clone(),
-                    disabled: self.disabled.clone(),
-                    multiple: self.multiple.clone(),
-                    required: self.required.clone(),
-                    hint: self.hint.clone(),
-                    other_attrs: self.other_attrs.clone(),
-                    other_classes: self.other_classes.clone(),
-                    select: self.select.clone(),
-                }
-            }
         }
     }
     // Widget  for relation fields -----------------------------------------------------------------
@@ -228,19 +158,6 @@ pub mod widgets {
             }
         }
 
-        /// Auxiliary structure to reduce load
-        pub struct Attrs {
-            pub id: String,
-            pub label: String,
-            pub relation_type: RelationType,
-            pub readonly: bool,
-            pub required: bool,
-            pub hint: String,
-            pub hidden: bool,
-            pub other_attrs: String,
-            pub other_classes: String,
-        }
-
         /// Widget for relation fields
         /// Use for:
         /// <select></select>
@@ -256,23 +173,6 @@ pub mod widgets {
             pub hidden: bool,
             pub other_attrs: String,   // "autofocus ..."
             pub other_classes: String, // "class-name class-name ..."
-        }
-
-        impl RelationWidget {
-            // Get attributes
-            pub fn get_attrs(&self) -> Attrs {
-                Attrs {
-                    id: self.id.clone(),
-                    label: self.label.clone(),
-                    relation_type: self.relation_type.clone(),
-                    readonly: self.readonly.clone(),
-                    required: self.required.clone(),
-                    hint: self.hint.clone(),
-                    hidden: self.hidden.clone(),
-                    other_attrs: self.other_attrs.clone(),
-                    other_classes: self.other_classes.clone(),
-                }
-            }
         }
     }
 }
