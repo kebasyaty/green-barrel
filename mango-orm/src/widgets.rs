@@ -81,13 +81,26 @@ pub mod widgets {
 // WIDGETS  FOR RELATIONSHIP FIELDS ================================================================
 pub mod relationship_widgets {
 
-    /// ForeignKey type Widget
+    #[derive(Debug, Clone)]
+    pub enum RelationshipType {
+        ForeignKey,
+        ManyToMany,
+        OneToOne,
+    }
+
+    impl Default for RelationshipType {
+        fn default() -> Self {
+            RelationshipType::ForeignKey
+        }
+    }
+
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
-    pub struct ForeignKeyWidget {
+    pub struct RelationshipWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
+        pub relationship_type: RelationshipType,
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
@@ -95,33 +108,22 @@ pub mod relationship_widgets {
         pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
-    /// ManyToMany type Widget
-    /// Use for:
-    /// <select multiple></select>
-    #[derive(Default, Debug)]
-    pub struct ManyToManyWidget {
-        pub id: String, // "id-name" or auto
-        pub label: String,
-        pub readonly: bool,
-        pub required: bool,
-        pub hint: String,
-        pub hidden: bool,
-        pub other_attrs: String,   // "autofocus ..."
-        pub other_classes: String, // "class-name class-name ..."
-    }
-    /// OneToOne type Widget
-    /// Use for:
-    /// <select></select>
-    #[derive(Default, Debug)]
-    pub struct OneToOneWidget {
-        pub id: String, // "id-name" or auto
-        pub label: String,
-        pub readonly: bool,
-        pub required: bool,
-        pub hint: String,
-        pub hidden: bool,
-        pub other_attrs: String,   // "autofocus ..."
-        pub other_classes: String, // "class-name class-name ..."
+
+    impl RelationshipWidget {
+        // Get attributes
+        pub fn attrs(&self) -> Self {
+            Self {
+                id: self.id.clone(),
+                label: self.label.clone(),
+                relationship_type: self.relationship_type.clone(),
+                readonly: self.readonly.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                hidden: self.hidden.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
+            }
+        }
     }
 }
 
