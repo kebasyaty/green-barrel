@@ -2,7 +2,7 @@
 //!
 //! ORM-like API MongoDB for Rust.
 
-pub mod fields;
+pub mod widgets;
 
 // MODELS ==========================================================================================
 pub mod models {

@@ -1,7 +1,7 @@
-use mango_orm::fields::IntegerField;
+use mango_orm::widgets::IntegerWidget;
 
 fn main() {
-    let field = IntegerField {
+    let field = IntegerWidget {
         label: "Planets".to_string(),
         required: true,
         ..Default::default()

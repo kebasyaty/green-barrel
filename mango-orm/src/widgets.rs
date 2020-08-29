@@ -3,27 +3,27 @@
 //! Field types for models.
 
 pub use abstractions::*;
-pub use choices_fields::*;
-pub use relationship_fields::*;
-pub use standard_fields::*;
+pub use choices_widgets::*;
+pub use relationship_widgets::*;
+pub use standard_widgets::*;
 
 // ABSTRACTIONS ====================================================================================
 pub mod abstractions {
-    /// Abstract field
-    pub trait Field<T> {
+    /// Abstract widget
+    pub trait Widget<T> {
         fn attrs(&self) -> T;
     }
 }
 
 // FIELDS FOR CHOICES ITEMS ========================================================================
-pub mod choices_fields {
-    use super::abstractions::Field;
+pub mod choices_widgets {
+    use super::abstractions::Widget;
 
-    /// Select string type field
+    /// Select type Widget
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
-    pub struct SelectStringField {
+    pub struct SelectWidget {
         pub label: String,
         pub default: String, // some text
         pub disabled: bool,
@@ -33,98 +33,10 @@ pub mod choices_fields {
         pub select: Vec<(String, String)>,
     }
 
-    impl Field<SelectStringField> for SelectStringField {
+    impl Widget<Self> for SelectWidget {
         // Get field attributes
-        fn attrs(&self) -> SelectStringField {
-            SelectStringField {
-                label: self.label.clone(),
-                default: self.default.clone(),
-                disabled: self.disabled.clone(),
-                multiple: self.multiple.clone(),
-                required: self.required.clone(),
-                hint: self.hint.clone(),
-                select: self.select.clone(),
-            }
-        }
-    }
-
-    /// Select i64 type field ----------------------------------------------------------------------
-
-    /// Use for:
-    /// <select></select>
-    #[derive(Default, Debug)]
-    pub struct SelectIntegerField {
-        pub label: String,
-        pub default: i64, // number 0_i64
-        pub disabled: bool,
-        pub multiple: bool,
-        pub required: bool,
-        pub hint: String,
-        pub select: Vec<(String, i64)>,
-    }
-
-    impl Field<SelectIntegerField> for SelectIntegerField {
-        // Get field attributes
-        fn attrs(&self) -> SelectIntegerField {
-            SelectIntegerField {
-                label: self.label.clone(),
-                default: self.default.clone(),
-                disabled: self.disabled.clone(),
-                multiple: self.multiple.clone(),
-                required: self.required.clone(),
-                hint: self.hint.clone(),
-                select: self.select.clone(),
-            }
-        }
-    }
-
-    /// Select u64 type field ----------------------------------------------------------------------
-    /// Use for:
-    /// <select></select>
-    #[derive(Default, Debug)]
-    pub struct SelectPositiveIntegerField {
-        pub label: String,
-        pub default: u64, // number 0_u64
-        pub disabled: bool,
-        pub multiple: bool,
-        pub required: bool,
-        pub hint: String,
-        pub select: Vec<(String, u64)>,
-    }
-
-    impl Field<SelectPositiveIntegerField> for SelectPositiveIntegerField {
-        // Get field attributes
-        fn attrs(&self) -> SelectPositiveIntegerField {
-            SelectPositiveIntegerField {
-                label: self.label.clone(),
-                default: self.default.clone(),
-                disabled: self.disabled.clone(),
-                multiple: self.multiple.clone(),
-                required: self.required.clone(),
-                hint: self.hint.clone(),
-                select: self.select.clone(),
-            }
-        }
-    }
-
-    /// Select f64 type field ----------------------------------------------------------------------
-    /// Use for:
-    /// <select></select>
-    #[derive(Default, Debug)]
-    pub struct SelectFloatField {
-        pub label: String,
-        pub default: f64, // number 0.0_f64
-        pub disabled: bool,
-        pub multiple: bool,
-        pub required: bool,
-        pub hint: String,
-        pub select: Vec<(String, f64)>,
-    }
-
-    impl Field<SelectFloatField> for SelectFloatField {
-        // Get field attributes
-        fn attrs(&self) -> SelectFloatField {
-            SelectFloatField {
+        fn attrs(&self) -> Self {
+            Self {
                 label: self.label.clone(),
                 default: self.default.clone(),
                 disabled: self.disabled.clone(),
@@ -138,13 +50,13 @@ pub mod choices_fields {
 }
 
 // STANDARD FIELDS =================================================================================
-pub mod standard_fields {
-    /// Boolean type field
+pub mod standard_widgets {
+    /// Boolean type Widget
     /// Use for:
     /// <input type="checkbox">
     /// <input type="radio">
     #[derive(Default, Debug)]
-    pub struct BooleanField {
+    pub struct BooleanWidget {
         pub label: String,
         pub default: bool, // true or false
         pub readonly: bool,
@@ -152,12 +64,12 @@ pub mod standard_fields {
         pub hint: String,
         pub hidden: bool,
     }
-    /// Color type field
+    /// Color type Widget
     /// Use for:
     /// <input type="color">
     /// <input type="text">
     #[derive(Default, Debug)]
-    pub struct ColorField {
+    pub struct ColorWidget {
         pub label: String,
         pub default: String, // example: "#ffffff" or blank line
         pub readonly: bool,
@@ -166,12 +78,12 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Date type field
+    /// Date type Widget
     /// Use for:
     /// <input type="date">
     /// <input type="text">
     #[derive(Default, Debug)]
-    pub struct DateField {
+    pub struct DateWidget {
         pub label: String,
         pub default: String, // Date in UNIX format "0000-00-00" or blank line
         pub readonly: bool,
@@ -180,11 +92,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Email type field
+    /// Email type Widget
     /// Use for:
     /// <input type="email">
     #[derive(Default, Debug)]
-    pub struct EmailField {
+    pub struct EmailWidget {
         pub label: String,
         pub default: String, // email address or blank line
         pub readonly: bool,
@@ -193,11 +105,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// File type field
+    /// File type Widget
     /// Use for:
     /// <input type="file">
     #[derive(Default, Debug)]
-    pub struct FileField {
+    pub struct FileWidget {
         pub label: String,
         pub default: String, // media_url plus file path or blank line
         pub readonly: bool,
@@ -205,11 +117,11 @@ pub mod standard_fields {
         pub hint: String,
         pub hidden: bool,
     }
-    /// Float type field
+    /// Float type Widget
     /// Use for:
     /// <input type="number">
     #[derive(Default, Debug)]
-    pub struct FloatField {
+    pub struct FloatWidget {
         pub label: String,
         pub default: f64, // number 0.0_f64
         pub readonly: bool,
@@ -218,11 +130,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Image type field
+    /// Image type Widget
     /// Use for:
     /// <input type="file">
     #[derive(Default, Debug)]
-    pub struct ImageField {
+    pub struct ImageWidget {
         pub label: String,
         pub default: String, // media_url plus file path or blank line
         pub readonly: bool,
@@ -230,11 +142,11 @@ pub mod standard_fields {
         pub hint: String,
         pub hidden: bool,
     }
-    /// Integer type field
+    /// Integer type Widget
     /// Use for:
     /// <input type="number">
     #[derive(Default, Debug)]
-    pub struct IntegerField {
+    pub struct IntegerWidget {
         pub label: String,
         pub default: i64, // number 0_i64
         pub readonly: bool,
@@ -243,14 +155,14 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// IPAddress type field
+    /// IPAddress type Widget
     /// Use for:
     /// 1. <input type="text">
     /// 2. <input type="text" size="16"
     /// pattern="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$">
     /// 3. https://stackoverflow.com/questions/49306970/correct-input-type-for-ip-address
     #[derive(Default, Debug)]
-    pub struct IPAddressField {
+    pub struct IPAddressWidget {
         pub label: String,
         pub default: String, // IP or blank line
         pub readonly: bool,
@@ -259,11 +171,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Positive Integer type field
+    /// Positive Integer type Widget
     /// Use for:
     /// <input type="number">
     #[derive(Default, Debug)]
-    pub struct PositiveIntegerField {
+    pub struct PositiveIntegerWidget {
         pub label: String,
         pub default: u64, // number 0_u64
         pub readonly: bool,
@@ -272,11 +184,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Slug type field
+    /// Slug type Widget
     /// Use for:
     /// <input type="text">
     #[derive(Default, Debug)]
-    pub struct SlugField {
+    pub struct SlugWidget {
         pub label: String,
         pub default: String, // slug-text or blank line
         pub readonly: bool,
@@ -285,11 +197,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Text type field
+    /// Text type Widget
     /// Use for:
     /// <input type="text">
     #[derive(Default, Debug)]
-    pub struct TextField {
+    pub struct TextWidget {
         pub label: String,
         pub default: String, // some text or blank line
         pub readonly: bool,
@@ -298,11 +210,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// TextArea type field
+    /// TextArea type Widget
     /// Use for:
     /// <textarea></textarea>
     #[derive(Default, Debug)]
-    pub struct TextAreaField {
+    pub struct TextAreaWidget {
         pub label: String,
         pub default: String, // some text or blank line
         pub readonly: bool,
@@ -311,11 +223,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Time type field
+    /// Time type Widget
     /// Use for:
     /// <input type="time">
     #[derive(Default, Debug)]
-    pub struct TimeField {
+    pub struct TimeWidget {
         pub label: String,
         pub default: String, // date in UNIX format "00:00:00" or blank line
         pub readonly: bool,
@@ -324,11 +236,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// URL type field
+    /// URL type Widget
     /// Use for:
     /// <input type="url">
     #[derive(Default, Debug)]
-    pub struct URLField {
+    pub struct URLWidget {
         pub label: String,
         pub default: String, // URL or blank line
         pub readonly: bool,
@@ -337,11 +249,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Password type field
+    /// Password type Widget
     /// Use for:
     /// <input type="password">
     #[derive(Default, Debug)]
-    pub struct PasswordField {
+    pub struct PasswordWidget {
         pub label: String,
         pub default: String, // password text or blank line
         pub readonly: bool,
@@ -350,11 +262,11 @@ pub mod standard_fields {
         pub unique: bool,
         pub hidden: bool,
     }
-    /// Phone type field
+    /// Phone type Widget
     /// Use for:
     /// <input type="tel">
     #[derive(Default, Debug)]
-    pub struct PhoneField {
+    pub struct PhoneWidget {
         pub label: String,
         pub default: String, //  phone number or blank line
         pub readonly: bool,
@@ -366,34 +278,34 @@ pub mod standard_fields {
 }
 
 // RELATIONSHIP FIELDS =============================================================================
-pub mod relationship_fields {
-    /// ForeignKey type field
+pub mod relationship_widgets {
+    /// ForeignKey type Widget
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
-    pub struct ForeignKeyField {
+    pub struct ForeignKeyWidget {
         pub label: String,
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
     }
-    /// ManyToMany type field
+    /// ManyToMany type Widget
     /// Use for:
     /// <select multiple></select>
     #[derive(Default, Debug)]
-    pub struct ManyToManyField {
+    pub struct ManyToManyWidget {
         pub label: String,
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
     }
-    /// OneToOne type field
+    /// OneToOne type Widget
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
-    pub struct OneToOneField {
+    pub struct OneToOneWidget {
         pub label: String,
         pub readonly: bool,
         pub required: bool,
@@ -409,8 +321,8 @@ mod tests {
 
     // FIELDS FOR CHOICES ITEMS --------------------------------------------------------------------
     #[test]
-    fn test_select_string_field() {
-        let field: SelectStringField = Default::default();
+    fn test_select_string_widget() {
+        let field: SelectWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.disabled, false);
@@ -420,8 +332,8 @@ mod tests {
         assert_eq!(field.select, vec![]);
     }
     #[test]
-    fn test_select_integer_field() {
-        let field: SelectIntegerField = Default::default();
+    fn test_select_integer_widget() {
+        let field: SelectWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_i64);
         assert_eq!(field.disabled, false);
@@ -431,8 +343,8 @@ mod tests {
         assert_eq!(field.select, vec![]);
     }
     #[test]
-    fn test_select_positive_integer_field() {
-        let field: SelectPositiveIntegerField = Default::default();
+    fn test_select_positive_integer_widget() {
+        let field: SelectWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_u64);
         assert_eq!(field.disabled, false);
@@ -442,8 +354,8 @@ mod tests {
         assert_eq!(field.select, vec![]);
     }
     #[test]
-    fn test_select_float_field() {
-        let field: SelectFloatField = Default::default();
+    fn test_select_float_widget() {
+        let field: SelectWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_f64);
         assert_eq!(field.disabled, false);
@@ -456,7 +368,7 @@ mod tests {
     // STANDARD FIELDS -----------------------------------------------------------------------------
     #[test]
     fn test_boolean_field() {
-        let field: BooleanField = Default::default();
+        let field: BooleanWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, false);
         assert_eq!(field.readonly, false);
@@ -467,7 +379,7 @@ mod tests {
 
     #[test]
     fn test_color_field() {
-        let field: ColorField = Default::default();
+        let field: ColorWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -479,7 +391,7 @@ mod tests {
 
     #[test]
     fn test_date_field() {
-        let field: DateField = Default::default();
+        let field: DateWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -491,7 +403,7 @@ mod tests {
 
     #[test]
     fn test_email_field() {
-        let field: EmailField = Default::default();
+        let field: EmailWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -503,7 +415,7 @@ mod tests {
 
     #[test]
     fn test_file_field() {
-        let field: FileField = Default::default();
+        let field: FileWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -514,7 +426,7 @@ mod tests {
 
     #[test]
     fn test_float_field() {
-        let field: FloatField = Default::default();
+        let field: FloatWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0.0_f64);
         assert_eq!(field.readonly, false);
@@ -526,7 +438,7 @@ mod tests {
 
     #[test]
     fn test_image_field() {
-        let field: ImageField = Default::default();
+        let field: ImageWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -537,7 +449,7 @@ mod tests {
 
     #[test]
     fn test_integer_field() {
-        let field: IntegerField = Default::default();
+        let field: IntegerWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_i64);
         assert_eq!(field.readonly, false);
@@ -549,7 +461,7 @@ mod tests {
 
     #[test]
     fn test_ip_address_field() {
-        let field: IPAddressField = Default::default();
+        let field: IPAddressWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -561,7 +473,7 @@ mod tests {
 
     #[test]
     fn test_positive_integer_field() {
-        let field: PositiveIntegerField = Default::default();
+        let field: PositiveIntegerWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, 0_u64);
         assert_eq!(field.readonly, false);
@@ -573,7 +485,7 @@ mod tests {
 
     #[test]
     fn test_slug_field() {
-        let field: SlugField = Default::default();
+        let field: SlugWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -585,7 +497,7 @@ mod tests {
 
     #[test]
     fn test_text_field() {
-        let field: TextField = Default::default();
+        let field: TextWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -597,7 +509,7 @@ mod tests {
 
     #[test]
     fn test_text_area_field() {
-        let field: TextAreaField = Default::default();
+        let field: TextAreaWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -609,7 +521,7 @@ mod tests {
 
     #[test]
     fn test_time_field() {
-        let field: TimeField = Default::default();
+        let field: TimeWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -621,7 +533,7 @@ mod tests {
 
     #[test]
     fn test_url_field() {
-        let field: URLField = Default::default();
+        let field: URLWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -633,7 +545,7 @@ mod tests {
 
     #[test]
     fn test_password_field() {
-        let field: PasswordField = Default::default();
+        let field: PasswordWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -645,7 +557,7 @@ mod tests {
 
     #[test]
     fn test_phone_field() {
-        let field: PhoneField = Default::default();
+        let field: PhoneWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.default, "".to_string());
         assert_eq!(field.readonly, false);
@@ -658,7 +570,7 @@ mod tests {
     // RELATIONSHIP FIELDS -------------------------------------------------------------------------
     #[test]
     fn test_foreign_key_field() {
-        let field: ForeignKeyField = Default::default();
+        let field: ForeignKeyWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
@@ -668,7 +580,7 @@ mod tests {
 
     #[test]
     fn test_many_to_many_field() {
-        let field: ManyToManyField = Default::default();
+        let field: ManyToManyWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
@@ -678,7 +590,7 @@ mod tests {
 
     #[test]
     fn test_one_to_one_field() {
-        let field: OneToOneField = Default::default();
+        let field: OneToOneWidget = Default::default();
         assert_eq!(field.label, "".to_string());
         assert_eq!(field.readonly, false);
         assert_eq!(field.required, false);
