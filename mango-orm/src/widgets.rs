@@ -7,7 +7,20 @@ pub use widgets::*;
 // WIDGETS =========================================================================================
 pub mod widgets {
 
-    // Standard widgets
+    // Standard widgets ----------------------------------------------------------------------------
+    /// Enumeration for standard types
+    #[derive(Debug, Clone)]
+    pub enum StandardType {
+        CheckBox,
+    }
+
+    impl Default for StandardType {
+        fn default() -> Self {
+            StandardType::CheckBox
+        }
+    }
+
+    /// For standard widgets
     /// Use for:
     /// <input type="checkbox">
     /// <input type="color">
@@ -28,7 +41,7 @@ pub mod widgets {
     pub struct StandardWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
-        pub input_type: String,
+        pub input_type: StandardType,
         pub default: String, // some text or blank line
         pub readonly: bool,
         pub required: bool,
@@ -57,7 +70,8 @@ pub mod widgets {
             }
         }
     }
-    /// Widget for choices items -------------------------------------------------------------------
+    // Widget for choices items --------------------------------------------------------------------
+    /// Widget for choices items
     /// Use for:
     /// <select></select>
     #[derive(Default, Debug)]
@@ -91,7 +105,8 @@ pub mod widgets {
             }
         }
     }
-    // widgets  for relationship fields ------------------------------------------------------------
+    // Widget  for relation fields -----------------------------------------------------------------
+    /// Enumeration of relationship types
     #[derive(Debug, Clone)]
     pub enum RelationshipType {
         ForeignKey,
@@ -105,6 +120,7 @@ pub mod widgets {
         }
     }
 
+    /// Widget for relation fields
     /// Use for:
     /// <select></select>
     /// <select multiple></select> for ManyToMany type
