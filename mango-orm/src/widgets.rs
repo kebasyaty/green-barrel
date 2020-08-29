@@ -104,7 +104,7 @@ pub mod widgets {
             pub id: String, // "id-name" or auto
             pub label: String,
             pub input_type: StandardType,
-            pub default: DefaultDataType,
+            pub value: DefaultDataType,
             pub readonly: bool,
             pub required: bool,
             pub hint: String,
@@ -123,7 +123,7 @@ pub mod widgets {
         pub struct SelectionWidget {
             pub id: String, // "id-name" or auto
             pub label: String,
-            pub default: String,
+            pub value: String,
             pub disabled: bool,
             pub multiple: bool,
             pub required: bool,
@@ -190,7 +190,7 @@ mod tests {
         assert_eq!(widget.label, "".to_string());
         assert_eq!(widget.input_type.get_type(), StandardType::Text.get_type());
         assert_eq!(
-            widget.default.get_data(),
+            widget.value.get_data(),
             DefaultDataType::Text(String::new()).get_data()
         );
         assert_eq!(widget.readonly, false);
@@ -208,7 +208,7 @@ mod tests {
         let widget: SelectionWidget = Default::default();
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.default, "".to_string());
+        assert_eq!(widget.value, "".to_string());
         assert_eq!(widget.disabled, false);
         assert_eq!(widget.multiple, false);
         assert_eq!(widget.required, false);
