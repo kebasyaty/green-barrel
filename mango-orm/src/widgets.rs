@@ -7,41 +7,7 @@ pub use widgets::*;
 // WIDGETS =========================================================================================
 pub mod widgets {
 
-    /// Widget for choices items
-    /// Use for:
-    /// <select></select>
-    #[derive(Default, Debug)]
-    pub struct SelectionWidget {
-        pub id: String, // "id-name" or auto
-        pub label: String,
-        pub default: String,
-        pub disabled: bool,
-        pub multiple: bool,
-        pub required: bool,
-        pub hint: String,
-        pub other_attrs: String,   // "autofocus size='3'"
-        pub other_classes: String, // "class-name class-name ..."
-        pub select: Vec<(String, String)>,
-    }
-
-    impl SelectionWidget {
-        // Get attributes
-        pub fn attrs(&self) -> Self {
-            Self {
-                id: self.id.clone(),
-                label: self.label.clone(),
-                default: self.default.clone(),
-                disabled: self.disabled.clone(),
-                multiple: self.multiple.clone(),
-                required: self.required.clone(),
-                hint: self.hint.clone(),
-                other_attrs: self.other_attrs.clone(),
-                other_classes: self.other_classes.clone(),
-                select: self.select.clone(),
-            }
-        }
-    }
-    // Standard widgets ----------------------------------------------------------------------------
+    // Standard widgets
     /// Use for:
     /// <input type="checkbox">
     /// <input type="color">
@@ -86,6 +52,40 @@ pub mod widgets {
                 hidden: self.hidden.clone(),
                 other_attrs: self.other_attrs.clone(),
                 other_classes: self.other_classes.clone(),
+            }
+        }
+    }
+    /// Widget for choices items -------------------------------------------------------------------
+    /// Use for:
+    /// <select></select>
+    #[derive(Default, Debug)]
+    pub struct SelectionWidget {
+        pub id: String, // "id-name" or auto
+        pub label: String,
+        pub default: String,
+        pub disabled: bool,
+        pub multiple: bool,
+        pub required: bool,
+        pub hint: String,
+        pub other_attrs: String,   // "autofocus size='3'"
+        pub other_classes: String, // "class-name class-name ..."
+        pub select: Vec<(String, String)>,
+    }
+
+    impl SelectionWidget {
+        // Get attributes
+        pub fn attrs(&self) -> Self {
+            Self {
+                id: self.id.clone(),
+                label: self.label.clone(),
+                default: self.default.clone(),
+                disabled: self.disabled.clone(),
+                multiple: self.multiple.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
+                select: self.select.clone(),
             }
         }
     }
