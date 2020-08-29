@@ -58,8 +58,17 @@ pub mod widgets {
     }
 
     /// Default data types
+    #[derive(Debug, Clone)]
     pub enum DefaultDataType {
-        //
+        Text(String),
+        I64(i64),
+        U64(u64),
+        F64(f64),
+    }
+    impl Default for DefaultDataType {
+        fn default() -> Self {
+            DefaultDataType::Text(String::new())
+        }
     }
 
     /// For standard widgets
@@ -85,7 +94,7 @@ pub mod widgets {
         pub id: String, // "id-name" or auto
         pub label: String,
         pub input_type: StandardType,
-        pub default: String,
+        pub default: DefaultDataType,
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
