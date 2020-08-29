@@ -37,7 +37,7 @@ pub mod selection_widgets {
     }
 
     impl Widget<Self> for SelectStrStrWidget {
-        // Get field attributes
+        // Get widget attributes
         fn attrs(&self) -> Self {
             Self {
                 id: self.id.clone(),
@@ -72,7 +72,7 @@ pub mod selection_widgets {
     }
 
     impl Widget<Self> for SelectStrI64Widget {
-        // Get field attributes
+        // Get widget attributes
         fn attrs(&self) -> Self {
             Self {
                 id: self.id.clone(),
@@ -107,7 +107,7 @@ pub mod selection_widgets {
     }
 
     impl Widget<Self> for SelectStrU64Widget {
-        // Get field attributes
+        // Get widget attributes
         fn attrs(&self) -> Self {
             Self {
                 id: self.id.clone(),
@@ -142,7 +142,7 @@ pub mod selection_widgets {
     }
 
     impl Widget<Self> for SelectStrF64Widget {
-        // Get field attributes
+        // Get widget attributes
         fn attrs(&self) -> Self {
             Self {
                 id: self.id.clone(),
@@ -162,6 +162,8 @@ pub mod selection_widgets {
 
 // STANDARD WIDGETS ================================================================================
 pub mod standard_widgets {
+    use super::abstractions::Widget;
+
     /// Boolean type Widget
     /// Use for:
     /// <input type="checkbox">
@@ -178,7 +180,25 @@ pub mod standard_widgets {
         pub other_attrs: String,   // "autofocus ..."
         pub other_classes: String, // "class-name class-name ..."
     }
-    /// Color type Widget
+
+    impl Widget<Self> for BooleanWidget {
+        // Get widget attributes
+        fn attrs(&self) -> Self {
+            Self {
+                id: self.id.clone(),
+                label: self.id.clone(),
+                default: self.default.clone(),
+                readonly: self.readonly.clone(),
+                required: self.required.clone(),
+                hint: self.hint.clone(),
+                hidden: self.hidden.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
+            }
+        }
+    }
+
+    /// Color type Widget --------------------------------------------------------------------------
     /// Use for:
     /// <input type="color">
     /// <input type="text">
