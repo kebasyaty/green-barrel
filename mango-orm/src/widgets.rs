@@ -3,8 +3,8 @@
 //! Field types for models.
 
 pub use abstractions::*;
-pub use choices_widgets::*;
 pub use relationship_widgets::*;
+pub use select_widgets::*;
 pub use standard_widgets::*;
 
 // ABSTRACTIONS ====================================================================================
@@ -15,8 +15,8 @@ pub mod abstractions {
     }
 }
 
-// FIELDS FOR CHOICES ITEMS ========================================================================
-pub mod choices_widgets {
+// WIDGETS FOR CHOICES ITEMS =======================================================================
+pub mod select_widgets {
     use super::abstractions::Widget;
 
     /// Select StrStr type Widget
@@ -136,7 +136,7 @@ pub mod choices_widgets {
     }
 }
 
-// STANDARD FIELDS =================================================================================
+// STANDARD WIDGETS ================================================================================
 pub mod standard_widgets {
     /// Boolean type Widget
     /// Use for:
@@ -364,7 +364,7 @@ pub mod standard_widgets {
     }
 }
 
-// RELATIONSHIP FIELDS =============================================================================
+// RELATIONSHIP WIDGETS ============================================================================
 pub mod relationship_widgets {
     /// ForeignKey type Widget
     /// Use for:
