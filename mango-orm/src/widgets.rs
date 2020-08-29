@@ -180,10 +180,12 @@ mod tests {
         let widget: StandardWidget = Default::default();
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.input_type, StandardType::Text);
         assert_eq!(widget.default, false);
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
         assert_eq!(widget.hint, "".to_string());
+        assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
         assert_eq!(widget.other_attrs, "".to_string());
         assert_eq!(widget.other_classes, "".to_string());
@@ -211,6 +213,7 @@ mod tests {
         let widget: RelationWidget = Default::default();
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.relation_type, RelationType::ForeignKey);
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
         assert_eq!(widget.hint, "".to_string());
