@@ -76,11 +76,7 @@ pub mod widgets {
             }
         }
     }
-}
-
-// WIDGETS  FOR RELATIONSHIP FIELDS ================================================================
-pub mod relationship_widgets {
-
+    // widgets  for relationship fields ------------------------------------------------------------
     #[derive(Debug, Clone)]
     pub enum RelationshipType {
         ForeignKey,
@@ -96,11 +92,12 @@ pub mod relationship_widgets {
 
     /// Use for:
     /// <select></select>
+    /// <select multiple></select> for ManyToMany type
     #[derive(Default, Debug)]
     pub struct RelationshipWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
-        pub relationship_type: RelationshipType,
+        pub relationship_type: RelationshipType, // Default = ForeignKey
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
