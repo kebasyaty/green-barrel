@@ -28,6 +28,7 @@ pub mod widgets {
     pub struct StandardWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
+        pub input_type: String,
         pub default: String, // some text or blank line
         pub readonly: bool,
         pub required: bool,
@@ -44,6 +45,7 @@ pub mod widgets {
             Self {
                 id: self.id.clone(),
                 label: self.label.clone(),
+                input_type: self.input_type.clone(),
                 default: self.default.clone(),
                 readonly: self.readonly.clone(),
                 required: self.required.clone(),
@@ -110,7 +112,7 @@ pub mod widgets {
     pub struct RelationWidget {
         pub id: String, // "id-name" or auto
         pub label: String,
-        pub relationship_type: RelationshipType, // Default = ForeignKey
+        pub relation_type: RelationshipType, // Default = ForeignKey
         pub readonly: bool,
         pub required: bool,
         pub hint: String,
@@ -125,7 +127,7 @@ pub mod widgets {
             Self {
                 id: self.id.clone(),
                 label: self.label.clone(),
-                relationship_type: self.relationship_type.clone(),
+                relation_type: self.relation_type.clone(),
                 readonly: self.readonly.clone(),
                 required: self.required.clone(),
                 hint: self.hint.clone(),
