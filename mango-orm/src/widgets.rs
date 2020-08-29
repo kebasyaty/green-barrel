@@ -175,6 +175,8 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Color type Widget
     /// Use for:
@@ -190,6 +192,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Date type Widget
     /// Use for:
@@ -205,6 +209,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Email type Widget
     /// Use for:
@@ -219,6 +225,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// File type Widget
     /// Use for:
@@ -232,6 +240,8 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Float type Widget
     /// Use for:
@@ -246,6 +256,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Image type Widget
     /// Use for:
@@ -259,6 +271,8 @@ pub mod standard_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Integer type Widget
     /// Use for:
@@ -273,6 +287,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// IPAddress type Widget
     /// Use for:
@@ -290,6 +306,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Positive Integer type Widget
     /// Use for:
@@ -304,6 +322,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Slug type Widget
     /// Use for:
@@ -318,6 +338,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Text type Widget
     /// Use for:
@@ -332,6 +354,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// TextArea type Widget
     /// Use for:
@@ -346,6 +370,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Time type Widget
     /// Use for:
@@ -360,6 +386,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// URL type Widget
     /// Use for:
@@ -374,6 +402,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Password type Widget
     /// Use for:
@@ -388,6 +418,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// Phone type Widget
     /// Use for:
@@ -402,6 +434,8 @@ pub mod standard_widgets {
         pub hint: String,
         pub unique: bool,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
 }
 
@@ -418,6 +452,8 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// ManyToMany type Widget
     /// Use for:
@@ -430,6 +466,8 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
     /// OneToOne type Widget
     /// Use for:
@@ -442,6 +480,8 @@ pub mod relationship_widgets {
         pub required: bool,
         pub hint: String,
         pub hidden: bool,
+        pub other_attrs: String,   // "autofocus"
+        pub other_classes: String, // "class-name class-name ..."
     }
 }
 
@@ -519,6 +559,8 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -532,6 +574,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -545,6 +589,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -558,6 +604,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -570,6 +618,8 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -583,6 +633,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -595,6 +647,8 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -608,6 +662,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -621,6 +677,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -634,6 +692,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -647,6 +707,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -660,6 +722,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -673,6 +737,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -686,6 +752,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -699,6 +767,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -712,6 +782,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -725,6 +797,8 @@ mod tests {
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.unique, false);
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     // RELATIONSHIP FIELDS -------------------------------------------------------------------------
@@ -737,6 +811,8 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -748,6 +824,8 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 
     #[test]
@@ -759,5 +837,7 @@ mod tests {
         assert_eq!(field.required, false);
         assert_eq!(field.hint, "".to_string());
         assert_eq!(field.hidden, false);
+        assert_eq!(field.other_attrs, "".to_string());
+        assert_eq!(field.other_classes, "".to_string());
     }
 }
