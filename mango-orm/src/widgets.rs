@@ -12,11 +12,25 @@ pub mod widgets {
     #[derive(Debug, Clone)]
     pub enum StandardType {
         CheckBox,
+        Color,
+        Date,
+        Email,
+        File,
+        Hidden,
+        Image,
+        Number,
+        Password,
+        Radio,
+        Range,
+        Tel,
+        Text,
+        Time,
+        Url,
     }
 
     impl Default for StandardType {
         fn default() -> Self {
-            StandardType::CheckBox
+            StandardType::Text
         }
     }
 
