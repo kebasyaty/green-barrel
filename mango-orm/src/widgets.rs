@@ -30,6 +30,8 @@ pub mod select_widgets {
         pub multiple: bool,
         pub required: bool,
         pub hint: String,
+        pub other_attrs: String,   // "autofocus size='3'"
+        pub other_classes: String, // "class-name class-name ..."
         pub select: Vec<(String, String)>,
     }
 
@@ -43,6 +45,8 @@ pub mod select_widgets {
                 multiple: self.multiple.clone(),
                 required: self.required.clone(),
                 hint: self.hint.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
                 select: self.select.clone(),
             }
         }
@@ -59,6 +63,8 @@ pub mod select_widgets {
         pub multiple: bool,
         pub required: bool,
         pub hint: String,
+        pub other_attrs: String,   // "autofocus size='3'"
+        pub other_classes: String, // "class-name class-name ..."
         pub select: Vec<(String, i64)>,
     }
 
@@ -72,6 +78,8 @@ pub mod select_widgets {
                 multiple: self.multiple.clone(),
                 required: self.required.clone(),
                 hint: self.hint.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
                 select: self.select.clone(),
             }
         }
@@ -88,6 +96,8 @@ pub mod select_widgets {
         pub multiple: bool,
         pub required: bool,
         pub hint: String,
+        pub other_attrs: String,   // "autofocus size='3'"
+        pub other_classes: String, // "class-name class-name ..."
         pub select: Vec<(String, u64)>,
     }
 
@@ -101,6 +111,8 @@ pub mod select_widgets {
                 multiple: self.multiple.clone(),
                 required: self.required.clone(),
                 hint: self.hint.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
                 select: self.select.clone(),
             }
         }
@@ -117,6 +129,8 @@ pub mod select_widgets {
         pub multiple: bool,
         pub required: bool,
         pub hint: String,
+        pub other_attrs: String,   // "autofocus size='3'"
+        pub other_classes: String, // "class-name class-name ..."
         pub select: Vec<(String, f64)>,
     }
 
@@ -130,6 +144,8 @@ pub mod select_widgets {
                 multiple: self.multiple.clone(),
                 required: self.required.clone(),
                 hint: self.hint.clone(),
+                other_attrs: self.other_attrs.clone(),
+                other_classes: self.other_classes.clone(),
                 select: self.select.clone(),
             }
         }
