@@ -2,7 +2,11 @@
 //!
 //! Widgets for Forms.
 
-pub use widgets::{relation_widgets::*, selection_widgets::*, standard_widgets::*};
+pub use widgets::{
+    relation_widgets::{RelationType, RelationWidget},
+    selection_widgets::SelectionWidget,
+    standard_widgets::{DefaultDataType, StandardType, StandardWidget},
+};
 
 // WIDGETS =========================================================================================
 pub mod widgets {
@@ -81,6 +85,21 @@ pub mod widgets {
             }
         }
 
+        /// Auxiliary structure to reduce load
+        pub struct Attrs {
+            pub id: String,
+            pub label: String,
+            pub input_type: StandardType,
+            pub default: DefaultDataType,
+            pub readonly: bool,
+            pub required: bool,
+            pub hint: String,
+            pub unique: bool,
+            pub hidden: bool,
+            pub other_attrs: String,
+            pub other_classes: String,
+        }
+
         /// For standard widgets
         /// Use for:
         /// <input type="checkbox">
@@ -116,8 +135,8 @@ pub mod widgets {
 
         impl StandardWidget {
             // Get attributes
-            pub fn attrs(&self) -> Self {
-                Self {
+            pub fn get_attrs(&self) -> Attrs {
+                Attrs {
                     id: self.id.clone(),
                     label: self.label.clone(),
                     input_type: self.input_type.clone(),
@@ -135,6 +154,20 @@ pub mod widgets {
     }
     // Widget for choices items --------------------------------------------------------------------
     pub mod selection_widgets {
+        /// Auxiliary structure to reduce load
+        pub struct Attrs {
+            pub id: String,
+            pub label: String,
+            pub default: String,
+            pub disabled: bool,
+            pub multiple: bool,
+            pub required: bool,
+            pub hint: String,
+            pub other_attrs: String,
+            pub other_classes: String,
+            pub select: Vec<(String, String)>,
+        }
+
         /// Widget for choices items
         /// Use for:
         /// <select></select>
@@ -154,8 +187,8 @@ pub mod widgets {
 
         impl SelectionWidget {
             // Get attributes
-            pub fn attrs(&self) -> Self {
-                Self {
+            pub fn get_attrs(&self) -> Attrs {
+                Attrs {
                     id: self.id.clone(),
                     label: self.label.clone(),
                     default: self.default.clone(),
@@ -195,6 +228,19 @@ pub mod widgets {
             }
         }
 
+        /// Auxiliary structure to reduce load
+        pub struct Attrs {
+            pub id: String,
+            pub label: String,
+            pub relation_type: RelationType,
+            pub readonly: bool,
+            pub required: bool,
+            pub hint: String,
+            pub hidden: bool,
+            pub other_attrs: String,
+            pub other_classes: String,
+        }
+
         /// Widget for relation fields
         /// Use for:
         /// <select></select>
@@ -214,8 +260,8 @@ pub mod widgets {
 
         impl RelationWidget {
             // Get attributes
-            pub fn attrs(&self) -> Self {
-                Self {
+            pub fn get_attrs(&self) -> Attrs {
+                Attrs {
                     id: self.id.clone(),
                     label: self.label.clone(),
                     relation_type: self.relation_type.clone(),
