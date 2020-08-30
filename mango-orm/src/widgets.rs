@@ -81,12 +81,11 @@ impl DataType {
 /// Data types for form attributes
 #[derive(Debug, Clone)]
 pub enum AttrType {
-    InputType(InputType),
-    DataType(DataType),
     Text(String),
     I64(i64),
     U64(u64),
     F64(f64),
+    Bool(bool),
 }
 
 /// For standard widgets
@@ -130,7 +129,12 @@ impl StandardWidget {
             ("label".to_string(), AttrType::Text(self.label.clone())),
             (
                 "input_type".to_string(),
-                AttrType::InputType(self.input_type.clone()),
+                AttrType::Text(self.input_type.get_type()),
+            ),
+            ("value".to_string(), AttrType::Text(self.value.get_data())),
+            (
+                "readonly".to_string(),
+                AttrType::Bool(self.readonly.clone()),
             ),
         ]
         .iter()
