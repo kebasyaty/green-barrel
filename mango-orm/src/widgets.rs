@@ -123,6 +123,30 @@ impl StandardWidget {
 }
 
 // Widget for choices items ------------------------------------------------------------------------
+/// Data types for the `value` field
+#[derive(Debug, Clone)]
+pub enum DataType2 {
+    Text(String),
+    I64(i64),
+    U64(u64),
+    F64(f64),
+}
+impl Default for DataType2 {
+    fn default() -> Self {
+        DataType2::Text(String::new())
+    }
+}
+impl DataType2 {
+    pub fn get_data(&self) -> String {
+        match self {
+            Self::Text(data) => data.to_string(),
+            Self::I64(data) => data.to_string(),
+            Self::U64(data) => data.to_string(),
+            Self::F64(data) => data.to_string(),
+        }
+    }
+}
+
 /// Widget for choices items
 /// Use for:
 /// <select></select>
@@ -130,14 +154,14 @@ impl StandardWidget {
 pub struct SelectionWidget {
     pub id: String, // "id-name" or auto
     pub label: String,
-    pub value: String,
+    pub value: DataType2,
     pub disabled: bool,
     pub multiple: bool,
     pub required: bool,
     pub hint: String,
     pub other_attrs: String,   // "autofocus size='3'"
     pub other_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, String)>,
+    pub select: Vec<(String, DataType2)>,
 }
 
 impl SelectionWidget {
@@ -150,6 +174,7 @@ impl SelectionWidget {
         String::new()
     }
 }
+
 // Widget  for relation fields ---------------------------------------------------------------------
 /// Enumeration of relationship types
 #[derive(Debug, Clone)]
@@ -237,11 +262,23 @@ mod tests {
         assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
         assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
         assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
+    }
+
+    #[test]
+    fn test_default_data_type_2() {
+        assert_eq!(
+            DataType2::Text("Some text".to_string()).get_data(),
+            "Some text".to_string()
+        );
+        assert_eq!(DataType2::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DataType2::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DataType2::F64(10_f64).get_data(), 10_f64.to_string());
     }
 
     // Standard widgets ----------------------------------------------------------------------------
     #[test]
-    fn test_boolean_widget() {
+    fn test_standard_widget() {
         let widget: StandardWidget = Default::default();
         // Fields
         assert_eq!(widget.id, "".to_string());
@@ -263,19 +300,27 @@ mod tests {
 
     // Widget for choices items --------------------------------------------------------------------
     #[test]
-    fn test_select_string_widget() {
-        let widget: SelectionWidget = Default::default();
+    fn test_select_widget() {
+        let mut widget: SelectionWidget = Default::default();
+        widget.select = vec![(String::new(), DataType2::Text(String::new()))];
         // Fields
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.value, "".to_string());
+        assert_eq!(
+            widget.value.get_data(),
+            DataType2::Text(String::new()).get_data()
+        );
         assert_eq!(widget.disabled, false);
         assert_eq!(widget.multiple, false);
         assert_eq!(widget.required, false);
         assert_eq!(widget.hint, "".to_string());
         assert_eq!(widget.other_attrs, "".to_string());
         assert_eq!(widget.other_classes, "".to_string());
-        assert_eq!(widget.select, vec![]);
+        assert_eq!(widget.select[0].0, String::new());
+        assert_eq!(
+            widget.select[0].1.get_data(),
+            DataType2::Text(String::new()).get_data()
+        );
         // Methods
     }
 
@@ -289,7 +334,7 @@ mod tests {
 
     // Widget for relation fields ------------------------------------------------------------------
     #[test]
-    fn test_foreign_key_widget() {
+    fn test_relation_widget() {
         let widget: RelationWidget = Default::default();
         // Fields
         assert_eq!(widget.id, "".to_string());
