@@ -2,8 +2,6 @@
 //!
 //! Widgets for Forms.
 
-use std::collections::HashMap;
-
 // WIDGETS =========================================================================================
 // Standard widgets --------------------------------------------------------------------------------
 /// Standard Form Element Types
@@ -114,39 +112,13 @@ pub struct StandardWidget {
 }
 
 impl StandardWidget {
-    /// Get Attribute Map
-    pub fn get_attrs(&self) -> HashMap<String, DataType> {
-        [
-            ("id".to_string(), DataType::Text(self.id.clone())),
-            ("label".to_string(), DataType::Text(self.label.clone())),
-            (
-                "input_type".to_string(),
-                DataType::Text(self.input_type.get_type()),
-            ),
-            ("value".to_string(), self.value.clone()),
-            (
-                "readonly".to_string(),
-                DataType::Bool(self.readonly.clone()),
-            ),
-            (
-                "required".to_string(),
-                DataType::Bool(self.required.clone()),
-            ),
-            ("hint".to_string(), DataType::Text(self.hint.clone())),
-            ("unique".to_string(), DataType::Bool(self.unique.clone())),
-            ("hidden".to_string(), DataType::Bool(self.hidden.clone())),
-            (
-                "other_attrs".to_string(),
-                DataType::Text(self.other_attrs.clone()),
-            ),
-            (
-                "other_classes".to_string(),
-                DataType::Text(self.other_classes.clone()),
-            ),
-        ]
-        .iter()
-        .cloned()
-        .collect()
+    // Get Html string with form element
+    pub fn get_html(&self) -> String {
+        String::new()
+    }
+    // Get Json string with attributes of form element
+    pub fn get_json(&self) -> String {
+        String::new()
     }
 }
 
@@ -166,6 +138,17 @@ pub struct SelectionWidget {
     pub other_attrs: String,   // "autofocus size='3'"
     pub other_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
+}
+
+impl SelectionWidget {
+    // Get Html string with form element
+    pub fn get_html(&self) -> String {
+        String::new()
+    }
+    // Get Json string with attributes of form element
+    pub fn get_json(&self) -> String {
+        String::new()
+    }
 }
 // Widget  for relation fields ---------------------------------------------------------------------
 /// Enumeration of relationship types
@@ -206,6 +189,17 @@ pub struct RelationWidget {
     pub hidden: bool,
     pub other_attrs: String,   // "autofocus ..."
     pub other_classes: String, // "class-name class-name ..."
+}
+
+impl RelationWidget {
+    // Get Html string with form element
+    pub fn get_html(&self) -> String {
+        String::new()
+    }
+    // Get Json string with attributes of form element
+    pub fn get_json(&self) -> String {
+        String::new()
+    }
 }
 
 // TESTS ===========================================================================================
