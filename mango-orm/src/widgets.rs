@@ -61,6 +61,7 @@ pub enum DataType {
     I64(i64),
     U64(u64),
     F64(f64),
+    Bool(bool),
 }
 impl Default for DataType {
     fn default() -> Self {
@@ -74,18 +75,9 @@ impl DataType {
             Self::I64(data) => data.to_string(),
             Self::U64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
+            Self::Bool(data) => data.to_string(),
         }
     }
-}
-
-/// Data types for form attributes
-#[derive(Debug, Clone)]
-pub enum AttrType {
-    Text(String),
-    I64(i64),
-    U64(u64),
-    F64(f64),
-    Bool(bool),
 }
 
 /// For standard widgets
@@ -123,33 +115,33 @@ pub struct StandardWidget {
 
 impl StandardWidget {
     /// Get Attribute Map
-    pub fn get_attrs(&self) -> HashMap<String, AttrType> {
+    pub fn get_attrs(&self) -> HashMap<String, DataType> {
         [
-            ("id".to_string(), AttrType::Text(self.id.clone())),
-            ("label".to_string(), AttrType::Text(self.label.clone())),
+            ("id".to_string(), DataType::Text(self.id.clone())),
+            ("label".to_string(), DataType::Text(self.label.clone())),
             (
                 "input_type".to_string(),
-                AttrType::Text(self.input_type.get_type()),
+                DataType::Text(self.input_type.get_type()),
             ),
-            ("value".to_string(), AttrType::Text(self.value.get_data())),
+            ("value".to_string(), self.value.clone()),
             (
                 "readonly".to_string(),
-                AttrType::Bool(self.readonly.clone()),
+                DataType::Bool(self.readonly.clone()),
             ),
             (
                 "required".to_string(),
-                AttrType::Bool(self.required.clone()),
+                DataType::Bool(self.required.clone()),
             ),
-            ("hint".to_string(), AttrType::Text(self.hint.clone())),
-            ("unique".to_string(), AttrType::Bool(self.unique.clone())),
-            ("hidden".to_string(), AttrType::Bool(self.hidden.clone())),
+            ("hint".to_string(), DataType::Text(self.hint.clone())),
+            ("unique".to_string(), DataType::Bool(self.unique.clone())),
+            ("hidden".to_string(), DataType::Bool(self.hidden.clone())),
             (
                 "other_attrs".to_string(),
-                AttrType::Text(self.other_attrs.clone()),
+                DataType::Text(self.other_attrs.clone()),
             ),
             (
                 "other_classes".to_string(),
-                AttrType::Text(self.other_classes.clone()),
+                DataType::Text(self.other_classes.clone()),
             ),
         ]
         .iter()
