@@ -193,6 +193,18 @@ mod tests {
         assert_eq!(StandardType::TextArea.get_type(), "textarea".to_string());
     }
 
+    // Default data type ---------------------------------------------------------------------------
+    #[test]
+    fn test_default_data_type() {
+        assert_eq!(
+            DefaultDataType::Text("Some text".to_string()).get_data(),
+            "Some text".to_string()
+        );
+        assert_eq!(DefaultDataType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DefaultDataType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DefaultDataType::F64(10_f64).get_data(), 10_f64.to_string());
+    }
+
     // Standard widgets ----------------------------------------------------------------------------
     #[test]
     fn test_boolean_widget() {
@@ -231,6 +243,14 @@ mod tests {
         assert_eq!(widget.other_classes, "".to_string());
         assert_eq!(widget.select, vec![]);
         // Methods
+    }
+
+    // Relation type -------------------------------------------------------------------------------
+    #[test]
+    fn test_relation_type() {
+        assert_eq!(RelationType::ForeignKey.get_token(), "m2o".to_string());
+        assert_eq!(RelationType::ManyToMany.get_token(), "m2m".to_string());
+        assert_eq!(RelationType::OneToOne.get_token(), "o2o".to_string());
     }
 
     // Widget for relation fields ------------------------------------------------------------------
