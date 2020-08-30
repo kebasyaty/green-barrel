@@ -136,6 +136,21 @@ impl StandardWidget {
                 "readonly".to_string(),
                 AttrType::Bool(self.readonly.clone()),
             ),
+            (
+                "required".to_string(),
+                AttrType::Bool(self.required.clone()),
+            ),
+            ("hint".to_string(), AttrType::Text(self.hint.clone())),
+            ("unique".to_string(), AttrType::Bool(self.unique.clone())),
+            ("hidden".to_string(), AttrType::Bool(self.hidden.clone())),
+            (
+                "other_attrs".to_string(),
+                AttrType::Text(self.other_attrs.clone()),
+            ),
+            (
+                "other_classes".to_string(),
+                AttrType::Text(self.other_classes.clone()),
+            ),
         ]
         .iter()
         .cloned()
