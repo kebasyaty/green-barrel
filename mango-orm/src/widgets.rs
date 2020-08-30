@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 // WIDGETS =========================================================================================
 // Standard widgets --------------------------------------------------------------------------------
-/// Enumeration for standard types
+/// Standard Form Element Types
 #[derive(Debug, Clone)]
 pub enum InputType {
     CheckBox,
@@ -54,7 +54,7 @@ impl InputType {
     }
 }
 
-/// Default data types
+/// Data types for the `value` field
 #[derive(Debug, Clone)]
 pub enum DataType {
     Text(String),
@@ -80,7 +80,7 @@ impl DataType {
 
 /// Data types for form attributes
 #[derive(Debug, Clone)]
-pub enum AttrsDataType {
+pub enum AttrType {
     InputType(InputType),
     DataType(DataType),
     Text(String),
@@ -124,11 +124,14 @@ pub struct StandardWidget {
 
 impl StandardWidget {
     /// Get Attribute Map
-    pub fn get_attrs(&self) -> HashMap<&str, i32> {
+    pub fn get_attrs(&self) -> HashMap<String, AttrType> {
         [
-            ("id", self.id),
-            ("label", self.label),
-            ("input_type", self.input_type),
+            ("id".to_string(), AttrType::Text(self.id.clone())),
+            ("label".to_string(), AttrType::Text(self.label.clone())),
+            (
+                "input_type".to_string(),
+                AttrType::InputType(self.input_type.clone()),
+            ),
         ]
         .iter()
         .cloned()
