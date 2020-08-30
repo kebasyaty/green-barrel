@@ -2,12 +2,13 @@
 //!
 //! Widgets for Forms.
 
-// WIDGETS =========================================================================================
+use std::collections::HashMap;
 
+// WIDGETS =========================================================================================
 // Standard widgets --------------------------------------------------------------------------------
 /// Enumeration for standard types
 #[derive(Debug, Clone)]
-pub enum StandardType {
+pub enum InputType {
     CheckBox,
     Color,
     Date,
@@ -25,12 +26,12 @@ pub enum StandardType {
     Url,
     TextArea,
 }
-impl Default for StandardType {
+impl Default for InputType {
     fn default() -> Self {
-        StandardType::Text
+        InputType::Text
     }
 }
-impl StandardType {
+impl InputType {
     pub fn get_type(&self) -> String {
         match self {
             Self::CheckBox => "checkbox".to_string(),
@@ -55,18 +56,18 @@ impl StandardType {
 
 /// Default data types
 #[derive(Debug, Clone)]
-pub enum DefaultDataType {
+pub enum DataType {
     Text(String),
     I64(i64),
     U64(u64),
     F64(f64),
 }
-impl Default for DefaultDataType {
+impl Default for DataType {
     fn default() -> Self {
-        DefaultDataType::Text(String::new())
+        DataType::Text(String::new())
     }
 }
-impl DefaultDataType {
+impl DataType {
     pub fn get_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_string(),
@@ -75,6 +76,17 @@ impl DefaultDataType {
             Self::F64(data) => data.to_string(),
         }
     }
+}
+
+/// Data types for form attributes
+#[derive(Debug, Clone)]
+pub enum AttrsDataType {
+    InputType(InputType),
+    DataType(DataType),
+    Text(String),
+    I64(i64),
+    U64(u64),
+    F64(f64),
 }
 
 /// For standard widgets
@@ -99,8 +111,8 @@ impl DefaultDataType {
 pub struct StandardWidget {
     pub id: String, // "id-name" or auto
     pub label: String,
-    pub input_type: StandardType,
-    pub value: DefaultDataType,
+    pub input_type: InputType,
+    pub value: DataType,
     pub readonly: bool,
     pub required: bool,
     pub hint: String,
@@ -108,6 +120,20 @@ pub struct StandardWidget {
     pub hidden: bool,
     pub other_attrs: String,   // "autofocus ..."
     pub other_classes: String, // "class-name class-name ..."
+}
+
+impl StandardWidget {
+    /// Get Attribute Map
+    pub fn get_attrs(&self) -> HashMap<&str, i32> {
+        [
+            ("id", self.id),
+            ("label", self.label),
+            ("input_type", self.input_type),
+        ]
+        .iter()
+        .cloned()
+        .collect()
+    }
 }
 
 // Widget for choices items ------------------------------------------------------------------------
@@ -176,33 +202,33 @@ mod tests {
     // Standard type -------------------------------------------------------------------------------
     #[test]
     fn test_standard_type() {
-        assert_eq!(StandardType::CheckBox.get_type(), "checkbox".to_string());
-        assert_eq!(StandardType::Color.get_type(), "color".to_string());
-        assert_eq!(StandardType::Date.get_type(), "date".to_string());
-        assert_eq!(StandardType::Email.get_type(), "email".to_string());
-        assert_eq!(StandardType::Hidden.get_type(), "hidden".to_string());
-        assert_eq!(StandardType::Image.get_type(), "image".to_string());
-        assert_eq!(StandardType::Number.get_type(), "number".to_string());
-        assert_eq!(StandardType::Password.get_type(), "password".to_string());
-        assert_eq!(StandardType::Radio.get_type(), "radio".to_string());
-        assert_eq!(StandardType::Range.get_type(), "range".to_string());
-        assert_eq!(StandardType::Tel.get_type(), "tel".to_string());
-        assert_eq!(StandardType::Text.get_type(), "text".to_string());
-        assert_eq!(StandardType::Time.get_type(), "time".to_string());
-        assert_eq!(StandardType::Url.get_type(), "url".to_string());
-        assert_eq!(StandardType::TextArea.get_type(), "textarea".to_string());
+        assert_eq!(InputType::CheckBox.get_type(), "checkbox".to_string());
+        assert_eq!(InputType::Color.get_type(), "color".to_string());
+        assert_eq!(InputType::Date.get_type(), "date".to_string());
+        assert_eq!(InputType::Email.get_type(), "email".to_string());
+        assert_eq!(InputType::Hidden.get_type(), "hidden".to_string());
+        assert_eq!(InputType::Image.get_type(), "image".to_string());
+        assert_eq!(InputType::Number.get_type(), "number".to_string());
+        assert_eq!(InputType::Password.get_type(), "password".to_string());
+        assert_eq!(InputType::Radio.get_type(), "radio".to_string());
+        assert_eq!(InputType::Range.get_type(), "range".to_string());
+        assert_eq!(InputType::Tel.get_type(), "tel".to_string());
+        assert_eq!(InputType::Text.get_type(), "text".to_string());
+        assert_eq!(InputType::Time.get_type(), "time".to_string());
+        assert_eq!(InputType::Url.get_type(), "url".to_string());
+        assert_eq!(InputType::TextArea.get_type(), "textarea".to_string());
     }
 
     // Default data type ---------------------------------------------------------------------------
     #[test]
     fn test_default_data_type() {
         assert_eq!(
-            DefaultDataType::Text("Some text".to_string()).get_data(),
+            DataType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
         );
-        assert_eq!(DefaultDataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DefaultDataType::U64(10_u64).get_data(), 10_u64.to_string());
-        assert_eq!(DefaultDataType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
     }
 
     // Standard widgets ----------------------------------------------------------------------------
@@ -212,10 +238,10 @@ mod tests {
         // Fields
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.input_type.get_type(), StandardType::Text.get_type());
+        assert_eq!(widget.input_type.get_type(), InputType::Text.get_type());
         assert_eq!(
             widget.value.get_data(),
-            DefaultDataType::Text(String::new()).get_data()
+            DataType::Text(String::new()).get_data()
         );
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.required, false);
