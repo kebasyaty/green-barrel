@@ -112,12 +112,8 @@ pub struct StandardWidget {
 }
 
 impl StandardWidget {
-    // Get Html string with form element
-    pub fn get_html(&self) -> String {
-        String::new()
-    }
-    // Get Json string with attributes of form element
-    pub fn get_json(&self) -> String {
+    // Get attributes of a widget
+    pub fn get_attrs(&self) -> String {
         String::new()
     }
 }
@@ -165,12 +161,8 @@ pub struct SelectionWidget {
 }
 
 impl SelectionWidget {
-    // Get Html string with form element
-    pub fn get_html(&self) -> String {
-        String::new()
-    }
-    // Get Json string with attributes of form element
-    pub fn get_json(&self) -> String {
+    // Get attributes of a widget
+    pub fn get_attrs(&self) -> String {
         String::new()
     }
 }
@@ -217,12 +209,8 @@ pub struct RelationWidget {
 }
 
 impl RelationWidget {
-    // Get Html string with form element
-    pub fn get_html(&self) -> String {
-        String::new()
-    }
-    // Get Json string with attributes of form element
-    pub fn get_json(&self) -> String {
+    // Get attributes of a widget
+    pub fn get_attrs(&self) -> String {
         String::new()
     }
 }
