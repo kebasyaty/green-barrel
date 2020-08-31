@@ -129,9 +129,9 @@ pub struct Widget {
     pub value: DataType,
     pub field_type: FieldType,
     pub required: bool,
-    pub readonly: Option<bool>, // For <input type="...">
-    pub disabled: Option<bool>, // For <select></select>
-    pub multiple: Option<bool>, // For <select></select>
+    pub readonly: bool, // For <input type="...">
+    pub disabled: bool, // For <select></select>
+    pub multiple: bool, // For <select></select>
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
