@@ -19,6 +19,7 @@ pub struct Transport {
     pub hidden: Option<bool>,
     pub other_attrs: Option<String>,
     pub other_classes: Option<String>,
+    pub select: Option<Vec<(String, DataType)>>, // For <select></select>
 }
 /// Field Types ------------------------------------------------------------------------------------
 #[derive(Debug, Clone)]
