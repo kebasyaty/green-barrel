@@ -133,6 +133,7 @@ pub struct Widget {
     pub readonly: bool, // For <input type="...">
     pub disabled: bool, // For <select></select>
     pub multiple: bool, // For <select></select>
+    pub checked: bool,  // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
@@ -207,6 +208,7 @@ mod tests {
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.disabled, false);
         assert_eq!(widget.multiple, false);
+        assert_eq!(widget.checked, false);
         assert_eq!(widget.hint, "".to_string());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
