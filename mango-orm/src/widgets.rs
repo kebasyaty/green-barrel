@@ -192,22 +192,29 @@ mod tests {
     // Widget --------------------------------------------------------------------------------------
     #[test]
     fn test_standard_widget() {
-        let widget: Widget = Default::default();
+        let mut widget: Widget = Default::default();
+        widget.select = vec![(String::new(), DataType::Text(String::new()))];
         // Fields
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
-        assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
         assert_eq!(
             widget.value.get_data(),
             DataType::Text(String::new()).get_data()
         );
-        assert_eq!(widget.readonly, false);
+        assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
         assert_eq!(widget.required, false);
+        assert_eq!(widget.readonly, false);
+        assert_eq!(widget.disabled, false);
+        assert_eq!(widget.multiple, false);
         assert_eq!(widget.hint, "".to_string());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
         assert_eq!(widget.other_attrs, "".to_string());
         assert_eq!(widget.other_classes, "".to_string());
+        assert_eq!(
+            widget.select[0].1.get_data(),
+            DataType::Text(String::new()).get_data()
+        );
         // Methods
     }
 }
