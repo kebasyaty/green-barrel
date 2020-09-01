@@ -32,7 +32,7 @@ pub enum ModelsFieldType {
 }
 impl Default for ModelsFieldType {
     fn default() -> Self {
-        ModelsFieldType::Text(Some(String::new()))
+        ModelsFieldType::Text(Option::None)
     }
 }
 impl ModelsFieldType {
