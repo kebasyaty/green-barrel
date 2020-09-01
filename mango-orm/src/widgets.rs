@@ -6,20 +6,22 @@
 /// Mediator for transporting widget attributes
 #[derive(Default, Debug)]
 pub struct Transport {
-    pub id: Option<String>,
-    pub label: Option<String>,
-    pub field_type: Option<FieldType>,
-    pub value: Option<DataType>,
-    pub required: Option<bool>,
-    pub readonly: Option<bool>, // For <input type="...">
-    pub disabled: Option<bool>, // For <select></select>
-    pub multiple: Option<bool>, // For <select></select>
-    pub hint: Option<String>,
-    pub unique: Option<bool>,
-    pub hidden: Option<bool>,
-    pub other_attrs: Option<String>,
-    pub other_classes: Option<String>,
-    pub select: Option<Vec<(String, DataType)>>, // For <select></select>
+    pub id: String, // "id-name" or auto
+    pub label: String,
+    pub field_type: String,
+    pub value: String,
+    pub maxlength: u32,
+    pub required: bool,
+    pub readonly: bool, // For <input type="...">
+    pub disabled: bool, // For <select></select>
+    pub multiple: bool, // For <select></select>
+    pub checked: bool,  // For <input type="checkbox|radio">
+    pub hint: String,
+    pub unique: bool,
+    pub hidden: bool,
+    pub other_attrs: String,   // "autofocus ..."
+    pub other_classes: String, // "class-name class-name ..."
+    pub select: Vec<(String, DataType)>,
 }
 /// Field Types ------------------------------------------------------------------------------------
 #[derive(Debug, Clone)]
@@ -127,8 +129,9 @@ impl DataType {
 pub struct Widget {
     pub id: String, // "id-name" or auto
     pub label: String,
-    pub value: DataType,
     pub field_type: FieldType,
+    pub value: DataType,
+    pub maxlength: u32,
     pub required: bool,
     pub readonly: bool, // For <input type="...">
     pub disabled: bool, // For <select></select>
@@ -199,11 +202,12 @@ mod tests {
         // Fields
         assert_eq!(widget.id, "".to_string());
         assert_eq!(widget.label, "".to_string());
+        assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
         assert_eq!(
             widget.value.get_data(),
             DataType::Text(String::new()).get_data()
         );
-        assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
+        assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.disabled, false);
