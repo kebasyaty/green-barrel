@@ -1,6 +1,6 @@
 //! # Widgets
 //!
-//! Widgets for Forms.
+//! Widgets for form elements.
 
 // WIDGETS =========================================================================================
 /// Mediator for transporting widget attributes
