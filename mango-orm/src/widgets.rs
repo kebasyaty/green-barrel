@@ -244,9 +244,11 @@ mod tests {
         // Methods
         let mut attrs = widget.get_attrs("some_name");
         attrs.select = vec![(String::new(), DataType::Text("").get_data())];
+
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
         assert_eq!(attrs.field_type, "text".to_string());
+        assert_eq!(attrs.field_name, "some_name".to_string());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
         assert_eq!(attrs.required, false);
