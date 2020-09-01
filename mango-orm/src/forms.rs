@@ -2,10 +2,13 @@
 //!
 //! Abstract Form methods for interacting with the database.
 
+use crate::widgets::Widget;
+use std::collections::HashMap;
+
 // FORMS ===========================================================================================
 /// Abstract Form
 pub trait Form {
-    //
+    fn form() -> HashMap<&'static str, Widget>;
 }
 
 // TESTS ===========================================================================================
