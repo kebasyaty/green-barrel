@@ -9,6 +9,7 @@ pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,
     pub field_type: String,
+    pub field_name: String,
     pub value: String,
     pub maxlength: u32,
     pub required: bool,
@@ -147,8 +148,26 @@ pub struct Widget {
 
 impl Widget {
     // Get attributes of a widget
-    pub fn get_attrs(&self) -> String {
-        String::new()
+    pub fn get_attrs(&self, field_name: &str) -> Transport {
+        Transport {
+            id: self.id,
+            label: self.label,
+            field_type: self.field_type,
+            field_name: field_name.to_string(),
+            value: self.value,
+            maxlength: self.maxlength,
+            required: self.required,
+            readonly: self.readonly,
+            disabled: self.disabled,
+            multiple: self.multiple,
+            checked: self.checked,
+            hint: self.hint,
+            unique: self.unique,
+            hidden: self.hidden,
+            other_attrs: self.other_attrs,
+            other_classes: self.other_classes,
+            select: self.select,
+        }
     }
 }
 
@@ -233,6 +252,7 @@ mod tests {
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
+        assert_eq!(trans.field_name, String::new());
         assert_eq!(trans.value, String::new());
         assert_eq!(trans.maxlength, 0);
         assert_eq!(trans.required, false);
