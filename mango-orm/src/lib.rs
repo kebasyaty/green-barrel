@@ -2,15 +2,8 @@
 //!
 //! ORM-like API MongoDB for Rust.
 
+pub mod models;
 pub mod widgets;
-
-// MODELS ==========================================================================================
-pub mod models {
-    /// Models (abstract methods)
-    pub trait Model {
-        //
-    }
-}
 
 // TESTS ===========================================================================================
 #[cfg(test)]

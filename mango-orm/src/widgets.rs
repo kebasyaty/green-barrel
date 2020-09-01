@@ -1,4 +1,4 @@
-//! # widgets
+//! # Widgets
 //!
 //! Widgets for Forms.
 
