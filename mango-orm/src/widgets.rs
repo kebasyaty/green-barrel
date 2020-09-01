@@ -106,7 +106,7 @@ impl DataType {
     }
 }
 
-// Attributes for the widget -----------------------------------------------------------------------
+/// Attributes for the widget ----------------------------------------------------------------------
 /// For standard widgets
 /// Use for:
 /// <input type="checkbox">
@@ -181,7 +181,32 @@ impl Widget {
 mod tests {
     use super::*;
 
-    // Standard type -------------------------------------------------------------------------------
+    // Transport -----------------------------------------------------------------------------------
+    #[test]
+    fn test_transport() {
+        let trans: Transport = Default::default();
+        // Fields
+        assert_eq!(trans.id, String::new());
+        assert_eq!(trans.label, String::new());
+        assert_eq!(trans.field_type, String::new());
+        assert_eq!(trans.field_name, String::new());
+        assert_eq!(trans.value, String::new());
+        assert_eq!(trans.maxlength, 0);
+        assert_eq!(trans.required, false);
+        assert_eq!(trans.readonly, false);
+        assert_eq!(trans.disabled, false);
+        assert_eq!(trans.multiple, false);
+        assert_eq!(trans.checked, false);
+        assert_eq!(trans.hint, String::new());
+        assert_eq!(trans.unique, false);
+        assert_eq!(trans.hidden, false);
+        assert_eq!(trans.other_attrs, String::new());
+        assert_eq!(trans.other_classes, String::new());
+        assert_eq!(trans.select, vec![]);
+        // Methods
+    }
+
+    // Field types ---------------------------------------------------------------------------------
     #[test]
     fn test_standard_type() {
         assert_eq!(FieldType::CheckBox.get_type(), "checkbox".to_string());
@@ -205,7 +230,7 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_type(), "o2o".to_string());
     }
 
-    // Default data type ---------------------------------------------------------------------------
+    // Data types ----------------------------------------------------------------------------------
     #[test]
     fn test_default_data_type() {
         assert_eq!(
@@ -263,29 +288,5 @@ mod tests {
         assert_eq!(attrs.other_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
         assert_eq!(attrs.select[0].1, String::new());
-    }
-
-    #[test]
-    fn test_transport() {
-        let trans: Transport = Default::default();
-        // Fields
-        assert_eq!(trans.id, String::new());
-        assert_eq!(trans.label, String::new());
-        assert_eq!(trans.field_type, String::new());
-        assert_eq!(trans.field_name, String::new());
-        assert_eq!(trans.value, String::new());
-        assert_eq!(trans.maxlength, 0);
-        assert_eq!(trans.required, false);
-        assert_eq!(trans.readonly, false);
-        assert_eq!(trans.disabled, false);
-        assert_eq!(trans.multiple, false);
-        assert_eq!(trans.checked, false);
-        assert_eq!(trans.hint, String::new());
-        assert_eq!(trans.unique, false);
-        assert_eq!(trans.hidden, false);
-        assert_eq!(trans.other_attrs, String::new());
-        assert_eq!(trans.other_classes, String::new());
-        assert_eq!(trans.select, vec![]);
-        // Methods
     }
 }
