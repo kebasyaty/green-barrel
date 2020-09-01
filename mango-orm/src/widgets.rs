@@ -24,9 +24,9 @@ pub struct Transport {
     pub other_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
 }
-/// Field Types ------------------------------------------------------------------------------------
+/// Field types for Widgets ------------------------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum FieldType {
+pub enum WidgetFieldType {
     CheckBox,
     Color,
     Date,
@@ -48,12 +48,12 @@ pub enum FieldType {
     ManyToMany,
     OneToOne,
 }
-impl Default for FieldType {
+impl Default for WidgetFieldType {
     fn default() -> Self {
-        FieldType::Text
+        WidgetFieldType::Text
     }
 }
-impl FieldType {
+impl WidgetFieldType {
     pub fn get_type(&self) -> String {
         match self {
             Self::CheckBox => "checkbox".to_string(),
@@ -130,7 +130,7 @@ impl DataType {
 pub struct Widget {
     pub id: &'static str, // "id-name" or auto
     pub label: &'static str,
-    pub field_type: FieldType,
+    pub field_type: WidgetFieldType,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -209,25 +209,25 @@ mod tests {
     // Field types ---------------------------------------------------------------------------------
     #[test]
     fn test_standard_type() {
-        assert_eq!(FieldType::CheckBox.get_type(), "checkbox".to_string());
-        assert_eq!(FieldType::Color.get_type(), "color".to_string());
-        assert_eq!(FieldType::Date.get_type(), "date".to_string());
-        assert_eq!(FieldType::Email.get_type(), "email".to_string());
-        assert_eq!(FieldType::Hidden.get_type(), "hidden".to_string());
-        assert_eq!(FieldType::Image.get_type(), "image".to_string());
-        assert_eq!(FieldType::Number.get_type(), "number".to_string());
-        assert_eq!(FieldType::Password.get_type(), "password".to_string());
-        assert_eq!(FieldType::Radio.get_type(), "radio".to_string());
-        assert_eq!(FieldType::Range.get_type(), "range".to_string());
-        assert_eq!(FieldType::Tel.get_type(), "tel".to_string());
-        assert_eq!(FieldType::Text.get_type(), "text".to_string());
-        assert_eq!(FieldType::Time.get_type(), "time".to_string());
-        assert_eq!(FieldType::Url.get_type(), "url".to_string());
-        assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
-        assert_eq!(FieldType::Select.get_type(), "select".to_string());
-        assert_eq!(FieldType::ForeignKey.get_type(), "m2o".to_string());
-        assert_eq!(FieldType::ManyToMany.get_type(), "m2m".to_string());
-        assert_eq!(FieldType::OneToOne.get_type(), "o2o".to_string());
+        assert_eq!(WidgetFieldType::CheckBox.get_type(), "checkbox".to_string());
+        assert_eq!(WidgetFieldType::Color.get_type(), "color".to_string());
+        assert_eq!(WidgetFieldType::Date.get_type(), "date".to_string());
+        assert_eq!(WidgetFieldType::Email.get_type(), "email".to_string());
+        assert_eq!(WidgetFieldType::Hidden.get_type(), "hidden".to_string());
+        assert_eq!(WidgetFieldType::Image.get_type(), "image".to_string());
+        assert_eq!(WidgetFieldType::Number.get_type(), "number".to_string());
+        assert_eq!(WidgetFieldType::Password.get_type(), "password".to_string());
+        assert_eq!(WidgetFieldType::Radio.get_type(), "radio".to_string());
+        assert_eq!(WidgetFieldType::Range.get_type(), "range".to_string());
+        assert_eq!(WidgetFieldType::Tel.get_type(), "tel".to_string());
+        assert_eq!(WidgetFieldType::Text.get_type(), "text".to_string());
+        assert_eq!(WidgetFieldType::Time.get_type(), "time".to_string());
+        assert_eq!(WidgetFieldType::Url.get_type(), "url".to_string());
+        assert_eq!(WidgetFieldType::TextArea.get_type(), "textarea".to_string());
+        assert_eq!(WidgetFieldType::Select.get_type(), "select".to_string());
+        assert_eq!(WidgetFieldType::ForeignKey.get_type(), "m2o".to_string());
+        assert_eq!(WidgetFieldType::ManyToMany.get_type(), "m2m".to_string());
+        assert_eq!(WidgetFieldType::OneToOne.get_type(), "o2o".to_string());
     }
 
     // Data types ----------------------------------------------------------------------------------
@@ -251,7 +251,10 @@ mod tests {
         // Fields
         assert_eq!(widget.id, "");
         assert_eq!(widget.label, "");
-        assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
+        assert_eq!(
+            widget.field_type.get_type(),
+            WidgetFieldType::Text.get_type()
+        );
         assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);

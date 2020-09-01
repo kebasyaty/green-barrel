@@ -1,4 +1,9 @@
+use mango_orm::forms::Form;
 use mango_orm::widgets::{DataType, FieldType, Widget};
+
+pub struct TestModel {
+    //
+}
 
 fn main() {
     let field_name = Widget {
