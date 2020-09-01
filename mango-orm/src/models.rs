@@ -60,7 +60,7 @@ impl ModelsFieldType {
 }
 
 /// Abstract Model ---------------------------------------------------------------------------------
-pub trait Moel {
+pub trait Model {
     //
 }
 

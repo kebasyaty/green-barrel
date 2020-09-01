@@ -1,7 +1,16 @@
-// use mango_orm::forms::Form;
+use mango_orm::forms::Form;
+use mango_orm::models::Model;
 use mango_orm::widgets::{DataType, Widget, WidgetFieldType};
 
 pub struct TestModel {
+    //
+}
+
+impl Form for TestModel {
+    //
+}
+
+impl Model for TestModel {
     //
 }
 
