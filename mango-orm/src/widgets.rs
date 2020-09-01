@@ -83,7 +83,7 @@ impl FieldType {
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum DataType {
-    Text(String),
+    Text(&'static str),
     I64(i64),
     U64(u64),
     F64(f64),
@@ -91,7 +91,7 @@ pub enum DataType {
 }
 impl Default for DataType {
     fn default() -> Self {
-        DataType::Text(String::new())
+        DataType::Text("")
     }
 }
 impl DataType {
@@ -209,7 +209,7 @@ mod tests {
     #[test]
     fn test_default_data_type() {
         assert_eq!(
-            DataType::Text("Some text".to_string()).get_data(),
+            DataType::Text("Some text").get_data(),
             "Some text".to_string()
         );
         assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
@@ -222,15 +222,12 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![("", DataType::Text(String::new()))];
+        widget.select = vec![("", DataType::Text(""))];
         // Fields
         assert_eq!(widget.id, "");
         assert_eq!(widget.label, "");
         assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
-        assert_eq!(
-            widget.value.get_data(),
-            DataType::Text(String::new()).get_data()
-        );
+        assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
@@ -243,11 +240,27 @@ mod tests {
         assert_eq!(widget.other_attrs, "");
         assert_eq!(widget.other_classes, "");
         assert_eq!(widget.select[0].0, "");
-        assert_eq!(
-            widget.select[0].1.get_data(),
-            DataType::Text(String::new()).get_data()
-        );
+        assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
+        let mut attrs = widget.get_attrs("some_name");
+        attrs.select = vec![(String::new(), DataType::Text("").get_data())];
+        assert_eq!(attrs.id, String::new());
+        assert_eq!(attrs.label, String::new());
+        assert_eq!(attrs.field_type, "text".to_string());
+        assert_eq!(attrs.value, String::new());
+        assert_eq!(attrs.maxlength, 0);
+        assert_eq!(attrs.required, false);
+        assert_eq!(attrs.readonly, false);
+        assert_eq!(attrs.disabled, false);
+        assert_eq!(attrs.multiple, false);
+        assert_eq!(attrs.checked, false);
+        assert_eq!(attrs.hint, String::new());
+        assert_eq!(attrs.unique, false);
+        assert_eq!(attrs.hidden, false);
+        assert_eq!(attrs.other_attrs, String::new());
+        assert_eq!(attrs.other_classes, String::new());
+        assert_eq!(attrs.select[0].0, String::new());
+        assert_eq!(attrs.select[0].1, String::new());
     }
 
     #[test]
