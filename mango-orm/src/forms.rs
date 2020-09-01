@@ -8,7 +8,7 @@ use std::collections::HashMap;
 // FORMS ===========================================================================================
 /// Abstract Form
 pub trait Form {
-    fn form() -> HashMap<&'static str, Widget>;
+    fn form(&self) -> HashMap<&'static str, Widget>;
 }
 
 // TESTS ===========================================================================================

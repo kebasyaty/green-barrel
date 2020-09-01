@@ -36,7 +36,7 @@ impl Default for ModelsFieldType {
     }
 }
 impl ModelsFieldType {
-    pub fn get_type(&self) -> String {
+    pub fn get_data(&self) -> String {
         match self {
             Self::CheckBox(data) => match data {
                 Some(data) => data.to_string(),
