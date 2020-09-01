@@ -143,7 +143,7 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: &'static str,   // "autofocus ..."
     pub other_classes: &'static str, // "class-name class-name ..."
-    pub select: Vec<(String, DataType)>,
+    pub select: Vec<(&'static str, DataType)>,
 }
 
 impl Widget {
