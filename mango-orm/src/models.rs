@@ -1,13 +1,11 @@
 //! # Models
 //!
-//! Models for creating collections in the database.
+//! Abstract Model methods for creating collections and interacting with the database.
 
 // MODELS ==========================================================================================
-pub mod models {
-    /// Models (abstract methods)
-    pub trait Model {
-        //
-    }
+/// Abstract Model
+pub trait Moel {
+    //
 }
 
 // TESTS ===========================================================================================
