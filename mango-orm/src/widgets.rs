@@ -128,8 +128,8 @@ impl DataType {
 /// <textarea></textarea>
 #[derive(Default, Debug)]
 pub struct Widget {
-    pub id: String, // "id-name" or auto
-    pub label: String,
+    pub id: &'static str, // "id-name" or auto
+    pub label: &'static str,
     pub field_type: FieldType,
     pub value: DataType,
     pub maxlength: u32,
@@ -138,11 +138,11 @@ pub struct Widget {
     pub disabled: bool, // For <select></select>
     pub multiple: bool, // For <select></select>
     pub checked: bool,  // For <input type="checkbox|radio">
-    pub hint: String,
+    pub hint: &'static str,
     pub unique: bool,
     pub hidden: bool,
-    pub other_attrs: String,   // "autofocus ..."
-    pub other_classes: String, // "class-name class-name ..."
+    pub other_attrs: &'static str,   // "autofocus ..."
+    pub other_classes: &'static str, // "class-name class-name ..."
     pub select: Vec<(String, DataType)>,
 }
 
@@ -150,23 +150,24 @@ impl Widget {
     // Get attributes of a widget
     pub fn get_attrs(&self, field_name: &str) -> Transport {
         Transport {
-            id: self.id,
-            label: self.label,
-            field_type: self.field_type,
+            id: self.id.to_string(),
+            label: self.label.to_string(),
+            //field_type: self.field_type,
             field_name: field_name.to_string(),
-            value: self.value,
+            //value: self.value,
             maxlength: self.maxlength,
             required: self.required,
             readonly: self.readonly,
             disabled: self.disabled,
             multiple: self.multiple,
             checked: self.checked,
-            hint: self.hint,
+            hint: self.hint.to_string(),
             unique: self.unique,
             hidden: self.hidden,
-            other_attrs: self.other_attrs,
-            other_classes: self.other_classes,
-            select: self.select,
+            other_attrs: self.other_attrs.to_string(),
+            other_classes: self.other_classes.to_string(),
+            //select: self.select,
+            ..Default::default()
         }
     }
 }
