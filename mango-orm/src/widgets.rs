@@ -152,18 +152,18 @@ impl Widget {
         Transport {
             id: self.id.to_string(),
             label: self.label.to_string(),
-            //field_type: self.field_type,
+            // field_type: self.field_type,
             field_name: field_name.to_string(),
-            //value: self.value,
-            maxlength: self.maxlength,
-            required: self.required,
-            readonly: self.readonly,
-            disabled: self.disabled,
-            multiple: self.multiple,
-            checked: self.checked,
+            value: self.value.get_data(),
+            maxlength: self.maxlength.clone(),
+            required: self.required.clone(),
+            readonly: self.readonly.clone(),
+            disabled: self.disabled.clone(),
+            multiple: self.multiple.clone(),
+            checked: self.checked.clone(),
             hint: self.hint.to_string(),
-            unique: self.unique,
-            hidden: self.hidden,
+            unique: self.unique.clone(),
+            hidden: self.hidden.clone(),
             other_attrs: self.other_attrs.to_string(),
             other_classes: self.other_classes.to_string(),
             //select: self.select,
@@ -218,10 +218,10 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), DataType::Text(String::new()))];
+        widget.select = vec![("", DataType::Text(String::new()))];
         // Fields
-        assert_eq!(widget.id, String::new());
-        assert_eq!(widget.label, String::new());
+        assert_eq!(widget.id, "");
+        assert_eq!(widget.label, "");
         assert_eq!(widget.field_type.get_type(), FieldType::Text.get_type());
         assert_eq!(
             widget.value.get_data(),
@@ -233,12 +233,12 @@ mod tests {
         assert_eq!(widget.disabled, false);
         assert_eq!(widget.multiple, false);
         assert_eq!(widget.checked, false);
-        assert_eq!(widget.hint, String::new());
+        assert_eq!(widget.hint, "");
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
-        assert_eq!(widget.other_attrs, String::new());
-        assert_eq!(widget.other_classes, String::new());
-        assert_eq!(widget.select[0].0, String::new());
+        assert_eq!(widget.other_attrs, "");
+        assert_eq!(widget.other_classes, "");
+        assert_eq!(widget.select[0].0, "");
         assert_eq!(
             widget.select[0].1.get_data(),
             DataType::Text(String::new()).get_data()
