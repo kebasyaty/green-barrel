@@ -166,7 +166,11 @@ impl Widget {
             hidden: self.hidden.clone(),
             other_attrs: self.other_attrs.to_string(),
             other_classes: self.other_classes.to_string(),
-            //select: self.select,
+            select: self
+                .select
+                .iter()
+                .map(|item| (item.0.to_string(), item.1.get_data()))
+                .collect::<Vec<(String, String)>>(),
             ..Default::default()
         }
     }
