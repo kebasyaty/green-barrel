@@ -1,5 +1,5 @@
-use mango_orm::forms::Form;
-use mango_orm::widgets::{DataType, FieldType, Widget};
+// use mango_orm::forms::Form;
+use mango_orm::widgets::{DataType, Widget, WidgetFieldType};
 
 pub struct TestModel {
     //
@@ -8,7 +8,7 @@ pub struct TestModel {
 fn main() {
     let field_name = Widget {
         label: "Choose a car:",
-        field_type: FieldType::Text,
+        field_type: WidgetFieldType::Text,
         value: DataType::Text("mercedes"),
         required: true,
         select: vec![
