@@ -181,7 +181,7 @@ impl Widget {
 mod tests {
     use super::*;
 
-    // Transport -----------------------------------------------------------------------------------
+    // Testing Transport structure -----------------------------------------------------------------
     #[test]
     fn test_transport() {
         let trans: Transport = Default::default();
@@ -206,7 +206,7 @@ mod tests {
         // Methods
     }
 
-    // Field types ---------------------------------------------------------------------------------
+    // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_standard_type() {
         assert_eq!(WidgetFieldType::CheckBox.get_type(), "checkbox".to_string());
@@ -230,7 +230,7 @@ mod tests {
         assert_eq!(WidgetFieldType::OneToOne.get_type(), "o2o".to_string());
     }
 
-    // Data types ----------------------------------------------------------------------------------
+    // Testing Data types --------------------------------------------------------------------------
     #[test]
     fn test_default_data_type() {
         assert_eq!(
@@ -243,7 +243,7 @@ mod tests {
         assert_eq!(DataType::Bool(true).get_data(), true.to_string());
     }
 
-    // Widget --------------------------------------------------------------------------------------
+    // Testing Widget structure --------------------------------------------------------------------
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
