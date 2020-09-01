@@ -152,7 +152,7 @@ impl Widget {
         Transport {
             id: self.id.to_string(),
             label: self.label.to_string(),
-            // field_type: self.field_type,
+            field_type: self.field_type.get_type(),
             field_name: field_name.to_string(),
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
