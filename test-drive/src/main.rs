@@ -1,12 +1,20 @@
-use mango_orm::widgets::{DataType, Widget};
+use mango_orm::widgets::{DataType, FieldType, Widget};
 
 fn main() {
-    let widget = Widget {
-        label: "Planets",
-        value: DataType::F64(10.3),
+    let field_name = Widget {
+        label: "Choose a car:",
+        field_type: FieldType::Text,
+        value: DataType::Text("mercedes"),
         required: true,
+        select: vec![
+            ("Volvo", DataType::Text("volvo")),
+            ("Saab", DataType::Text("saab")),
+            ("Mercedes", DataType::Text("mercedes")),
+            ("Audi", DataType::Text("audi")),
+        ],
         ..Default::default()
     };
 
-    println!("{:#?}", widget);
+    println!("{:#?}", field_name);
+    println!("{:#?}", field_name.get_attrs("field_name"));
 }
