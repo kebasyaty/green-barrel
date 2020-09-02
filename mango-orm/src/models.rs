@@ -191,6 +191,40 @@ impl Radio {
         }
     }
 }
+/// Tel
+#[derive(Debug, Clone)]
+pub enum Tel {
+    Data(Option<&'static str>),
+}
+impl Default for Tel {
+    fn default() -> Self {
+        Tel::Data(Option::None)
+    }
+}
+impl Tel {
+    pub fn get_data(&self) -> Option<&'static str> {
+        match self {
+            Self::Data(data) => *data,
+        }
+    }
+}
+/// Text
+#[derive(Debug, Clone)]
+pub enum Text {
+    Data(Option<&'static str>),
+}
+impl Default for Text {
+    fn default() -> Self {
+        Text::Data(Option::None)
+    }
+}
+impl Text {
+    pub fn get_data(&self) -> Option<&'static str> {
+        match self {
+            Self::Data(data) => *data,
+        }
+    }
+}
 
 /// Abstract Model ---------------------------------------------------------------------------------
 pub trait Model {
