@@ -1,11 +1,11 @@
 use mango_orm::forms::Form;
-use mango_orm::models::{Model, ModelsFieldType};
+use mango_orm::models::{Model, Text};
 use mango_orm::widgets::Widget;
 use std::collections::HashMap;
 
 #[derive(Default, Debug)]
 pub struct TestModel {
-    pub title: ModelsFieldType,
+    pub title: Text,
 }
 
 impl Form for TestModel {
@@ -27,10 +27,10 @@ impl Model for TestModel {
 
 fn main() {
     let test_model = TestModel {
-        title: ModelsFieldType::Text(Some("Some text".to_string())),
+        title: Text::Data(Some("Some text")),
     };
 
     println!("{:?}", test_model);
-    println!("{}", test_model.title.get_data());
+    println!("{}", test_model.title.get_data().unwrap_or(""));
     println!("{:?}", test_model.form());
 }
