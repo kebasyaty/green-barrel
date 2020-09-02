@@ -146,8 +146,8 @@ pub struct Widget {
 }
 
 impl Widget {
-    // Get attributes of a widget
-    pub fn get_attrs(&self, field_name: &str) -> Transport {
+    // Get pure attributes from a widget
+    pub fn get_clean_attrs(&self, field_name: &str) -> Transport {
         Transport {
             id: field_name.to_string(),
             label: self.label.clone(),
@@ -265,7 +265,7 @@ mod tests {
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
-        let mut attrs = widget.get_attrs("");
+        let mut attrs = widget.get_clean_attrs("");
         attrs.select = vec![(String::new(), DataType::Text("").get_data())];
 
         assert_eq!(attrs.id, String::new());

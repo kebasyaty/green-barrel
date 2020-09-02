@@ -34,7 +34,7 @@ impl Form for TestModel {
         let raw_attrs = self.raw_attrs();
         let mut clean_attrs = HashMap::new();
         for (field, widget) in &raw_attrs {
-            clean_attrs.insert(field.to_string(), widget.get_attrs(field));
+            clean_attrs.insert(field.to_string(), widget.get_clean_attrs(field));
         }
         clean_attrs
     }
