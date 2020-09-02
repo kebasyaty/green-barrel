@@ -4,394 +4,396 @@
 
 // MODELS ==========================================================================================
 /// Field Types for Models
-/// CheckBox
-#[derive(Debug, Clone)]
-pub enum CheckBox {
-    Data(Option<bool>),
-}
-impl Default for CheckBox {
-    fn default() -> Self {
-        CheckBox::Data(Option::None)
+pub mod field_types {
+    /// CheckBox
+    #[derive(Debug, Clone)]
+    pub enum CheckBox {
+        Data(Option<bool>),
     }
-}
-impl CheckBox {
-    pub fn get_data(&self) -> Option<bool> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for CheckBox {
+        fn default() -> Self {
+            CheckBox::Data(Option::None)
         }
     }
-}
-/// Color
-#[derive(Debug, Clone)]
-pub enum Color {
-    Data(Option<&'static str>),
-}
-impl Default for Color {
-    fn default() -> Self {
-        Color::Data(Option::None)
-    }
-}
-impl Color {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl CheckBox {
+        pub fn get_data(&self) -> Option<bool> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// Date
-#[derive(Debug, Clone)]
-pub enum Date {
-    Data(Option<&'static str>),
-}
-impl Default for Date {
-    fn default() -> Self {
-        Date::Data(Option::None)
+    /// Color
+    #[derive(Debug, Clone)]
+    pub enum Color {
+        Data(Option<&'static str>),
     }
-}
-impl Date {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Color {
+        fn default() -> Self {
+            Color::Data(Option::None)
         }
     }
-}
-/// Email
-#[derive(Debug, Clone)]
-pub enum Email {
-    Data(Option<&'static str>),
-}
-impl Default for Email {
-    fn default() -> Self {
-        Email::Data(Option::None)
-    }
-}
-impl Email {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Color {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// File
-#[derive(Debug, Clone)]
-pub enum File {
-    Data(Option<&'static str>),
-}
-impl Default for File {
-    fn default() -> Self {
-        File::Data(Option::None)
+    /// Date
+    #[derive(Debug, Clone)]
+    pub enum Date {
+        Data(Option<&'static str>),
     }
-}
-impl File {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Date {
+        fn default() -> Self {
+            Date::Data(Option::None)
         }
     }
-}
-/// Image
-#[derive(Debug, Clone)]
-pub enum Image {
-    Data(Option<&'static str>),
-}
-impl Default for Image {
-    fn default() -> Self {
-        Image::Data(Option::None)
-    }
-}
-impl Image {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Date {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// NumberI64
-#[derive(Debug, Clone)]
-pub enum NumberI64 {
-    Data(Option<i64>),
-}
-impl Default for NumberI64 {
-    fn default() -> Self {
-        NumberI64::Data(Option::None)
+    /// Email
+    #[derive(Debug, Clone)]
+    pub enum Email {
+        Data(Option<&'static str>),
     }
-}
-impl NumberI64 {
-    pub fn get_data(&self) -> Option<i64> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Email {
+        fn default() -> Self {
+            Email::Data(Option::None)
         }
     }
-}
-/// NumberU64
-#[derive(Debug, Clone)]
-pub enum NumberU64 {
-    Data(Option<i64>),
-}
-impl Default for NumberU64 {
-    fn default() -> Self {
-        NumberU64::Data(Option::None)
-    }
-}
-impl NumberU64 {
-    pub fn get_data(&self) -> Option<i64> {
-        match self {
-            Self::Data(data) => *data,
+    impl Email {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// NumberF64
-#[derive(Debug, Clone)]
-pub enum NumberF64 {
-    Data(Option<f64>),
-}
-impl Default for NumberF64 {
-    fn default() -> Self {
-        NumberF64::Data(Option::None)
+    /// File
+    #[derive(Debug, Clone)]
+    pub enum File {
+        Data(Option<&'static str>),
     }
-}
-impl NumberF64 {
-    pub fn get_data(&self) -> Option<f64> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for File {
+        fn default() -> Self {
+            File::Data(Option::None)
         }
     }
-}
-/// Password
-#[derive(Debug, Clone)]
-pub enum Password {
-    Data(Option<&'static str>),
-}
-impl Default for Password {
-    fn default() -> Self {
-        Password::Data(Option::None)
-    }
-}
-impl Password {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl File {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// Radio
-#[derive(Debug, Clone)]
-pub enum Radio {
-    Data(Option<bool>),
-}
-impl Default for Radio {
-    fn default() -> Self {
-        Radio::Data(Option::None)
+    /// Image
+    #[derive(Debug, Clone)]
+    pub enum Image {
+        Data(Option<&'static str>),
     }
-}
-impl Radio {
-    pub fn get_data(&self) -> Option<bool> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Image {
+        fn default() -> Self {
+            Image::Data(Option::None)
         }
     }
-}
-/// Tel
-#[derive(Debug, Clone)]
-pub enum Tel {
-    Data(Option<&'static str>),
-}
-impl Default for Tel {
-    fn default() -> Self {
-        Tel::Data(Option::None)
-    }
-}
-impl Tel {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Image {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// TextLine
-#[derive(Debug, Clone)]
-pub enum TextLine {
-    Data(Option<&'static str>),
-}
-impl Default for TextLine {
-    fn default() -> Self {
-        TextLine::Data(Option::None)
+    /// NumberI64
+    #[derive(Debug, Clone)]
+    pub enum NumberI64 {
+        Data(Option<i64>),
     }
-}
-impl TextLine {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for NumberI64 {
+        fn default() -> Self {
+            NumberI64::Data(Option::None)
         }
     }
-}
-/// Time
-#[derive(Debug, Clone)]
-pub enum Time {
-    Data(Option<&'static str>),
-}
-impl Default for Time {
-    fn default() -> Self {
-        Time::Data(Option::None)
-    }
-}
-impl Time {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl NumberI64 {
+        pub fn get_data(&self) -> Option<i64> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// Url
-#[derive(Debug, Clone)]
-pub enum Url {
-    Data(Option<&'static str>),
-}
-impl Default for Url {
-    fn default() -> Self {
-        Url::Data(Option::None)
+    /// NumberU64
+    #[derive(Debug, Clone)]
+    pub enum NumberU64 {
+        Data(Option<i64>),
     }
-}
-impl Url {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for NumberU64 {
+        fn default() -> Self {
+            NumberU64::Data(Option::None)
         }
     }
-}
-/// TextArea
-#[derive(Debug, Clone)]
-pub enum TextArea {
-    Data(Option<&'static str>),
-}
-impl Default for TextArea {
-    fn default() -> Self {
-        TextArea::Data(Option::None)
-    }
-}
-impl TextArea {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl NumberU64 {
+        pub fn get_data(&self) -> Option<i64> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// SelectText
-#[derive(Debug, Clone)]
-pub enum SelectText {
-    Data(Option<&'static str>),
-}
-impl Default for SelectText {
-    fn default() -> Self {
-        SelectText::Data(Option::None)
+    /// NumberF64
+    #[derive(Debug, Clone)]
+    pub enum NumberF64 {
+        Data(Option<f64>),
     }
-}
-impl SelectText {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for NumberF64 {
+        fn default() -> Self {
+            NumberF64::Data(Option::None)
         }
     }
-}
-/// SelectI64
-#[derive(Debug, Clone)]
-pub enum SelectI64 {
-    Data(Option<i64>),
-}
-impl Default for SelectI64 {
-    fn default() -> Self {
-        SelectI64::Data(Option::None)
-    }
-}
-impl SelectI64 {
-    pub fn get_data(&self) -> Option<i64> {
-        match self {
-            Self::Data(data) => *data,
+    impl NumberF64 {
+        pub fn get_data(&self) -> Option<f64> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// SelectU64
-#[derive(Debug, Clone)]
-pub enum SelectU64 {
-    Data(Option<u64>),
-}
-impl Default for SelectU64 {
-    fn default() -> Self {
-        SelectU64::Data(Option::None)
+    /// Password
+    #[derive(Debug, Clone)]
+    pub enum Password {
+        Data(Option<&'static str>),
     }
-}
-impl SelectU64 {
-    pub fn get_data(&self) -> Option<u64> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Password {
+        fn default() -> Self {
+            Password::Data(Option::None)
         }
     }
-}
-/// SelectF64
-#[derive(Debug, Clone)]
-pub enum SelectF64 {
-    Data(Option<f64>),
-}
-impl Default for SelectF64 {
-    fn default() -> Self {
-        SelectF64::Data(Option::None)
-    }
-}
-impl SelectF64 {
-    pub fn get_data(&self) -> Option<f64> {
-        match self {
-            Self::Data(data) => *data,
+    impl Password {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// ForeignKey
-#[derive(Debug, Clone)]
-pub enum ForeignKey {
-    Data(Option<&'static str>),
-}
-impl Default for ForeignKey {
-    fn default() -> Self {
-        ForeignKey::Data(Option::None)
+    /// Radio
+    #[derive(Debug, Clone)]
+    pub enum Radio {
+        Data(Option<bool>),
     }
-}
-impl ForeignKey {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Radio {
+        fn default() -> Self {
+            Radio::Data(Option::None)
         }
     }
-}
-/// ManyToMany
-#[derive(Debug, Clone)]
-pub enum ManyToMany {
-    Data(Option<&'static str>),
-}
-impl Default for ManyToMany {
-    fn default() -> Self {
-        ManyToMany::Data(Option::None)
-    }
-}
-impl ManyToMany {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Radio {
+        pub fn get_data(&self) -> Option<bool> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
-}
-/// OneToOne
-#[derive(Debug, Clone)]
-pub enum OneToOne {
-    Data(Option<&'static str>),
-}
-impl Default for OneToOne {
-    fn default() -> Self {
-        OneToOne::Data(Option::None)
+    /// Tel
+    #[derive(Debug, Clone)]
+    pub enum Tel {
+        Data(Option<&'static str>),
     }
-}
-impl OneToOne {
-    pub fn get_data(&self) -> Option<&'static str> {
-        match self {
-            Self::Data(data) => *data,
+    impl Default for Tel {
+        fn default() -> Self {
+            Tel::Data(Option::None)
+        }
+    }
+    impl Tel {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// TextLine
+    #[derive(Debug, Clone)]
+    pub enum TextLine {
+        Data(Option<&'static str>),
+    }
+    impl Default for TextLine {
+        fn default() -> Self {
+            TextLine::Data(Option::None)
+        }
+    }
+    impl TextLine {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// Time
+    #[derive(Debug, Clone)]
+    pub enum Time {
+        Data(Option<&'static str>),
+    }
+    impl Default for Time {
+        fn default() -> Self {
+            Time::Data(Option::None)
+        }
+    }
+    impl Time {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// Url
+    #[derive(Debug, Clone)]
+    pub enum Url {
+        Data(Option<&'static str>),
+    }
+    impl Default for Url {
+        fn default() -> Self {
+            Url::Data(Option::None)
+        }
+    }
+    impl Url {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// TextArea
+    #[derive(Debug, Clone)]
+    pub enum TextArea {
+        Data(Option<&'static str>),
+    }
+    impl Default for TextArea {
+        fn default() -> Self {
+            TextArea::Data(Option::None)
+        }
+    }
+    impl TextArea {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// SelectText
+    #[derive(Debug, Clone)]
+    pub enum SelectText {
+        Data(Option<&'static str>),
+    }
+    impl Default for SelectText {
+        fn default() -> Self {
+            SelectText::Data(Option::None)
+        }
+    }
+    impl SelectText {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// SelectI64
+    #[derive(Debug, Clone)]
+    pub enum SelectI64 {
+        Data(Option<i64>),
+    }
+    impl Default for SelectI64 {
+        fn default() -> Self {
+            SelectI64::Data(Option::None)
+        }
+    }
+    impl SelectI64 {
+        pub fn get_data(&self) -> Option<i64> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// SelectU64
+    #[derive(Debug, Clone)]
+    pub enum SelectU64 {
+        Data(Option<u64>),
+    }
+    impl Default for SelectU64 {
+        fn default() -> Self {
+            SelectU64::Data(Option::None)
+        }
+    }
+    impl SelectU64 {
+        pub fn get_data(&self) -> Option<u64> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// SelectF64
+    #[derive(Debug, Clone)]
+    pub enum SelectF64 {
+        Data(Option<f64>),
+    }
+    impl Default for SelectF64 {
+        fn default() -> Self {
+            SelectF64::Data(Option::None)
+        }
+    }
+    impl SelectF64 {
+        pub fn get_data(&self) -> Option<f64> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// ForeignKey
+    #[derive(Debug, Clone)]
+    pub enum ForeignKey {
+        Data(Option<&'static str>),
+    }
+    impl Default for ForeignKey {
+        fn default() -> Self {
+            ForeignKey::Data(Option::None)
+        }
+    }
+    impl ForeignKey {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// ManyToMany
+    #[derive(Debug, Clone)]
+    pub enum ManyToMany {
+        Data(Option<&'static str>),
+    }
+    impl Default for ManyToMany {
+        fn default() -> Self {
+            ManyToMany::Data(Option::None)
+        }
+    }
+    impl ManyToMany {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
+        }
+    }
+    /// OneToOne
+    #[derive(Debug, Clone)]
+    pub enum OneToOne {
+        Data(Option<&'static str>),
+    }
+    impl Default for OneToOne {
+        fn default() -> Self {
+            OneToOne::Data(Option::None)
+        }
+    }
+    impl OneToOne {
+        pub fn get_data(&self) -> Option<&'static str> {
+            match self {
+                Self::Data(data) => *data,
+            }
         }
     }
 }

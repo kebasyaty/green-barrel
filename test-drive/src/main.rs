@@ -1,5 +1,5 @@
 use mango_orm::forms::Form;
-use mango_orm::models::{Model, TextLine};
+use mango_orm::models::{field_types::TextLine, Model};
 use mango_orm::widgets::Widget;
 use std::collections::HashMap;
 
