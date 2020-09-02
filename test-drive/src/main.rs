@@ -12,8 +12,8 @@ impl Form for TestModel {
     // Get raw attributes for further processing
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
-        let mut map = HashMap::new();
-        map.insert(
+        let mut raw_attrs = HashMap::new();
+        raw_attrs.insert(
             "username",
             Widget {
                 label: "Your name",
@@ -25,16 +25,16 @@ impl Form for TestModel {
                 ..Default::default()
             },
         );
-        map
+        raw_attrs
     }
     // Get pure attributes for a page templating engine
     fn form_attrs(&self) -> HashMap<String, Transport> {
         let raw_attrs = self.raw_attrs();
-        let mut attrs = HashMap::new();
+        let mut clean_attrs = HashMap::new();
         for (field, widget) in &raw_attrs {
-            attrs.insert(field.to_string(), widget.get_attrs(field));
+            clean_attrs.insert(field.to_string(), widget.get_attrs(field));
         }
-        attrs
+        clean_attrs
     }
 }
 
