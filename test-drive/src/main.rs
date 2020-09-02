@@ -16,12 +16,14 @@ impl Form for TestModel {
         raw_attrs.insert(
             "username",
             Widget {
-                label: "Your name",
+                label: "Your name".to_string(),
                 field_type: FieldType::TextLine,
                 value: DataType::Text("Rust"),
                 maxlength: 30,
                 required: true,
-                hint: "Please enter your real name.",
+                hint: "Please enter your real name.".to_string(),
+                other_attrs: format!("placeholder=\"{}\"", "Your name"),
+
                 ..Default::default()
             },
         );

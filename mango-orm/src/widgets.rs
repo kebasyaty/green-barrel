@@ -128,7 +128,7 @@ impl DataType {
 /// <textarea></textarea>
 #[derive(Default, Debug)]
 pub struct Widget {
-    pub label: &'static str,
+    pub label: String,
     pub field_type: FieldType,
     pub value: DataType,
     pub maxlength: u32,
@@ -137,12 +137,12 @@ pub struct Widget {
     pub disabled: bool, // For <select></select>
     pub multiple: bool, // For <select></select>
     pub checked: bool,  // For <input type="checkbox|radio">
-    pub hint: &'static str,
+    pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub other_attrs: &'static str,   // "autofocus ..."
-    pub other_classes: &'static str, // "class-name class-name ..."
-    pub select: Vec<(&'static str, DataType)>,
+    pub other_attrs: String,   // "autofocus ..."
+    pub other_classes: String, // "class-name class-name ..."
+    pub select: Vec<(String, DataType)>,
 }
 
 impl Widget {
@@ -150,7 +150,7 @@ impl Widget {
     pub fn get_attrs(&self, field_name: &str) -> Transport {
         Transport {
             id: field_name.to_string(),
-            label: self.label.to_string(),
+            label: self.label.clone(),
             field_type: self.field_type.get_type(),
             field_name: field_name.to_string(),
             value: self.value.get_data(),
@@ -160,15 +160,15 @@ impl Widget {
             disabled: self.disabled.clone(),
             multiple: self.multiple.clone(),
             checked: self.checked.clone(),
-            hint: self.hint.to_string(),
+            hint: self.hint.clone(),
             unique: self.unique.clone(),
             hidden: self.hidden.clone(),
-            other_attrs: self.other_attrs.to_string(),
-            other_classes: self.other_classes.to_string(),
+            other_attrs: self.other_attrs.clone(),
+            other_classes: self.other_classes.clone(),
             select: self
                 .select
                 .iter()
-                .map(|item| (item.0.to_string(), item.1.get_data()))
+                .map(|item| (item.0.clone(), item.1.get_data()))
                 .collect::<Vec<(String, String)>>(),
             ..Default::default()
         }
