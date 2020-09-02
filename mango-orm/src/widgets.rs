@@ -128,7 +128,6 @@ impl DataType {
 /// <textarea></textarea>
 #[derive(Default, Debug)]
 pub struct Widget {
-    pub id: &'static str, // "field-name" or "form-name__field-name" or auto = "field-name"
     pub label: &'static str,
     pub field_type: FieldType,
     pub value: DataType,
@@ -150,7 +149,7 @@ impl Widget {
     // Get attributes of a widget
     pub fn get_attrs(&self, field_name: &str) -> Transport {
         Transport {
-            id: self.id.to_string(),
+            id: field_name.to_string(),
             label: self.label.to_string(),
             field_type: self.field_type.get_type(),
             field_name: field_name.to_string(),
@@ -249,7 +248,6 @@ mod tests {
         let mut widget: Widget = Default::default();
         widget.select = vec![("", DataType::Text(""))];
         // Fields
-        assert_eq!(widget.id, "");
         assert_eq!(widget.label, "");
         assert_eq!(widget.field_type.get_type(), FieldType::TextLine.get_type());
         assert_eq!(widget.value.get_data(), DataType::Text("").get_data());

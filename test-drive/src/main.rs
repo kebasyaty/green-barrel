@@ -1,6 +1,6 @@
 use mango_orm::forms::Form;
 use mango_orm::models::{field_types, Model};
-use mango_orm::widgets::{DataType, FieldType, Widget};
+use mango_orm::widgets::{DataType, FieldType, Transport, Widget};
 use std::collections::HashMap;
 
 #[derive(Default, Debug)]
@@ -9,13 +9,12 @@ pub struct TestModel {
 }
 
 impl Form for TestModel {
-    fn form(&self) -> HashMap<&'static str, Widget> {
+    fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut map = HashMap::new();
         map.insert(
             "username",
             Widget {
-                id: "username",
                 label: "Your name",
                 field_type: FieldType::TextLine,
                 value: DataType::Text("Rust"),
@@ -26,6 +25,15 @@ impl Form for TestModel {
             },
         );
         map
+    }
+
+    fn form_attrs(&self) -> HashMap<String, Transport> {
+        let raw_attrs = self.raw_attrs();
+        let mut attrs = HashMap::new();
+        for (field, widget) in &raw_attrs {
+            attrs.insert(field.to_string(), widget.get_attrs(field));
+        }
+        attrs
     }
 }
 
@@ -40,5 +48,6 @@ fn main() {
 
     println!("{:?}", test_model);
     println!("{}", test_model.username.get_data().unwrap_or(""));
-    println!("{:?}", test_model.form());
+    println!("{:?}", test_model.raw_attrs());
+    println!("{:?}", test_model.form_attrs());
 }
