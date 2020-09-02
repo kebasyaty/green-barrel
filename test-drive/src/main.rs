@@ -1,11 +1,11 @@
 use mango_orm::forms::Form;
-use mango_orm::models::{field_types::TextLine, Model};
+use mango_orm::models::{field_types, Model};
 use mango_orm::widgets::Widget;
 use std::collections::HashMap;
 
 #[derive(Default, Debug)]
 pub struct TestModel {
-    pub title: TextLine,
+    pub title: field_types::TextLine,
 }
 
 impl Form for TestModel {
@@ -27,7 +27,7 @@ impl Model for TestModel {
 
 fn main() {
     let test_model = TestModel {
-        title: TextLine::Data(Some("Some text")),
+        title: field_types::TextLine::Data(Some("Some text")),
     };
 
     println!("{:?}", test_model);
