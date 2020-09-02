@@ -9,6 +9,7 @@ pub struct TestModel {
 }
 
 impl Form for TestModel {
+    // Get raw attributes for further processing
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut map = HashMap::new();
@@ -26,7 +27,7 @@ impl Form for TestModel {
         );
         map
     }
-
+    // Get clean attrs
     fn form_attrs(&self) -> HashMap<String, Transport> {
         let raw_attrs = self.raw_attrs();
         let mut attrs = HashMap::new();
