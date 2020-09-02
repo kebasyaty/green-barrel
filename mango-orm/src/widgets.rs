@@ -26,7 +26,7 @@ pub struct Transport {
 }
 /// Field types for Widgets ------------------------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum WidgetFieldType {
+pub enum FieldType {
     CheckBox,
     Color,
     Date,
@@ -39,7 +39,7 @@ pub enum WidgetFieldType {
     Radio,
     Range,
     Tel,
-    Text,
+    TextLine,
     Time,
     Url,
     TextArea,
@@ -48,12 +48,12 @@ pub enum WidgetFieldType {
     ManyToMany,
     OneToOne,
 }
-impl Default for WidgetFieldType {
+impl Default for FieldType {
     fn default() -> Self {
-        WidgetFieldType::Text
+        FieldType::TextLine
     }
 }
-impl WidgetFieldType {
+impl FieldType {
     pub fn get_type(&self) -> String {
         match self {
             Self::CheckBox => "checkbox".to_string(),
@@ -68,7 +68,7 @@ impl WidgetFieldType {
             Self::Radio => "radio".to_string(),
             Self::Range => "range".to_string(),
             Self::Tel => "tel".to_string(),
-            Self::Text => "text".to_string(),
+            Self::TextLine => "text".to_string(),
             Self::Time => "time".to_string(),
             Self::Url => "url".to_string(),
             Self::TextArea => "textarea".to_string(),
@@ -82,19 +82,19 @@ impl WidgetFieldType {
 
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum DataType {
+pub enum DefaultValue {
     Text(&'static str),
     I64(i64),
     U64(u64),
     F64(f64),
     Bool(bool),
 }
-impl Default for DataType {
+impl Default for DefaultValue {
     fn default() -> Self {
-        DataType::Text("")
+        DefaultValue::Text("")
     }
 }
-impl DataType {
+impl DefaultValue {
     pub fn get_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_string(),
@@ -130,8 +130,8 @@ impl DataType {
 pub struct Widget {
     pub id: &'static str, // "id-name" or auto
     pub label: &'static str,
-    pub field_type: WidgetFieldType,
-    pub value: DataType,
+    pub field_type: FieldType,
+    pub value: DefaultValue,
     pub maxlength: u32,
     pub required: bool,
     pub readonly: bool, // For <input type="...">
@@ -143,7 +143,7 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: &'static str,   // "autofocus ..."
     pub other_classes: &'static str, // "class-name class-name ..."
-    pub select: Vec<(&'static str, DataType)>,
+    pub select: Vec<(&'static str, DefaultValue)>,
 }
 
 impl Widget {
@@ -209,53 +209,50 @@ mod tests {
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_standard_type() {
-        assert_eq!(WidgetFieldType::CheckBox.get_type(), "checkbox".to_string());
-        assert_eq!(WidgetFieldType::Color.get_type(), "color".to_string());
-        assert_eq!(WidgetFieldType::Date.get_type(), "date".to_string());
-        assert_eq!(WidgetFieldType::Email.get_type(), "email".to_string());
-        assert_eq!(WidgetFieldType::Hidden.get_type(), "hidden".to_string());
-        assert_eq!(WidgetFieldType::Image.get_type(), "image".to_string());
-        assert_eq!(WidgetFieldType::Number.get_type(), "number".to_string());
-        assert_eq!(WidgetFieldType::Password.get_type(), "password".to_string());
-        assert_eq!(WidgetFieldType::Radio.get_type(), "radio".to_string());
-        assert_eq!(WidgetFieldType::Range.get_type(), "range".to_string());
-        assert_eq!(WidgetFieldType::Tel.get_type(), "tel".to_string());
-        assert_eq!(WidgetFieldType::Text.get_type(), "text".to_string());
-        assert_eq!(WidgetFieldType::Time.get_type(), "time".to_string());
-        assert_eq!(WidgetFieldType::Url.get_type(), "url".to_string());
-        assert_eq!(WidgetFieldType::TextArea.get_type(), "textarea".to_string());
-        assert_eq!(WidgetFieldType::Select.get_type(), "select".to_string());
-        assert_eq!(WidgetFieldType::ForeignKey.get_type(), "m2o".to_string());
-        assert_eq!(WidgetFieldType::ManyToMany.get_type(), "m2m".to_string());
-        assert_eq!(WidgetFieldType::OneToOne.get_type(), "o2o".to_string());
+        assert_eq!(FieldType::CheckBox.get_type(), "checkbox".to_string());
+        assert_eq!(FieldType::Color.get_type(), "color".to_string());
+        assert_eq!(FieldType::Date.get_type(), "date".to_string());
+        assert_eq!(FieldType::Email.get_type(), "email".to_string());
+        assert_eq!(FieldType::Hidden.get_type(), "hidden".to_string());
+        assert_eq!(FieldType::Image.get_type(), "image".to_string());
+        assert_eq!(FieldType::Number.get_type(), "number".to_string());
+        assert_eq!(FieldType::Password.get_type(), "password".to_string());
+        assert_eq!(FieldType::Radio.get_type(), "radio".to_string());
+        assert_eq!(FieldType::Range.get_type(), "range".to_string());
+        assert_eq!(FieldType::Tel.get_type(), "tel".to_string());
+        assert_eq!(FieldType::TextLine.get_type(), "text".to_string());
+        assert_eq!(FieldType::Time.get_type(), "time".to_string());
+        assert_eq!(FieldType::Url.get_type(), "url".to_string());
+        assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
+        assert_eq!(FieldType::Select.get_type(), "select".to_string());
+        assert_eq!(FieldType::ForeignKey.get_type(), "m2o".to_string());
+        assert_eq!(FieldType::ManyToMany.get_type(), "m2m".to_string());
+        assert_eq!(FieldType::OneToOne.get_type(), "o2o".to_string());
     }
 
     // Testing Data types --------------------------------------------------------------------------
     #[test]
     fn test_default_data_type() {
         assert_eq!(
-            DataType::Text("Some text").get_data(),
+            DefaultValue::Text("Some text").get_data(),
             "Some text".to_string()
         );
-        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
-        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
-        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
+        assert_eq!(DefaultValue::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DefaultValue::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DefaultValue::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(DefaultValue::Bool(true).get_data(), true.to_string());
     }
 
     // Testing Widget structure --------------------------------------------------------------------
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![("", DataType::Text(""))];
+        widget.select = vec![("", DefaultValue::Text(""))];
         // Fields
         assert_eq!(widget.id, "");
         assert_eq!(widget.label, "");
-        assert_eq!(
-            widget.field_type.get_type(),
-            WidgetFieldType::Text.get_type()
-        );
-        assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
+        assert_eq!(widget.field_type.get_type(), FieldType::TextLine.get_type());
+        assert_eq!(widget.value.get_data(), DefaultValue::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
@@ -271,7 +268,7 @@ mod tests {
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
         let mut attrs = widget.get_attrs("some_name");
-        attrs.select = vec![(String::new(), DataType::Text("").get_data())];
+        attrs.select = vec![(String::new(), DefaultValue::Text("").get_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
