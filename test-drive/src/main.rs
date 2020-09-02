@@ -27,7 +27,7 @@ impl Form for TestModel {
         );
         map
     }
-    // Get clean attrs
+    // Get pure attributes for a page templating engine
     fn form_attrs(&self) -> HashMap<String, Transport> {
         let raw_attrs = self.raw_attrs();
         let mut attrs = HashMap::new();
