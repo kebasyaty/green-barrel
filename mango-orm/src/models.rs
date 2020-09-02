@@ -208,17 +208,68 @@ impl Tel {
         }
     }
 }
-/// Text
+/// TextLine
 #[derive(Debug, Clone)]
-pub enum Text {
+pub enum TextLine {
     Data(Option<&'static str>),
 }
-impl Default for Text {
+impl Default for TextLine {
     fn default() -> Self {
-        Text::Data(Option::None)
+        TextLine::Data(Option::None)
     }
 }
-impl Text {
+impl TextLine {
+    pub fn get_data(&self) -> Option<&'static str> {
+        match self {
+            Self::Data(data) => *data,
+        }
+    }
+}
+/// Time
+#[derive(Debug, Clone)]
+pub enum Time {
+    Data(Option<&'static str>),
+}
+impl Default for Time {
+    fn default() -> Self {
+        Time::Data(Option::None)
+    }
+}
+impl Time {
+    pub fn get_data(&self) -> Option<&'static str> {
+        match self {
+            Self::Data(data) => *data,
+        }
+    }
+}
+/// Url
+#[derive(Debug, Clone)]
+pub enum Url {
+    Data(Option<&'static str>),
+}
+impl Default for Url {
+    fn default() -> Self {
+        Url::Data(Option::None)
+    }
+}
+impl Url {
+    pub fn get_data(&self) -> Option<&'static str> {
+        match self {
+            Self::Data(data) => *data,
+        }
+    }
+}
+/// TextArea(
+#[derive(Debug, Clone)]
+pub enum TextArea {
+    Data(Option<&'static str>),
+}
+impl Default for TextArea {
+    fn default() -> Self {
+        TextArea::Data(Option::None)
+    }
+}
+impl TextArea {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
