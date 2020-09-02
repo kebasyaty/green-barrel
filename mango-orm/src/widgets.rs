@@ -82,19 +82,19 @@ impl FieldType {
 
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum DefaultValue {
+pub enum DataType {
     Text(&'static str),
     I64(i64),
     U64(u64),
     F64(f64),
     Bool(bool),
 }
-impl Default for DefaultValue {
+impl Default for DataType {
     fn default() -> Self {
-        DefaultValue::Text("")
+        DataType::Text("")
     }
 }
-impl DefaultValue {
+impl DataType {
     pub fn get_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_string(),
@@ -128,10 +128,10 @@ impl DefaultValue {
 /// <textarea></textarea>
 #[derive(Default, Debug)]
 pub struct Widget {
-    pub id: &'static str, // "id-name" or auto
+    pub id: &'static str, // "field-name" or "form-name__field-name" or auto = "field-name"
     pub label: &'static str,
     pub field_type: FieldType,
-    pub value: DefaultValue,
+    pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
     pub readonly: bool, // For <input type="...">
@@ -143,7 +143,7 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: &'static str,   // "autofocus ..."
     pub other_classes: &'static str, // "class-name class-name ..."
-    pub select: Vec<(&'static str, DefaultValue)>,
+    pub select: Vec<(&'static str, DataType)>,
 }
 
 impl Widget {
@@ -234,25 +234,25 @@ mod tests {
     #[test]
     fn test_default_data_type() {
         assert_eq!(
-            DefaultValue::Text("Some text").get_data(),
+            DataType::Text("Some text").get_data(),
             "Some text".to_string()
         );
-        assert_eq!(DefaultValue::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DefaultValue::U64(10_u64).get_data(), 10_u64.to_string());
-        assert_eq!(DefaultValue::F64(10_f64).get_data(), 10_f64.to_string());
-        assert_eq!(DefaultValue::Bool(true).get_data(), true.to_string());
+        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
     }
 
     // Testing Widget structure --------------------------------------------------------------------
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![("", DefaultValue::Text(""))];
+        widget.select = vec![("", DataType::Text(""))];
         // Fields
         assert_eq!(widget.id, "");
         assert_eq!(widget.label, "");
         assert_eq!(widget.field_type.get_type(), FieldType::TextLine.get_type());
-        assert_eq!(widget.value.get_data(), DefaultValue::Text("").get_data());
+        assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
@@ -268,7 +268,7 @@ mod tests {
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
         let mut attrs = widget.get_attrs("some_name");
-        attrs.select = vec![(String::new(), DefaultValue::Text("").get_data())];
+        attrs.select = vec![(String::new(), DataType::Text("").get_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
