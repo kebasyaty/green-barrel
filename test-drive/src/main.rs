@@ -4,7 +4,7 @@ use mango_orm::widgets::{DataType, Transport, Widget, WidgetFields};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct User {
     pub username: String,
 }
