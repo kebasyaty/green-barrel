@@ -9,7 +9,7 @@ pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,
     pub field_type: String,
-    pub field_name: String,
+    pub name: String,
     pub value: String,
     pub maxlength: u32,
     pub required: bool,
@@ -145,12 +145,12 @@ pub struct Widget {
 
 impl Widget {
     // Get pure attributes from a widget
-    pub fn get_clean_attrs(&self, field_name: &str) -> Transport {
+    pub fn get_clean_attrs(&self, name: &str) -> Transport {
         Transport {
-            id: field_name.to_string(),
+            id: name.to_string(),
             label: self.label.clone(),
             field_type: self.field_type.get_type(),
-            field_name: field_name.to_string(),
+            name: name.to_string(),
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
             required: self.required.clone(),
@@ -186,7 +186,7 @@ mod tests {
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
-        assert_eq!(trans.field_name, String::new());
+        assert_eq!(trans.name, String::new());
         assert_eq!(trans.value, String::new());
         assert_eq!(trans.maxlength, 0);
         assert_eq!(trans.required, false);
@@ -277,7 +277,7 @@ mod tests {
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
         assert_eq!(attrs.field_type, "text".to_string());
-        assert_eq!(attrs.field_name, String::new());
+        assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
         assert_eq!(attrs.required, false);
