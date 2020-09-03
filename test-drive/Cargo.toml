@@ -1,5 +1,6 @@
 [package]
 authors = ["kebasyaty <kebasyaty@gmail.com>"]
+default-run = "test-drive"
 description = "For manual testing Mango-ORM"
 edition = "2018"
 name = "test-drive"
