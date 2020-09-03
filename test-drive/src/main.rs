@@ -7,6 +7,7 @@ use std::collections::HashMap;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
     pub username: String,
+    pub email: String,
 }
 
 impl Model for User {
