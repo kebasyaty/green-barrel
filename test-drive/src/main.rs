@@ -1,18 +1,19 @@
 use mango_orm::forms::Form;
-use mango_orm::models::{model_fields as ModelFields, Model};
+use mango_orm::models::Model;
 use mango_orm::widgets::{DataType, Transport, Widget, WidgetFields};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Default, Debug)]
-pub struct TestModel {
-    pub username: ModelFields::InputText,
+#[derive(Default, Serialize, Deserialize, Debug)]
+pub struct User {
+    pub username: String,
 }
 
-impl Model for TestModel {
+impl Model for User {
     //
 }
 
-impl Form for TestModel {
+impl Form for User {
     // Get raw attributes for further processing
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
@@ -45,12 +46,12 @@ impl Form for TestModel {
 }
 
 fn main() {
-    let test_model = TestModel {
-        username: ModelFields::InputText::Data(Some("Some text")),
+    let test_model = User {
+        username: "Some text".to_string(),
     };
 
     println!("{:?}", test_model);
-    println!("{}", test_model.username.get_data().unwrap_or(""));
+    println!("{}", test_model.username);
     println!("{:?}", test_model.raw_attrs());
     println!("{:?}", test_model.form_attrs());
 }
