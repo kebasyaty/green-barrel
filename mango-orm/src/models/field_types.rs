@@ -4,255 +4,255 @@
 
 // FIELD TYPES =====================================================================================
 /// Field Types for Models
-/// CheckBox
+/// Input CheckBox
 #[derive(Debug, Clone)]
-pub enum CheckBox {
+pub enum InputCheckBox {
     Data(Option<bool>),
 }
-impl Default for CheckBox {
+impl Default for InputCheckBox {
     fn default() -> Self {
-        CheckBox::Data(Option::None)
+        InputCheckBox::Data(Option::None)
     }
 }
-impl CheckBox {
+impl InputCheckBox {
     pub fn get_data(&self) -> Option<bool> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Color
+/// Input Color
 #[derive(Debug, Clone)]
-pub enum Color {
+pub enum InputColor {
     Data(Option<&'static str>),
 }
-impl Default for Color {
+impl Default for InputColor {
     fn default() -> Self {
-        Color::Data(Option::None)
+        InputColor::Data(Option::None)
     }
 }
-impl Color {
+impl InputColor {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Date
+/// Input Date
 #[derive(Debug, Clone)]
-pub enum Date {
+pub enum InputDate {
     Data(Option<&'static str>),
 }
-impl Default for Date {
+impl Default for InputDate {
     fn default() -> Self {
-        Date::Data(Option::None)
+        InputDate::Data(Option::None)
     }
 }
-impl Date {
+impl InputDate {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Email
+/// Input Email
 #[derive(Debug, Clone)]
-pub enum Email {
+pub enum InputEmail {
     Data(Option<&'static str>),
 }
-impl Default for Email {
+impl Default for InputEmail {
     fn default() -> Self {
-        Email::Data(Option::None)
+        InputEmail::Data(Option::None)
     }
 }
-impl Email {
+impl InputEmail {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// File
+/// Input File
 #[derive(Debug, Clone)]
-pub enum File {
+pub enum InputFile {
     Data(Option<&'static str>),
 }
-impl Default for File {
+impl Default for InputFile {
     fn default() -> Self {
-        File::Data(Option::None)
+        InputFile::Data(Option::None)
     }
 }
-impl File {
+impl InputFile {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Image
+/// Input Image
 #[derive(Debug, Clone)]
-pub enum Image {
+pub enum InputImage {
     Data(Option<&'static str>),
 }
-impl Default for Image {
+impl Default for InputImage {
     fn default() -> Self {
-        Image::Data(Option::None)
+        InputImage::Data(Option::None)
     }
 }
-impl Image {
+impl InputImage {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// NumberI64
+/// Input NumberI64
 #[derive(Debug, Clone)]
-pub enum NumberI64 {
+pub enum InputNumberI64 {
     Data(Option<i64>),
 }
-impl Default for NumberI64 {
+impl Default for InputNumberI64 {
     fn default() -> Self {
-        NumberI64::Data(Option::None)
+        InputNumberI64::Data(Option::None)
     }
 }
-impl NumberI64 {
+impl InputNumberI64 {
     pub fn get_data(&self) -> Option<i64> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// NumberU64
+/// Input NumberU64
 #[derive(Debug, Clone)]
-pub enum NumberU64 {
+pub enum InputNumberU64 {
     Data(Option<i64>),
 }
-impl Default for NumberU64 {
+impl Default for InputNumberU64 {
     fn default() -> Self {
-        NumberU64::Data(Option::None)
+        InputNumberU64::Data(Option::None)
     }
 }
-impl NumberU64 {
+impl InputNumberU64 {
     pub fn get_data(&self) -> Option<i64> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// NumberF64
+/// Input NumberF64
 #[derive(Debug, Clone)]
-pub enum NumberF64 {
+pub enum InputNumberF64 {
     Data(Option<f64>),
 }
-impl Default for NumberF64 {
+impl Default for InputNumberF64 {
     fn default() -> Self {
-        NumberF64::Data(Option::None)
+        InputNumberF64::Data(Option::None)
     }
 }
-impl NumberF64 {
+impl InputNumberF64 {
     pub fn get_data(&self) -> Option<f64> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Password
+/// Input Password
 #[derive(Debug, Clone)]
-pub enum Password {
+pub enum InputPassword {
     Data(Option<&'static str>),
 }
-impl Default for Password {
+impl Default for InputPassword {
     fn default() -> Self {
-        Password::Data(Option::None)
+        InputPassword::Data(Option::None)
     }
 }
-impl Password {
+impl InputPassword {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Radio
+/// Input Radio
 #[derive(Debug, Clone)]
-pub enum Radio {
+pub enum InputRadio {
     Data(Option<bool>),
 }
-impl Default for Radio {
+impl Default for InputRadio {
     fn default() -> Self {
-        Radio::Data(Option::None)
+        InputRadio::Data(Option::None)
     }
 }
-impl Radio {
+impl InputRadio {
     pub fn get_data(&self) -> Option<bool> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Tel
+/// Input Tel
 #[derive(Debug, Clone)]
-pub enum Tel {
+pub enum InputTel {
     Data(Option<&'static str>),
 }
-impl Default for Tel {
+impl Default for InputTel {
     fn default() -> Self {
-        Tel::Data(Option::None)
+        InputTel::Data(Option::None)
     }
 }
-impl Tel {
+impl InputTel {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// TextLine
+/// Input Text
 #[derive(Debug, Clone)]
-pub enum TextLine {
+pub enum InputText {
     Data(Option<&'static str>),
 }
-impl Default for TextLine {
+impl Default for InputText {
     fn default() -> Self {
-        TextLine::Data(Option::None)
+        InputText::Data(Option::None)
     }
 }
-impl TextLine {
+impl InputText {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Time
+/// Input Time
 #[derive(Debug, Clone)]
-pub enum Time {
+pub enum InputTime {
     Data(Option<&'static str>),
 }
-impl Default for Time {
+impl Default for InputTime {
     fn default() -> Self {
-        Time::Data(Option::None)
+        InputTime::Data(Option::None)
     }
 }
-impl Time {
+impl InputTime {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,
         }
     }
 }
-/// Url
+/// Input Url
 #[derive(Debug, Clone)]
-pub enum Url {
+pub enum InputUrl {
     Data(Option<&'static str>),
 }
-impl Default for Url {
+impl Default for InputUrl {
     fn default() -> Self {
-        Url::Data(Option::None)
+        InputUrl::Data(Option::None)
     }
 }
-impl Url {
+impl InputUrl {
     pub fn get_data(&self) -> Option<&'static str> {
         match self {
             Self::Data(data) => *data,

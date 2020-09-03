@@ -27,21 +27,20 @@ pub struct Transport {
 /// Field types for Widgets ------------------------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum FieldType {
-    CheckBox,
-    Color,
-    Date,
-    Email,
-    File,
-    Hidden,
-    Image,
-    Number,
-    Password,
-    Radio,
-    Range,
-    Tel,
-    TextLine,
-    Time,
-    Url,
+    InputCheckBox,
+    InputColor,
+    InputDate,
+    InputEmail,
+    InputFile,
+    InputImage,
+    InputNumber,
+    InputPassword,
+    InputRadio,
+    InputRange,
+    InputTel,
+    InputText,
+    InputTime,
+    InputUrl,
     TextArea,
     Select,
     ForeignKey,
@@ -50,27 +49,26 @@ pub enum FieldType {
 }
 impl Default for FieldType {
     fn default() -> Self {
-        FieldType::TextLine
+        FieldType::InputText
     }
 }
 impl FieldType {
     pub fn get_type(&self) -> String {
         match self {
-            Self::CheckBox => "checkbox".to_string(),
-            Self::Color => "color".to_string(),
-            Self::Date => "date".to_string(),
-            Self::Email => "email".to_string(),
-            Self::File => "file".to_string(),
-            Self::Hidden => "hidden".to_string(),
-            Self::Image => "image".to_string(),
-            Self::Number => "number".to_string(),
-            Self::Password => "password".to_string(),
-            Self::Radio => "radio".to_string(),
-            Self::Range => "range".to_string(),
-            Self::Tel => "tel".to_string(),
-            Self::TextLine => "text".to_string(),
-            Self::Time => "time".to_string(),
-            Self::Url => "url".to_string(),
+            Self::InputCheckBox => "checkbox".to_string(),
+            Self::InputColor => "color".to_string(),
+            Self::InputDate => "date".to_string(),
+            Self::InputEmail => "email".to_string(),
+            Self::InputFile => "file".to_string(),
+            Self::InputImage => "image".to_string(),
+            Self::InputNumber => "number".to_string(),
+            Self::InputPassword => "password".to_string(),
+            Self::InputRadio => "radio".to_string(),
+            Self::InputRange => "range".to_string(),
+            Self::InputTel => "tel".to_string(),
+            Self::InputText => "text".to_string(),
+            Self::InputTime => "time".to_string(),
+            Self::InputUrl => "url".to_string(),
             Self::TextArea => "textarea".to_string(),
             Self::Select => "select".to_string(),
             Self::ForeignKey => "m2o".to_string(),
@@ -208,20 +206,19 @@ mod tests {
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_standard_type() {
-        assert_eq!(FieldType::CheckBox.get_type(), "checkbox".to_string());
-        assert_eq!(FieldType::Color.get_type(), "color".to_string());
-        assert_eq!(FieldType::Date.get_type(), "date".to_string());
-        assert_eq!(FieldType::Email.get_type(), "email".to_string());
-        assert_eq!(FieldType::Hidden.get_type(), "hidden".to_string());
-        assert_eq!(FieldType::Image.get_type(), "image".to_string());
-        assert_eq!(FieldType::Number.get_type(), "number".to_string());
-        assert_eq!(FieldType::Password.get_type(), "password".to_string());
-        assert_eq!(FieldType::Radio.get_type(), "radio".to_string());
-        assert_eq!(FieldType::Range.get_type(), "range".to_string());
-        assert_eq!(FieldType::Tel.get_type(), "tel".to_string());
-        assert_eq!(FieldType::TextLine.get_type(), "text".to_string());
-        assert_eq!(FieldType::Time.get_type(), "time".to_string());
-        assert_eq!(FieldType::Url.get_type(), "url".to_string());
+        assert_eq!(FieldType::InputCheckBox.get_type(), "checkbox".to_string());
+        assert_eq!(FieldType::InputColor.get_type(), "color".to_string());
+        assert_eq!(FieldType::InputDate.get_type(), "date".to_string());
+        assert_eq!(FieldType::InputEmail.get_type(), "email".to_string());
+        assert_eq!(FieldType::InputImage.get_type(), "image".to_string());
+        assert_eq!(FieldType::InputNumber.get_type(), "number".to_string());
+        assert_eq!(FieldType::InputPassword.get_type(), "password".to_string());
+        assert_eq!(FieldType::InputRadio.get_type(), "radio".to_string());
+        assert_eq!(FieldType::InputRange.get_type(), "range".to_string());
+        assert_eq!(FieldType::InputTel.get_type(), "tel".to_string());
+        assert_eq!(FieldType::InputText.get_type(), "text".to_string());
+        assert_eq!(FieldType::InputTime.get_type(), "time".to_string());
+        assert_eq!(FieldType::InputUrl.get_type(), "url".to_string());
         assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
         assert_eq!(FieldType::Select.get_type(), "select".to_string());
         assert_eq!(FieldType::ForeignKey.get_type(), "m2o".to_string());
@@ -249,7 +246,10 @@ mod tests {
         widget.select = vec![(String::new(), DataType::Text(""))];
         // Fields
         assert_eq!(widget.label, String::new());
-        assert_eq!(widget.field_type.get_type(), FieldType::TextLine.get_type());
+        assert_eq!(
+            widget.field_type.get_type(),
+            FieldType::InputText.get_type()
+        );
         assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);

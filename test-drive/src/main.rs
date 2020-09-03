@@ -1,11 +1,15 @@
 use mango_orm::forms::Form;
-use mango_orm::models::{field_types, Model};
-use mango_orm::widgets::{DataType, FieldType, Transport, Widget};
+use mango_orm::models::{field_types as model, Model};
+use mango_orm::widgets::{DataType, FieldType as widget, Transport, Widget};
 use std::collections::HashMap;
 
 #[derive(Default, Debug)]
 pub struct TestModel {
-    pub username: field_types::TextLine,
+    pub username: model::InputText,
+}
+
+impl Model for TestModel {
+    //
 }
 
 impl Form for TestModel {
@@ -17,7 +21,7 @@ impl Form for TestModel {
             "username",
             Widget {
                 label: "Your name".to_string(),
-                field_type: FieldType::TextLine,
+                field_type: widget::InputText,
                 value: DataType::Text("Rust"),
                 maxlength: 30,
                 required: true,
@@ -40,13 +44,9 @@ impl Form for TestModel {
     }
 }
 
-impl Model for TestModel {
-    //
-}
-
 fn main() {
     let test_model = TestModel {
-        username: field_types::TextLine::Data(Some("Some text")),
+        username: model::InputText::Data(Some("Some text")),
     };
 
     println!("{:?}", test_model);
