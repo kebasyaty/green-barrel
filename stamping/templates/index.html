@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hello {{ title }}!</h1>
+<form action="/user" method="GET" enctype="application/x-www-form-urlencoded">
+    <input type="text" name="username" value="">
+    <button>Send</button>
+</form>
+{% endblock content %}

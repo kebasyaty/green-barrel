@@ -2,5 +2,6 @@
 
 members = [
   "test-drive",
+  "stamping",
   "mango-orm",
 ]
