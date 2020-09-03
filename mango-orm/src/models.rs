@@ -2,7 +2,7 @@
 //!
 //! Abstract Model methods for creating collections and interacting with the database.
 
-pub mod field_types;
+pub mod model_fields;
 
 // MODELS ==========================================================================================
 /// Abstract Model ---------------------------------------------------------------------------------
