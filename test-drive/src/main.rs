@@ -52,6 +52,5 @@ fn main() {
 
     println!("{:?}", test_model);
     println!("{}", test_model.username);
-    println!("{:?}", test_model.raw_attrs());
     println!("{:?}", test_model.form_attrs());
 }
