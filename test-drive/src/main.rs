@@ -8,6 +8,7 @@ use std::collections::HashMap;
 pub struct User {
     pub username: String,
     pub email: String,
+    pub all_attrs: f64,
 }
 
 impl Model for User {
@@ -44,6 +45,32 @@ impl Form for User {
                 ..Default::default()
             },
         );
+        raw_attrs.insert(
+            "all_attrs",
+            Widget {
+                label: "Your Email".to_string(),
+                field_type: FieldType::InputNumber,
+                value: DataType::F64(0.0),
+                maxlength: 20,
+                required: true,
+                readonly: true,
+                disabled: true,
+                multiple: true,
+                checked: true,
+                hidden: true,
+                hint: "Test all attrs.".to_string(),
+                unique: true,
+                other_attrs: format!("placeholder=\"{}\" step=\"{}\"", "Test all attrs", 0.01),
+                some_classes: "class-name class-name-2".to_string(),
+                select: vec![
+                    ("Mercury".to_string(), DataType::F64(3.302)),
+                    ("Venus".to_string(), DataType::F64(4.869)),
+                    ("Earth".to_string(), DataType::F64(5.974)),
+                    ("Mars".to_string(), DataType::F64(6.419)),
+                ],
+                ..Default::default()
+            },
+        );
         raw_attrs
     }
 }
@@ -52,6 +79,7 @@ fn main() {
     let test_model = User {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
+        all_attrs: 10.02,
     };
 
     println!("{:?}", test_model);

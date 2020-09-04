@@ -139,7 +139,7 @@ pub struct Widget {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub other_attrs: String,  // "autofocus ..."
+    pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, DataType)>,
 }
