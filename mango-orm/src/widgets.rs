@@ -101,7 +101,6 @@ pub struct Transport {
     pub checked: bool,  // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
-    pub hidden: bool,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
@@ -149,10 +148,15 @@ pub struct Widget {
 impl Widget {
     // Get pure attributes from a widget
     pub fn get_clean_attrs(&self, name: &str) -> Transport {
+        let field_type = match self.hidden {
+            true => "hidden".to_string(),
+            false => self.field_type.get_type(),
+        };
+
         Transport {
             id: name.to_string(),
             label: self.label.clone(),
-            field_type: self.field_type.get_type(),
+            field_type: field_type,
             name: name.to_string(),
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
@@ -163,7 +167,6 @@ impl Widget {
             checked: self.checked.clone(),
             hint: self.hint.clone(),
             unique: self.unique.clone(),
-            hidden: self.hidden.clone(),
             other_attrs: self.other_attrs.clone(),
             some_classes: self.some_classes.clone(),
             select: self
@@ -199,7 +202,6 @@ mod tests {
         assert_eq!(trans.checked, false);
         assert_eq!(trans.hint, String::new());
         assert_eq!(trans.unique, false);
-        assert_eq!(trans.hidden, false);
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
@@ -287,7 +289,6 @@ mod tests {
         assert_eq!(attrs.checked, false);
         assert_eq!(attrs.hint, String::new());
         assert_eq!(attrs.unique, false);
-        assert_eq!(attrs.hidden, false);
         assert_eq!(attrs.other_attrs, String::new());
         assert_eq!(attrs.some_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
