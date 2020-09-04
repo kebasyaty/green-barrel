@@ -24,7 +24,7 @@ impl Form for User {
             Widget {
                 label: "Your Name".to_string(),
                 field_type: FieldType::InputText,
-                value: DataType::Text("Rust"),
+                value: DataType::Text("Rust".to_string()),
                 maxlength: 40,
                 required: true,
                 hint: "Please enter your real name.".to_string(),
@@ -49,7 +49,7 @@ impl Form for User {
             "all_attrs",
             Widget {
                 label: "Your Email".to_string(),
-                field_type: FieldType::InputNumber,
+                field_type: FieldType::Select,
                 value: DataType::F64(0.0),
                 maxlength: 20,
                 required: true,

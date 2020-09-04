@@ -60,7 +60,7 @@ impl FieldType {
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum DataType {
-    Text(&'static str),
+    Text(String),
     I64(i64),
     U64(u64),
     F64(f64),
@@ -68,13 +68,13 @@ pub enum DataType {
 }
 impl Default for DataType {
     fn default() -> Self {
-        DataType::Text("")
+        DataType::Text(String::new())
     }
 }
 impl DataType {
     pub fn get_data(&self) -> String {
         match self {
-            Self::Text(data) => data.to_string(),
+            Self::Text(data) => data.to_owned(),
             Self::I64(data) => data.to_string(),
             Self::U64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
@@ -231,7 +231,7 @@ mod tests {
     #[test]
     fn test_default_data_type() {
         assert_eq!(
-            DataType::Text("Some text").get_data(),
+            DataType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
         );
         assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
@@ -244,14 +244,17 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), DataType::Text(""))];
+        widget.select = vec![(String::new(), DataType::Text(String::new()))];
         // Fields
         assert_eq!(widget.label, String::new());
         assert_eq!(
             widget.field_type.get_type(),
             FieldType::InputText.get_type()
         );
-        assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
+        assert_eq!(
+            widget.value.get_data(),
+            DataType::Text(String::new()).get_data()
+        );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
@@ -267,7 +270,7 @@ mod tests {
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
         let mut attrs = widget.get_clean_attrs("");
-        attrs.select = vec![(String::new(), DataType::Text("").get_data())];
+        attrs.select = vec![(String::new(), DataType::Text(String::new()).get_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
