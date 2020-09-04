@@ -133,9 +133,6 @@ pub struct Widget {
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
-    pub readonly: bool, // For <input type="...">
-    pub disabled: bool, // For <select></select>
-    pub checked: bool,  // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
@@ -151,6 +148,13 @@ impl Widget {
             true => "hidden".to_string(),
             false => self.field_type.get_type(),
         };
+        let checked = match self.value {
+            DataType::Bool(data) => match data {
+                true => true,
+                _ => false,
+            },
+            _ => false,
+        };
 
         Transport {
             id: name.to_string(),
@@ -160,9 +164,7 @@ impl Widget {
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
             required: self.required.clone(),
-            readonly: self.readonly.clone(),
-            disabled: self.disabled.clone(),
-            checked: self.checked.clone(),
+            checked: checked,
             hint: self.hint.clone(),
             unique: self.unique.clone(),
             other_attrs: self.other_attrs.clone(),
@@ -259,8 +261,6 @@ mod tests {
         );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
-        assert_eq!(widget.readonly, false);
-        assert_eq!(widget.disabled, false);
         assert_eq!(widget.checked, false);
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
