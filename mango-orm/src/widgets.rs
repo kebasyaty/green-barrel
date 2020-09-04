@@ -149,10 +149,7 @@ impl Widget {
             false => self.field_type.get_type(),
         };
         let checked = match self.value {
-            DataType::Bool(data) => match data {
-                true => true,
-                _ => false,
-            },
+            DataType::Bool(data) => data,
             _ => false,
         };
 
