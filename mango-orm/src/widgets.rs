@@ -2,7 +2,7 @@
 //!
 //! Widgets for form elements.
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 // WIDGETS =========================================================================================
 /// Field types for Widgets
