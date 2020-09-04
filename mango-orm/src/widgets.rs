@@ -3,28 +3,7 @@
 //! Widgets for form elements.
 
 // WIDGETS =========================================================================================
-/// Mediator for transporting widget attributes
-#[derive(Default, Debug)]
-pub struct Transport {
-    pub id: String, // "id-name" or auto
-    pub label: String,
-    pub field_type: String,
-    pub name: String,
-    pub value: String,
-    pub maxlength: u32,
-    pub required: bool,
-    pub readonly: bool, // For <input type="...">
-    pub disabled: bool, // For <select></select>
-    pub multiple: bool, // For <select></select>
-    pub checked: bool,  // For <input type="checkbox|radio">
-    pub hint: String,
-    pub unique: bool,
-    pub hidden: bool,
-    pub other_attrs: String,  // "autofocus ..."
-    pub some_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, String)>,
-}
-/// Field types for Widgets ------------------------------------------------------------------------
+/// Field types for Widgets
 #[derive(Debug, Clone)]
 pub enum FieldType {
     InputCheckBox,
@@ -102,6 +81,28 @@ impl DataType {
             Self::Bool(data) => data.to_string(),
         }
     }
+}
+
+/// Mediator for transporting widget attributes ----------------------------------------------------
+#[derive(Default, Debug)]
+pub struct Transport {
+    pub id: String, // "id-name" or auto
+    pub label: String,
+    pub field_type: String,
+    pub name: String,
+    pub value: String,
+    pub maxlength: u32,
+    pub required: bool,
+    pub readonly: bool, // For <input type="...">
+    pub disabled: bool, // For <select></select>
+    pub multiple: bool, // For <select></select>
+    pub checked: bool,  // For <input type="checkbox|radio">
+    pub hint: String,
+    pub unique: bool,
+    pub hidden: bool,
+    pub other_attrs: String,  // "autofocus step=\"число\" ..."
+    pub some_classes: String, // "class-name class-name ..."
+    pub select: Vec<(String, String)>,
 }
 
 /// Attributes for the widget ----------------------------------------------------------------------

@@ -39,6 +39,7 @@ impl Form for User {
                 maxlength: 78,
                 required: true,
                 hint: "Enter your work email.".to_string(),
+                unique: true,
                 other_attrs: format!("placeholder=\"{}\"", "Your Email"),
                 ..Default::default()
             },
