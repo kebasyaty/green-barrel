@@ -27,7 +27,7 @@ pub mod request_handlers {
     pub async fn index(
         app_state: web::Data<settings::AppState>,
         tmpl: web::Data<Tera>,
-        form: web::Query<mango_models::User>,
+        form: web::Data<mango_models::User>,
     ) -> impl Responder {
         let mut ctx = Context::new();
         ctx.insert("title", &app_state.get_app_name());
