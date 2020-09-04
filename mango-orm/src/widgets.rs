@@ -95,10 +95,7 @@ pub struct Transport {
     pub value: String,
     pub maxlength: u32,
     pub required: bool,
-    pub readonly: bool, // For <input type="...">
-    pub disabled: bool, // For <select></select>
-    pub multiple: bool, // For <select></select>
-    pub checked: bool,  // For <input type="checkbox|radio">
+    pub checked: bool, // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
@@ -193,9 +190,6 @@ mod tests {
         assert_eq!(trans.value, String::new());
         assert_eq!(trans.maxlength, 0);
         assert_eq!(trans.required, false);
-        assert_eq!(trans.readonly, false);
-        assert_eq!(trans.disabled, false);
-        assert_eq!(trans.multiple, false);
         assert_eq!(trans.checked, false);
         assert_eq!(trans.hint, String::new());
         assert_eq!(trans.unique, false);
@@ -258,7 +252,6 @@ mod tests {
         );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
-        assert_eq!(widget.checked, false);
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
@@ -277,9 +270,6 @@ mod tests {
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
         assert_eq!(attrs.required, false);
-        assert_eq!(attrs.readonly, false);
-        assert_eq!(attrs.disabled, false);
-        assert_eq!(attrs.multiple, false);
         assert_eq!(attrs.checked, false);
         assert_eq!(attrs.hint, String::new());
         assert_eq!(attrs.unique, false);
