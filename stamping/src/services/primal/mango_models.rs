@@ -28,7 +28,7 @@ impl Form for User {
                 maxlength: 40,
                 required: true,
                 hint: "Please enter your real name.".to_string(),
-                other_attrs: format!("placeholder={}", "Your Name"),
+                other_attrs: format!("placeholder=\"{}\"", "Your Name"),
                 ..Default::default()
             },
         );
@@ -41,7 +41,7 @@ impl Form for User {
                 required: true,
                 hint: "Enter your work email.".to_string(),
                 unique: true,
-                other_attrs: format!("placeholder={}", "Your Email"),
+                other_attrs: format!("placeholder=\"{}\"", "Your Email"),
                 ..Default::default()
             },
         );
