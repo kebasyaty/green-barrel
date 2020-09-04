@@ -2,6 +2,8 @@
 //!
 //! Widgets for form elements.
 
+use serde::{Deserialize, Serialize};
+
 // WIDGETS =========================================================================================
 /// Field types for Widgets
 #[derive(Debug, Clone)]
@@ -84,7 +86,7 @@ impl DataType {
 }
 
 /// Mediator for transporting widget attributes ----------------------------------------------------
-#[derive(Default, Debug)]
+#[derive(Serialize, Debug, Default)]
 pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,

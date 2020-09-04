@@ -17,5 +17,9 @@ default-features = false
 features = ["tokio-runtime"]
 version = "1.1.0"
 
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.115"
+
 [dev-dependencies]
 tokio = {version = "0.2.22", features = ["rt-threaded", "macros"]}
