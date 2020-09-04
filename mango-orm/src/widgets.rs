@@ -20,13 +20,13 @@ pub struct Transport {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub other_attrs: String,   // "autofocus ..."
-    pub other_classes: String, // "class-name class-name ..."
+    pub other_attrs: String,  // "autofocus ..."
+    pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
 }
 /// Field types for Widgets ------------------------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum WidgetFields {
+pub enum FieldType {
     InputCheckBox,
     InputColor,
     InputDate,
@@ -47,12 +47,12 @@ pub enum WidgetFields {
     ManyToMany,
     OneToOne,
 }
-impl Default for WidgetFields {
+impl Default for FieldType {
     fn default() -> Self {
-        WidgetFields::InputText
+        FieldType::InputText
     }
 }
-impl WidgetFields {
+impl FieldType {
     pub fn get_type(&self) -> String {
         match self {
             Self::InputCheckBox => "checkbox".to_string(),
@@ -127,7 +127,7 @@ impl DataType {
 #[derive(Default, Debug)]
 pub struct Widget {
     pub label: String,
-    pub field_type: WidgetFields,
+    pub field_type: FieldType,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -138,8 +138,8 @@ pub struct Widget {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub other_attrs: String,   // "autofocus ..."
-    pub other_classes: String, // "class-name class-name ..."
+    pub other_attrs: String,  // "autofocus ..."
+    pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, DataType)>,
 }
 
@@ -162,7 +162,7 @@ impl Widget {
             unique: self.unique.clone(),
             hidden: self.hidden.clone(),
             other_attrs: self.other_attrs.clone(),
-            other_classes: self.other_classes.clone(),
+            some_classes: self.some_classes.clone(),
             select: self
                 .select
                 .iter()
@@ -198,7 +198,7 @@ mod tests {
         assert_eq!(trans.unique, false);
         assert_eq!(trans.hidden, false);
         assert_eq!(trans.other_attrs, String::new());
-        assert_eq!(trans.other_classes, String::new());
+        assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
         // Methods
     }
@@ -206,30 +206,24 @@ mod tests {
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_standard_type() {
-        assert_eq!(
-            WidgetFields::InputCheckBox.get_type(),
-            "checkbox".to_string()
-        );
-        assert_eq!(WidgetFields::InputColor.get_type(), "color".to_string());
-        assert_eq!(WidgetFields::InputDate.get_type(), "date".to_string());
-        assert_eq!(WidgetFields::InputEmail.get_type(), "email".to_string());
-        assert_eq!(WidgetFields::InputImage.get_type(), "image".to_string());
-        assert_eq!(WidgetFields::InputNumber.get_type(), "number".to_string());
-        assert_eq!(
-            WidgetFields::InputPassword.get_type(),
-            "password".to_string()
-        );
-        assert_eq!(WidgetFields::InputRadio.get_type(), "radio".to_string());
-        assert_eq!(WidgetFields::InputRange.get_type(), "range".to_string());
-        assert_eq!(WidgetFields::InputTel.get_type(), "tel".to_string());
-        assert_eq!(WidgetFields::InputText.get_type(), "text".to_string());
-        assert_eq!(WidgetFields::InputTime.get_type(), "time".to_string());
-        assert_eq!(WidgetFields::InputUrl.get_type(), "url".to_string());
-        assert_eq!(WidgetFields::TextArea.get_type(), "textarea".to_string());
-        assert_eq!(WidgetFields::Select.get_type(), "select".to_string());
-        assert_eq!(WidgetFields::ForeignKey.get_type(), "m2o".to_string());
-        assert_eq!(WidgetFields::ManyToMany.get_type(), "m2m".to_string());
-        assert_eq!(WidgetFields::OneToOne.get_type(), "o2o".to_string());
+        assert_eq!(FieldType::InputCheckBox.get_type(), "checkbox".to_string());
+        assert_eq!(FieldType::InputColor.get_type(), "color".to_string());
+        assert_eq!(FieldType::InputDate.get_type(), "date".to_string());
+        assert_eq!(FieldType::InputEmail.get_type(), "email".to_string());
+        assert_eq!(FieldType::InputImage.get_type(), "image".to_string());
+        assert_eq!(FieldType::InputNumber.get_type(), "number".to_string());
+        assert_eq!(FieldType::InputPassword.get_type(), "password".to_string());
+        assert_eq!(FieldType::InputRadio.get_type(), "radio".to_string());
+        assert_eq!(FieldType::InputRange.get_type(), "range".to_string());
+        assert_eq!(FieldType::InputTel.get_type(), "tel".to_string());
+        assert_eq!(FieldType::InputText.get_type(), "text".to_string());
+        assert_eq!(FieldType::InputTime.get_type(), "time".to_string());
+        assert_eq!(FieldType::InputUrl.get_type(), "url".to_string());
+        assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
+        assert_eq!(FieldType::Select.get_type(), "select".to_string());
+        assert_eq!(FieldType::ForeignKey.get_type(), "m2o".to_string());
+        assert_eq!(FieldType::ManyToMany.get_type(), "m2m".to_string());
+        assert_eq!(FieldType::OneToOne.get_type(), "o2o".to_string());
     }
 
     // Testing Data types --------------------------------------------------------------------------
@@ -254,7 +248,7 @@ mod tests {
         assert_eq!(widget.label, String::new());
         assert_eq!(
             widget.field_type.get_type(),
-            WidgetFields::InputText.get_type()
+            FieldType::InputText.get_type()
         );
         assert_eq!(widget.value.get_data(), DataType::Text("").get_data());
         assert_eq!(widget.maxlength, 0);
@@ -267,7 +261,7 @@ mod tests {
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
         assert_eq!(widget.other_attrs, String::new());
-        assert_eq!(widget.other_classes, String::new());
+        assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
@@ -289,7 +283,7 @@ mod tests {
         assert_eq!(attrs.unique, false);
         assert_eq!(attrs.hidden, false);
         assert_eq!(attrs.other_attrs, String::new());
-        assert_eq!(attrs.other_classes, String::new());
+        assert_eq!(attrs.some_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
         assert_eq!(attrs.select[0].1, String::new());
     }
