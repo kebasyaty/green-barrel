@@ -1,8 +1,9 @@
 use actix_web::{web, HttpResponse, Responder};
-use serde::{Deserialize, Serialize};
 use tera::{Context, Tera};
 
 use super::super::settings;
+
+pub mod mango_models;
 
 pub use configure_urls::*;
 pub use request_handlers::*;
@@ -37,15 +38,10 @@ pub mod request_handlers {
     }
 
     // User page -----------------------------------------------------------------------------------
-    #[derive(Serialize, Deserialize, Debug)]
-    pub struct FormData {
-        username: String,
-    }
-
     pub async fn user(
         app_state: web::Data<settings::AppState>,
         tmpl: web::Data<Tera>,
-        form: web::Query<FormData>,
+        form: web::Query<mango_models::User>,
     ) -> impl Responder {
         let mut ctx = Context::new();
         ctx.insert("title", &app_state.get_app_name());
@@ -54,6 +50,7 @@ pub mod request_handlers {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         );
         ctx.insert("username", &form.username);
+        ctx.insert("email", &form.email);
         let rendered = tmpl.render("user.html", &ctx).unwrap();
         HttpResponse::Ok().content_type("text/html").body(rendered)
     }
