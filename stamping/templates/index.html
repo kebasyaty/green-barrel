@@ -6,11 +6,12 @@
     <p>
         <label for="{{ form.username.id }}">{{ form.username.label }}</label>
         <input id="{{ form.username.id }}" type="{{ form.username.field_type }}" name="{{ form.username.name }}"
-            value="">
+            value="{{ form.username.value }}" {{ form.username.other_attrs  }}>
     </p>
     <p>
         <label for="{{ form.email.id }}">{{ form.email.label }}</label>
-        <input id="{{ form.email.id }}" type="{{ form.email.field_type }}" name="{{ form.email.name }}" value="">
+        <input id="{{ form.email.id }}" type="{{ form.email.field_type }}" name="{{ form.email.name }}"
+            value="{{ form.email.value }}" {{ form.email.other_attrs }}>
     </p>
     <button>Send</button>
 </form>
