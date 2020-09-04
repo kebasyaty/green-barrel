@@ -3,8 +3,8 @@
 {% block content %}
 <h1>Hello {{ title }}!</h1>
 <form action="/user" method="GET" enctype="application/x-www-form-urlencoded">
-    <input type="text" name="username" value="">
-    <input type="email" name="email" value="">
+    <input type="{{ form.username.field_type }}" name="form.username.name" value="">
+    <input type="{{ form.email.field_type }}" name="{{ form.email.name }}" value="">
     <button>Send</button>
 </form>
 {% endblock content %}

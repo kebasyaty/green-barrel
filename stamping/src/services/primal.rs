@@ -1,4 +1,5 @@
 use actix_web::{web, HttpResponse, Responder};
+use mango_orm::forms::Form;
 use tera::{Context, Tera};
 
 use super::super::settings;
@@ -26,6 +27,7 @@ pub mod request_handlers {
     pub async fn index(
         app_state: web::Data<settings::AppState>,
         tmpl: web::Data<Tera>,
+        form: web::Query<mango_models::User>,
     ) -> impl Responder {
         let mut ctx = Context::new();
         ctx.insert("title", &app_state.get_app_name());
@@ -33,8 +35,7 @@ pub mod request_handlers {
             "description",
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         );
-        let form: mango_models::User = Default::default();
-        ctx.insert("form", form.form_attrs());
+        ctx.insert("form", &form.form_attrs());
         let rendered = tmpl.render("index.html", &ctx).unwrap();
         HttpResponse::Ok().content_type("text/html").body(rendered)
     }

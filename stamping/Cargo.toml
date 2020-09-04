@@ -18,9 +18,11 @@ env_logger = "0.7.1"
 futures = "0.3.5"
 sanitize-filename = "0.2.1"
 str_slug = "0.1.3"
-tera = "1.5.0"
 
 mango-orm = {path = "../mango-orm"}
+
+[dependencies.tera]
+version = "1.5.0"
 
 [dependencies.serde]
 features = ["derive"]
