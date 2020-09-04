@@ -9,7 +9,6 @@ use std::collections::HashMap;
 pub struct User {
     pub username: String,
     pub email: String,
-    pub all_attrs: f64,
 }
 
 impl Model for User {
