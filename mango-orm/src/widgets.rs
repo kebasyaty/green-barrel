@@ -52,9 +52,9 @@ impl FieldType {
             Self::InputUrl => "url".to_string(),
             Self::TextArea => "textarea".to_string(),
             Self::Select => "select".to_string(),
-            Self::ForeignKey => "m2o".to_string(),
-            Self::ManyToMany => "m2m".to_string(),
-            Self::OneToOne => "o2o".to_string(),
+            Self::ForeignKey => "select".to_string(),
+            Self::ManyToMany => "select".to_string(),
+            Self::OneToOne => "hidden".to_string(),
         }
     }
 }
