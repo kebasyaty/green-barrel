@@ -135,7 +135,6 @@ pub struct Widget {
     pub required: bool,
     pub readonly: bool, // For <input type="...">
     pub disabled: bool, // For <select></select>
-    pub multiple: bool, // For <select></select>
     pub checked: bool,  // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
@@ -163,7 +162,6 @@ impl Widget {
             required: self.required.clone(),
             readonly: self.readonly.clone(),
             disabled: self.disabled.clone(),
-            multiple: self.multiple.clone(),
             checked: self.checked.clone(),
             hint: self.hint.clone(),
             unique: self.unique.clone(),
@@ -263,7 +261,6 @@ mod tests {
         assert_eq!(widget.required, false);
         assert_eq!(widget.readonly, false);
         assert_eq!(widget.disabled, false);
-        assert_eq!(widget.multiple, false);
         assert_eq!(widget.checked, false);
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);

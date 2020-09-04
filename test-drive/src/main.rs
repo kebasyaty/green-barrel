@@ -55,12 +55,14 @@ impl Form for User {
                 required: true,
                 readonly: true,
                 disabled: true,
-                multiple: true,
                 checked: true,
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
-                other_attrs: format!("placeholder=\"{}\" step=\"{}\"", "Test all attrs", 0.01),
+                other_attrs: format!(
+                    "multiple placeholder=\"{}\" step=\"{}\"",
+                    "Test all attrs", 0.01
+                ),
                 some_classes: "class-name class-name-2".to_string(),
                 select: vec![
                     ("Mercury".to_string(), DataType::F64(3.302)),
