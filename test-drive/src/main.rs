@@ -24,7 +24,7 @@ impl Form for User {
                 label: "Your Name".to_string(),
                 field_type: FieldType::InputText,
                 value: DataType::Text("Rust"),
-                maxlength: 30,
+                maxlength: 40,
                 required: true,
                 hint: "Please enter your real name.".to_string(),
                 other_attrs: format!("placeholder=\"{}\"", "Your Name"),
