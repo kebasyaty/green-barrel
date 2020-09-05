@@ -71,7 +71,7 @@ impl Form for User {
                     ),
                     (
                         "Category name 4".to_string(),
-                        DataType::Text("5".to_string()),
+                        DataType::Text("4".to_string()),
                     ),
                 ],
                 ..Default::default()
