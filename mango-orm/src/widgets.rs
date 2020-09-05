@@ -85,7 +85,7 @@ impl PrimitiveType {
     }
 }
 
-/// Vector types for the `value` attribute ----------------------------------------------------------
+/// Vector types for the `value` attribute ---------------------------------------------------------
 /// Vector - Text
 #[derive(Debug, Clone)]
 pub enum VectorText {
@@ -271,7 +271,7 @@ mod tests {
         assert_eq!(PrimitiveType::Bool(true).get_data(), true.to_string());
     }
 
-    // Testing Vector types -------------------------------------------------------------------------
+    // Testing Vector types ------------------------------------------------------------------------
     #[test]
     fn test_vector_types() {
         assert_eq!(
