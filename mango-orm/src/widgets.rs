@@ -310,10 +310,6 @@ mod tests {
         assert_eq!(PrimitiveType::U64(10_u64).get_data(), 10_u64.to_string());
         assert_eq!(PrimitiveType::F64(10_f64).get_data(), 10_f64.to_string());
         assert_eq!(PrimitiveType::Bool(true).get_data(), true.to_string());
-        assert_eq!(
-            PrimitiveType::Array(vec!["1".to_string(), "2".to_string()]).get_data(),
-            "1 2".to_string()
-        );
     }
 
     // Testing Array types -------------------------------------------------------------------------
