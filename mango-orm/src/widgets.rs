@@ -255,27 +255,6 @@ impl Widget {
 mod tests {
     use super::*;
 
-    // Testing Transport structure -----------------------------------------------------------------
-    #[test]
-    fn test_transport() {
-        let trans: Transport = Default::default();
-        // Fields
-        assert_eq!(trans.id, String::new());
-        assert_eq!(trans.label, String::new());
-        assert_eq!(trans.field_type, String::new());
-        assert_eq!(trans.name, String::new());
-        assert_eq!(trans.value, String::new());
-        assert_eq!(trans.maxlength, 0);
-        assert_eq!(trans.required, false);
-        assert_eq!(trans.checked, false);
-        assert_eq!(trans.hint, String::new());
-        assert_eq!(trans.unique, false);
-        assert_eq!(trans.other_attrs, String::new());
-        assert_eq!(trans.some_classes, String::new());
-        assert_eq!(trans.select, vec![]);
-        // Methods
-    }
-
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_field_types() {
@@ -322,6 +301,27 @@ mod tests {
         assert_eq!(ArrayI64::Data(vec![1, -2]).get_data(), vec![1, -2]);
         assert_eq!(ArrayU64::Data(vec![1, 2]).get_data(), vec![1, 2]);
         assert_eq!(ArrayF64::Data(vec![1.0, 2.0]).get_data(), vec![1.0, 2.0]);
+    }
+
+    // Testing Transport structure -----------------------------------------------------------------
+    #[test]
+    fn test_transport() {
+        let trans: Transport = Default::default();
+        // Fields
+        assert_eq!(trans.id, String::new());
+        assert_eq!(trans.label, String::new());
+        assert_eq!(trans.field_type, String::new());
+        assert_eq!(trans.name, String::new());
+        assert_eq!(trans.value, String::new());
+        assert_eq!(trans.maxlength, 0);
+        assert_eq!(trans.required, false);
+        assert_eq!(trans.checked, false);
+        assert_eq!(trans.hint, String::new());
+        assert_eq!(trans.unique, false);
+        assert_eq!(trans.other_attrs, String::new());
+        assert_eq!(trans.some_classes, String::new());
+        assert_eq!(trans.select, vec![]);
+        // Methods
     }
 
     // Testing Widget structure --------------------------------------------------------------------
