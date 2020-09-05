@@ -210,7 +210,7 @@ mod tests {
 
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
-    fn test_standard_type() {
+    fn test_field_types() {
         assert_eq!(FieldType::InputCheckBox.get_type(), "checkbox".to_string());
         assert_eq!(FieldType::InputColor.get_type(), "color".to_string());
         assert_eq!(FieldType::InputDate.get_type(), "date".to_string());
@@ -226,14 +226,14 @@ mod tests {
         assert_eq!(FieldType::InputUrl.get_type(), "url".to_string());
         assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
         assert_eq!(FieldType::Select.get_type(), "select".to_string());
-        assert_eq!(FieldType::ForeignKey.get_type(), "m2o".to_string());
-        assert_eq!(FieldType::ManyToMany.get_type(), "m2m".to_string());
-        assert_eq!(FieldType::OneToOne.get_type(), "o2o".to_string());
+        assert_eq!(FieldType::ForeignKey.get_type(), "select".to_string());
+        assert_eq!(FieldType::ManyToMany.get_type(), "select".to_string());
+        assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
     }
 
     // Testing Data types --------------------------------------------------------------------------
     #[test]
-    fn test_default_data_type() {
+    fn test_data_types() {
         assert_eq!(
             DataType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
@@ -242,6 +242,10 @@ mod tests {
         assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
         assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
         assert_eq!(DataType::Bool(true).get_data(), true.to_string());
+        assert_eq!(
+            DataType::Array(vec!["1".to_string(), "2".to_string()]).get_data(),
+            "1 2".to_string()
+        );
     }
 
     // Testing Widget structure --------------------------------------------------------------------
