@@ -67,6 +67,7 @@ pub enum DataType {
     U64(u64),
     F64(f64),
     Bool(bool),
+    Array(Vec<String>),
 }
 impl Default for DataType {
     fn default() -> Self {
@@ -81,6 +82,7 @@ impl DataType {
             Self::U64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
+            Self::Array(data) => data.join(" "),
         }
     }
 }
