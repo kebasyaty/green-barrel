@@ -59,19 +59,19 @@ impl Form for User {
                 select: vec![
                     (
                         "Category name 1".to_string(),
-                        DataType::Text("1".to_string()),
+                        PrimitiveType::Text("1".to_string()),
                     ),
                     (
                         "Category name 2".to_string(),
-                        DataType::Text("2".to_string()),
+                        PrimitiveType::Text("2".to_string()),
                     ),
                     (
                         "Category name 3".to_string(),
-                        DataType::Text("3".to_string()),
+                        PrimitiveType::Text("3".to_string()),
                     ),
                     (
                         "Category name 4".to_string(),
-                        DataType::Text("4".to_string()),
+                        PrimitiveType::Text("4".to_string()),
                     ),
                 ],
                 ..Default::default()
