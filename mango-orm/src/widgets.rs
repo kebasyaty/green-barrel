@@ -59,14 +59,14 @@ impl FieldType {
     }
 }
 
-/// Relation field types ---------------------------------------------------------------------------
-pub enum RelationField<T> {
+/// Relation model types ---------------------------------------------------------------------------
+pub enum RelationModel<T> {
     ForeignKey(<T>),
     ManyToMany(<T>),
     OneToOne(<T>),
 }
-impl<T> RelationField<T> {
-    pub fn get_data(&self) -> <T> {
+impl<T> RelationModel<T> {
+    pub fn get_model(&self) -> <T> {
         match self {
             Self::ForeignKey(model) => model,
             Self::ManyToMany(model) => model,
@@ -108,7 +108,7 @@ pub enum VectorText {
     Data(Vec<String>),
 }
 impl VectorText {
-    pub fn get_data(&self) -> Vec<String> {
+    pub fn get_vector(&self) -> Vec<String> {
         match self {
             Self::Data(vector) => vector.to_vec(),
         }
@@ -120,7 +120,7 @@ pub enum VectorI64 {
     Data(Vec<i64>),
 }
 impl VectorI64 {
-    pub fn get_data(&self) -> Vec<i64> {
+    pub fn get_vector(&self) -> Vec<i64> {
         match self {
             Self::Data(vector) => vector.to_vec(),
         }
@@ -132,7 +132,7 @@ pub enum VectorU64 {
     Data(Vec<u64>),
 }
 impl VectorU64 {
-    pub fn get_data(&self) -> Vec<u64> {
+    pub fn get_vector(&self) -> Vec<u64> {
         match self {
             Self::Data(vector) => vector.to_vec(),
         }
@@ -144,7 +144,7 @@ pub enum VectorF64 {
     Data(Vec<f64>),
 }
 impl VectorF64 {
-    pub fn get_data(&self) -> Vec<f64> {
+    pub fn get_vector(&self) -> Vec<f64> {
         match self {
             Self::Data(vector) => vector.to_vec(),
         }
@@ -291,12 +291,12 @@ mod tests {
     #[test]
     fn test_vector_types() {
         assert_eq!(
-            VectorText::Data(vec!["1".to_string(), "2".to_string()]).get_data(),
+            VectorText::Data(vec!["1".to_string(), "2".to_string()]).get_vector(),
             vec!["1".to_string(), "2".to_string()]
         );
-        assert_eq!(VectorI64::Data(vec![1, -2]).get_data(), vec![1, -2]);
-        assert_eq!(VectorU64::Data(vec![1, 2]).get_data(), vec![1, 2]);
-        assert_eq!(VectorF64::Data(vec![1.0, 2.0]).get_data(), vec![1.0, 2.0]);
+        assert_eq!(VectorI64::Data(vec![1, -2]).get_vector(), vec![1, -2]);
+        assert_eq!(VectorU64::Data(vec![1, 2]).get_vector(), vec![1, 2]);
+        assert_eq!(VectorF64::Data(vec![1.0, 2.0]).get_vector(), vec![1.0, 2.0]);
     }
 
     // Testing Transport structure -----------------------------------------------------------------
