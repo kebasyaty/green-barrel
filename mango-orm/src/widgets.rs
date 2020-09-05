@@ -61,9 +61,9 @@ impl FieldType {
 
 /// Relation model types ---------------------------------------------------------------------------
 pub enum RelationModel<T> {
-    ForeignKey(<T>),
-    ManyToMany(<T>),
-    OneToOne(<T>),
+    ForeignKey(Option<T>),
+    ManyToMany(Option<T>),
+    OneToOne(Option<T>),
 }
 impl<T> RelationModel<T> {
     pub fn get_model(&self) -> <T> {
@@ -241,7 +241,6 @@ impl Widget {
                 .iter()
                 .map(|item| (item.0.clone(), item.1.get_data()))
                 .collect::<Vec<(String, String)>>(),
-            ..Default::default()
         }
     }
 }
