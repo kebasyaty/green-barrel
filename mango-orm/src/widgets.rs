@@ -60,16 +60,16 @@ impl FieldType {
 }
 
 /// Relation model types ---------------------------------------------------------------------------
-pub struct StubModel;
 #[derive(Debug, Clone)]
 pub enum RelationModel<T> {
     ForeignKey(T),
     ManyToMany(T),
     OneToOne(T),
+    StubModel,
 }
 impl<T> Default for RelationModel<T> {
     fn default() -> Self {
-        RelationModel::ForeignKey(StubModel)
+        RelationModel::StubModel
     }
 }
 impl<T> RelationModel<T> {
