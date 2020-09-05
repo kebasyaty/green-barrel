@@ -26,7 +26,6 @@ impl<T> Form for User<T> {
                 field_type: FieldType::InputText,
                 value: DataType::Text("Rust".to_string()),
                 maxlength: 40,
-                required: true,
                 hint: "Please enter your real name.".to_string(),
                 other_attrs: format!("placeholder=\"{}\"", "Your Name"),
                 ..Default::default()
@@ -38,7 +37,6 @@ impl<T> Form for User<T> {
                 label: "Your Email".to_string(),
                 field_type: FieldType::InputEmail,
                 maxlength: 78,
-                required: true,
                 hint: "Enter your work email.".to_string(),
                 unique: true,
                 other_attrs: format!("placeholder=\"{}\"", "Your Email"),
@@ -50,7 +48,6 @@ impl<T> Form for User<T> {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                required: true,
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
