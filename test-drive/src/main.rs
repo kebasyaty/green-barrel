@@ -5,17 +5,17 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct User {
+pub struct User<T> {
     pub username: String,
     pub email: String,
-    pub categories: Vec<String>,
+    pub categories: Vec<T>,
 }
 
-impl Model for User {
+impl<T> Model for User<T> {
     //
 }
 
-impl Form for User {
+impl<T> Form for User<T> {
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
