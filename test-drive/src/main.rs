@@ -1,6 +1,6 @@
 use mango_orm::forms::Form;
 use mango_orm::models::Model;
-use mango_orm::widgets::{FieldType, PrimitiveType, Widget};
+use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -24,7 +24,7 @@ impl<T> Form for User<T> {
             Widget {
                 label: "Your Name".to_string(),
                 field_type: FieldType::InputText,
-                value: PrimitiveType::Text("Rust".to_string()),
+                value: DataType::Text("Rust".to_string()),
                 maxlength: 40,
                 required: true,
                 hint: "Please enter your real name.".to_string(),
@@ -59,19 +59,19 @@ impl<T> Form for User<T> {
                 select: vec![
                     (
                         "Category name 1".to_string(),
-                        PrimitiveType::Text("1".to_string()),
+                        DataType::Text("1".to_string()),
                     ),
                     (
                         "Category name 2".to_string(),
-                        PrimitiveType::Text("2".to_string()),
+                        DataType::Text("2".to_string()),
                     ),
                     (
                         "Category name 3".to_string(),
-                        PrimitiveType::Text("3".to_string()),
+                        DataType::Text("3".to_string()),
                     ),
                     (
                         "Category name 4".to_string(),
-                        PrimitiveType::Text("4".to_string()),
+                        DataType::Text("4".to_string()),
                     ),
                 ],
                 ..Default::default()

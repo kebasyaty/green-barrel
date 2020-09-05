@@ -76,21 +76,25 @@ impl<T> RelationModel<T> {
     }
 }
 
-/// Primitive types for the `value` attribute ------------------------------------------------------
+/// Data types for the `value` attribute ------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum PrimitiveType {
+pub enum DataType {
     Text(String),
     I64(i64),
     U64(u64),
     F64(f64),
     Bool(bool),
+    VectorText(Vec<String>),
+    VectorI64(Vec<i64>),
+    VectorU64(Vec<u64>),
+    VectorF64(Vec<f64>),
 }
-impl Default for PrimitiveType {
+impl Default for DataType {
     fn default() -> Self {
-        PrimitiveType::Text(String::new())
+        DataType::Text(String::new())
     }
 }
-impl PrimitiveType {
+impl DataType {
     pub fn get_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
@@ -98,56 +102,22 @@ impl PrimitiveType {
             Self::U64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
-        }
-    }
-}
-
-/// Vector types for the `value` attribute ---------------------------------------------------------
-/// Vector - Text
-#[derive(Debug, Clone)]
-pub enum VectorText {
-    Data(Vec<String>),
-}
-impl VectorText {
-    pub fn get_vector(&self) -> Vec<String> {
-        match self {
-            Self::Data(vector) => vector.to_vec(),
-        }
-    }
-}
-/// Vector - I64
-#[derive(Debug, Clone)]
-pub enum VectorI64 {
-    Data(Vec<i64>),
-}
-impl VectorI64 {
-    pub fn get_vector(&self) -> Vec<i64> {
-        match self {
-            Self::Data(vector) => vector.to_vec(),
-        }
-    }
-}
-/// Vector - U64
-#[derive(Debug, Clone)]
-pub enum VectorU64 {
-    Data(Vec<u64>),
-}
-impl VectorU64 {
-    pub fn get_vector(&self) -> Vec<u64> {
-        match self {
-            Self::Data(vector) => vector.to_vec(),
-        }
-    }
-}
-/// Vector - F64
-#[derive(Debug, Clone)]
-pub enum VectorF64 {
-    Data(Vec<f64>),
-}
-impl VectorF64 {
-    pub fn get_vector(&self) -> Vec<f64> {
-        match self {
-            Self::Data(vector) => vector.to_vec(),
+            Self::VectorText(data) => data.join(" "),
+            Self::VectorI64(data) => data
+                .iter()
+                .map(|num| num.to_string())
+                .collect::<Vec<String>>()
+                .join(" "),
+            Self::VectorU64(data) => data
+                .iter()
+                .map(|num| num.to_string())
+                .collect::<Vec<String>>()
+                .join(" "),
+            Self::VectorF64(data) => data
+                .iter()
+                .map(|num| num.to_string())
+                .collect::<Vec<String>>()
+                .join(" "),
         }
     }
 }
@@ -194,7 +164,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    pub value: PrimitiveType,
+    pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
     pub hint: String,
@@ -202,7 +172,7 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, PrimitiveType)>,
+    pub select: Vec<(String, DataType)>,
 }
 
 impl Widget {
@@ -213,7 +183,7 @@ impl Widget {
             false => self.field_type.get_type(),
         };
         let checked = match self.value {
-            PrimitiveType::Bool(data) => data,
+            DataType::Bool(data) => data,
             _ => false,
         };
         let other_attrs = match self.field_type {
@@ -274,29 +244,17 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
     }
 
-    // Testing Primitive types ---------------------------------------------------------------------
+    // Testing Data types ---------------------------------------------------------------------
     #[test]
-    fn test_primitive_types() {
+    fn test_data_types() {
         assert_eq!(
-            PrimitiveType::Text("Some text".to_string()).get_data(),
+            DataType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
         );
-        assert_eq!(PrimitiveType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(PrimitiveType::U64(10_u64).get_data(), 10_u64.to_string());
-        assert_eq!(PrimitiveType::F64(10_f64).get_data(), 10_f64.to_string());
-        assert_eq!(PrimitiveType::Bool(true).get_data(), true.to_string());
-    }
-
-    // Testing Vector types ------------------------------------------------------------------------
-    #[test]
-    fn test_vector_types() {
-        assert_eq!(
-            VectorText::Data(vec!["1".to_string(), "2".to_string()]).get_vector(),
-            vec!["1".to_string(), "2".to_string()]
-        );
-        assert_eq!(VectorI64::Data(vec![1, -2]).get_vector(), vec![1, -2]);
-        assert_eq!(VectorU64::Data(vec![1, 2]).get_vector(), vec![1, 2]);
-        assert_eq!(VectorF64::Data(vec![1.0, 2.0]).get_vector(), vec![1.0, 2.0]);
+        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
     }
 
     // Testing Transport structure -----------------------------------------------------------------
@@ -324,7 +282,7 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), PrimitiveType::Text(String::new()))];
+        widget.select = vec![(String::new(), DataType::Text(String::new()))];
         // Fields
         assert_eq!(widget.label, String::new());
         assert_eq!(
@@ -333,7 +291,7 @@ mod tests {
         );
         assert_eq!(
             widget.value.get_data(),
-            PrimitiveType::Text(String::new()).get_data()
+            DataType::Text(String::new()).get_data()
         );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
@@ -346,7 +304,7 @@ mod tests {
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
         let mut attrs = widget.get_clean_attrs("");
-        attrs.select = vec![(String::new(), PrimitiveType::Text(String::new()).get_data())];
+        attrs.select = vec![(String::new(), DataType::Text(String::new()).get_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
