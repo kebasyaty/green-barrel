@@ -299,9 +299,9 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
     }
 
-    // Testing Data types --------------------------------------------------------------------------
+    // Testing Primitive types ---------------------------------------------------------------------
     #[test]
-    fn test_data_types() {
+    fn test_primitive_types() {
         assert_eq!(
             PrimitiveType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
@@ -314,6 +314,18 @@ mod tests {
             PrimitiveType::Array(vec!["1".to_string(), "2".to_string()]).get_data(),
             "1 2".to_string()
         );
+    }
+
+    // Testing Array types -------------------------------------------------------------------------
+    #[test]
+    fn test_array_types() {
+        assert_eq!(
+            ArrayText::Data(vec!["1".to_string(), "2".to_string()]).get_data(),
+            vec!["1".to_string(), "2".to_string()]
+        );
+        assert_eq!(ArrayI64::Data(vec![1, -2]).get_data(), vec![1, -2]);
+        assert_eq!(ArrayU64::Data(vec![1, 2]).get_data(), vec![1, 2]);
+        assert_eq!(ArrayF64::Data(vec![1.0, 2.0]).get_data(), vec![1.0, 2.0]);
     }
 
     // Testing Widget structure --------------------------------------------------------------------
