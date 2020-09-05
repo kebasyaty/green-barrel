@@ -8,7 +8,7 @@ use std::collections::HashMap;
 pub struct User {
     pub username: String,
     pub email: String,
-    pub all_attrs: f64,
+    pub categories: Vec<String>,
 }
 
 impl Model for User {
@@ -46,12 +46,11 @@ impl Form for User {
             },
         );
         raw_attrs.insert(
-            "all_attrs",
+            "categories",
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
                 value: DataType::Text(String::new()),
-                maxlength: 20,
                 required: true,
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
@@ -75,10 +74,13 @@ fn main() {
     let test_model = User {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
-        all_attrs: 10.02,
+        categories: vec![
+            "1".to_string(),
+            "2".to_string(),
+            "3".to_string(),
+            "4".to_string(),
+        ],
     };
 
-    println!("{:?}", test_model);
-    println!("{}", test_model.username);
     println!("{:?}", test_model.form_attrs());
 }
