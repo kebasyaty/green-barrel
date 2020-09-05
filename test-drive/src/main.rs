@@ -50,7 +50,7 @@ impl Form for User {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                value: DataType::F64(0.0),
+                value: DataType::Text(String::new()),
                 maxlength: 20,
                 required: true,
                 hidden: true,

@@ -1,6 +1,6 @@
 [package]
 authors = ["kebasyaty <kebasyaty@gmail.com>"]
-default-run = "stamping"
+# default-run = "stamping"
 edition = "2018"
 name = "stamping"
 version = "0.1.0"
