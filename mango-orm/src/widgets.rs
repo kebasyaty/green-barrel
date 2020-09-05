@@ -164,6 +164,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
+    // pub relation_model: RelationModel,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
