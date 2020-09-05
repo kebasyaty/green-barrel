@@ -91,11 +91,6 @@ impl PrimitiveType {
 pub enum VectorText {
     Data(Vec<String>),
 }
-impl Default for VectorText {
-    fn default() -> Self {
-        VectorText::Data(vec![])
-    }
-}
 impl VectorText {
     pub fn get_data(&self) -> Vec<String> {
         match self {
@@ -107,11 +102,6 @@ impl VectorText {
 #[derive(Debug, Clone)]
 pub enum VectorI64 {
     Data(Vec<i64>),
-}
-impl Default for VectorI64 {
-    fn default() -> Self {
-        VectorI64::Data(vec![])
-    }
 }
 impl VectorI64 {
     pub fn get_data(&self) -> Vec<i64> {
@@ -125,11 +115,6 @@ impl VectorI64 {
 pub enum VectorU64 {
     Data(Vec<u64>),
 }
-impl Default for VectorU64 {
-    fn default() -> Self {
-        VectorU64::Data(vec![])
-    }
-}
 impl VectorU64 {
     pub fn get_data(&self) -> Vec<u64> {
         match self {
@@ -141,11 +126,6 @@ impl VectorU64 {
 #[derive(Debug, Clone)]
 pub enum VectorF64 {
     Data(Vec<f64>),
-}
-impl Default for VectorF64 {
-    fn default() -> Self {
-        VectorF64::Data(vec![])
-    }
 }
 impl VectorF64 {
     pub fn get_data(&self) -> Vec<f64> {
