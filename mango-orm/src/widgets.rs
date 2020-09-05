@@ -255,6 +255,22 @@ mod tests {
         assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
         assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
         assert_eq!(DataType::Bool(true).get_data(), true.to_string());
+        assert_eq!(
+            DataType::VectorText(vec!["some text".to_string(), "some text".to_string()]).get_data(),
+            "some text some text".to_string()
+        );
+        assert_eq!(
+            DataType::VectorI64(vec![1, -2]).get_data(),
+            "1 -2".to_string()
+        );
+        assert_eq!(
+            DataType::VectorU64(vec![1, 2]).get_data(),
+            "1 2".to_string()
+        );
+        assert_eq!(
+            DataType::VectorF64(vec![1.1, 2.2]).get_data(),
+            "1.1 2.2".to_string()
+        );
     }
 
     // Testing Transport structure -----------------------------------------------------------------
