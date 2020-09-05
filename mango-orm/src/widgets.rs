@@ -59,6 +59,22 @@ impl FieldType {
     }
 }
 
+/// Relation field types ---------------------------------------------------------------------------
+pub enum RelationField<T> {
+    ForeignKey(<T>),
+    ManyToMany(<T>),
+    OneToOne(<T>),
+}
+impl<T> RelationField<T> {
+    pub fn get_data(&self) -> <T> {
+        match self {
+            Self::ForeignKey(model) => model,
+            Self::ManyToMany(model) => model,
+            Self::OneToOne(model) => model,
+        }
+    } 
+}
+
 /// Primitive types for the `value` attribute ------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum PrimitiveType {
@@ -94,7 +110,7 @@ pub enum VectorText {
 impl VectorText {
     pub fn get_data(&self) -> Vec<String> {
         match self {
-            Self::Data(data) => data.to_vec(),
+            Self::Data(vector) => vector.to_vec(),
         }
     }
 }
@@ -106,7 +122,7 @@ pub enum VectorI64 {
 impl VectorI64 {
     pub fn get_data(&self) -> Vec<i64> {
         match self {
-            Self::Data(data) => data.to_vec(),
+            Self::Data(vector) => vector.to_vec(),
         }
     }
 }
@@ -118,7 +134,7 @@ pub enum VectorU64 {
 impl VectorU64 {
     pub fn get_data(&self) -> Vec<u64> {
         match self {
-            Self::Data(data) => data.to_vec(),
+            Self::Data(vector) => vector.to_vec(),
         }
     }
 }
@@ -130,7 +146,7 @@ pub enum VectorF64 {
 impl VectorF64 {
     pub fn get_data(&self) -> Vec<f64> {
         match self {
-            Self::Data(data) => data.to_vec(),
+            Self::Data(vector) => vector.to_vec(),
         }
     }
 }
