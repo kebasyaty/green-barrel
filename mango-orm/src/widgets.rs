@@ -61,20 +61,19 @@ impl FieldType {
 
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum DataType {
+pub enum PrimitiveType {
     Text(String),
     I64(i64),
     U64(u64),
     F64(f64),
     Bool(bool),
-    Array(Vec<String>),
 }
-impl Default for DataType {
+impl Default for PrimitiveType {
     fn default() -> Self {
-        DataType::Text(String::new())
+        PrimitiveType::Text(String::new())
     }
 }
-impl DataType {
+impl PrimitiveType {
     pub fn get_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
@@ -82,7 +81,76 @@ impl DataType {
             Self::U64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
-            Self::Array(data) => data.join(" "),
+        }
+    }
+}
+
+/// Array types ------------------------------------------------------------------------------------
+/// Array - Text
+#[derive(Debug, Clone)]
+pub enum ArrayText {
+    Data(Vec<String>),
+}
+impl Default for ArrayText {
+    fn default() -> Self {
+        ArrayText::Data(vec![])
+    }
+}
+impl ArrayText {
+    pub fn get_data(&self) -> Vec<String> {
+        match self {
+            Self::Data(data) => data.to_vec(),
+        }
+    }
+}
+/// Array - I64
+#[derive(Debug, Clone)]
+pub enum ArrayI64 {
+    Data(Vec<i64>),
+}
+impl Default for ArrayI64 {
+    fn default() -> Self {
+        ArrayI64::Data(vec![])
+    }
+}
+impl ArrayI64 {
+    pub fn get_data(&self) -> Vec<i64> {
+        match self {
+            Self::Data(data) => data.to_vec(),
+        }
+    }
+}
+/// Array - U64
+#[derive(Debug, Clone)]
+pub enum ArrayU64 {
+    Data(Vec<u64>),
+}
+impl Default for ArrayU64 {
+    fn default() -> Self {
+        ArrayU64::Data(vec![])
+    }
+}
+impl ArrayU64 {
+    pub fn get_data(&self) -> Vec<u64> {
+        match self {
+            Self::Data(data) => data.to_vec(),
+        }
+    }
+}
+/// Array - F64
+#[derive(Debug, Clone)]
+pub enum ArrayF64 {
+    Data(Vec<f64>),
+}
+impl Default for ArrayF64 {
+    fn default() -> Self {
+        ArrayF64::Data(vec![])
+    }
+}
+impl ArrayF64 {
+    pub fn get_data(&self) -> Vec<f64> {
+        match self {
+            Self::Data(data) => data.to_vec(),
         }
     }
 }
@@ -129,7 +197,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    pub value: DataType,
+    pub value: PrimitiveType,
     pub maxlength: u32,
     pub required: bool,
     pub hint: String,
@@ -137,7 +205,7 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, DataType)>,
+    pub select: Vec<(String, PrimitiveType)>,
 }
 
 impl Widget {
@@ -148,7 +216,7 @@ impl Widget {
             false => self.field_type.get_type(),
         };
         let checked = match self.value {
-            DataType::Bool(data) => data,
+            PrimitiveType::Bool(data) => data,
             _ => false,
         };
         let other_attrs = match self.field_type {
@@ -235,15 +303,15 @@ mod tests {
     #[test]
     fn test_data_types() {
         assert_eq!(
-            DataType::Text("Some text".to_string()).get_data(),
+            PrimitiveType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
         );
-        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
-        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
-        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
+        assert_eq!(PrimitiveType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(PrimitiveType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(PrimitiveType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(PrimitiveType::Bool(true).get_data(), true.to_string());
         assert_eq!(
-            DataType::Array(vec!["1".to_string(), "2".to_string()]).get_data(),
+            PrimitiveType::Array(vec!["1".to_string(), "2".to_string()]).get_data(),
             "1 2".to_string()
         );
     }
@@ -252,7 +320,7 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), DataType::Text(String::new()))];
+        widget.select = vec![(String::new(), PrimitiveType::Text(String::new()))];
         // Fields
         assert_eq!(widget.label, String::new());
         assert_eq!(
@@ -261,7 +329,7 @@ mod tests {
         );
         assert_eq!(
             widget.value.get_data(),
-            DataType::Text(String::new()).get_data()
+            PrimitiveType::Text(String::new()).get_data()
         );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, false);
@@ -274,7 +342,7 @@ mod tests {
         assert_eq!(widget.select[0].1.get_data(), String::new());
         // Methods
         let mut attrs = widget.get_clean_attrs("");
-        attrs.select = vec![(String::new(), DataType::Text(String::new()).get_data())];
+        attrs.select = vec![(String::new(), PrimitiveType::Text(String::new()).get_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
