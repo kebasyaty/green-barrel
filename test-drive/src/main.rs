@@ -50,7 +50,6 @@ impl Form for User {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                value: DataType::Text(String::new()),
                 required: true,
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
@@ -58,10 +57,22 @@ impl Form for User {
                 other_attrs: format!("placeholder=\"{}\"", "Test all attrs"),
                 some_classes: "class-name class-name-2".to_string(),
                 select: vec![
-                    ("Mercury".to_string(), DataType::F64(3.302)),
-                    ("Venus".to_string(), DataType::F64(4.869)),
-                    ("Earth".to_string(), DataType::F64(5.974)),
-                    ("Mars".to_string(), DataType::F64(6.419)),
+                    (
+                        "Category name 1".to_string(),
+                        DataType::Text("1".to_string()),
+                    ),
+                    (
+                        "Category name 2".to_string(),
+                        DataType::Text("2".to_string()),
+                    ),
+                    (
+                        "Category name 3".to_string(),
+                        DataType::Text("3".to_string()),
+                    ),
+                    (
+                        "Category name 4".to_string(),
+                        DataType::Text("5".to_string()),
+                    ),
                 ],
                 ..Default::default()
             },
