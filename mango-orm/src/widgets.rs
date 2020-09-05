@@ -61,8 +61,6 @@ impl FieldType {
 
 /// Relation model types ---------------------------------------------------------------------------
 #[derive(Debug, Clone)]
-pub struct StubModel;
-#[derive(Debug, Clone)]
 pub enum RelationModel<T> {
     ForeignKey(T),
     ManyToMany(T),
