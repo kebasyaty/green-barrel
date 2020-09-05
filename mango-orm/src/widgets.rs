@@ -85,69 +85,69 @@ impl PrimitiveType {
     }
 }
 
-/// Array types for the `value` attribute ----------------------------------------------------------
-/// Array - Text
+/// Vector types for the `value` attribute ----------------------------------------------------------
+/// Vector - Text
 #[derive(Debug, Clone)]
-pub enum ArrayText {
+pub enum VectorText {
     Data(Vec<String>),
 }
-impl Default for ArrayText {
+impl Default for VectorText {
     fn default() -> Self {
-        ArrayText::Data(vec![])
+        VectorText::Data(vec![])
     }
 }
-impl ArrayText {
+impl VectorText {
     pub fn get_data(&self) -> Vec<String> {
         match self {
             Self::Data(data) => data.to_vec(),
         }
     }
 }
-/// Array - I64
+/// Vector - I64
 #[derive(Debug, Clone)]
-pub enum ArrayI64 {
+pub enum VectorI64 {
     Data(Vec<i64>),
 }
-impl Default for ArrayI64 {
+impl Default for VectorI64 {
     fn default() -> Self {
-        ArrayI64::Data(vec![])
+        VectorI64::Data(vec![])
     }
 }
-impl ArrayI64 {
+impl VectorI64 {
     pub fn get_data(&self) -> Vec<i64> {
         match self {
             Self::Data(data) => data.to_vec(),
         }
     }
 }
-/// Array - U64
+/// Vector - U64
 #[derive(Debug, Clone)]
-pub enum ArrayU64 {
+pub enum VectorU64 {
     Data(Vec<u64>),
 }
-impl Default for ArrayU64 {
+impl Default for VectorU64 {
     fn default() -> Self {
-        ArrayU64::Data(vec![])
+        VectorU64::Data(vec![])
     }
 }
-impl ArrayU64 {
+impl VectorU64 {
     pub fn get_data(&self) -> Vec<u64> {
         match self {
             Self::Data(data) => data.to_vec(),
         }
     }
 }
-/// Array - F64
+/// Vector - F64
 #[derive(Debug, Clone)]
-pub enum ArrayF64 {
+pub enum VectorF64 {
     Data(Vec<f64>),
 }
-impl Default for ArrayF64 {
+impl Default for VectorF64 {
     fn default() -> Self {
-        ArrayF64::Data(vec![])
+        VectorF64::Data(vec![])
     }
 }
-impl ArrayF64 {
+impl VectorF64 {
     pub fn get_data(&self) -> Vec<f64> {
         match self {
             Self::Data(data) => data.to_vec(),
@@ -291,16 +291,16 @@ mod tests {
         assert_eq!(PrimitiveType::Bool(true).get_data(), true.to_string());
     }
 
-    // Testing Array types -------------------------------------------------------------------------
+    // Testing Vector types -------------------------------------------------------------------------
     #[test]
-    fn test_array_types() {
+    fn test_vector_types() {
         assert_eq!(
-            ArrayText::Data(vec!["1".to_string(), "2".to_string()]).get_data(),
+            VectorText::Data(vec!["1".to_string(), "2".to_string()]).get_data(),
             vec!["1".to_string(), "2".to_string()]
         );
-        assert_eq!(ArrayI64::Data(vec![1, -2]).get_data(), vec![1, -2]);
-        assert_eq!(ArrayU64::Data(vec![1, 2]).get_data(), vec![1, 2]);
-        assert_eq!(ArrayF64::Data(vec![1.0, 2.0]).get_data(), vec![1.0, 2.0]);
+        assert_eq!(VectorI64::Data(vec![1, -2]).get_data(), vec![1, -2]);
+        assert_eq!(VectorU64::Data(vec![1, 2]).get_data(), vec![1, 2]);
+        assert_eq!(VectorF64::Data(vec![1.0, 2.0]).get_data(), vec![1.0, 2.0]);
     }
 
     // Testing Transport structure -----------------------------------------------------------------
