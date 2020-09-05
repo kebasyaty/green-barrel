@@ -166,7 +166,7 @@ pub struct Transport {
 /// <input type="url">
 /// <select></select>
 /// <textarea></textarea>
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
@@ -180,6 +180,25 @@ pub struct Widget {
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, DataType)>,
+}
+
+impl Default for Widget {
+    fn default() -> Self {
+        Widget {
+            label: String::new(),
+            field_type: FieldType::default(),
+            relation_model: RelationModel::default(),
+            value: DataType::default(),
+            maxlength: 0_u32,
+            required: true,
+            hint: String::new(),
+            unique: false,
+            hidden: false,
+            other_attrs: String::new(),
+            some_classes: String::new(),
+            select: vec![],
+        }
+    }
 }
 
 impl Widget {

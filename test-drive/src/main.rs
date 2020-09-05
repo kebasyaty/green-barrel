@@ -1,6 +1,6 @@
 use mango_orm::forms::Form;
 use mango_orm::models::Model;
-use mango_orm::widgets::{DataType, FieldType, Widget};
+use mango_orm::widgets::{DataType, FieldType, RelationModel, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
