@@ -60,6 +60,7 @@ impl FieldType {
 }
 
 /// Relation model types ---------------------------------------------------------------------------
+#[derive(Debug, Clone)]
 pub enum RelationModel<T> {
     ForeignKey(Option<T>),
     ManyToMany(Option<T>),
