@@ -66,13 +66,13 @@ pub enum RelationModel<T> {
     OneToOne(Option<T>),
 }
 impl<T> RelationModel<T> {
-    pub fn get_model(&self) -> <T> {
+    pub fn get_model(&self) -> Option<&T> {
         match self {
-            Self::ForeignKey(model) => model,
-            Self::ManyToMany(model) => model,
-            Self::OneToOne(model) => model,
+            Self::ForeignKey(model) => model.as_ref(),
+            Self::ManyToMany(model) => model.as_ref(),
+            Self::OneToOne(model) => model.as_ref(),
         }
-    } 
+    }
 }
 
 /// Primitive types for the `value` attribute ------------------------------------------------------
