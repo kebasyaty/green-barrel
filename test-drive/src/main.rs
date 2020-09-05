@@ -56,7 +56,7 @@ impl Form for User {
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
-                other_attrs: format!("placeholder=\"{}\" step=\"{}\"", "Test all attrs", 0.01),
+                other_attrs: format!("placeholder=\"{}\"", "Test all attrs"),
                 some_classes: "class-name class-name-2".to_string(),
                 select: vec![
                     ("Mercury".to_string(), DataType::F64(3.302)),
