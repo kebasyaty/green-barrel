@@ -59,7 +59,7 @@ impl FieldType {
     }
 }
 
-/// Data types for the `value` attribute -----------------------------------------------------------
+/// Primitive types for the `value` attribute ------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum PrimitiveType {
     Text(String),
@@ -85,7 +85,7 @@ impl PrimitiveType {
     }
 }
 
-/// Array types ------------------------------------------------------------------------------------
+/// Array types for the `value` attribute ----------------------------------------------------------
 /// Array - Text
 #[derive(Debug, Clone)]
 pub enum ArrayText {
