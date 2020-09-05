@@ -60,23 +60,29 @@ impl FieldType {
 }
 
 /// Relation model types ---------------------------------------------------------------------------
+pub struct StubModel;
 #[derive(Debug, Clone)]
 pub enum RelationModel<T> {
-    ForeignKey(Option<T>),
-    ManyToMany(Option<T>),
-    OneToOne(Option<T>),
+    ForeignKey(T),
+    ManyToMany(T),
+    OneToOne(T),
+}
+impl<T> Default for RelationModel<T> {
+    fn default() -> Self {
+        RelationModel::ForeignKey(StubModel)
+    }
 }
 impl<T> RelationModel<T> {
-    pub fn get_model(&self) -> Option<&T> {
+    pub fn get_model(&self) -> &T {
         match self {
-            Self::ForeignKey(model) => model.as_ref(),
-            Self::ManyToMany(model) => model.as_ref(),
-            Self::OneToOne(model) => model.as_ref(),
+            Self::ForeignKey(model) => model,
+            Self::ManyToMany(model) => model,
+            Self::OneToOne(model) => model,
         }
     }
 }
 
-/// Data types for the `value` attribute ------------------------------------------------------
+/// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum DataType {
     Text(String),
@@ -164,7 +170,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    // pub relation_model: RelationModel,
+    pub relation_model: RelationModel,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -245,7 +251,7 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
     }
 
-    // Testing Data types ---------------------------------------------------------------------
+    // Testing Data types --------------------------------------------------------------------------
     #[test]
     fn test_data_types() {
         assert_eq!(
