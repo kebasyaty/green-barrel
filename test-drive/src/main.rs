@@ -5,17 +5,22 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct User<T> {
-    pub username: String,
-    pub email: String,
-    pub categories: Vec<T>,
+pub struct CategoryName {
+    pub title: String,
 }
 
-impl<T> Model for User<T> {
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct User {
+    pub username: String,
+    pub email: String,
+    pub categories: Vec<String>,
+}
+
+impl Model for User {
     //
 }
 
-impl<T> Form for User<T> {
+impl Form for User {
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
@@ -48,6 +53,7 @@ impl<T> Form for User<T> {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
+                relation_model_name: "CategoryName".to_string(),
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
