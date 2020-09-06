@@ -59,7 +59,7 @@ impl FieldType {
     }
 }
 
-/// Relation tokens types --------------------------------------------------------------------------
+/// Relation tokens types for relation models ------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum RelationToken {
     ForeignKey(String),
@@ -271,6 +271,24 @@ mod tests {
         assert_eq!(FieldType::ForeignKey.get_type(), "select".to_string());
         assert_eq!(FieldType::ManyToMany.get_type(), "select".to_string());
         assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
+    }
+
+    // Testing Relation tokens types for relation models -------------------------------------------
+    #[test]
+    fn test_relation_token() {
+        assert_eq!(
+            RelationToken::ForeignKey("m2o".to_string()).get_token(),
+            "m2o".to_string()
+        );
+        assert_eq!(
+            RelationToken::ManyToMany("m2m".to_string()).get_token(),
+            "m2m".to_string()
+        );
+        assert_eq!(
+            RelationToken::OneToOne("o2o".to_string()).get_token(),
+            "o2o".to_string()
+        );
+        assert_eq!(RelationToken::StubToken.get_token(), String::new());
     }
 
     // Testing Data types --------------------------------------------------------------------------
