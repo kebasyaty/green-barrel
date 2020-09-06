@@ -59,25 +59,26 @@ impl FieldType {
     }
 }
 
-/// Relation model types ---------------------------------------------------------------------------
+/// Relation tokens types --------------------------------------------------------------------------
 #[derive(Debug, Clone)]
-pub enum RelationModel<T> {
-    ForeignKey(T),
-    ManyToMany(T),
-    OneToOne(T),
-    StubModel,
+pub enum RelationToken {
+    ForeignKey(String),
+    ManyToMany(String),
+    OneToOne(String),
+    StubToken,
 }
-impl<T> Default for RelationModel<T> {
+impl Default for RelationToken {
     fn default() -> Self {
-        RelationModel::StubModel
+        RelationToken::StubToken
     }
 }
-impl<T> RelationModel<T> {
-    pub fn get_model(&self) -> &T {
+impl RelationToken {
+    pub fn get_token(&self) -> String {
         match self {
-            Self::ForeignKey(model) => model,
-            Self::ManyToMany(model) => model,
-            Self::OneToOne(model) => model,
+            Self::ForeignKey(model) => model.to_string(),
+            Self::ManyToMany(model) => model.to_string(),
+            Self::OneToOne(model) => model.to_string(),
+            Self::StubToken => String::new(),
         }
     }
 }
@@ -134,6 +135,7 @@ pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,
     pub field_type: String,
+    pub relation_token: String,
     pub name: String,
     pub value: String,
     pub maxlength: u32,
@@ -170,7 +172,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    pub relation_model: RelationModel,
+    pub relation_token: RelationToken,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -187,7 +189,7 @@ impl Default for Widget {
         Widget {
             label: String::new(),
             field_type: FieldType::default(),
-            relation_model: RelationModel::default(),
+            relation_token: RelationToken::default(),
             value: DataType::default(),
             maxlength: 0_u32,
             required: true,
@@ -224,6 +226,7 @@ impl Widget {
             id: name.to_string(),
             label: self.label.clone(),
             field_type: field_type,
+            relation_token: self.relation_token.get_token(),
             name: name.to_string(),
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
@@ -307,6 +310,7 @@ mod tests {
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
+        assert_eq!(trans.relation_token, String::new());
         assert_eq!(trans.name, String::new());
         assert_eq!(trans.value, String::new());
         assert_eq!(trans.maxlength, 0);
@@ -332,11 +336,15 @@ mod tests {
             FieldType::InputText.get_type()
         );
         assert_eq!(
+            widget.relation_token.get_token(),
+            RelationToken::StubToken.get_token()
+        );
+        assert_eq!(
             widget.value.get_data(),
             DataType::Text(String::new()).get_data()
         );
         assert_eq!(widget.maxlength, 0);
-        assert_eq!(widget.required, false);
+        assert_eq!(widget.required, true);
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
@@ -351,10 +359,11 @@ mod tests {
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
         assert_eq!(attrs.field_type, "text".to_string());
+        assert_eq!(attrs.relation_token, String::new());
         assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
-        assert_eq!(attrs.required, false);
+        assert_eq!(attrs.required, true);
         assert_eq!(attrs.checked, false);
         assert_eq!(attrs.hint, String::new());
         assert_eq!(attrs.unique, false);
