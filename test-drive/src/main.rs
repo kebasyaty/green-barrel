@@ -54,22 +54,10 @@ impl<T> Form for User<T> {
                 other_attrs: format!("placeholder=\"{}\"", "Test all attrs"),
                 some_classes: "class-name class-name-2".to_string(),
                 select: vec![
-                    (
-                        "Category name 1".to_string(),
-                        DataType::Text("1".to_string()),
-                    ),
-                    (
-                        "Category name 2".to_string(),
-                        DataType::Text("2".to_string()),
-                    ),
-                    (
-                        "Category name 3".to_string(),
-                        DataType::Text("3".to_string()),
-                    ),
-                    (
-                        "Category name 4".to_string(),
-                        DataType::Text("4".to_string()),
-                    ),
+                    ("Doc name 1".to_string(), DataType::Text("id-1".to_string())),
+                    ("Doc name 2".to_string(), DataType::Text("id-2".to_string())),
+                    ("Doc name 3".to_string(), DataType::Text("id-3".to_string())),
+                    ("Doc name 4".to_string(), DataType::Text("id-4".to_string())),
                 ],
                 ..Default::default()
             },
@@ -83,10 +71,10 @@ fn main() {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
         categories: vec![
-            "1".to_string(),
-            "2".to_string(),
-            "3".to_string(),
-            "4".to_string(),
+            "id-1".to_string(),
+            "id-2".to_string(),
+            "id-3".to_string(),
+            "id-4".to_string(),
         ],
     };
 
