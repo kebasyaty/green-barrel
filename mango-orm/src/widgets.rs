@@ -59,30 +59,6 @@ impl FieldType {
     }
 }
 
-/// Relation tokens types for relation models ------------------------------------------------------
-#[derive(Debug, Clone)]
-pub enum RelationToken {
-    ForeignKey(String),
-    ManyToMany(String),
-    OneToOne(String),
-    StubToken,
-}
-impl Default for RelationToken {
-    fn default() -> Self {
-        RelationToken::StubToken
-    }
-}
-impl RelationToken {
-    pub fn get_token(&self) -> String {
-        match self {
-            Self::ForeignKey(model) => model.to_string(),
-            Self::ManyToMany(model) => model.to_string(),
-            Self::OneToOne(model) => model.to_string(),
-            Self::StubToken => String::new(),
-        }
-    }
-}
-
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone)]
 pub enum DataType {
@@ -135,7 +111,6 @@ pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,
     pub field_type: String,
-    pub relation_token: String,
     pub name: String,
     pub value: String,
     pub maxlength: u32,
@@ -172,7 +147,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    pub relation_token: RelationToken,
+    pub relation_model_name: String,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -189,7 +164,7 @@ impl Default for Widget {
         Widget {
             label: String::new(),
             field_type: FieldType::default(),
-            relation_token: RelationToken::default(),
+            relation_model_name: String::new(),
             value: DataType::default(),
             maxlength: 0_u32,
             required: true,
@@ -226,7 +201,6 @@ impl Widget {
             id: name.to_string(),
             label: self.label.clone(),
             field_type: field_type,
-            relation_token: self.relation_token.get_token(),
             name: name.to_string(),
             value: self.value.get_data(),
             maxlength: self.maxlength.clone(),
@@ -273,24 +247,6 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
     }
 
-    // Testing Relation tokens types for relation models -------------------------------------------
-    #[test]
-    fn test_relation_token() {
-        assert_eq!(
-            RelationToken::ForeignKey("m2o".to_string()).get_token(),
-            "m2o".to_string()
-        );
-        assert_eq!(
-            RelationToken::ManyToMany("m2m".to_string()).get_token(),
-            "m2m".to_string()
-        );
-        assert_eq!(
-            RelationToken::OneToOne("o2o".to_string()).get_token(),
-            "o2o".to_string()
-        );
-        assert_eq!(RelationToken::StubToken.get_token(), String::new());
-    }
-
     // Testing Data types --------------------------------------------------------------------------
     #[test]
     fn test_data_types() {
@@ -328,7 +284,6 @@ mod tests {
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
-        assert_eq!(trans.relation_token, String::new());
         assert_eq!(trans.name, String::new());
         assert_eq!(trans.value, String::new());
         assert_eq!(trans.maxlength, 0);
@@ -353,10 +308,7 @@ mod tests {
             widget.field_type.get_type(),
             FieldType::InputText.get_type()
         );
-        assert_eq!(
-            widget.relation_token.get_token(),
-            RelationToken::StubToken.get_token()
-        );
+        assert_eq!(widget.relation_model_name, String::new());
         assert_eq!(
             widget.value.get_data(),
             DataType::Text(String::new()).get_data()
@@ -377,7 +329,6 @@ mod tests {
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
         assert_eq!(attrs.field_type, "text".to_string());
-        assert_eq!(attrs.relation_token, String::new());
         assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
