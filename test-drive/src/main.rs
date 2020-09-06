@@ -53,7 +53,7 @@ impl Form for User {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                relation_model_name: "CategoryName".to_string(),
+                relation_model_name: "CategoryName",
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
