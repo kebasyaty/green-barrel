@@ -4,6 +4,8 @@ use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+pub mod settings;
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct CategoryInfo {
     pub title: String,
@@ -11,6 +13,7 @@ pub struct CategoryInfo {
 impl Model for CategoryInfo {
     fn meta() -> Meta {
         Meta {
+            db_name: settings::DB_NAME,
             collection: "category_name",
         }
     }
@@ -43,7 +46,10 @@ pub struct UserInfo {
 }
 impl Model for UserInfo {
     fn meta() -> Meta {
-        Meta { collection: "user" }
+        Meta {
+            db_name: settings::DB_NAME,
+            collection: "user",
+        }
     }
 }
 impl Form for UserInfo {

@@ -13,6 +13,7 @@ pub struct UserInfo {
 impl Model for UserInfo {
     fn meta() -> Meta {
         Meta {
+            db_name: "dev_db",
             collection: "category_name",
         }
     }
