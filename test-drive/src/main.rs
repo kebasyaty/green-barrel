@@ -8,6 +8,28 @@ use std::collections::HashMap;
 pub struct CategoryName {
     pub title: String,
 }
+impl Model for CategoryName {
+    //
+}
+impl Form for CategoryName {
+    fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
+        // Map of matching fields and widgets.
+        let mut raw_attrs = HashMap::new();
+        raw_attrs.insert(
+            "title",
+            Widget {
+                label: "Category Name".to_string(),
+                field_type: FieldType::InputText,
+                value: DataType::Text(String::new()),
+                maxlength: 40,
+                hint: "Please enter Category name.".to_string(),
+                other_attrs: format!("placeholder=\"{}\"", "Category Name"),
+                ..Default::default()
+            },
+        );
+        raw_attrs
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct User {
@@ -15,11 +37,9 @@ pub struct User {
     pub email: String,
     pub categories: Vec<String>,
 }
-
 impl Model for User {
     //
 }
-
 impl Form for User {
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
