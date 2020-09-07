@@ -11,6 +11,7 @@ pub struct CategoryInfo {
     pub title: String,
 }
 impl Model for CategoryInfo {
+    // Metadata
     fn meta() -> Meta {
         Meta {
             db_name: settings::DB_NAME,
@@ -45,6 +46,7 @@ pub struct UserInfo {
     pub categories: Vec<String>,
 }
 impl Model for UserInfo {
+    // Metadata
     fn meta() -> Meta {
         Meta {
             db_name: settings::DB_NAME,
