@@ -1,17 +1,21 @@
 use mango_orm::forms::Form;
-use mango_orm::models::Model;
+use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct CategoryName {
+pub struct CategoryInfo {
     pub title: String,
 }
-impl Model for CategoryName {
-    //
+impl Model for CategoryInfo {
+    fn meta() -> Meta {
+        Meta {
+            collection: "category_name",
+        }
+    }
 }
-impl Form for CategoryName {
+impl Form for CategoryInfo {
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
@@ -32,15 +36,17 @@ impl Form for CategoryName {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct User {
+pub struct UserInfo {
     pub username: String,
     pub email: String,
     pub categories: Vec<String>,
 }
-impl Model for User {
-    //
+impl Model for UserInfo {
+    fn meta() -> Meta {
+        Meta { collection: "user" }
+    }
 }
-impl Form for User {
+impl Form for UserInfo {
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
@@ -73,7 +79,7 @@ impl Form for User {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                relation_model_name: "CategoryName",
+                relation_model_name: "CategoryInfo",
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
@@ -93,7 +99,7 @@ impl Form for User {
 }
 
 fn main() {
-    let test_model = User {
+    let test_model = UserInfo {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
         categories: vec![
