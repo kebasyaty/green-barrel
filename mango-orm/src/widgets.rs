@@ -147,7 +147,7 @@ pub struct Transport {
 pub struct Widget {
     pub label: String,
     pub field_type: FieldType,
-    pub relation_model_name: &'static str,
+    pub relation_model_name: String,
     pub value: DataType,
     pub maxlength: u32,
     pub required: bool,
@@ -164,7 +164,7 @@ impl Default for Widget {
         Widget {
             label: String::new(),
             field_type: FieldType::default(),
-            relation_model_name: "",
+            relation_model_name: String::new(),
             value: DataType::default(),
             maxlength: 0_u32,
             required: true,
@@ -308,7 +308,7 @@ mod tests {
             widget.field_type.get_type(),
             FieldType::InputText.get_type()
         );
-        assert_eq!(widget.relation_model_name, "");
+        assert_eq!(widget.relation_model_name, String::new());
         assert_eq!(
             widget.value.get_data(),
             DataType::Text(String::new()).get_data()
