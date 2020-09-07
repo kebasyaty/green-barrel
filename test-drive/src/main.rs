@@ -79,7 +79,7 @@ impl Form for UserInfo {
             Widget {
                 label: "Your Email".to_string(),
                 field_type: FieldType::ManyToMany,
-                relation_model_name: CategoryInfo::meta().collection.to_string(),
+                relation_model: CategoryInfo::meta().collection.to_string(),
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
@@ -110,5 +110,6 @@ fn main() {
         ],
     };
 
+    println!("{:?}\n", test_model.raw_attrs());
     println!("{:?}", test_model.form_attrs());
 }
