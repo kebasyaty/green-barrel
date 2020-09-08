@@ -1,4 +1,5 @@
 use actix_web::{web, HttpResponse, Responder};
+use mango_orm::models::Model;
 use tera::{Context, Tera};
 
 use super::super::settings;
