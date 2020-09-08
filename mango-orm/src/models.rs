@@ -16,10 +16,10 @@ pub trait Model {
     // Metadata (database name, collection name, etc)
     fn meta() -> Meta;
     // Get raw attributes for further processing
-    fn raw_attrs(&self) -> HashMap<&'static str, Widget>;
+    fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Get pure attributes for a page templating engine
-    fn form_attrs(&self) -> HashMap<String, Transport> {
-        let raw_attrs = self.raw_attrs();
+    fn form_attrs() -> HashMap<String, Transport> {
+        let raw_attrs = Self::raw_attrs();
         let mut clean_attrs = HashMap::new();
         for (field, widget) in &raw_attrs {
             clean_attrs.insert(field.to_string(), widget.get_clean_attrs(field));
@@ -27,9 +27,9 @@ pub trait Model {
         clean_attrs
     }
     // Checking Models and creating migrations to the Database.
-    fn migrat(&self) {
+    fn migrat() {
         println!("{}", Self::meta().collection.to_string());
-        println!("{:?}", Self::raw_attrs(&self));
+        println!("{:?}", Self::raw_attrs());
     }
 }
 

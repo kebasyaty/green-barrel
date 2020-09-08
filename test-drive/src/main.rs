@@ -1,9 +1,7 @@
-use mango_orm::models::Model;
-
 pub mod mango_models;
 
 fn main() {
-    let test_model = mango_models::User {
+    let user = mango_models::User {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
         categories: vec![
@@ -14,6 +12,6 @@ fn main() {
         ],
     };
 
-    println!("{:?}\n", test_model.raw_attrs());
-    println!("{:?}", test_model.form_attrs());
+    println!("{:?}\n", user::raw_attrs());
+    println!("{:?}", user::form_attrs());
 }
