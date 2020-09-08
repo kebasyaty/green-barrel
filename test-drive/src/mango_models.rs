@@ -80,7 +80,7 @@ impl Model for User {
             },
         );
         raw_attrs.insert(
-            "categories",
+            "title",
             Widget {
                 label: "Select Categories".to_string(),
                 field_type: FieldType::ManyToMany,
