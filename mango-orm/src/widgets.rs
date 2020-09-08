@@ -189,6 +189,13 @@ impl Widget {
             DataType::Bool(data) => data,
             _ => false,
         };
+        let other_attrs = match self.field_type {
+            FieldType::ManyToMany => match self.other_attrs.contains("multiple") {
+                true => self.other_attrs.clone(),
+                false => format!("multiple {}", self.other_attrs),
+            },
+            _ => self.other_attrs.clone(),
+        };
 
         Transport {
             id: name.to_string(),
@@ -201,7 +208,7 @@ impl Widget {
             checked: checked,
             hint: self.hint.clone(),
             unique: self.unique.clone(),
-            other_attrs: self.other_attrs.clone(),
+            other_attrs: other_attrs,
             some_classes: self.some_classes.clone(),
             select: self
                 .select
