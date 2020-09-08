@@ -1,4 +1,3 @@
-use mango_orm::forms::Form;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
@@ -6,19 +5,18 @@ use std::collections::HashMap;
 
 // User --------------------------------------------------------------------------------------------
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct UserInfo {
+pub struct User {
     pub username: String,
     pub email: String,
 }
-impl Model for UserInfo {
+impl Model for User {
     fn meta() -> Meta {
         Meta {
             db_name: "dev_db",
             collection: "category_name",
         }
     }
-}
-impl Form for UserInfo {
+    //
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();

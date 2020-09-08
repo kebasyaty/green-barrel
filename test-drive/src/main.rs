@@ -1,4 +1,3 @@
-use mango_orm::forms::Form;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
@@ -7,10 +6,10 @@ use std::collections::HashMap;
 pub mod settings;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct CategoryInfo {
+pub struct Category {
     pub title: String,
 }
-impl Model for CategoryInfo {
+impl Model for Category {
     // Metadata
     fn meta() -> Meta {
         Meta {
@@ -18,8 +17,7 @@ impl Model for CategoryInfo {
             collection: "category_name",
         }
     }
-}
-impl Form for CategoryInfo {
+    //
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
@@ -40,12 +38,12 @@ impl Form for CategoryInfo {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct UserInfo {
+pub struct User {
     pub username: String,
     pub email: String,
     pub categories: Vec<String>,
 }
-impl Model for UserInfo {
+impl Model for User {
     // Metadata
     fn meta() -> Meta {
         Meta {
@@ -53,8 +51,7 @@ impl Model for UserInfo {
             collection: "user",
         }
     }
-}
-impl Form for UserInfo {
+    //
     fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
@@ -85,13 +82,13 @@ impl Form for UserInfo {
         raw_attrs.insert(
             "categories",
             Widget {
-                label: "Your Email".to_string(),
+                label: "Select Categories".to_string(),
                 field_type: FieldType::ManyToMany,
-                relation_model: CategoryInfo::meta().collection.to_string(),
+                relation_model: Category::meta().collection.to_string(),
                 hidden: true,
                 hint: "Test all attrs.".to_string(),
                 unique: true,
-                other_attrs: format!("placeholder=\"{}\"", "Test all attrs"),
+                other_attrs: format!("multiple placeholder=\"{}\"", "Select Categories"),
                 some_classes: "class-name class-name-2".to_string(),
                 select: vec![
                     ("Doc name 1".to_string(), DataType::Text("id-1".to_string())),
@@ -107,7 +104,7 @@ impl Form for UserInfo {
 }
 
 fn main() {
-    let test_model = UserInfo {
+    let test_model = User {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
         categories: vec![
