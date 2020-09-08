@@ -1,3 +1,5 @@
+use mango_orm::models::Model;
+
 pub mod mango_models;
 
 fn main() {
@@ -12,6 +14,7 @@ fn main() {
         ],
     };
 
-    println!("{:?}\n", user::raw_attrs());
-    println!("{:?}", user::form_attrs());
+    println!("{:?}\n", user);
+    println!("{:?}\n", mango_models::User::raw_attrs());
+    println!("{:?}", mango_models::User::form_attrs());
 }

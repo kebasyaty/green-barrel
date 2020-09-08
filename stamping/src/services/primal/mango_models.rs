@@ -17,7 +17,7 @@ impl Model for User {
         }
     }
     //
-    fn raw_attrs(&self) -> HashMap<&'static str, Widget> {
+    fn raw_attrs() -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
