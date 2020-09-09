@@ -24,7 +24,7 @@ mod tests {
             }])
             .build();
 
-        let client = Client::with_options(client_options)?;
+        let client: Client = Client::with_options(client_options)?;
 
         for db_name in client.list_database_names(None, None).await? {
             println!("{}", db_name);

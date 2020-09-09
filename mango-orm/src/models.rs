@@ -3,6 +3,7 @@
 //! Abstract Model methods for creating collections and interacting with the database.
 
 use crate::widgets::{Transport, Widget};
+use mongodb::Client;
 use std::collections::HashMap;
 
 // MODELS ==========================================================================================
@@ -27,7 +28,7 @@ pub trait Model {
         clean_attrs
     }
     // Checking Models and creating migrations to the Database.
-    fn migrat() {
+    fn migrat(_client: &Client) {
         let _meta: Meta = Self::meta();
         let _attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
     }

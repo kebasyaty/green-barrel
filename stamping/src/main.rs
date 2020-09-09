@@ -5,6 +5,10 @@ use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use chrono;
 use env_logger;
 use mango_orm::models::Model;
+use mongodb::{
+    options::{ClientOptions, StreamAddress},
+    Client,
+};
 use tera::Tera;
 
 // Application settings
@@ -15,7 +19,15 @@ pub mod specific;
 pub mod services;
 
 fn migration() {
-    services::primal::mango_models::User::migrat();
+    let client_options = ClientOptions::builder()
+        .hosts(vec![StreamAddress {
+            hostname: "localhost".into(),
+            port: Some(27017),
+        }])
+        .build();
+
+    let client = Client::with_options(client_options).unwrap();
+    services::primal::mango_models::User::migrat(&client);
 }
 
 #[actix_rt::main]

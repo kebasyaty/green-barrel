@@ -1,10 +1,22 @@
 use mango_orm::models::Model;
+use mongodb::{
+    options::{ClientOptions, StreamAddress},
+    Client,
+};
 
 mod mango_models;
 
 fn migration() {
-    mango_models::Category::migrat();
-    mango_models::User::migrat();
+    let client_options = ClientOptions::builder()
+        .hosts(vec![StreamAddress {
+            hostname: "localhost".into(),
+            port: Some(27017),
+        }])
+        .build();
+
+    let client = Client::with_options(client_options).unwrap();
+    mango_models::Category::migrat(&client);
+    mango_models::User::migrat(&client);
 }
 
 fn main() {
