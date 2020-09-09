@@ -29,7 +29,7 @@ pub trait Model {
     // Checking Models and creating migrations to the Database.
     fn migrat() {
         let meta: Meta = Self::meta();
-        let attrs = Self::raw_attrs();
+        let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
         println!("{}", meta.database.to_string());
         println!("{}", meta.collection.to_string());
         println!("{:?}", attrs);
