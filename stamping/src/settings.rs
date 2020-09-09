@@ -6,7 +6,9 @@ pub use default_settings::*;
 
 // DEFAULT SETTINGS ================================================================================
 pub mod default_settings {
+    // Development status
     pub static DEBUG: bool = true;
+    // Project
     pub static PROJECT_NAME: &str = "Example";
     // Http Server
     pub static LOCAL_DOMAIN: &str = "127.0.0.1";
@@ -16,7 +18,7 @@ pub mod default_settings {
     // Database
     pub static DB_HOSTNAME: &str = "localhost";
     pub static DB_PORT: u16 = 27017;
-    // 2.016 mb
+    // Max size of loaded content for Form and Json - 2.016 mb
     pub static MAX_UPLOAD_SIZE: usize = (2.016 * 1024.0 * 1024.0) as usize;
     // Security
     // http://www.miniwebtool.com/django-secret-key-generator/
