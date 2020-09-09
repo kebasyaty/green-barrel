@@ -4,6 +4,7 @@ use actix_session::CookieSession;
 use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use chrono;
 use env_logger;
+use mango_orm::models::Model;
 use tera::Tera;
 
 // Application settings
@@ -13,8 +14,14 @@ pub mod specific;
 // Services (sub-apps)
 pub mod services;
 
+fn migration() {
+    services::primal::mango_models::User::migrat();
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    // Run migrations
+    migration();
     // Init logger middleware (debug, error, info, trace)
     std::env::set_var("RUST_LOG", "actix_web=info,actix_server=info");
     env_logger::init();
