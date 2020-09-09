@@ -31,6 +31,7 @@ pub trait Model {
     fn migrat(_client: &Client) {
         let _meta: Meta = Self::meta();
         let _attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+        println!("Heollo Migration!")
     }
 }
 
