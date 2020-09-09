@@ -1,7 +1,0 @@
-User-Agent: *
-Disallow: /admin
-Disallow: /static
-Disallow: /media
-Allow: /
-Host: {{ host }}
-Sitemap: {{ scheme }}://{{ host }}/sitemap.xml
