@@ -2,7 +2,15 @@ use mango_orm::models::Model;
 
 mod mango_models;
 
+fn migration() {
+    mango_models::Category::migrat();
+    mango_models::User::migrat();
+}
+
 fn main() {
+    // Run migrations
+    migration();
+
     let user = mango_models::User {
         username: "Some text".to_string(),
         email: "some@some.net".to_string(),
@@ -14,7 +22,7 @@ fn main() {
         ],
     };
 
-    println!("{:?}\n", user);
+    println!("\n\n{:?}\n", user);
     println!("{:?}\n", mango_models::User::raw_attrs());
     println!("{:?}", mango_models::User::form_attrs());
 }
