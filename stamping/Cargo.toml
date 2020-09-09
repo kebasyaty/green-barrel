@@ -1,6 +1,6 @@
 [package]
 authors = ["kebasyaty <kebasyaty@gmail.com>"]
-# default-run = "stamping"
+default-run = "stamping"
 edition = "2018"
 name = "stamping"
 version = "0.1.0"
@@ -21,9 +21,9 @@ str_slug = "0.1.3"
 
 mango-orm = {path = "../mango-orm"}
 
-[dependencies.tera]
-version = "1.5.0"
-
 [dependencies.serde]
 features = ["derive"]
 version = "1.0.115"
+
+[dependencies.tera]
+version = "1.5.0"

@@ -14,14 +14,14 @@ pub mod specific;
 // Services (sub-apps)
 pub mod services;
 
-fn migration() {
+pub fn migration() {
     services::primal::mango_models::User::migrat();
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Run migrations
-    migration();
+    // migration();
     // Init logger middleware (debug, error, info, trace)
     std::env::set_var("RUST_LOG", "actix_web=info,actix_server=info");
     env_logger::init();
