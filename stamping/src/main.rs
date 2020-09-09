@@ -25,7 +25,6 @@ fn migration() {
             port: Some(27017),
         }])
         .build();
-
     let client = Client::with_options(client_options).unwrap();
     // Models
     services::primal::mango_models::User::migrat(&client);
