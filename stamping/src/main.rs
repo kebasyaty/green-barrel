@@ -21,8 +21,8 @@ pub mod services;
 fn migration() {
     let client_options = ClientOptions::builder()
         .hosts(vec![StreamAddress {
-            hostname: "localhost".into(),
-            port: Some(27017),
+            hostname: settings::DB_HOSTNAME.into(),
+            port: Some(settings::DB_PORT),
         }])
         .build();
     let client = Client::with_options(client_options).unwrap();
