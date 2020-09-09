@@ -3,7 +3,6 @@ use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-// Database name
 const DATABASE: &str = "dev_db";
 
 #[derive(Serialize, Deserialize, Debug, Default)]

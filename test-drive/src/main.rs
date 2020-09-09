@@ -1,7 +1,6 @@
 use mango_orm::models::Model;
 
 mod mango_models;
-mod settings;
 
 fn main() {
     let user = mango_models::User {
