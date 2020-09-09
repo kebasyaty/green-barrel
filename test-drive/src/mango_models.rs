@@ -13,7 +13,7 @@ impl Model for Category {
     // Metadata
     fn meta() -> Meta {
         Meta {
-            db_name: DB_NAME,
+            database: DB_NAME,
             collection: "category_name",
         }
     }
@@ -47,7 +47,7 @@ impl Model for User {
     // Metadata
     fn meta() -> Meta {
         Meta {
-            db_name: DB_NAME,
+            database: DB_NAME,
             collection: "user",
         }
     }

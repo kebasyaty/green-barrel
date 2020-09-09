@@ -8,7 +8,7 @@ use std::collections::HashMap;
 // MODELS ==========================================================================================
 /// Metadata
 pub struct Meta {
-    pub db_name: &'static str,
+    pub database: &'static str,
     pub collection: &'static str,
 }
 /// Abstract Model ---------------------------------------------------------------------------------
