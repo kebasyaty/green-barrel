@@ -3,7 +3,8 @@ use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-const DB_NAME: &str = "dev_db";
+// Database name
+const DATABASE: &str = "dev_db";
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Category {
@@ -13,7 +14,7 @@ impl Model for Category {
     // Metadata
     fn meta() -> Meta {
         Meta {
-            database: DB_NAME,
+            database: DATABASE,
             collection: "category_name",
         }
     }
@@ -47,7 +48,7 @@ impl Model for User {
     // Metadata
     fn meta() -> Meta {
         Meta {
-            database: DB_NAME,
+            database: DATABASE,
             collection: "user",
         }
     }
