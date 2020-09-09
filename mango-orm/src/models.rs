@@ -28,8 +28,11 @@ pub trait Model {
     }
     // Checking Models and creating migrations to the Database.
     fn migrat() {
-        println!("{}", Self::meta().collection.to_string());
-        println!("{:?}", Self::raw_attrs());
+        let meta: Meta = Self::meta();
+        let attrs = Self::raw_attrs();
+        println!("{}", meta.database.to_string());
+        println!("{}", meta.collection.to_string());
+        println!("{:?}", attrs);
     }
 }
 
