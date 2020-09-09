@@ -15,6 +15,7 @@ fn migration() {
         .build();
 
     let client = Client::with_options(client_options).unwrap();
+    // Models
     mango_models::Category::migrat(&client);
     mango_models::User::migrat(&client);
 }
