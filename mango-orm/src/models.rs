@@ -30,9 +30,6 @@ pub trait Model {
     fn migrat() {
         let meta: Meta = Self::meta();
         let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-        println!("{}", meta.database.to_string());
-        println!("{}", meta.collection.to_string());
-        println!("{:?}", attrs);
     }
 }
 
