@@ -3,10 +3,11 @@ use mongodb::{
     options::{ClientOptions, StreamAddress},
     Client,
 };
+// use tokio::runtime::Runtime;
 
 mod mango_models;
 
-fn migration() {
+async fn migration() {
     let client_options = ClientOptions::builder()
         .hosts(vec![StreamAddress {
             hostname: "localhost".into(),
@@ -15,13 +16,14 @@ fn migration() {
         .build();
     let client = Client::with_options(client_options).unwrap();
     // Models
-    mango_models::Category::migrat(&client);
-    mango_models::User::migrat(&client);
+    mango_models::Category::migrat(client.clone()).await;
+    mango_models::User::migrat(client.clone()).await;
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // Run migrations
-    migration();
+    migration().await;
 
     let user = mango_models::User {
         username: "Some text".to_string(),

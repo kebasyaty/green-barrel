@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
@@ -9,6 +10,7 @@ const DATABASE: &str = "dev_db";
 pub struct Category {
     pub title: String,
 }
+#[async_trait]
 impl Model for Category {
     // Metadata
     fn meta() -> Meta {
@@ -43,6 +45,7 @@ pub struct User {
     pub email: String,
     pub categories: Vec<String>,
 }
+#[async_trait]
 impl Model for User {
     // Metadata
     fn meta() -> Meta {

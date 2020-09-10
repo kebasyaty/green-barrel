@@ -3,6 +3,7 @@
 //! Abstract Model methods for creating collections and interacting with the database.
 
 use crate::widgets::{Transport, Widget};
+use async_trait::async_trait;
 use mongodb::Client;
 use std::collections::HashMap;
 
@@ -13,6 +14,7 @@ pub struct Meta {
     pub collection: &'static str,
 }
 /// Abstract Model ---------------------------------------------------------------------------------
+#[async_trait]
 pub trait Model {
     // Metadata (database name, collection name, etc)
     fn meta() -> Meta;
@@ -28,10 +30,12 @@ pub trait Model {
         clean_attrs
     }
     // Checking Models and creating migrations to the Database.
-    fn migrat(_client: &Client) {
+    async fn migrat(client: Client) {
         let _meta: Meta = Self::meta();
         let _attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-        println!("Heollo Migration!")
+        for db_name in client.list_database_names(None, None).await.unwrap() {
+            println!("{}", db_name);
+        }
     }
 }
 

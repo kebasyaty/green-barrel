@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
@@ -12,6 +13,7 @@ pub struct User {
     pub username: String,
     pub email: String,
 }
+#[async_trait]
 impl Model for User {
     fn meta() -> Meta {
         Meta {
