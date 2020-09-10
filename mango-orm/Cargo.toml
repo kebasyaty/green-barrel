@@ -20,7 +20,7 @@ version = "1.1.1"
 
 [dependencies.tokio]
 default-features = false
-features = ["full"]
+features = ["rt-threaded", "macros"]
 version = "0.2.22"
 
 [dependencies.serde]

@@ -29,11 +29,6 @@ version = "1.0.115"
 [dependencies.tera]
 version = "1.5.0"
 
-[dependencies.tokio]
-default-features = false
-features = ["full"]
-version = "0.2.22"
-
 [dependencies.mongodb]
 default-features = false
 features = ["tokio-runtime"]

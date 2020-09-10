@@ -18,7 +18,7 @@ pub mod specific;
 // Services (sub-apps)
 pub mod services;
 
-fn migration() {
+async fn migration() {
     let client_options = ClientOptions::builder()
         .hosts(vec![StreamAddress {
             hostname: settings::DB_HOSTNAME.into(),
@@ -27,13 +27,13 @@ fn migration() {
         .build();
     let client = Client::with_options(client_options).unwrap();
     // Models
-    services::primal::mango_models::User::migrat(&client);
+    services::primal::mango_models::User::migrat(client.clone()).await;
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Run migrations
-    migration();
+    migration().await;
     // Init logger middleware (debug, error, info, trace)
     std::env::set_var("RUST_LOG", "actix_web=info,actix_server=info");
     env_logger::init();
