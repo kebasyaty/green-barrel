@@ -8,6 +8,7 @@ use std::collections::HashMap;
 
 // MODELS ==========================================================================================
 /// Metadata
+#[derive(Debug)]
 pub struct Meta {
     pub database: String,
     pub collection: String,

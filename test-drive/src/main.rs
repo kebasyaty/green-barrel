@@ -37,6 +37,7 @@ async fn main() {
     };
 
     println!("\n\n{:?}\n", user);
-    println!("{:?}\n", mango_models::User::raw_attrs());
+    println!("{:?}\n", mango_models::User::meta());
+    println!("{:?}\n", mango_models::User::form_attrs());
     println!("{:?}", mango_models::User::form_attrs());
 }
