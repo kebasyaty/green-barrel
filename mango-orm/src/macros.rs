@@ -4,7 +4,7 @@
 
 /// Macro for converting Structure to Model
 #[macro_export]
-macro_rules! create_model {
+macro_rules! model_info {
     (struct $name:ident { $($fname:ident : $ftype:ty),* }) => {
 
         #[derive(Serialize, Deserialize, Debug, Default)]
