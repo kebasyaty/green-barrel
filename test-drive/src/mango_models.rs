@@ -6,22 +6,18 @@ use mongodb::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-const DATABASE: &str = "dev_db";
+const SERVICE_NAME: &str = "dev_db";
+const DATABASE_NAME: &str = "dev_db";
 
 create_model! {
+    SERVICE_NAME,
+    DATABASE_NAME,
     struct Category {
         title: String
     }
 }
 #[async_trait]
 impl Model for Category {
-    // Metadata
-    fn meta() -> Meta {
-        Meta {
-            database: DATABASE,
-            collection: "category_name",
-        }
-    }
     //
     fn raw_attrs() -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.
@@ -43,6 +39,8 @@ impl Model for Category {
 }
 
 create_model! {
+    SERVICE_NAME,
+    DATABASE_NAME,
     struct User {
         username: String,
         email: String,
@@ -51,13 +49,6 @@ create_model! {
 }
 #[async_trait]
 impl Model for User {
-    // Metadata
-    fn meta() -> Meta {
-        Meta {
-            database: DATABASE,
-            collection: "user",
-        }
-    }
     //
     fn raw_attrs() -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.

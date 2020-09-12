@@ -15,8 +15,6 @@ pub struct Meta {
 /// Abstract Model ---------------------------------------------------------------------------------
 #[async_trait]
 pub trait Model {
-    // Metadata (database name, collection name, etc)
-    fn meta() -> Meta;
     // Get raw attributes for further processing
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Get pure attributes for a page templating engine

@@ -5,27 +5,36 @@
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! create_model {
-    (struct $name:ident { $($fname:ident : $ftype:ty),* }) => {
+    ($service:expr, $database:expr, struct $sname:ident { $($fname:ident : $ftype:ty),* }) => {
 
         #[derive(Serialize, Deserialize, Debug, Default)]
-        pub struct $name {
+        pub struct $sname {
             $(pub $fname : $ftype),*
         }
 
-        impl $name {
+        impl $sname {
             pub fn struct_name() -> &'static str {
-                stringify!($name)
+                stringify!($sname)
             }
 
             pub fn field_names() -> &'static [&'static str] {
                 &[$(stringify!($fname)),*]
             }
 
+            // Metadata (database name, collection name, etc)
+            pub fn meta() -> Meta {
+                let struct_name = format!("{}", stringify!($sname)).to_lowercase();
+                Meta {
+                    database: $database,
+                    collection: &format!("{}_{}", $database, struct_name)
+                }
+            }
+
             // Checking Models and creating migrations to the Database.
             pub async fn migrat(_client: &Client) {
                 let _meta: Meta = Self::meta();
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-                static STRUCT_NAME: &'static str  = stringify!($name);
+                static STRUCT_NAME: &'static str  = stringify!($sname);
                 // Checking Widgets
                 for (field, widget) in attrs {
                     match widget.field_type {
