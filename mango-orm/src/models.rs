@@ -2,9 +2,8 @@
 //!
 //! Abstract Model methods for creating collections and interacting with the database.
 
-use crate::widgets::{FieldType, Transport, Widget};
+use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
-use mongodb::Client;
 use std::collections::HashMap;
 
 // MODELS ==========================================================================================
@@ -28,26 +27,6 @@ pub trait Model {
             clean_attrs.insert(field.to_string(), widget.get_clean_attrs(field));
         }
         clean_attrs
-    }
-    // Checking Models and creating migrations to the Database.
-    async fn migrat(_client: Client) {
-        let _meta: Meta = Self::meta();
-        let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-        let struct_name: &str = Self::struct_name();
-        // Checking Widgets
-        for (_field, widget) in attrs {
-            match widget.field_type {
-                FieldType::InputCheckBox => {
-                    if widget.relation_model != String::new() {
-                        panic!(
-                            "{} FieldType `InputCheckBox` -> relation_model = blank string",
-                            struct_name
-                        )
-                    }
-                }
-                _ => panic!("{} - Non-existent field type.", struct_name),
-            }
-        }
     }
 }
 
