@@ -25,16 +25,7 @@ async fn main() {
     // Run migrations
     migration().await;
 
-    let user = mango_models::User {
-        username: "Some text".to_string(),
-        email: "some@some.net".to_string(),
-        categories: vec![
-            "id-1".to_string(),
-            "id-2".to_string(),
-            "id-3".to_string(),
-            "id-4".to_string(),
-        ],
-    };
+    let user: mango_models::User = Default::default();
 
     println!("\n\n{:?}\n", user);
     println!("{:?}\n", mango_models::User::raw_attrs());
