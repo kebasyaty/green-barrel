@@ -13,20 +13,21 @@ macro_rules! create_model {
         }
 
         impl $sname {
+            // Get structure name
             pub fn struct_name() -> &'static str {
                 stringify!($sname)
             }
 
+            // Get array of field names
             pub fn field_names() -> &'static [&'static str] {
                 &[$(stringify!($fname)),*]
             }
 
             // Metadata (database name, collection name, etc)
             pub fn meta() -> Meta {
-                let struct_name = format!("{}", stringify!($sname)).to_lowercase();
                 Meta {
-                    database: &$database,
-                    collection: &format!("{}_{}", $database, struct_name)
+                    database: &format!("{}", stringify!($database).to_lowercase()),
+                    collection: &format!("{}_{}", stringify!($service).to_lowercase(), stringify!($sname).to_lowercase())
                 }
             }
 
