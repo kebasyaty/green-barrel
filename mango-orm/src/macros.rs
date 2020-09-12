@@ -25,7 +25,7 @@ macro_rules! create_model {
             pub fn meta() -> Meta {
                 let struct_name = format!("{}", stringify!($sname)).to_lowercase();
                 Meta {
-                    database: $database,
+                    database: &$database,
                     collection: &format!("{}_{}", $database, struct_name)
                 }
             }
