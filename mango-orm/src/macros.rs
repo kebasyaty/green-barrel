@@ -6,7 +6,6 @@
 #[macro_export]
 macro_rules! create_model {
     (struct $name:ident { $($fname:ident : $ftype:ty),* }) => {
-        use serde::{Deserialize, Serialize};
 
         #[derive(Serialize, Deserialize, Debug, Default)]
         pub struct $name {

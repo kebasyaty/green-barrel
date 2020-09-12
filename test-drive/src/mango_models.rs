@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
@@ -6,9 +7,10 @@ use std::collections::HashMap;
 
 const DATABASE: &str = "dev_db";
 
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct Category {
-    pub title: String,
+create_model! {
+    struct Category {
+        title: String
+    }
 }
 #[async_trait]
 impl Model for Category {
@@ -39,11 +41,12 @@ impl Model for Category {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct User {
-    pub username: String,
-    pub email: String,
-    pub categories: Vec<String>,
+create_model! {
+    struct User {
+        username: String,
+        email: String,
+        categories: Vec<String>
+    }
 }
 #[async_trait]
 impl Model for User {
@@ -83,7 +86,7 @@ impl Model for User {
             },
         );
         raw_attrs.insert(
-            "title",
+            "categories",
             Widget {
                 label: "Select Categories".to_string(),
                 field_type: FieldType::ManyToMany,
