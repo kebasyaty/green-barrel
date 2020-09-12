@@ -2,6 +2,7 @@
 //!
 //!  Custom macros.
 
+// MACROS ==========================================================================================
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! create_model {
@@ -57,4 +58,10 @@ macro_rules! create_model {
             }
         }
     }
+}
+
+// TESTS ===========================================================================================
+#[cfg(test)]
+mod tests {
+    //
 }
