@@ -9,8 +9,8 @@ use std::collections::HashMap;
 // MODELS ==========================================================================================
 /// Metadata
 pub struct Meta {
-    pub database: &'static str,
-    pub collection: &'static str,
+    pub database: String,
+    pub collection: String,
 }
 /// Abstract Model ---------------------------------------------------------------------------------
 #[async_trait]
