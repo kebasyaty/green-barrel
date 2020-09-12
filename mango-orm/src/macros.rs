@@ -14,13 +14,11 @@ macro_rules! create_model {
 
         impl $name {
             pub fn struct_name() -> &'static str {
-                static NAME: &'static str  = stringify!($name);
-                NAME
+                stringify!($name)
             }
 
             pub fn field_names() -> &'static [&'static str] {
-                static NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                NAMES
+                &[$(stringify!($fname)),*]
             }
 
             // Checking Models and creating migrations to the Database.
