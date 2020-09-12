@@ -33,15 +33,19 @@ pub trait Model {
     async fn migrat(_client: Client) {
         let _meta: Meta = Self::meta();
         let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+        let struct_name: &str = Self::struct_name();
         // Checking Widgets
         for (_field, widget) in attrs {
             match widget.field_type {
                 FieldType::InputCheckBox => {
                     if widget.relation_model != String::new() {
-                        panic!("FieldType `InputCheckBox` -> relation_model = blank string")
+                        panic!(
+                            "{} FieldType `InputCheckBox` -> relation_model = blank string",
+                            struct_name
+                        )
                     }
                 }
-                _ => panic!("Non-existent field type."),
+                _ => panic!("{} - Non-existent field type.", struct_name),
             }
         }
     }
