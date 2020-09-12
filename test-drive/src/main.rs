@@ -16,8 +16,8 @@ async fn migration() {
         .build();
     let client = Client::with_options(client_options).unwrap();
     // Models
-    mango_models::Category::migrat(client.clone()).await;
-    mango_models::User::migrat(client.clone()).await;
+    mango_models::Category::migrat(&client).await;
+    mango_models::User::migrat(&client).await;
 }
 
 #[tokio::main]

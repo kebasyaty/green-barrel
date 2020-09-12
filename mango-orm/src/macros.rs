@@ -4,7 +4,7 @@
 
 /// Macro for converting Structure to Model
 #[macro_export]
-macro_rules! model_info {
+macro_rules! create_model {
     (struct $name:ident { $($fname:ident : $ftype:ty),* }) => {
 
         #[derive(Serialize, Deserialize, Debug, Default)]
@@ -24,22 +24,23 @@ macro_rules! model_info {
             }
 
             // Checking Models and creating migrations to the Database.
-            pub async fn migrat(_client: Client) {
+            pub async fn migrat(_client: &Client) {
                 let _meta: Meta = Self::meta();
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
                 static STRUCT_NAME: &'static str  = stringify!($name);
                 // Checking Widgets
-                for (_field, widget) in attrs {
+                for (field, widget) in attrs {
                     match widget.field_type {
                         FieldType::InputCheckBox => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "{} FieldType `InputCheckBox` -> relation_model = blank string",
+                                    "Model: `{}` - FieldType `InputCheckBox` -> relation_model = blank string",
                                     STRUCT_NAME
                                 )
                             }
                         }
-                        _ => panic!("{} - Non-existent field type.", STRUCT_NAME),
+                        _ => panic!("Model: `{}`; Field: `{}` - Non-existent field type.",
+                                STRUCT_NAME, field),
                     }
                 }
             }

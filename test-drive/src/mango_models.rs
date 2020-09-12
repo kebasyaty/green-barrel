@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use mango_orm::model_info;
+use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use mongodb::Client;
@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 const DATABASE: &str = "dev_db";
 
-model_info! {
+create_model! {
     struct Category {
         title: String
     }
@@ -42,7 +42,7 @@ impl Model for Category {
     }
 }
 
-model_info! {
+create_model! {
     struct User {
         username: String,
         email: String,
