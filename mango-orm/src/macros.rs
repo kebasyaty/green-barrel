@@ -27,7 +27,9 @@ macro_rules! create_model {
             pub fn meta() -> Meta {
                 Meta {
                     database: &format!("{}", stringify!($database).to_lowercase()),
-                    collection: &format!("{}_{}", stringify!($service).to_lowercase(), stringify!($sname).to_lowercase())
+                    collection: &format!("{}_{}",
+                        stringify!($service).to_lowercase(),
+                        stringify!($sname).to_lowercase())
                 }
             }
 
