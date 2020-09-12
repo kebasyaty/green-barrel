@@ -9,7 +9,7 @@ macro_rules! create_model {
 
         #[derive(Serialize, Deserialize, Debug, Default)]
         pub struct $name {
-            pub $($fname : $ftype),*
+            $(pub $fname : $ftype),*
         }
 
         impl $name {
