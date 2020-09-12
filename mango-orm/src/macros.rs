@@ -29,7 +29,8 @@ macro_rules! create_model {
                     database: &format!("{}", stringify!($database).to_lowercase()),
                     collection: &format!("{}_{}",
                         stringify!($service).to_lowercase(),
-                        stringify!($sname).to_lowercase())
+                        stringify!($sname).to_lowercase()
+                    )
                 }
             }
 
@@ -37,7 +38,7 @@ macro_rules! create_model {
             pub async fn migrat(_client: &Client) {
                 let _meta: Meta = Self::meta();
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-                static STRUCT_NAME: &'static str  = stringify!($sname);
+                static STRUCT_NAME: &'static str = stringify!($sname);
                 // Checking Widgets
                 for (field, widget) in attrs {
                     match widget.field_type {
