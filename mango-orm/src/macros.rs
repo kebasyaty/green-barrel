@@ -91,7 +91,19 @@ macro_rules! create_model {
                             }
                         }
                         // InputDate ---------------------------------------------------------------
-                        FieldType::InputDate => {}
+                        FieldType::InputDate => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputEmail --------------------------------------------------------------
                         FieldType::InputEmail => {}
                         // InputFile ---------------------------------------------------------------
