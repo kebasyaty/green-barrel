@@ -157,7 +157,19 @@ macro_rules! create_model {
                             }
                         }
                         // InputNumber -------------------------------------------------------------
-                        FieldType::InputNumber => {}
+                        FieldType::InputNumber => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputPassword -----------------------------------------------------------
                         FieldType::InputPassword => {}
                         // InputRadio --------------------------------------------------------------
