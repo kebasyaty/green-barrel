@@ -88,12 +88,6 @@ impl Model for User {
                 unique: true,
                 other_attrs: format!("multiple placeholder=\"{}\"", "Select Categories"),
                 some_classes: "class-name class-name-2".to_string(),
-                select: vec![
-                    ("Doc name 1".to_string(), DataType::Text("id-1".to_string())),
-                    ("Doc name 2".to_string(), DataType::Text("id-2".to_string())),
-                    ("Doc name 3".to_string(), DataType::Text("id-3".to_string())),
-                    ("Doc name 4".to_string(), DataType::Text("id-4".to_string())),
-                ],
                 ..Default::default()
             },
         );
