@@ -256,7 +256,19 @@ macro_rules! create_model {
                             }
                         }
                         // InputTime ---------------------------------------------------------------
-                        FieldType::InputTime => {}
+                        FieldType::InputTime => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputUrl ----------------------------------------------------------------
                         FieldType::InputUrl => {}
                         // TextArea ----------------------------------------------------------------
