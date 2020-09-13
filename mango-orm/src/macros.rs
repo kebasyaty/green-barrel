@@ -298,7 +298,19 @@ macro_rules! create_model {
                             }
                         }
                         // Select ------------------------------------------------------------------
-                        FieldType::Select => {}
+                        FieldType::Select => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // ForeignKey --------------------------------------------------------------
                         FieldType::ForeignKey => {}
                         // ManyToMany --------------------------------------------------------------
