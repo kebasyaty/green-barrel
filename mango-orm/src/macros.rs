@@ -326,7 +326,19 @@ macro_rules! create_model {
                             }
                         }
                         // ManyToMany --------------------------------------------------------------
-                        FieldType::ManyToMany => {}
+                        FieldType::ManyToMany => {
+                            if widget.relation_model == String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // OneToOne ----------------------------------------------------------------
                         FieldType::OneToOne => {}
                         _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
