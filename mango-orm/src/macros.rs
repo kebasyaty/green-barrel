@@ -68,7 +68,14 @@ macro_rules! create_model {
                             }
                         }
                         // InputColor --------------------------------------------------------------
-                        FieldType::InputColor => {}
+                        FieldType::InputColor => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Model: `{}` - FieldType `InputColor` -> `relation_model` = only blank string",
+                                    STRUCT_NAME
+                                )
+                            }
+                        }
                         // InputDate ---------------------------------------------------------------
                         FieldType::InputDate => {}
                         // InputEmail --------------------------------------------------------------
