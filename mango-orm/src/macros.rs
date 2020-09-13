@@ -127,7 +127,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.value != DataType::Text(String::new()) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only DataType::Text and blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -146,7 +146,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.value != DataType::Text(String::new()) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `value` = only DataType::Text and blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -179,7 +179,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.value != DataType::Text(String::new()) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `value` = only DataType::Text and blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -214,9 +214,33 @@ macro_rules! create_model {
                             }
                         }
                         // InputRange --------------------------------------------------------------
-                        FieldType::InputRange => {}
+                        FieldType::InputRange => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputTel ----------------------------------------------------------------
-                        FieldType::InputTel => {}
+                        FieldType::InputTel => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputText ---------------------------------------------------------------
                         FieldType::InputText => {}
                         // InputTime ---------------------------------------------------------------
