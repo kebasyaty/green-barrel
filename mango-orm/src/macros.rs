@@ -46,7 +46,7 @@ macro_rules! create_model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> Field: `{}` - Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> Field: `{}` : Incorrect field name.",
                             $service, STRUCT_NAME, field
                         )
                     }
@@ -56,23 +56,23 @@ macro_rules! create_model {
                         FieldType::InputCheckBox => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputCheckBox` -> `relation_model` = only blank string.",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
                                 )
                             } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputCheckBox` -> `value` = only false or true.",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `value` = only false or true.",
+                                    $service, STRUCT_NAME, field
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputCheckBox` -> `maxlength` = only 0 (zero).",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `maxlength` = only 0 (zero).",
+                                    $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputCheckBox` -> `select` = only vec![].",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
                                 )
                             }
                         }
@@ -80,13 +80,13 @@ macro_rules! create_model {
                         FieldType::InputColor => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputColor` -> `relation_model` = only blank string.",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> FieldType `InputColor` -> `select` = only vec![].",
-                                    $service, STRUCT_NAME
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
                                 )
                             }
                         }
@@ -124,7 +124,7 @@ macro_rules! create_model {
                         FieldType::ManyToMany => {}
                         // OneToOne ----------------------------------------------------------------
                         FieldType::OneToOne => {}
-                        _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> `field_type` - Non-existent field type.",
+                        _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
                         $service, STRUCT_NAME, field),
                     }
                 }
