@@ -51,6 +51,24 @@ macro_rules! create_model {
                                 )
                             }
                         }
+                        FieldType::InputColor => {}
+                        FieldType::InputDate => {}
+                        FieldType::InputEmail => {}
+                        FieldType::InputFile => {}
+                        FieldType::InputImage => {}
+                        FieldType::InputNumber => {}
+                        FieldType::InputPassword => {}
+                        FieldType::InputRadio => {}
+                        FieldType::InputRange => {}
+                        FieldType::InputTel => {}
+                        FieldType::InputText => {}
+                        FieldType::InputTime => {}
+                        FieldType::InputUrl => {}
+                        FieldType::TextArea => {}
+                        FieldType::Select => {}
+                        FieldType::ForeignKey => {}
+                        FieldType::ManyToMany => {}
+                        FieldType::OneToOne => {}
                         _ => panic!("Model: `{}`; Field: `{}` - Non-existent field type.",
                                 STRUCT_NAME, field),
                     }
