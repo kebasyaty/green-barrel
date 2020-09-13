@@ -312,7 +312,19 @@ macro_rules! create_model {
                             }
                         }
                         // ForeignKey --------------------------------------------------------------
-                        FieldType::ForeignKey => {}
+                        FieldType::ForeignKey => {
+                            if widget.relation_model == String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // ManyToMany --------------------------------------------------------------
                         FieldType::ManyToMany => {}
                         // OneToOne ----------------------------------------------------------------
