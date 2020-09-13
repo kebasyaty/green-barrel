@@ -52,7 +52,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
                                 panic!(
-                                    "Model: `{}` - FieldType `InputCheckBox` -> `value` = only true or false",
+                                    "Model: `{}` - FieldType `InputCheckBox` -> `value` = only false or true",
                                     STRUCT_NAME
                                 )
                             } else if widget.maxlength != 0 {
