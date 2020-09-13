@@ -46,7 +46,7 @@ macro_rules! create_model {
                         FieldType::InputCheckBox => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Model: `{}` - FieldType `InputCheckBox` -> relation_model = blank string",
+                                    "Model: `{}` - FieldType `InputCheckBox` -> relation_model = only blank string",
                                     STRUCT_NAME
                                 )
                             }
