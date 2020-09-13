@@ -43,6 +43,7 @@ macro_rules! create_model {
                 // Checking Widgets
                 for (field, widget) in attrs {
                     match widget.field_type {
+                        // InputCheckBox -----------------------------------------------------------
                         FieldType::InputCheckBox => {
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -51,23 +52,41 @@ macro_rules! create_model {
                                 )
                             }
                         }
+                        // InputColor --------------------------------------------------------------
                         FieldType::InputColor => {}
+                        // InputDate ---------------------------------------------------------------
                         FieldType::InputDate => {}
+                        // InputEmail --------------------------------------------------------------
                         FieldType::InputEmail => {}
+                        // InputFile ---------------------------------------------------------------
                         FieldType::InputFile => {}
+                        // InputImage --------------------------------------------------------------
                         FieldType::InputImage => {}
+                        // InputNumber -------------------------------------------------------------
                         FieldType::InputNumber => {}
+                        // InputPassword -----------------------------------------------------------
                         FieldType::InputPassword => {}
+                        // InputRadio --------------------------------------------------------------
                         FieldType::InputRadio => {}
+                        // InputRange --------------------------------------------------------------
                         FieldType::InputRange => {}
+                        // InputTel ----------------------------------------------------------------
                         FieldType::InputTel => {}
+                        // InputText ---------------------------------------------------------------
                         FieldType::InputText => {}
+                        // InputTime ---------------------------------------------------------------
                         FieldType::InputTime => {}
+                        // InputUrl ----------------------------------------------------------------
                         FieldType::InputUrl => {}
+                        // TextArea ----------------------------------------------------------------
                         FieldType::TextArea => {}
+                        // Select ------------------------------------------------------------------
                         FieldType::Select => {}
+                        // ForeignKey --------------------------------------------------------------
                         FieldType::ForeignKey => {}
+                        // ManyToMany --------------------------------------------------------------
                         FieldType::ManyToMany => {}
+                        // OneToOne ----------------------------------------------------------------
                         FieldType::OneToOne => {}
                         _ => panic!("Model: `{}`; Field: `{}` - Non-existent field type.",
                                 STRUCT_NAME, field),
