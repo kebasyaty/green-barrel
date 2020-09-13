@@ -284,7 +284,19 @@ macro_rules! create_model {
                             }
                         }
                         // TextArea ----------------------------------------------------------------
-                        FieldType::TextArea => {}
+                        FieldType::TextArea => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // Select ------------------------------------------------------------------
                         FieldType::Select => {}
                         // ForeignKey --------------------------------------------------------------
