@@ -1,26 +1,24 @@
 use async_trait::async_trait;
+use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-// Database name
-const DATABASE: &str = "dev_db";
+const SERVICE_NAME: &'static str = "test_service";
+const DATABASE_NAME: &'static str = "dev_db";
 
 // User --------------------------------------------------------------------------------------------
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct User {
-    pub username: String,
-    pub email: String,
+create_model! {
+    SERVICE_NAME,
+    DATABASE_NAME,
+    struct User {
+        username: String,
+        email: String
+    }
 }
 #[async_trait]
 impl Model for User {
-    fn meta() -> Meta {
-        Meta {
-            database: DATABASE,
-            collection: "category_name",
-        }
-    }
     //
     fn raw_attrs() -> HashMap<&'static str, Widget> {
         // Map of matching fields and widgets.

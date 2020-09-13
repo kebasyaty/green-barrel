@@ -4,7 +4,6 @@ use actix_session::CookieSession;
 use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use chrono;
 use env_logger;
-use mango_orm::models::Model;
 use mongodb::{
     options::{ClientOptions, StreamAddress},
     Client,
@@ -27,7 +26,7 @@ async fn migration() {
         .build();
     let client = Client::with_options(client_options).unwrap();
     // Models
-    services::primal::mango_models::User::migrat(client.clone()).await;
+    services::primal::mango_models::User::migrat(&client).await;
 }
 
 #[actix_rt::main]
