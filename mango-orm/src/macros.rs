@@ -119,7 +119,24 @@ macro_rules! create_model {
                             }
                         }
                         // InputFile ---------------------------------------------------------------
-                        FieldType::InputFile => {}
+                        FieldType::InputFile => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.value != DataType::Text(String::new()) {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputImage --------------------------------------------------------------
                         FieldType::InputImage => {}
                         // InputNumber -------------------------------------------------------------
