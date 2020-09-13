@@ -127,7 +127,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.value != DataType::Text(String::new()) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only DataType::Text and blank string.",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -138,7 +138,24 @@ macro_rules! create_model {
                             }
                         }
                         // InputImage --------------------------------------------------------------
-                        FieldType::InputImage => {}
+                        FieldType::InputImage => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.value != DataType::Text(String::new()) {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `value` = only DataType::Text and blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputNumber -------------------------------------------------------------
                         FieldType::InputNumber => {}
                         // InputPassword -----------------------------------------------------------
