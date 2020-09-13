@@ -1,6 +1,6 @@
 //! # Macros
 //!
-//!  Custom macros.
+//!  Custom macros for mango models.
 
 // MACROS ==========================================================================================
 /// Macro for converting Structure to Model
