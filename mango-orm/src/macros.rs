@@ -190,7 +190,29 @@ macro_rules! create_model {
                             }
                         }
                         // InputRadio --------------------------------------------------------------
-                        FieldType::InputRadio => {}
+                        FieldType::InputRadio => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `value` = only false or true.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.maxlength != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `maxlength` = only 0 (zero).",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputRange --------------------------------------------------------------
                         FieldType::InputRange => {}
                         // InputTel ----------------------------------------------------------------
