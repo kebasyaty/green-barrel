@@ -50,7 +50,7 @@ macro_rules! create_model {
                                     "Model: `{}` - FieldType `InputCheckBox` -> `relation_model` = only blank string",
                                     STRUCT_NAME
                                 )
-                            } else if widget.value.get_data() != "true" || widget.value.get_data() != "false" {
+                            } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
                                 panic!(
                                     "Model: `{}` - FieldType `InputCheckBox` -> `value` = only true or false",
                                     STRUCT_NAME

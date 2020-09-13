@@ -60,7 +60,7 @@ impl FieldType {
 }
 
 /// Data types for the `value` attribute -----------------------------------------------------------
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum DataType {
     Text(String),
     I64(i64),
