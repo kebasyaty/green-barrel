@@ -47,7 +47,22 @@ macro_rules! create_model {
                         FieldType::InputCheckBox => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Model: `{}` - FieldType `InputCheckBox` -> relation_model = only blank string",
+                                    "Model: `{}` - FieldType `InputCheckBox` -> `relation_model` = only blank string",
+                                    STRUCT_NAME
+                                )
+                            } else if widget.value.get_data() != "true" || widget.value.get_data() != "false" {
+                                panic!(
+                                    "Model: `{}` - FieldType `InputCheckBox` -> `value` = only true or false",
+                                    STRUCT_NAME
+                                )
+                            } else if widget.maxlength != 0 {
+                                panic!(
+                                    "Model: `{}` - FieldType `InputCheckBox` -> `maxlength` = only 0 (zero)",
+                                    STRUCT_NAME
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Model: `{}` - FieldType `InputCheckBox` -> `select` = only vec![]",
                                     STRUCT_NAME
                                 )
                             }
