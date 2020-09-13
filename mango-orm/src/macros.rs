@@ -340,7 +340,19 @@ macro_rules! create_model {
                             }
                         }
                         // OneToOne ----------------------------------------------------------------
-                        FieldType::OneToOne => {}
+                        FieldType::OneToOne => {
+                            if widget.relation_model == String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
                         $service, STRUCT_NAME, field),
                     }
