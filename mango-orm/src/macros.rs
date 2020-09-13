@@ -105,7 +105,19 @@ macro_rules! create_model {
                             }
                         }
                         // InputEmail --------------------------------------------------------------
-                        FieldType::InputEmail => {}
+                        FieldType::InputEmail => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputFile ---------------------------------------------------------------
                         FieldType::InputFile => {}
                         // InputImage --------------------------------------------------------------
