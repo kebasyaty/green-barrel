@@ -363,7 +363,7 @@ macro_rules! create_model {
 
                 // Create a new database
                 if !database_names.contains(&meta.database) {
-                    println!("No database: {}", meta.database);
+                    let _db = client.database(&meta.database);
                 }
             }
         }

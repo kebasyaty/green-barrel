@@ -12,35 +12,6 @@ const DATABASE_NAME: &'static str = "dev_db";
 create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
-    struct Category {
-        title: String
-    }
-}
-#[async_trait]
-impl Model for Category {
-    //
-    fn raw_attrs() -> HashMap<&'static str, Widget> {
-        // Map of matching fields and widgets.
-        let mut raw_attrs = HashMap::new();
-        raw_attrs.insert(
-            "title",
-            Widget {
-                label: "Category Name".to_string(),
-                field_type: FieldType::InputText,
-                value: DataType::Text(String::new()),
-                maxlength: 40,
-                hint: "Please enter Category name.".to_string(),
-                other_attrs: format!("placeholder=\"{}\"", "Category Name"),
-                ..Default::default()
-            },
-        );
-        raw_attrs
-    }
-}
-
-create_model! {
-    SERVICE_NAME,
-    DATABASE_NAME,
     struct User {
         username: String,
         email: String,
@@ -74,20 +45,6 @@ impl Model for User {
                 hint: "Enter your work email.".to_string(),
                 unique: true,
                 other_attrs: format!("placeholder=\"{}\"", "Your Email"),
-                ..Default::default()
-            },
-        );
-        raw_attrs.insert(
-            "categories",
-            Widget {
-                label: "Select Categories".to_string(),
-                field_type: FieldType::ManyToMany,
-                relation_model: Category::meta().collection.to_string(),
-                hidden: true,
-                hint: "Test all attrs.".to_string(),
-                unique: true,
-                other_attrs: format!("multiple placeholder=\"{}\"", "Select Categories"),
-                some_classes: "class-name class-name-2".to_string(),
                 ..Default::default()
             },
         );
