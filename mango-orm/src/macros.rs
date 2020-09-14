@@ -372,8 +372,6 @@ macro_rules! create_model {
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
                     db.create_collection(&meta.collection, None).await.unwrap();
                 }
-                println!("{:?}", client.list_database_names(None, None).await.unwrap());
-                println!("{:?}", client.database(&meta.database).list_collection_names(None).await.unwrap());
             }
         }
     }
