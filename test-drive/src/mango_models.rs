@@ -14,8 +14,7 @@ create_model! {
     DATABASE_NAME,
     struct User {
         username: String,
-        email: String,
-        categories: Vec<String>
+        email: String
     }
 }
 #[async_trait]
