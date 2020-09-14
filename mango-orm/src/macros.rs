@@ -362,14 +362,10 @@ macro_rules! create_model {
                 }
 
                 // Create a new database and add new collections
-                if !database_names.contains(&meta.database) {
-                    client.database(&meta.database).create_collection(&meta.collection, None).await.unwrap();
-                } else { // Add new collections
-                    let db = client.database(&meta.database);
-                    let collection_names: Vec<String> = db.list_collection_names(None).await.unwrap();
-                    if !collection_names.contains(&meta.collection) {
-                        client.database(&meta.database).create_collection(&meta.collection, None).await.unwrap();
-                    }
+                let db = client.database(&meta.database);
+                if !database_names.contains(&meta.database) ||
+                    !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
+                    db.create_collection(&meta.collection, None).await.unwrap();
                 }
                 println!("{:?}", client.list_database_names(None, None).await.unwrap());
                 println!("{:?}", client.database(&meta.database).list_collection_names(None).await.unwrap());
