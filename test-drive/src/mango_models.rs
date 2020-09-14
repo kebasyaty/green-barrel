@@ -12,6 +12,35 @@ const DATABASE_NAME: &'static str = "test_db";
 create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
+    struct Category {
+        title: String
+    }
+}
+#[async_trait]
+impl Model for Category {
+    //
+    fn raw_attrs() -> HashMap<&'static str, Widget> {
+        // Map of matching fields and widgets.
+        let mut raw_attrs = HashMap::new();
+        raw_attrs.insert(
+            "title",
+            Widget {
+                label: "Category Name".to_string(),
+                field_type: FieldType::InputText,
+                value: DataType::Text(String::new()),
+                maxlength: 40,
+                hint: "Please enter Category name.".to_string(),
+                other_attrs: format!("placeholder=\"{}\"", "Category Name"),
+                ..Default::default()
+            },
+        );
+        raw_attrs
+    }
+}
+
+create_model! {
+    SERVICE_NAME,
+    DATABASE_NAME,
     struct User {
         username: String,
         email: String
