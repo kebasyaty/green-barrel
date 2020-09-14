@@ -44,11 +44,6 @@ macro_rules! create_model {
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
                 let database_names: Vec<String> = client.list_database_names(None, None).await.unwrap();
 
-                // Prevent using the name of the test base.
-                if database_names.contains(&"mango_test_db".to_owned()) {
-                    panic!("It is forbidden to use the name of the test base.");
-                }
-
                 // Checking Widgets
                 for (field, widget) in attrs {
                     // Checking for the correct field name
