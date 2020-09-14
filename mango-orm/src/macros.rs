@@ -40,7 +40,7 @@ macro_rules! create_model {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
 
-                let _meta: Meta = Self::meta();
+                let meta: Meta = Self::meta();
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
                 let database_names: Vec<String> = client.list_database_names(None, None).await.unwrap();
 
@@ -359,6 +359,11 @@ macro_rules! create_model {
                         _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
                         $service, STRUCT_NAME, field),
                     }
+                }
+
+                // Create a new database
+                if !database_names.contains(&meta.database) {
+                    println!("No database: {}", meta.database);
                 }
             }
         }
