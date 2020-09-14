@@ -36,11 +36,14 @@ macro_rules! create_model {
             }
 
             // Checking Models and creating migrations to the Database.
-            pub async fn migrat(_client: &Client) {
-                let _meta: Meta = Self::meta();
-                let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+            pub async fn migrat(client: &Client) {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+
+                let _meta: Meta = Self::meta();
+                let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+                let database_names: Vec<String> = client.list_database_names(None, None).await.unwrap();
+
                 // Checking Widgets
                 for (field, widget) in attrs {
                     // Checking for the correct field name
