@@ -6,8 +6,8 @@ use mongodb::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-const SERVICE_NAME: &'static str = "test_service";
-const DATABASE_NAME: &'static str = "dev_db";
+const SERVICE_NAME: &'static str = "account";
+const DATABASE_NAME: &'static str = "test_db";
 
 create_model! {
     SERVICE_NAME,
