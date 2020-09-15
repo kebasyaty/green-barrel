@@ -17,7 +17,7 @@ async fn migration() {
     mango_models::User::migrat(&client).await;
     mango_models::Category::migrat(&client).await;
     // Reorganize databases state
-    monitor.run().await;
+    monitor.napalm().await;
 }
 
 #[tokio::main]

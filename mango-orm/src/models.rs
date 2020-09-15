@@ -44,7 +44,7 @@ impl<'a> Monitor<'a> {
         println!("{}", self.password);
     }
     // Reorganize databases state
-    pub async fn run(&self) {
+    pub async fn napalm(&self) {
         println!("{}", self.password);
     }
 }
