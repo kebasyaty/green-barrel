@@ -13,13 +13,13 @@ async fn migration() {
         }])
         .build();
     let client = Client::with_options(client_options).unwrap();
-    // Models
+    // Register models
     mango_models::User::migrat(&client).await;
     mango_models::Category::migrat(&client).await;
 }
 
 #[tokio::main]
 async fn main() {
-    // Run migrations
+    // Run migration
     migration().await;
 }
