@@ -1,6 +1,7 @@
 //! # Models
 //!
-//! Abstract Model methods for creating collections and interacting with the database.
+//! `Meta` - Metadata of models.
+//! `Model` - Defining common behavior of models.
 
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
