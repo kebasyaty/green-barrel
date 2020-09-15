@@ -41,7 +41,7 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
-        let db_name = format!("mango_{}", self.keyword);
+        let db_name = format!("mango_tech_{}", self.keyword);
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
         if !database_names.contains(&db_name) {

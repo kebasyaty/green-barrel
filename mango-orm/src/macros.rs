@@ -42,7 +42,7 @@ macro_rules! create_model {
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
                 // Technical database for `models::Monitor`
-                let mango_db_name = format!("mango_{}", keyword);
+                let mango_db_name = format!("mango_tech_{}", keyword);
                 // Checking the status of Widgets
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
                 // List of existing databases
