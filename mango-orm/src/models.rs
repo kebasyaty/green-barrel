@@ -35,13 +35,13 @@ pub trait Model {
 // For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
 pub struct Monitor<'a> {
-    pub password: &'a str,
+    pub keyword: &'a str,
     pub client: &'a Client,
 }
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
-        let db_name = format!("mango_{}", self.password);
+        let db_name = format!("mango_{}", self.keyword);
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
         if !database_names.contains(&db_name) {
@@ -54,7 +54,7 @@ impl<'a> Monitor<'a> {
     }
     // Reorganize databases state
     pub async fn napalm(&self) {
-        println!("{}", self.password);
+        println!("{}", self.keyword);
     }
 }
 

@@ -36,7 +36,7 @@ macro_rules! create_model {
             }
 
             // Checking Models and creating migrations to the Database.
-            pub async fn migrat(client: &Client) {
+            pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
 
