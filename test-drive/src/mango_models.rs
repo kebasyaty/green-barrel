@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 const SERVICE_NAME: &'static str = "account";
-const DATABASE_NAME: &'static str = "test_drive_db";
+const DATABASE_NAME: &'static str = "test_drive";
 
 create_model! {
     SERVICE_NAME,
