@@ -2,9 +2,11 @@
 //!
 //! `Meta` - Metadata of models.
 //! `Model` - Defining common behavior of models.
+//! `run_monitor` - Creating and updating a database for monitoring the state of models.
 
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
+use mongodb::Client;
 use std::collections::HashMap;
 
 // MODELS ==========================================================================================
@@ -29,7 +31,22 @@ pub trait Model {
         clean_attrs
     }
 }
-/// Migration --------------------------------------------------------------------------------------
+/// For Migration ----------------------------------------------------------------------------------
+/// Creating and refreshin a database for monitoring the state of models
+pub struct Monitor<'a> {
+    pub password: &'static str,
+    pub _client: &'a Client,
+}
+impl<'a> Monitor<'a> {
+    // Refresh models state
+    pub async fn refresh(&self) {
+        println!("{}", self.password);
+    }
+    // Reorganize database state
+    pub async fn run(&self) {
+        println!("{}", self.password);
+    }
+}
 
 // TESTS ===========================================================================================
 #[cfg(test)]
