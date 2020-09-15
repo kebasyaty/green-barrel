@@ -4,11 +4,12 @@ use mongodb::Client;
 mod mango_models;
 
 async fn migration() {
+    static PASSWORD: &'static str = "7rzg_cfqQB3B7q7T";
     let client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
     let monitor = Monitor {
-        password: "7rzg_cfqQB3B7q7T",
+        password: PASSWORD,
         client: &client,
     };
     // Refresh models state
