@@ -42,7 +42,8 @@ macro_rules! create_model {
 
                 let meta: Meta = Self::meta();
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
-                let database_names: Vec<String> = client.list_database_names(None, None).await.unwrap();
+                let database_names: Vec<String> =
+                    client.list_database_names(None, None).await.unwrap();
 
                 // Checking Widgets
                 for (field, widget) in attrs {

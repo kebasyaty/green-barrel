@@ -9,7 +9,7 @@ async fn migration() {
         .unwrap();
     let monitor = Monitor {
         password: "7rzg_cfqQB3B7q7T",
-        _client: &client,
+        client: &client,
     };
     // Refresh models state
     monitor.refresh().await;
