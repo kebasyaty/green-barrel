@@ -16,7 +16,7 @@ async fn migration() {
     // Register models
     mango_models::User::migrat(&client).await;
     mango_models::Category::migrat(&client).await;
-    // Reorganize database state
+    // Reorganize databases state
     monitor.run().await;
 }
 

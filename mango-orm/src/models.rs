@@ -2,7 +2,7 @@
 //!
 //! `Meta` - Metadata of models.
 //! `Model` - Defining common behavior of models.
-//! `run_monitor` - Creating and updating a database for monitoring the state of models.
+//! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
@@ -32,7 +32,7 @@ pub trait Model {
     }
 }
 /// For Migration ----------------------------------------------------------------------------------
-/// Creating and refreshin a database for monitoring the state of models
+/// Creation and updating of a technical database for monitoring the state of models
 pub struct Monitor<'a> {
     pub password: &'static str,
     pub _client: &'a Client,
@@ -42,7 +42,7 @@ impl<'a> Monitor<'a> {
     pub async fn refresh(&self) {
         println!("{}", self.password);
     }
-    // Reorganize database state
+    // Reorganize databases state
     pub async fn run(&self) {
         println!("{}", self.password);
     }
