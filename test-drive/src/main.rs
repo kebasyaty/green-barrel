@@ -1,18 +1,11 @@
-use mongodb::{
-    options::{ClientOptions, StreamAddress},
-    Client,
-};
+use mongodb::Client;
 
 mod mango_models;
 
 async fn migration() {
-    let client_options = ClientOptions::builder()
-        .hosts(vec![StreamAddress {
-            hostname: "localhost".into(),
-            port: Some(27017),
-        }])
-        .build();
-    let client = Client::with_options(client_options).unwrap();
+    let client = Client::with_uri_str("mongodb://localhost:27017")
+        .await
+        .unwrap();
     // Register models
     mango_models::User::migrat(&client).await;
     mango_models::Category::migrat(&client).await;
