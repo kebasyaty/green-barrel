@@ -41,7 +41,7 @@ macro_rules! create_model {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
-                // Technical database for `Monitor`
+                // Technical database for `models::Monitor`
                 let mango_db_name = format!("mango_{}", keyword);
                 // Checking the status of Widgets
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
@@ -373,7 +373,7 @@ macro_rules! create_model {
                     db.create_collection(&meta.collection, None).await.unwrap();
                 }
 
-                // Update the state of models for `Monitor`
+                // Update the state of models for `models::Monitor`
                 let db = client.database(&mango_db_name);
                 if !database_names.contains(&mango_db_name) {
                     panic!("???");
