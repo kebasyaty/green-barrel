@@ -16,7 +16,8 @@ pub struct Meta {
     pub database: String,
     pub collection: String,
 }
-/// Model ------------------------------------------------------------------------------------------
+// Model -------------------------------------------------------------------------------------------
+/// Defining common behavior of models
 #[async_trait]
 pub trait Model {
     // Get raw attributes for further processing
@@ -31,7 +32,7 @@ pub trait Model {
         clean_attrs
     }
 }
-/// For Migration ----------------------------------------------------------------------------------
+// For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
 pub struct Monitor<'a> {
     pub password: &'static str,
