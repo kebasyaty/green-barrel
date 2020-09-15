@@ -1,6 +1,6 @@
 //! # Macros
 //!
-//!  Custom macros for mango models.
+//!  `create_model` - Macro for converting Structure to Model.
 
 // MACROS ==========================================================================================
 /// Macro for converting Structure to Model
