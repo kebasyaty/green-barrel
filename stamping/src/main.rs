@@ -4,10 +4,8 @@ use actix_session::CookieSession;
 use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use chrono;
 use env_logger;
-use mongodb::{
-    options::{ClientOptions, StreamAddress},
-    Client,
-};
+use mango_orm::models::Monitor;
+use mongodb::Client;
 use tera::Tera;
 
 // Application settings
@@ -17,22 +15,27 @@ pub mod specific;
 // Services (sub-apps)
 pub mod services;
 
-async fn migration() {
-    let client_options = ClientOptions::builder()
-        .hosts(vec![StreamAddress {
-            hostname: settings::DB_HOSTNAME.into(),
-            port: Some(settings::DB_PORT),
-        }])
-        .build();
-    let client = Client::with_options(client_options).unwrap();
-    // Models
-    services::primal::mango_models::User::migrat(&client).await;
+async fn mango_migration() {
+    static KEYWORD: &'static str = "7rzg_cfqQB3B7q7T";
+    let client = Client::with_uri_str("mongodb://localhost:27017")
+        .await
+        .unwrap();
+    let monitor = Monitor {
+        keyword: KEYWORD,
+        client: &client,
+    };
+    // Refresh models state
+    monitor.refresh().await;
+    // Register models
+    services::primal::mango_models::User::migrat(KEYWORD, &client).await;
+    // Reorganize databases state
+    monitor.napalm().await;
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Run migrations
-    migration().await;
+    mango_migration().await;
     // Init logger middleware (debug, error, info, trace)
     std::env::set_var("RUST_LOG", "actix_web=info,actix_server=info");
     env_logger::init();
