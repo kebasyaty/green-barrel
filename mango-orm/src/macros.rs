@@ -375,7 +375,8 @@ macro_rules! create_model {
 
                 // Update the state of models for `models::Monitor`
                 let db = client.database(&mango_db_name);
-                if !database_names.contains(&mango_db_name) {
+                if !database_names.contains(&mango_db_name) ||
+                    !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 }
             }
