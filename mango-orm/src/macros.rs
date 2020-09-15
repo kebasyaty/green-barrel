@@ -39,9 +39,13 @@ macro_rules! create_model {
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-
+                // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
+                // Technical database for `Monitor`
+                let mango_db_name = format!("mango_{}", keyword);
+                // Checking the status of Widgets
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+                // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
 
@@ -367,6 +371,12 @@ macro_rules! create_model {
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
                     db.create_collection(&meta.collection, None).await.unwrap();
+                }
+
+                // Update the state of models for `Monitor`
+                let db = client.database(&mango_db_name);
+                if !database_names.contains(&mango_db_name) {
+                    panic!("???");
                 }
             }
         }

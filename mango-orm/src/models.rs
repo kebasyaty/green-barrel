@@ -1,6 +1,6 @@
 //! # Models
 //!
-//! `Meta` - Metadata of models.
+//! `Meta` - Metadata of model (database name, collection name, etc).
 //! `Model` - Defining common behavior of models.
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 
