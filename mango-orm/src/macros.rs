@@ -58,7 +58,7 @@ macro_rules! create_model {
                             $service, STRUCT_NAME, field
                         )
                     }
-                    // Checking the relationship of attribute states
+                    // Checking attribute states
                     match widget.field_type {
                         // InputCheckBox -----------------------------------------------------------
                         FieldType::InputCheckBox => {
@@ -378,6 +378,8 @@ macro_rules! create_model {
                 if !database_names.contains(&mango_db_name) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
+                } else {
+                    //
                 }
             }
         }
