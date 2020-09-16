@@ -7,10 +7,8 @@
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use futures::stream::StreamExt;
-use mongodb::{
-    bson::{doc, Bson},
-    Client,
-};
+use mongodb::{bson, options::UpdateModifications, Client};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 // MODELS ==========================================================================================
@@ -38,10 +36,18 @@ pub trait Model {
 }
 // For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
+#[derive(Serialize, Deserialize)]
+pub struct ModelState {
+    pub database: String,
+    pub collection: String,
+    pub status: bool,
+}
+
 pub struct Monitor<'a> {
     pub keyword: &'a str,
     pub client: &'a Client,
 }
+
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
@@ -59,13 +65,18 @@ impl<'a> Monitor<'a> {
             let db = self.client.database(&mango_orm_keyword);
             let collection = db.collection(collection_name);
             let mut cursor = collection.find(None, None).await.unwrap();
+            // Reset model state information
             while let Some(result) = cursor.next().await {
                 match result {
                     Ok(document) => {
-                        let database_name: &'static str =
-                            document.get("database").and_then(Bson::as_str).unwrap();
-                        let collection_name: &'static str =
-                            document.get("collection").and_then(Bson::as_str).unwrap();
+                        let mut model_state: ModelState =
+                            bson::de::from_document(document).unwrap();
+                        model_state.status = false;
+                        let query = bson::doc! {"database": &model_state.database, "collection": &model_state.collection};
+                        let update = UpdateModifications::Document(
+                            bson::ser::to_document(&model_state).unwrap(),
+                        );
+                        collection.update_one(query, update, None).await.unwrap();
                     }
                     Err(e) => panic!("{}", e),
                 }
