@@ -41,15 +41,17 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
-        let db_name = format!("mango_orm_{}", self.keyword);
+        let mango_orm_keyword = format!("mango_orm_{}", self.keyword);
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
-        if !database_names.contains(&db_name) {
+        if !database_names.contains(&mango_orm_keyword) {
             self.client
-                .database(&db_name)
+                .database(&mango_orm_keyword)
                 .create_collection("models", None)
                 .await
                 .unwrap();
+        } else {
+            //
         }
     }
     // Reorganize databases state
