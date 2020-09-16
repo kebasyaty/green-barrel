@@ -28,7 +28,7 @@ macro_rules! create_model {
             pub fn meta() -> Meta {
                 Meta {
                     database: $database.to_lowercase(),
-                    collection: format!("{}_{}",
+                    collection: format!("{}__{}",
                         $service.to_lowercase(),
                         stringify!($sname).to_lowercase()
                     )
@@ -380,6 +380,8 @@ macro_rules! create_model {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 } else {
                     let collection = db.collection("models");
+                    let doc = doc!{"database": &meta.database, "collection": &meta.collection, "status": true};
+                    collection.insert_one(doc, None).await.unwrap();
                 }
             }
         }
