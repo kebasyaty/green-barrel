@@ -6,7 +6,11 @@
 
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
-use mongodb::Client;
+use futures::stream::StreamExt;
+use mongodb::{
+    bson::{doc, Bson},
+    Client,
+};
 use std::collections::HashMap;
 
 // MODELS ==========================================================================================
@@ -54,7 +58,18 @@ impl<'a> Monitor<'a> {
         } else {
             let db = self.client.database(&mango_orm_keyword);
             let collection = db.collection(collection_name);
-            let cursor = collection.find(None, None).await.unwrap();
+            let mut cursor = collection.find(None, None).await.unwrap();
+            while let Some(result) = cursor.next().await {
+                match result {
+                    Ok(document) => {
+                        let database_name: &'static str =
+                            document.get("database").and_then(Bson::as_str).unwrap();
+                        let collection_name: &'static str =
+                            document.get("collection").and_then(Bson::as_str).unwrap();
+                    }
+                    Err(e) => panic!("{}", e),
+                }
+            }
         }
     }
     // Reorganize databases state
