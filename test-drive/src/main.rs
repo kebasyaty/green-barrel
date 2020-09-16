@@ -18,7 +18,7 @@ async fn mango_migration() {
     mango_models::User::migrat(KEYWORD, &client).await;
     mango_models::Category::migrat(KEYWORD, &client).await;
     // Reorganize databases state
-    // (full removal of irrelevant databases and collections)
+    // (full delete of irrelevant databases and collections)
     monitor.napalm().await;
 }
 
