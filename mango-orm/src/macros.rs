@@ -375,16 +375,20 @@ macro_rules! create_model {
 
                 // Update the state of models for `models::Monitor`
                 let db = client.database(&mango_orm_keyword);
+                // Check the availability of the technical base of the project
                 if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 } else {
                     let collection = db.collection("models");
                     let filter = doc! {"database": &meta.database, "collection": &meta.collection};
+                    // Check if there is model state in the database
                     if collection.count_documents(filter, None).await.unwrap() == 0_i64 {
+                        // Add model state information
                         let doc = doc!{"database": &meta.database, "collection": &meta.collection, "status": true};
                         collection.insert_one(doc, None).await.unwrap();
                     } else {
+                        // Update model state information
                         let query = doc! {"database": &meta.database, "collection": &meta.collection};
                         let update = UpdateModifications::Document(
                             doc!{"database": &meta.database, "collection": &meta.collection, "status": true}
