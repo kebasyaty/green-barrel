@@ -381,7 +381,7 @@ macro_rules! create_model {
                 } else {
                     let collection = db.collection("models");
                     let filter = doc! {"database": &meta.database, "collection": &meta.collection};
-                    if collection.count_documents(filter, None).await.unwrap() > 0_i64 {
+                    if collection.count_documents(filter, None).await.unwrap() == 0_i64 {
                     let doc = doc!{"database": &meta.database, "collection": &meta.collection, "status": true};
                     collection.insert_one(doc, None).await.unwrap();
                     }
