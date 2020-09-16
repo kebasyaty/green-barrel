@@ -42,7 +42,7 @@ macro_rules! create_model {
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
                 // Technical database for `models::Monitor`
-                let mango_db_name = format!("mango_orm_{}", keyword);
+                let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
                 let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
                 // List of existing databases
@@ -374,12 +374,12 @@ macro_rules! create_model {
                 }
 
                 // Update the state of models for `models::Monitor`
-                let db = client.database(&mango_db_name);
-                if !database_names.contains(&mango_db_name) ||
+                let db = client.database(&mango_orm_keyword);
+                if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 } else {
-                    //
+                    let collection = db.collection("models");
                 }
             }
         }
