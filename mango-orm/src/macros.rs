@@ -384,6 +384,10 @@ macro_rules! create_model {
                     if collection.count_documents(filter, None).await.unwrap() == 0_i64 {
                         let doc = doc!{"database": &meta.database, "collection": &meta.collection, "status": true};
                         collection.insert_one(doc, None).await.unwrap();
+                    } else {
+                        let query = doc! {"database": &meta.database, "collection": &meta.collection};
+                        let update = UpdateModifications::Document(doc!{"status": true});
+                        collection.update_one(query, update, None).await.unwrap();
                     }
                 }
             }
