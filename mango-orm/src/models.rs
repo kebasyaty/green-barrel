@@ -55,14 +55,17 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
+        // Keyword Validation
         let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.keyword) {
             panic!("Keyword - Valid characters: _|a-z|A-Z|0-9 ; Size: 8-16.");
         }
+        // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
+        // Create a technical database if it is missing
         if !database_names.contains(&mango_orm_keyword) {
             self.client
                 .database(&mango_orm_keyword)
@@ -70,10 +73,11 @@ impl<'a> Monitor<'a> {
                 .await
                 .unwrap();
         } else {
+            // Reset model state information
             let db: Database = self.client.database(&mango_orm_keyword);
             let collection: Collection = db.collection(collection_name);
             let mut cursor: Cursor = collection.find(None, None).await.unwrap();
-            // Reset model state information
+
             while let Some(result) = cursor.next().await {
                 match result {
                     Ok(document) => {
@@ -97,7 +101,16 @@ impl<'a> Monitor<'a> {
     // Reorganize databases state
     // (full delete of orphaned documents, collections and databases)
     pub async fn napalm(&self) {
-        println!("{}", self.keyword);
+        // Establish a connection with the technical database of the project
+        let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
+        let collection_name: &'static str = "models";
+        let db: Database = self.client.database(&mango_orm_keyword);
+        let collection: Collection = db.collection(collection_name);
+        // Delete orphaned Collections
+        let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+        while let Some(result) = cursor.next().await {
+            //
+        }
     }
 }
 
