@@ -281,6 +281,7 @@ mod tests {
             DataType::VectorF64(vec![1.1, 2.2]).get_data(),
             "1.1 2.2".to_string()
         );
+        assert_eq!(DataType::None.get_data(), String::new());
     }
 
     // Testing Transport structure -----------------------------------------------------------------
