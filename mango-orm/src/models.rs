@@ -110,8 +110,9 @@ impl<'a> Monitor<'a> {
         let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
         let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
         // Delete orphaned Collections
-        let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
-        while let Some(result) = cursor.next().await {
+        let cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
+        let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect().await;
+        for result in results {
             match result {
                 Ok(document) => {
                     let model_state: MangoOrmModelState =
