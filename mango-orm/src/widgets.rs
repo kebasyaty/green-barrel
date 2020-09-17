@@ -64,13 +64,15 @@ impl FieldType {
 pub enum DataType {
     Text(String),
     I64(i64),
-    U64(u64),
+    I32(i32),
+    U32(u32),
     F64(f64),
     Bool(bool),
     VectorText(Vec<String>),
     VectorI64(Vec<i64>),
     VectorU64(Vec<u64>),
     VectorF64(Vec<f64>),
+    None,
 }
 impl Default for DataType {
     fn default() -> Self {
@@ -82,7 +84,8 @@ impl DataType {
         match self {
             Self::Text(data) => data.to_owned(),
             Self::I64(data) => data.to_string(),
-            Self::U64(data) => data.to_string(),
+            Self::I32(data) => data.to_string(),
+            Self::U32(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
             Self::VectorText(data) => data.join(" "),
@@ -101,6 +104,7 @@ impl DataType {
                 .map(|num| num.to_string())
                 .collect::<Vec<String>>()
                 .join(" "),
+            Self::None => String::new(),
         }
     }
 }
@@ -257,7 +261,8 @@ mod tests {
             "Some text".to_string()
         );
         assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DataType::U64(10_u64).get_data(), 10_u64.to_string());
+        assert_eq!(DataType::I32(10_i32).get_data(), 10_i32.to_string());
+        assert_eq!(DataType::U32(10_u32).get_data(), 10_u32.to_string());
         assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
         assert_eq!(DataType::Bool(true).get_data(), true.to_string());
         assert_eq!(
