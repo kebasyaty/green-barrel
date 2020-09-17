@@ -41,7 +41,7 @@ pub trait Model {
 // For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
 #[derive(Serialize, Deserialize)]
-pub struct ModelState {
+pub struct MangoOrmModelState {
     pub database: String,
     pub collection: String,
     pub status: bool,
@@ -74,14 +74,14 @@ impl<'a> Monitor<'a> {
                 .unwrap();
         } else {
             // Reset model state information
-            let db: Database = self.client.database(&mango_orm_keyword);
-            let collection: Collection = db.collection(collection_name);
-            let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+            let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
+            let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
+            let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
 
             while let Some(result) = cursor.next().await {
                 match result {
                     Ok(document) => {
-                        let mut model_state: ModelState =
+                        let mut model_state: MangoOrmModelState =
                             bson::de::from_document(document).unwrap();
                         model_state.status = false;
                         let query: Document = bson::doc! {
@@ -91,7 +91,10 @@ impl<'a> Monitor<'a> {
                         let update: UpdateModifications = UpdateModifications::Document(
                             bson::ser::to_document(&model_state).unwrap(),
                         );
-                        collection.update_one(query, update, None).await.unwrap();
+                        mango_orm_collection
+                            .update_one(query, update, None)
+                            .await
+                            .unwrap();
                     }
                     Err(e) => panic!("{}", e),
                 }
@@ -104,12 +107,26 @@ impl<'a> Monitor<'a> {
         // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
-        let db: Database = self.client.database(&mango_orm_keyword);
-        let collection: Collection = db.collection(collection_name);
+        let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
+        let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
         // Delete orphaned Collections
-        let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+        let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
         while let Some(result) = cursor.next().await {
-            //
+            match result {
+                Ok(document) => {
+                    let model_state: MangoOrmModelState =
+                        bson::de::from_document(document).unwrap();
+                    if !model_state.status {
+                        self.client
+                            .database(&model_state.database)
+                            .collection(&model_state.collection)
+                            .drop(None)
+                            .await
+                            .unwrap();
+                    }
+                }
+                Err(e) => panic!("{}", e),
+            }
         }
     }
 }
