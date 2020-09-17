@@ -397,7 +397,8 @@ macro_rules! create_model {
                     }
                 }
 
-                // Check the field changes in the Model and (if required) update the documents in the appropriate Collection
+                // Check the field changes in the Model and (if required)
+                // update the documents in the appropriate Collection
                 for field in FIELD_NAMES {
                     println!("{}", field);
                 }
