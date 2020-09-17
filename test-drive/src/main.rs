@@ -4,6 +4,7 @@ use mongodb::Client;
 mod mango_models;
 
 async fn mango_migration() {
+    // KEYWORD - It is recommended not to change within the boundaries of one project
     static KEYWORD: &'static str = "7rzg_cfqQB3B7q7T";
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
