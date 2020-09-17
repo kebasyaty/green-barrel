@@ -375,7 +375,7 @@ macro_rules! create_model {
 
                 // Update the state of models for `models::Monitor`
                 let db = client.database(&mango_orm_keyword);
-                // Check the availability of the technical base of the project
+                // Check if there is a technical database of the project, if not, causes panic
                 if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
