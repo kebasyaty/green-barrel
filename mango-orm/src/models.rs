@@ -84,7 +84,7 @@ impl<'a> Monitor<'a> {
         }
     }
     // Reorganize databases state
-    // (full delete of irrelevant databases and collections)
+    // (full delete of orphaned collections and databases)
     pub async fn napalm(&self) {
         println!("{}", self.keyword);
     }
