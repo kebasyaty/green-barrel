@@ -7,7 +7,11 @@
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use futures::stream::StreamExt;
-use mongodb::{bson, options::UpdateModifications, Client};
+use mongodb::{
+    bson, bson::document::Document, options::UpdateModifications, Client, Collection, Cursor,
+    Database,
+};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -26,8 +30,8 @@ pub trait Model {
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Get pure attributes for a page templating engine
     fn form_attrs() -> HashMap<String, Transport> {
-        let raw_attrs = Self::raw_attrs();
-        let mut clean_attrs = HashMap::new();
+        let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
+        let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
         for (field, widget) in &raw_attrs {
             clean_attrs.insert(field.to_string(), widget.get_clean_attrs(field));
         }
@@ -51,6 +55,10 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
+        let re = Regex::new(r"^[_a-zA-Z\d]$").unwrap();
+        if !re.is_match(self.keyword) {
+            panic!("Keyword - Valid characters: _|a-z|A-Z|0-9");
+        }
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
         let database_names: Vec<String> =
@@ -62,9 +70,9 @@ impl<'a> Monitor<'a> {
                 .await
                 .unwrap();
         } else {
-            let db = self.client.database(&mango_orm_keyword);
-            let collection = db.collection(collection_name);
-            let mut cursor = collection.find(None, None).await.unwrap();
+            let db: Database = self.client.database(&mango_orm_keyword);
+            let collection: Collection = db.collection(collection_name);
+            let mut cursor: Cursor = collection.find(None, None).await.unwrap();
             // Reset model state information
             while let Some(result) = cursor.next().await {
                 match result {
@@ -72,8 +80,11 @@ impl<'a> Monitor<'a> {
                         let mut model_state: ModelState =
                             bson::de::from_document(document).unwrap();
                         model_state.status = false;
-                        let query = bson::doc! {"database": &model_state.database, "collection": &model_state.collection};
-                        let update = UpdateModifications::Document(
+                        let query: Document = bson::doc! {
+                            "database": &model_state.database,
+                            "collection": &model_state.collection
+                        };
+                        let update: UpdateModifications = UpdateModifications::Document(
                             bson::ser::to_document(&model_state).unwrap(),
                         );
                         collection.update_one(query, update, None).await.unwrap();

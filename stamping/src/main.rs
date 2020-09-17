@@ -17,7 +17,7 @@ pub mod services;
 
 async fn mango_migration() {
     static KEYWORD: &'static str = "7rzg_cfqQB3B7q7T";
-    let client = Client::with_uri_str("mongodb://localhost:27017")
+    let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
     let monitor = Monitor {
