@@ -366,7 +366,7 @@ macro_rules! create_model {
                     }
                 }
 
-                // Create a new database and add new collections
+                // Create a new database (if doesn't exist) and add new collection
                 let db = client.database(&meta.database);
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
