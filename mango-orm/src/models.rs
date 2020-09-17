@@ -55,9 +55,9 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     // Refresh models state
     pub async fn refresh(&self) {
-        let re = Regex::new(r"^[_a-zA-Z\d]$").unwrap();
+        let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.keyword) {
-            panic!("Keyword - Valid characters: _|a-z|A-Z|0-9");
+            panic!("Keyword - Valid characters: _|a-z|A-Z|0-9 ; Size: 8-16.");
         }
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
