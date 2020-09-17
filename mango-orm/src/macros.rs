@@ -396,6 +396,11 @@ macro_rules! create_model {
                         collection.update_one(query, update, None).await.unwrap();
                     }
                 }
+
+                // Check the field changes in the Model and (if required) update the documents in the appropriate Collection
+                for field in FIELD_NAMES {
+                    //
+                }
             }
         }
     }
