@@ -118,12 +118,19 @@ impl<'a> Monitor<'a> {
                     let model_state: MangoOrmModelState =
                         bson::de::from_document(document).unwrap();
                     if !model_state.status {
+                        // Delete Collection
                         self.client
                             .database(&model_state.database)
                             .collection(&model_state.collection)
                             .drop(None)
                             .await
                             .unwrap();
+                        // Delete a document with a record about the state of the model from the technical base
+                        let query: Document = bson::doc! {
+                            "database": &model_state.database,
+                            "collection": &model_state.collection
+                        };
+                        mango_orm_collection.delete_one(query, None).await.unwrap();
                     }
                 }
                 Err(e) => panic!("{}", e),
