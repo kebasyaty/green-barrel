@@ -118,7 +118,7 @@ impl<'a> Monitor<'a> {
                     let model_state: MangoOrmModelState =
                         bson::de::from_document(document).unwrap();
                     if !model_state.status {
-                        // Delete Collection
+                        // Delete Collection (left without a model)
                         self.client
                             .database(&model_state.database)
                             .collection(&model_state.collection)
