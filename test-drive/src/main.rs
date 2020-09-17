@@ -20,7 +20,7 @@ async fn mango_migration() {
     mango_models::User::migrat(KEYWORD, &client).await;
     mango_models::Category::migrat(KEYWORD, &client).await;
     // Reorganize databases state
-    // (full delete of orphaned collections and databases)
+    // (full delete of orphaned documents, collections and databases)
     monitor.napalm().await;
 }
 
