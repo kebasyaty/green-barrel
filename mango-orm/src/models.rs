@@ -65,7 +65,7 @@ impl<'a> Monitor<'a> {
         let collection_name: &'static str = "models";
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
-        // Create a technical database if it is missing
+        // Create a technical database for the project if it doesn't exist
         if !database_names.contains(&mango_orm_keyword) {
             self.client
                 .database(&mango_orm_keyword)
