@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
-use mango_orm::widgets::{FieldType, SelectDataType, Widget};
+use mango_orm::widgets::{FieldType, Widget};
 use mongodb::{
     bson::{doc, Bson},
     options::UpdateModifications,
