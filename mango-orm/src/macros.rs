@@ -64,15 +64,15 @@ macro_rules! create_model {
                     // Add in map default value
                     default_values.insert(field, (widget.value.data_type(), widget.value.raw_data()));
                     // Checking attribute states
-                    match widget.field_type {
+                    match widget.value {
                         // InputCheckBox -----------------------------------------------------------
-                        FieldType::InputCheckBox => {
+                        FieldType::InputCheckBox(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `relation_model` = only blank string.",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
+                            } else if widget.value != FieldType::InputCheckBox(false) || widget.value != FieldType::InputCheckBox(true) {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `value` = only false or true.",
                                     $service, STRUCT_NAME, field
@@ -90,7 +90,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputColor --------------------------------------------------------------
-                        FieldType::InputColor => {
+                        FieldType::InputColor(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `relation_model` = only blank string.",
@@ -104,7 +104,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputDate ---------------------------------------------------------------
-                        FieldType::InputDate => {
+                        FieldType::InputDate(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `relation_model` = only blank string.",
@@ -118,7 +118,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputEmail --------------------------------------------------------------
-                        FieldType::InputEmail => {
+                        FieldType::InputEmail(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `relation_model` = only blank string.",
@@ -132,7 +132,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputFile ---------------------------------------------------------------
-                        FieldType::InputFile => {
+                        FieldType::InputFile(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `relation_model` = only blank string.",
@@ -151,7 +151,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputImage --------------------------------------------------------------
-                        FieldType::InputImage => {
+                        FieldType::InputImage(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `relation_model` = only blank string.",
@@ -170,7 +170,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputNumber -------------------------------------------------------------
-                        FieldType::InputNumber => {
+                        FieldType::InputNumber(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
@@ -184,7 +184,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputPassword -----------------------------------------------------------
-                        FieldType::InputPassword => {
+                        FieldType::InputPassword(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `relation_model` = only blank string.",
@@ -203,7 +203,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputRadio --------------------------------------------------------------
-                        FieldType::InputRadio => {
+                        FieldType::InputRadio(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `relation_model` = only blank string.",
@@ -227,7 +227,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputRange --------------------------------------------------------------
-                        FieldType::InputRange => {
+                        FieldType::InputRange(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
@@ -241,7 +241,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputTel ----------------------------------------------------------------
-                        FieldType::InputTel => {
+                        FieldType::InputTel(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `relation_model` = only blank string.",
@@ -255,7 +255,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputText ---------------------------------------------------------------
-                        FieldType::InputText => {
+                        FieldType::InputText(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `relation_model` = only blank string.",
@@ -269,7 +269,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputTime ---------------------------------------------------------------
-                        FieldType::InputDateTime => {
+                        FieldType::InputDateTime(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `relation_model` = only blank string.",
@@ -283,7 +283,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputUrl ----------------------------------------------------------------
-                        FieldType::InputUrl => {
+                        FieldType::InputUrl(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `relation_model` = only blank string.",
@@ -297,7 +297,7 @@ macro_rules! create_model {
                             }
                         }
                         // TextArea ----------------------------------------------------------------
-                        FieldType::TextArea => {
+                        FieldType::TextArea(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `relation_model` = only blank string.",
@@ -311,7 +311,7 @@ macro_rules! create_model {
                             }
                         }
                         // Select ------------------------------------------------------------------
-                        FieldType::Select => {
+                        FieldType::Select(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
@@ -325,7 +325,7 @@ macro_rules! create_model {
                             }
                         }
                         // ForeignKey --------------------------------------------------------------
-                        FieldType::ForeignKey => {
+                        FieldType::ForeignKey(_) => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
@@ -339,7 +339,7 @@ macro_rules! create_model {
                             }
                         }
                         // ManyToMany --------------------------------------------------------------
-                        FieldType::ManyToMany => {
+                        FieldType::ManyToMany(_) => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
@@ -353,7 +353,7 @@ macro_rules! create_model {
                             }
                         }
                         // OneToOne ----------------------------------------------------------------
-                        FieldType::OneToOne => {
+                        FieldType::OneToOne(_) => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
