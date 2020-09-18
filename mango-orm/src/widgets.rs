@@ -11,7 +11,7 @@ pub enum FieldType {
     InputCheckBox(bool),
     InputColor(String),
     InputDate(String),
-    InputDateTime(u32),
+    InputDateTime(String),
     InputEmail(String),
     InputFile,
     InputImage,
@@ -119,7 +119,7 @@ impl FieldType {
             Self::InputCheckBox(_) => "bool",
             Self::InputColor(_) => "string",
             Self::InputDate(_) => "string",
-            Self::InputDateTime(_) => "u32",
+            Self::InputDateTime(_) => "string",
             Self::InputEmail(_) => "string",
             Self::InputFile => "string",
             Self::InputImage => "string",
@@ -310,76 +310,40 @@ mod tests {
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_field_types() {
-        assert_eq!(
-            FieldType::InputCheckBox(false).input_type(),
-            "checkbox".to_string()
-        );
-        assert_eq!(
-            FieldType::InputColor(String::new()).input_type(),
-            "color".to_string()
-        );
-        assert_eq!(
-            FieldType::InputDate(String::new()).input_type(),
-            "date".to_string()
-        );
+        assert_eq!(FieldType::InputCheckBox(false).input_type(), "checkbox");
+        assert_eq!(FieldType::InputColor(String::new()).input_type(), "color");
+        assert_eq!(FieldType::InputDate(String::new()).input_type(), "date");
         assert_eq!(
             FieldType::InputDateTime(String::new()).input_type(),
-            "datetime".to_string()
+            "datetime"
         );
-        assert_eq!(
-            FieldType::InputEmail(String::new()).input_type(),
-            "email".to_string()
-        );
+        assert_eq!(FieldType::InputEmail(String::new()).input_type(), "email");
         assert_eq!(FieldType::InputImage.input_type(), "image".to_string());
-        assert_eq!(FieldType::InputNumber.input_type(), "number".to_string());
+        assert_eq!(FieldType::InputNumberI32(-1_i32).input_type(), "number");
+        assert_eq!(FieldType::InputNumberU32(0_u32).input_type(), "number");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).input_type(), "number");
+        assert_eq!(FieldType::InputNumberF64(-1.3_f64).input_type(), "number");
         assert_eq!(
             FieldType::InputPassword(String::new()).input_type(),
-            "password".to_string()
+            "password"
         );
-        assert_eq!(
-            FieldType::InputRadio(false).input_type(),
-            "radio".to_string()
-        );
-        assert_eq!(FieldType::InputRange.input_type(), "range".to_string());
-        assert_eq!(
-            FieldType::InputTel(String::new()).input_type(),
-            "tel".to_string()
-        );
-        assert_eq!(
-            FieldType::InputText(String::new()).input_type(),
-            "text".to_string()
-        );
-        assert_eq!(
-            FieldType::InputUrl(String::new()).input_type(),
-            "url".to_string()
-        );
-        assert_eq!(
-            FieldType::TextArea(String::new()).input_type(),
-            "textarea".to_string()
-        );
-        assert_eq!(
-            FieldType::SelectText(String::new()).input_type(),
-            "select".to_string()
-        );
-        assert_eq!(
-            FieldType::SelectI32(-1_i32).input_type(),
-            "select".to_string()
-        );
-        assert_eq!(
-            FieldType::SelectU32(0_u32).input_type(),
-            "select".to_string()
-        );
-        assert_eq!(
-            FieldType::SelectI64(-1_i64).input_type(),
-            "select".to_string()
-        );
-        assert_eq!(
-            FieldType::SelectF64(-1.3_f64).input_type(),
-            "select".to_string()
-        );
-        assert_eq!(FieldType::ForeignKey.input_type(), "select".to_string());
-        assert_eq!(FieldType::ManyToMany.input_type(), "select".to_string());
-        assert_eq!(FieldType::OneToOne.input_type(), "hidden".to_string());
+        assert_eq!(FieldType::InputRadio(false).input_type(), "radio");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).input_type(), "range");
+        assert_eq!(FieldType::InputRangeU32(0_u32).input_type(), "range");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).input_type(), "range");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).input_type(), "range");
+        assert_eq!(FieldType::InputTel(String::new()).input_type(), "tel");
+        assert_eq!(FieldType::InputText(String::new()).input_type(), "text");
+        assert_eq!(FieldType::InputUrl(String::new()).input_type(), "url");
+        assert_eq!(FieldType::TextArea(String::new()).input_type(), "textarea");
+        assert_eq!(FieldType::SelectText(String::new()).input_type(), "select");
+        assert_eq!(FieldType::SelectI32(-1_i32).input_type(), "select");
+        assert_eq!(FieldType::SelectU32(0_u32).input_type(), "select");
+        assert_eq!(FieldType::SelectI64(-1_i64).input_type(), "select");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).input_type(), "select");
+        assert_eq!(FieldType::ForeignKey.input_type(), "select");
+        assert_eq!(FieldType::ManyToMany.input_type(), "select");
+        assert_eq!(FieldType::OneToOne.input_type(), "hidden");
     }
 
     // Testing Data types --------------------------------------------------------------------------
