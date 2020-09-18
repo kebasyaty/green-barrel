@@ -62,7 +62,7 @@ macro_rules! create_model {
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, (widget.value.get_type(), widget.value.get_data()));
+                    default_values.insert(field, (widget.value.data_type(), widget.value.raw_data()));
                     // Checking attribute states
                     match widget.field_type {
                         // InputCheckBox -----------------------------------------------------------
@@ -411,13 +411,13 @@ macro_rules! create_model {
                 let mut doc = doc! {};
                 for (k, v) in &default_values {
                     match v.0 {
-                        "Text" => doc.insert(k.to_string(), Bson::String(v.1.clone())),
-                        "I64" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "I32" => doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
-                        "U32" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "F64" => doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
-                        "Bool" => doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
-                        "None" => doc.insert(k.to_string(), Bson::Null),
+                        "string" => doc.insert(k.to_string(), Bson::String(v.1.clone())),
+                        "i32" => doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
+                        "u32" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "i64" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "f64" => doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
+                        "bool" => doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
+                        "none" => doc.insert(k.to_string(), Bson::Null),
                         _ => panic!("Invalid data type."),
                     };
                 }
