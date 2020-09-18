@@ -6,7 +6,7 @@ use serde::Serialize;
 
 // WIDGETS =========================================================================================
 /// Field types for Widgets
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum FieldType {
     InputCheckBox(bool),
     InputColor(String),
@@ -150,7 +150,7 @@ impl FieldType {
 }
 
 /// Data types for the `value` attribute -----------------------------------------------------------
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum SelectDataType {
     Text(String),
     I32(i32),
