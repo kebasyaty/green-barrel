@@ -307,9 +307,10 @@ impl Widget {
 mod tests {
     use super::*;
 
-    // Testing field types for Widget --------------------------------------------------------------
+    // Testing enum FieldTypes ---------------------------------------------------------------------
     #[test]
     fn test_field_types() {
+        // Method input_type()
         assert_eq!(FieldType::InputCheckBox(false).input_type(), "checkbox");
         assert_eq!(FieldType::InputColor(String::new()).input_type(), "color");
         assert_eq!(FieldType::InputDate(String::new()).input_type(), "date");
@@ -350,15 +351,13 @@ mod tests {
     #[test]
     fn test_data_types() {
         assert_eq!(
-            DataType::Text("Some text".to_string()).get_data(),
+            SelectDataType::Text("Some text".to_string()).get_data(),
             "Some text".to_string()
         );
-        assert_eq!(DataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(DataType::I32(10_i32).get_data(), 10_i32.to_string());
-        assert_eq!(DataType::U32(10_u32).get_data(), 10_u32.to_string());
-        assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
-        assert_eq!(DataType::Bool(true).get_data(), true.to_string());
-        assert_eq!(DataType::None.get_data(), String::new());
+        assert_eq!(SelectDataType::I64(10_i64).get_data(), 10_i64.to_string());
+        assert_eq!(SelectDataType::I32(10_i32).get_data(), 10_i32.to_string());
+        assert_eq!(SelectDataType::U32(10_u32).get_data(), 10_u32.to_string());
+        assert_eq!(SelectDataType::F64(10_f64).get_data(), 10_f64.to_string());
     }
 
     // Testing Transport structure -----------------------------------------------------------------
