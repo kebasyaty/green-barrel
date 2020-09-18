@@ -174,11 +174,11 @@ impl SelectDataType {
 
     pub fn data_type(&self) -> &'static str {
         match self {
-            Self::Text(_) => "Text",
-            Self::I64(_) => "I64",
-            Self::I32(_) => "I32",
-            Self::U32(_) => "U32",
-            Self::F64(_) => "F64",
+            Self::Text(_) => "string",
+            Self::I64(_) => "i64",
+            Self::I32(_) => "i32",
+            Self::U32(_) => "u32",
+            Self::F64(_) => "f64",
         }
     }
 }
