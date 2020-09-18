@@ -28,11 +28,13 @@ pub enum FieldType {
     ManyToMany,
     OneToOne,
 }
+
 impl Default for FieldType {
     fn default() -> Self {
         FieldType::InputText
     }
 }
+
 impl FieldType {
     pub fn get_type(&self) -> String {
         match self {
@@ -70,11 +72,13 @@ pub enum DataType {
     Bool(bool),
     None,
 }
+
 impl Default for DataType {
     fn default() -> Self {
         DataType::Text(String::new())
     }
 }
+
 impl DataType {
     pub fn get_data(&self) -> String {
         match self {
