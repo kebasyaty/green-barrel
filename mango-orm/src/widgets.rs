@@ -280,7 +280,7 @@ impl Widget {
             label: self.label.clone(),
             field_type: field_type,
             name: name.to_string(),
-            value: self.value.get_data(),
+            value: self.value.raw_data(),
             maxlength: self.maxlength.clone(),
             required: self.required.clone(),
             checked: checked,
@@ -292,7 +292,7 @@ impl Widget {
             select: self
                 .select
                 .iter()
-                .map(|item| (item.0.clone(), item.1.get_data()))
+                .map(|item| (item.0.clone(), item.1.raw_data()))
                 .collect::<Vec<(String, String)>>(),
         }
     }
