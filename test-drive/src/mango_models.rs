@@ -6,7 +6,7 @@ use mongodb::{bson::doc, options::UpdateModifications, Client};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-const SERVICE_NAME: &'static str = "account";
+const SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME
 const DATABASE_NAME: &'static str = "test_drive";
 
 create_model! {
