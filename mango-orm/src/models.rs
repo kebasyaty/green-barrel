@@ -102,7 +102,7 @@ impl<'a> Monitor<'a> {
         }
     }
     // Reorganize databases state
-    // (full delete of orphaned documents, collections and databases)
+    // (full delete of orphaned collections and databases)
     pub async fn napalm(&self) {
         // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
