@@ -174,7 +174,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputNumber -------------------------------------------------------------
-                        FieldType::InputNumber(_) => {
+                        FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_) | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
