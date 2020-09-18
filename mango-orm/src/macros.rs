@@ -48,7 +48,7 @@ macro_rules! create_model {
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
-                // Default values from `value` attribute
+                // Default values and value type from `value` attribute
                 let mut default_values: HashMap<&'static str, (String, String)> = HashMap::new();
 
                 // Checking Widgets
@@ -61,7 +61,7 @@ macro_rules! create_model {
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, ("".to_string(), widget.value.get_data()));
+                    default_values.insert(field, (widget.value.get_type(), widget.value.get_data()));
                     // Checking attribute states
                     match widget.field_type {
                         // InputCheckBox -----------------------------------------------------------

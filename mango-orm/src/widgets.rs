@@ -68,10 +68,6 @@ pub enum DataType {
     U32(u32),
     F64(f64),
     Bool(bool),
-    VectorText(Vec<String>),
-    VectorI64(Vec<i64>),
-    VectorU64(Vec<u64>),
-    VectorF64(Vec<f64>),
     None,
 }
 impl Default for DataType {
@@ -88,23 +84,19 @@ impl DataType {
             Self::U32(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
-            Self::VectorText(data) => data.join(" "),
-            Self::VectorI64(data) => data
-                .iter()
-                .map(|num| num.to_string())
-                .collect::<Vec<String>>()
-                .join(" "),
-            Self::VectorU64(data) => data
-                .iter()
-                .map(|num| num.to_string())
-                .collect::<Vec<String>>()
-                .join(" "),
-            Self::VectorF64(data) => data
-                .iter()
-                .map(|num| num.to_string())
-                .collect::<Vec<String>>()
-                .join(" "),
             Self::None => String::new(),
+        }
+    }
+
+    pub fn get_type(&self) -> String {
+        match self {
+            Self::Text(_) => "Text".to_string(),
+            Self::I64(_) => "I64".to_string(),
+            Self::I32(_) => "I32".to_string(),
+            Self::U32(_) => "U32".to_string(),
+            Self::F64(_) => "F64".to_string(),
+            Self::Bool(_) => "Bool".to_string(),
+            Self::None => "None".to_string(),
         }
     }
 }
@@ -265,22 +257,6 @@ mod tests {
         assert_eq!(DataType::U32(10_u32).get_data(), 10_u32.to_string());
         assert_eq!(DataType::F64(10_f64).get_data(), 10_f64.to_string());
         assert_eq!(DataType::Bool(true).get_data(), true.to_string());
-        assert_eq!(
-            DataType::VectorText(vec!["some text".to_string(), "some text".to_string()]).get_data(),
-            "some text some text".to_string()
-        );
-        assert_eq!(
-            DataType::VectorI64(vec![1, -2]).get_data(),
-            "1 -2".to_string()
-        );
-        assert_eq!(
-            DataType::VectorU64(vec![1, 2]).get_data(),
-            "1 2".to_string()
-        );
-        assert_eq!(
-            DataType::VectorF64(vec![1.1, 2.2]).get_data(),
-            "1.1 2.2".to_string()
-        );
         assert_eq!(DataType::None.get_data(), String::new());
     }
 
