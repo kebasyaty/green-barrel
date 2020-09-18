@@ -406,6 +406,10 @@ macro_rules! create_model {
                 for field in FIELD_NAMES {
                     println!("{}", field);
                 }
+                //
+                for (k, v) in &default_values {
+                    println!("{}: {:?}", k, v);
+                }
             }
         }
     }
