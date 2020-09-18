@@ -411,7 +411,7 @@ mod tests {
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
-        assert_eq!(widget.select[0].1.data_type(), String::new());
+        assert_eq!(widget.select[0].1.raw_data(), String::new());
         // Methods
         let mut attrs = widget.get_clean_attrs("");
         attrs.select = vec![(
@@ -421,7 +421,7 @@ mod tests {
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
-        assert_eq!(attrs.field_type, "string".to_string());
+        assert_eq!(attrs.field_type, "text".to_string());
         assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
