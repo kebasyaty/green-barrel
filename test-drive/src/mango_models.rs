@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
-use mango_orm::widgets::{DataType, FieldType, Widget};
+use mango_orm::widgets::{FieldType, SelectDataType, Widget};
 use mongodb::{
     bson::{doc, Bson},
     options::UpdateModifications,
@@ -29,8 +29,7 @@ impl Model for Category {
             "title",
             Widget {
                 label: "Category Name".to_string(),
-                field_type: FieldType::InputText,
-                value: DataType::Text(String::new()),
+                value: FieldType::InputText(String::new()),
                 maxlength: 40,
                 hint: "Please enter Category name.".to_string(),
                 other_attrs: format!("placeholder=\"{}\"", "Category Name"),
@@ -58,8 +57,7 @@ impl Model for User {
             "username",
             Widget {
                 label: "Your Name".to_string(),
-                field_type: FieldType::InputText,
-                value: DataType::Text("Rust".to_string()),
+                value: FieldType::InputText("Rust".to_string()),
                 maxlength: 40,
                 hint: "Please enter your real name.".to_string(),
                 other_attrs: format!("placeholder=\"{}\"", "Your Name"),
@@ -70,7 +68,7 @@ impl Model for User {
             "email",
             Widget {
                 label: "Your Email".to_string(),
-                field_type: FieldType::InputEmail,
+                value: FieldType::InputEmail(String::new()),
                 maxlength: 78,
                 hint: "Enter your work email.".to_string(),
                 unique: true,

@@ -142,9 +142,9 @@ impl FieldType {
             Self::SelectU32(_) => "u32",
             Self::SelectI64(_) => "i64",
             Self::SelectF64(_) => "f64",
-            Self::ForeignKey => "string",
-            Self::ManyToMany => "string",
-            Self::OneToOne => "string",
+            Self::ForeignKey => "none",
+            Self::ManyToMany => "none",
+            Self::OneToOne => "none",
         }
     }
 }
@@ -395,18 +395,14 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), DataType::Text(String::new()))];
+        widget.select = vec![(String::new(), SelectDataType::Text(String::new()))];
         // Fields
         assert_eq!(widget.label, String::new());
         assert_eq!(
-            widget.field_type.get_type(),
-            FieldType::InputText.get_type()
+            widget.value.input_type(),
+            FieldType::InputText(String::new()).input_type()
         );
         assert_eq!(widget.relation_model, String::new());
-        assert_eq!(
-            widget.value.get_data(),
-            DataType::Text(String::new()).get_data()
-        );
         assert_eq!(widget.maxlength, 0);
         assert_eq!(widget.required, true);
         assert_eq!(widget.hint, String::new());
@@ -415,14 +411,17 @@ mod tests {
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
-        assert_eq!(widget.select[0].1.get_data(), String::new());
+        assert_eq!(widget.select[0].1.data_type(), String::new());
         // Methods
         let mut attrs = widget.get_clean_attrs("");
-        attrs.select = vec![(String::new(), DataType::Text(String::new()).get_data())];
+        attrs.select = vec![(
+            String::new(),
+            SelectDataType::Text(String::new()).raw_data(),
+        )];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
-        assert_eq!(attrs.field_type, "text".to_string());
+        assert_eq!(attrs.field_type, "string".to_string());
         assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
