@@ -213,7 +213,7 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `relation_model` = only blank string.",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.value != DataType::Bool(false) || widget.value != DataType::Bool(true) {
+                            } else if widget.value != FieldType::InputRadio(false) || widget.value != FieldType::InputRadio(true) {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `value` = only false or true.",
                                     $service, STRUCT_NAME, field
