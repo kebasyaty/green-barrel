@@ -33,9 +33,9 @@ pub enum FieldType {
     SelectU32(u32),
     SelectI64(i64),
     SelectF64(f64),
-    ForeignKey(String),
-    ManyToMany(String),
-    OneToOne(String),
+    ForeignKey,
+    ManyToMany,
+    OneToOne,
 }
 
 impl Default for FieldType {
@@ -72,9 +72,9 @@ impl FieldType {
             Self::SelectU32(_) => "select".to_string(),
             Self::SelectI64(_) => "select".to_string(),
             Self::SelectF64(_) => "select".to_string(),
-            Self::ForeignKey(_) => "select".to_string(),
-            Self::ManyToMany(_) => "select".to_string(),
-            Self::OneToOne(_) => "hidden".to_string(),
+            Self::ForeignKey => "select".to_string(),
+            Self::ManyToMany => "select".to_string(),
+            Self::OneToOne => "hidden".to_string(),
         }
     }
 
@@ -105,9 +105,9 @@ impl FieldType {
             Self::SelectU32(data) => data.to_string(),
             Self::SelectI64(data) => data.to_string(),
             Self::SelectF64(data) => data.to_string(),
-            Self::ForeignKey(data) => data.to_string(),
-            Self::ManyToMany(data) => data.to_string(),
-            Self::OneToOne(data) => data.to_string(),
+            Self::ForeignKey => String::new(),
+            Self::ManyToMany => String::new(),
+            Self::OneToOne => String::new(),
         }
     }
 
@@ -138,9 +138,9 @@ impl FieldType {
             Self::SelectU32(_) => "u32".to_string(),
             Self::SelectI64(_) => "i64".to_string(),
             Self::SelectF64(_) => "f64".to_string(),
-            Self::ForeignKey(_) => "string".to_string(),
-            Self::ManyToMany(_) => "string".to_string(),
-            Self::OneToOne(_) => "string".to_string(),
+            Self::ForeignKey => String::new(),
+            Self::ManyToMany => String::new(),
+            Self::OneToOne => String::new(),
         }
     }
 }
@@ -157,7 +157,7 @@ pub enum SelectDataType {
 
 impl Default for SelectDataType {
     fn default() -> Self {
-        DataType::Text(String::new())
+        SelectDataType::Text(String::new())
     }
 }
 
@@ -169,7 +169,6 @@ impl SelectDataType {
             Self::I32(data) => data.to_string(),
             Self::U32(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
-            Self::Bool(data) => data.to_string(),
         }
     }
 
@@ -180,7 +179,6 @@ impl SelectDataType {
             Self::I32(_) => "I32",
             Self::U32(_) => "U32",
             Self::F64(_) => "F64",
-            Self::Bool(_) => "Bool",
         }
     }
 }
@@ -227,9 +225,8 @@ pub struct Transport {
 #[derive(Debug)]
 pub struct Widget {
     pub label: String,
-    pub field_type: FieldType,
     pub relation_model: String,
-    pub value: DataType,
+    pub value: FieldType,
     pub maxlength: u32,
     pub required: bool,
     pub hint: String,
@@ -237,16 +234,15 @@ pub struct Widget {
     pub hidden: bool,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, DataType)>,
+    pub select: Vec<(String, SelectDataType)>,
 }
 
 impl Default for Widget {
     fn default() -> Self {
         Widget {
             label: String::new(),
-            field_type: FieldType::default(),
             relation_model: String::new(),
-            value: DataType::default(),
+            value: FieldType::default(),
             maxlength: 0_u32,
             required: true,
             hint: String::new(),
@@ -264,13 +260,14 @@ impl Widget {
     pub fn get_clean_attrs(&self, name: &str) -> Transport {
         let field_type = match self.hidden {
             true => "hidden".to_string(),
-            false => self.field_type.get_type(),
+            false => self.value.input_type(),
         };
         let checked = match self.value {
-            DataType::Bool(data) => data,
+            FieldType::InputCheckBox(data) => data,
+            FieldType::InputRadio(data) => data,
             _ => false,
         };
-        let other_attrs = match self.field_type {
+        let other_attrs = match self.value {
             FieldType::ManyToMany => match self.other_attrs.contains("multiple") {
                 true => self.other_attrs.clone(),
                 false => format!("multiple {}", self.other_attrs),
