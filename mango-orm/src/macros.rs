@@ -48,6 +48,8 @@ macro_rules! create_model {
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
+                // Default values from `value` attribute
+                let mut default_values: HashMap<&'static str, String> = HashMap::new();
 
                 // Checking Widgets
                 for (field, widget) in attrs {
@@ -58,6 +60,8 @@ macro_rules! create_model {
                             $service, STRUCT_NAME, field
                         )
                     }
+                    // Add in map default value
+                    default_values.insert(field, widget.value.get_data());
                     // Checking attribute states
                     match widget.field_type {
                         // InputCheckBox -----------------------------------------------------------
