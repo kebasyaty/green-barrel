@@ -13,8 +13,8 @@ pub enum FieldType {
     InputDate(String),
     InputDateTime(u32),
     InputEmail(String),
-    InputFile(String),
-    InputImage(String),
+    InputFile,
+    InputImage,
     InputNumberI32(i32),
     InputNumberU32(u32),
     InputNumberI64(i64),
@@ -29,6 +29,7 @@ pub enum FieldType {
     InputText(String),
     InputUrl(String),
     TextArea(String),
+    SelectText(String),
     SelectI32(i32),
     SelectU32(u32),
     SelectI64(i64),
@@ -45,36 +46,37 @@ impl Default for FieldType {
 }
 
 impl FieldType {
-    pub fn input_type(&self) -> String {
+    pub fn input_type(&self) -> &'static str {
         match self {
-            Self::InputCheckBox(_) => "checkbox".to_string(),
-            Self::InputColor(_) => "color".to_string(),
-            Self::InputDate(_) => "date".to_string(),
-            Self::InputDateTime(_) => "datetime".to_string(),
-            Self::InputEmail(_) => "email".to_string(),
-            Self::InputFile(_) => "file".to_string(),
-            Self::InputImage(_) => "image".to_string(),
-            Self::InputNumberI32(_) => "number".to_string(),
-            Self::InputNumberU32(_) => "number".to_string(),
-            Self::InputNumberI64(_) => "number".to_string(),
-            Self::InputNumberF64(_) => "number".to_string(),
-            Self::InputPassword(_) => "password".to_string(),
-            Self::InputRadio(_) => "radio".to_string(),
-            Self::InputRangeI32(_) => "range".to_string(),
-            Self::InputRangeU32(_) => "range".to_string(),
-            Self::InputRangeI64(_) => "range".to_string(),
-            Self::InputRangeF64(_) => "range".to_string(),
-            Self::InputTel(_) => "tel".to_string(),
-            Self::InputText(_) => "text".to_string(),
-            Self::InputUrl(_) => "url".to_string(),
-            Self::TextArea(_) => "textarea".to_string(),
-            Self::SelectI32(_) => "select".to_string(),
-            Self::SelectU32(_) => "select".to_string(),
-            Self::SelectI64(_) => "select".to_string(),
-            Self::SelectF64(_) => "select".to_string(),
-            Self::ForeignKey => "select".to_string(),
-            Self::ManyToMany => "select".to_string(),
-            Self::OneToOne => "hidden".to_string(),
+            Self::InputCheckBox(_) => "checkbox",
+            Self::InputColor(_) => "color",
+            Self::InputDate(_) => "date",
+            Self::InputDateTime(_) => "datetime",
+            Self::InputEmail(_) => "email",
+            Self::InputFile => "file",
+            Self::InputImage => "image",
+            Self::InputNumberI32(_) => "number",
+            Self::InputNumberU32(_) => "number",
+            Self::InputNumberI64(_) => "number",
+            Self::InputNumberF64(_) => "number",
+            Self::InputPassword(_) => "password",
+            Self::InputRadio(_) => "radio",
+            Self::InputRangeI32(_) => "range",
+            Self::InputRangeU32(_) => "range",
+            Self::InputRangeI64(_) => "range",
+            Self::InputRangeF64(_) => "range",
+            Self::InputTel(_) => "tel",
+            Self::InputText(_) => "text",
+            Self::InputUrl(_) => "url",
+            Self::TextArea(_) => "textarea",
+            Self::SelectText(_) => "select",
+            Self::SelectI32(_) => "select",
+            Self::SelectU32(_) => "select",
+            Self::SelectI64(_) => "select",
+            Self::SelectF64(_) => "select",
+            Self::ForeignKey => "select",
+            Self::ManyToMany => "select",
+            Self::OneToOne => "hidden",
         }
     }
 
@@ -85,8 +87,8 @@ impl FieldType {
             Self::InputDate(data) => data.to_string(),
             Self::InputDateTime(data) => data.to_string(),
             Self::InputEmail(data) => data.to_string(),
-            Self::InputFile(data) => data.to_string(),
-            Self::InputImage(data) => data.to_string(),
+            Self::InputFile => String::new(),
+            Self::InputImage => String::new(),
             Self::InputNumberI32(data) => data.to_string(),
             Self::InputNumberU32(data) => data.to_string(),
             Self::InputNumberI64(data) => data.to_string(),
@@ -101,6 +103,7 @@ impl FieldType {
             Self::InputText(data) => data.to_string(),
             Self::InputUrl(data) => data.to_string(),
             Self::TextArea(data) => data.to_string(),
+            Self::SelectText(data) => data.to_string(),
             Self::SelectI32(data) => data.to_string(),
             Self::SelectU32(data) => data.to_string(),
             Self::SelectI64(data) => data.to_string(),
@@ -111,36 +114,37 @@ impl FieldType {
         }
     }
 
-    pub fn data_type(&self) -> String {
+    pub fn data_type(&self) -> &'static str {
         match self {
-            Self::InputCheckBox(_) => "bool".to_string(),
-            Self::InputColor(_) => "string".to_string(),
-            Self::InputDate(_) => "string".to_string(),
-            Self::InputDateTime(_) => "u32".to_string(),
-            Self::InputEmail(_) => "string".to_string(),
-            Self::InputFile(_) => "string".to_string(),
-            Self::InputImage(_) => "string".to_string(),
-            Self::InputNumberI32(_) => "i32".to_string(),
-            Self::InputNumberU32(_) => "u32".to_string(),
-            Self::InputNumberI64(_) => "i64".to_string(),
-            Self::InputNumberF64(_) => "f64".to_string(),
-            Self::InputPassword(_) => "string".to_string(),
-            Self::InputRadio(_) => "bool".to_string(),
-            Self::InputRangeI32(_) => "i32".to_string(),
-            Self::InputRangeU32(_) => "u32".to_string(),
-            Self::InputRangeI64(_) => "i64".to_string(),
-            Self::InputRangeF64(_) => "f64".to_string(),
-            Self::InputTel(_) => "string".to_string(),
-            Self::InputText(_) => "string".to_string(),
-            Self::InputUrl(_) => "string".to_string(),
-            Self::TextArea(_) => "string".to_string(),
-            Self::SelectI32(_) => "i32".to_string(),
-            Self::SelectU32(_) => "u32".to_string(),
-            Self::SelectI64(_) => "i64".to_string(),
-            Self::SelectF64(_) => "f64".to_string(),
-            Self::ForeignKey => String::new(),
-            Self::ManyToMany => String::new(),
-            Self::OneToOne => String::new(),
+            Self::InputCheckBox(_) => "bool",
+            Self::InputColor(_) => "string",
+            Self::InputDate(_) => "string",
+            Self::InputDateTime(_) => "u32",
+            Self::InputEmail(_) => "string",
+            Self::InputFile => "string",
+            Self::InputImage => "string",
+            Self::InputNumberI32(_) => "i32",
+            Self::InputNumberU32(_) => "u32",
+            Self::InputNumberI64(_) => "i64",
+            Self::InputNumberF64(_) => "f64",
+            Self::InputPassword(_) => "string",
+            Self::InputRadio(_) => "bool",
+            Self::InputRangeI32(_) => "i32",
+            Self::InputRangeU32(_) => "u32",
+            Self::InputRangeI64(_) => "i64",
+            Self::InputRangeF64(_) => "f64",
+            Self::InputTel(_) => "string",
+            Self::InputText(_) => "string",
+            Self::InputUrl(_) => "string",
+            Self::TextArea(_) => "string",
+            Self::SelectText(_) => "string",
+            Self::SelectI32(_) => "i32",
+            Self::SelectU32(_) => "u32",
+            Self::SelectI64(_) => "i64",
+            Self::SelectF64(_) => "f64",
+            Self::ForeignKey => "string",
+            Self::ManyToMany => "string",
+            Self::OneToOne => "string",
         }
     }
 }
@@ -260,7 +264,7 @@ impl Widget {
     pub fn get_clean_attrs(&self, name: &str) -> Transport {
         let field_type = match self.hidden {
             true => "hidden".to_string(),
-            false => self.value.input_type(),
+            false => self.value.input_type().to_string(),
         };
         let checked = match self.value {
             FieldType::InputCheckBox(data) => data,
@@ -306,24 +310,76 @@ mod tests {
     // Testing field types for Widget --------------------------------------------------------------
     #[test]
     fn test_field_types() {
-        assert_eq!(FieldType::InputCheckBox.get_type(), "checkbox".to_string());
-        assert_eq!(FieldType::InputColor.get_type(), "color".to_string());
-        assert_eq!(FieldType::InputDate.get_type(), "date".to_string());
-        assert_eq!(FieldType::InputDateTime.get_type(), "datetime".to_string());
-        assert_eq!(FieldType::InputEmail.get_type(), "email".to_string());
-        assert_eq!(FieldType::InputImage.get_type(), "image".to_string());
-        assert_eq!(FieldType::InputNumber.get_type(), "number".to_string());
-        assert_eq!(FieldType::InputPassword.get_type(), "password".to_string());
-        assert_eq!(FieldType::InputRadio.get_type(), "radio".to_string());
-        assert_eq!(FieldType::InputRange.get_type(), "range".to_string());
-        assert_eq!(FieldType::InputTel.get_type(), "tel".to_string());
-        assert_eq!(FieldType::InputText.get_type(), "text".to_string());
-        assert_eq!(FieldType::InputUrl.get_type(), "url".to_string());
-        assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
-        assert_eq!(FieldType::Select.get_type(), "select".to_string());
-        assert_eq!(FieldType::ForeignKey.get_type(), "select".to_string());
-        assert_eq!(FieldType::ManyToMany.get_type(), "select".to_string());
-        assert_eq!(FieldType::OneToOne.get_type(), "hidden".to_string());
+        assert_eq!(
+            FieldType::InputCheckBox(false).input_type(),
+            "checkbox".to_string()
+        );
+        assert_eq!(
+            FieldType::InputColor(String::new()).input_type(),
+            "color".to_string()
+        );
+        assert_eq!(
+            FieldType::InputDate(String::new()).input_type(),
+            "date".to_string()
+        );
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).input_type(),
+            "datetime".to_string()
+        );
+        assert_eq!(
+            FieldType::InputEmail(String::new()).input_type(),
+            "email".to_string()
+        );
+        assert_eq!(FieldType::InputImage.input_type(), "image".to_string());
+        assert_eq!(FieldType::InputNumber.input_type(), "number".to_string());
+        assert_eq!(
+            FieldType::InputPassword(String::new()).input_type(),
+            "password".to_string()
+        );
+        assert_eq!(
+            FieldType::InputRadio(false).input_type(),
+            "radio".to_string()
+        );
+        assert_eq!(FieldType::InputRange.input_type(), "range".to_string());
+        assert_eq!(
+            FieldType::InputTel(String::new()).input_type(),
+            "tel".to_string()
+        );
+        assert_eq!(
+            FieldType::InputText(String::new()).input_type(),
+            "text".to_string()
+        );
+        assert_eq!(
+            FieldType::InputUrl(String::new()).input_type(),
+            "url".to_string()
+        );
+        assert_eq!(
+            FieldType::TextArea(String::new()).input_type(),
+            "textarea".to_string()
+        );
+        assert_eq!(
+            FieldType::SelectText(String::new()).input_type(),
+            "select".to_string()
+        );
+        assert_eq!(
+            FieldType::SelectI32(-1_i32).input_type(),
+            "select".to_string()
+        );
+        assert_eq!(
+            FieldType::SelectU32(0_u32).input_type(),
+            "select".to_string()
+        );
+        assert_eq!(
+            FieldType::SelectI64(-1_i64).input_type(),
+            "select".to_string()
+        );
+        assert_eq!(
+            FieldType::SelectF64(-1.3_f64).input_type(),
+            "select".to_string()
+        );
+        assert_eq!(FieldType::ForeignKey.input_type(), "select".to_string());
+        assert_eq!(FieldType::ManyToMany.input_type(), "select".to_string());
+        assert_eq!(FieldType::OneToOne.input_type(), "hidden".to_string());
     }
 
     // Testing Data types --------------------------------------------------------------------------
