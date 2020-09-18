@@ -231,7 +231,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputRange --------------------------------------------------------------
-                        FieldType::InputRange(_) => {
+                        FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_) | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
@@ -272,20 +272,6 @@ macro_rules! create_model {
                                 )
                             }
                         }
-                        // InputTime ---------------------------------------------------------------
-                        FieldType::InputDateTime(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `relation_model` = only blank string.",
-                                    $service, STRUCT_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `select` = only vec![].",
-                                    $service, STRUCT_NAME, field
-                                )
-                            }
-                        }
                         // InputUrl ----------------------------------------------------------------
                         FieldType::InputUrl(_) => {
                             if widget.relation_model != String::new() {
@@ -315,7 +301,7 @@ macro_rules! create_model {
                             }
                         }
                         // Select ------------------------------------------------------------------
-                        FieldType::Select(_) => {
+                        FieldType::SelectText(_) | FieldType::SelectI32(_) | FieldType::SelectU32(_) | FieldType::SelectI64(_) | FieldType::SelectF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
