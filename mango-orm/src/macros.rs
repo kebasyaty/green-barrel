@@ -48,7 +48,8 @@ macro_rules! create_model {
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
-                // Map of default values and value types from `value` attribute
+                // Map of default values and value types from `value` attribute -
+                // (String, String) -> index 0 = type ; index 1 = value
                 let mut default_values: HashMap<&'static str, (String, String)> = HashMap::new();
 
                 // Checking Widgets
