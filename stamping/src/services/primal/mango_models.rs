@@ -2,7 +2,11 @@ use async_trait::async_trait;
 use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{DataType, FieldType, Widget};
-use mongodb::{bson::doc, options::UpdateModifications, Client};
+use mongodb::{
+    bson::{doc, Bson},
+    options::UpdateModifications,
+    Client,
+};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

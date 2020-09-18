@@ -11,6 +11,7 @@ pub enum FieldType {
     InputCheckBox,
     InputColor,
     InputDate,
+    InputDateTime,
     InputEmail,
     InputFile,
     InputImage,
@@ -20,7 +21,6 @@ pub enum FieldType {
     InputRange,
     InputTel,
     InputText,
-    InputTime,
     InputUrl,
     TextArea,
     Select,
@@ -41,6 +41,7 @@ impl FieldType {
             Self::InputCheckBox => "checkbox".to_string(),
             Self::InputColor => "color".to_string(),
             Self::InputDate => "date".to_string(),
+            Self::InputDateTime => "datetime".to_string(),
             Self::InputEmail => "email".to_string(),
             Self::InputFile => "file".to_string(),
             Self::InputImage => "image".to_string(),
@@ -50,7 +51,6 @@ impl FieldType {
             Self::InputRange => "range".to_string(),
             Self::InputTel => "tel".to_string(),
             Self::InputText => "text".to_string(),
-            Self::InputTime => "time".to_string(),
             Self::InputUrl => "url".to_string(),
             Self::TextArea => "textarea".to_string(),
             Self::Select => "select".to_string(),
@@ -232,6 +232,7 @@ mod tests {
         assert_eq!(FieldType::InputCheckBox.get_type(), "checkbox".to_string());
         assert_eq!(FieldType::InputColor.get_type(), "color".to_string());
         assert_eq!(FieldType::InputDate.get_type(), "date".to_string());
+        assert_eq!(FieldType::InputDateTime.get_type(), "datetime".to_string());
         assert_eq!(FieldType::InputEmail.get_type(), "email".to_string());
         assert_eq!(FieldType::InputImage.get_type(), "image".to_string());
         assert_eq!(FieldType::InputNumber.get_type(), "number".to_string());
@@ -240,7 +241,6 @@ mod tests {
         assert_eq!(FieldType::InputRange.get_type(), "range".to_string());
         assert_eq!(FieldType::InputTel.get_type(), "tel".to_string());
         assert_eq!(FieldType::InputText.get_type(), "text".to_string());
-        assert_eq!(FieldType::InputTime.get_type(), "time".to_string());
         assert_eq!(FieldType::InputUrl.get_type(), "url".to_string());
         assert_eq!(FieldType::TextArea.get_type(), "textarea".to_string());
         assert_eq!(FieldType::Select.get_type(), "select".to_string());

@@ -269,7 +269,7 @@ macro_rules! create_model {
                             }
                         }
                         // InputTime ---------------------------------------------------------------
-                        FieldType::InputTime => {
+                        FieldType::InputDateTime => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTime` : `relation_model` = only blank string.",
