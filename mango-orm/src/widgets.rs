@@ -8,79 +8,161 @@ use serde::Serialize;
 /// Field types for Widgets
 #[derive(Debug, Clone)]
 pub enum FieldType {
-    InputCheckBox,
-    InputColor,
-    InputDate,
-    InputDateTime,
-    InputEmail,
-    InputFile,
-    InputImage,
-    InputNumber,
-    InputPassword,
-    InputRadio,
-    InputRange,
-    InputTel,
-    InputText,
-    InputUrl,
-    TextArea,
-    Select,
-    ForeignKey,
-    ManyToMany,
-    OneToOne,
+    InputCheckBox(bool),
+    InputColor(String),
+    InputDate(String),
+    InputDateTime(u32),
+    InputEmail(String),
+    InputFile(String),
+    InputImage(String),
+    InputNumberI32(i32),
+    InputNumberU32(u32),
+    InputNumberI64(i64),
+    InputNumberF64(f64),
+    InputPassword(String),
+    InputRadio(bool),
+    InputRangeI32(i32),
+    InputRangeU32(u32),
+    InputRangeI64(i64),
+    InputRangeF64(f64),
+    InputTel(String),
+    InputText(String),
+    InputUrl(String),
+    TextArea(String),
+    SelectI32(i32),
+    SelectU32(u32),
+    SelectI64(i64),
+    SelectF64(f64),
+    ForeignKey(String),
+    ManyToMany(String),
+    OneToOne(String),
 }
 
 impl Default for FieldType {
     fn default() -> Self {
-        FieldType::InputText
+        FieldType::InputText(String::new())
     }
 }
 
 impl FieldType {
-    pub fn get_type(&self) -> String {
+    pub fn input_type(&self) -> String {
         match self {
-            Self::InputCheckBox => "checkbox".to_string(),
-            Self::InputColor => "color".to_string(),
-            Self::InputDate => "date".to_string(),
-            Self::InputDateTime => "datetime".to_string(),
-            Self::InputEmail => "email".to_string(),
-            Self::InputFile => "file".to_string(),
-            Self::InputImage => "image".to_string(),
-            Self::InputNumber => "number".to_string(),
-            Self::InputPassword => "password".to_string(),
-            Self::InputRadio => "radio".to_string(),
-            Self::InputRange => "range".to_string(),
-            Self::InputTel => "tel".to_string(),
-            Self::InputText => "text".to_string(),
-            Self::InputUrl => "url".to_string(),
-            Self::TextArea => "textarea".to_string(),
-            Self::Select => "select".to_string(),
-            Self::ForeignKey => "select".to_string(),
-            Self::ManyToMany => "select".to_string(),
-            Self::OneToOne => "hidden".to_string(),
+            Self::InputCheckBox(_) => "checkbox".to_string(),
+            Self::InputColor(_) => "color".to_string(),
+            Self::InputDate(_) => "date".to_string(),
+            Self::InputDateTime(_) => "datetime".to_string(),
+            Self::InputEmail(_) => "email".to_string(),
+            Self::InputFile(_) => "file".to_string(),
+            Self::InputImage(_) => "image".to_string(),
+            Self::InputNumberI32(_) => "number".to_string(),
+            Self::InputNumberU32(_) => "number".to_string(),
+            Self::InputNumberI64(_) => "number".to_string(),
+            Self::InputNumberF64(_) => "number".to_string(),
+            Self::InputPassword(_) => "password".to_string(),
+            Self::InputRadio(_) => "radio".to_string(),
+            Self::InputRangeI32(_) => "range".to_string(),
+            Self::InputRangeU32(_) => "range".to_string(),
+            Self::InputRangeI64(_) => "range".to_string(),
+            Self::InputRangeF64(_) => "range".to_string(),
+            Self::InputTel(_) => "tel".to_string(),
+            Self::InputText(_) => "text".to_string(),
+            Self::InputUrl(_) => "url".to_string(),
+            Self::TextArea(_) => "textarea".to_string(),
+            Self::SelectI32(_) => "select".to_string(),
+            Self::SelectU32(_) => "select".to_string(),
+            Self::SelectI64(_) => "select".to_string(),
+            Self::SelectF64(_) => "select".to_string(),
+            Self::ForeignKey(_) => "select".to_string(),
+            Self::ManyToMany(_) => "select".to_string(),
+            Self::OneToOne(_) => "hidden".to_string(),
+        }
+    }
+
+    pub fn raw_data(&self) -> String {
+        match self {
+            Self::InputCheckBox(data) => data.to_string(),
+            Self::InputColor(data) => data.to_string(),
+            Self::InputDate(data) => data.to_string(),
+            Self::InputDateTime(data) => data.to_string(),
+            Self::InputEmail(data) => data.to_string(),
+            Self::InputFile(data) => data.to_string(),
+            Self::InputImage(data) => data.to_string(),
+            Self::InputNumberI32(data) => data.to_string(),
+            Self::InputNumberU32(data) => data.to_string(),
+            Self::InputNumberI64(data) => data.to_string(),
+            Self::InputNumberF64(data) => data.to_string(),
+            Self::InputPassword(data) => data.to_string(),
+            Self::InputRadio(data) => data.to_string(),
+            Self::InputRangeI32(data) => data.to_string(),
+            Self::InputRangeU32(data) => data.to_string(),
+            Self::InputRangeI64(data) => data.to_string(),
+            Self::InputRangeF64(data) => data.to_string(),
+            Self::InputTel(data) => data.to_string(),
+            Self::InputText(data) => data.to_string(),
+            Self::InputUrl(data) => data.to_string(),
+            Self::TextArea(data) => data.to_string(),
+            Self::SelectI32(data) => data.to_string(),
+            Self::SelectU32(data) => data.to_string(),
+            Self::SelectI64(data) => data.to_string(),
+            Self::SelectF64(data) => data.to_string(),
+            Self::ForeignKey(data) => data.to_string(),
+            Self::ManyToMany(data) => data.to_string(),
+            Self::OneToOne(data) => data.to_string(),
+        }
+    }
+
+    pub fn data_type(&self) -> String {
+        match self {
+            Self::InputCheckBox(_) => "bool".to_string(),
+            Self::InputColor(_) => "string".to_string(),
+            Self::InputDate(_) => "string".to_string(),
+            Self::InputDateTime(_) => "u32".to_string(),
+            Self::InputEmail(_) => "string".to_string(),
+            Self::InputFile(_) => "string".to_string(),
+            Self::InputImage(_) => "string".to_string(),
+            Self::InputNumberI32(_) => "i32".to_string(),
+            Self::InputNumberU32(_) => "u32".to_string(),
+            Self::InputNumberI64(_) => "i64".to_string(),
+            Self::InputNumberF64(_) => "f64".to_string(),
+            Self::InputPassword(_) => "string".to_string(),
+            Self::InputRadio(_) => "bool".to_string(),
+            Self::InputRangeI32(_) => "i32".to_string(),
+            Self::InputRangeU32(_) => "u32".to_string(),
+            Self::InputRangeI64(_) => "i64".to_string(),
+            Self::InputRangeF64(_) => "f64".to_string(),
+            Self::InputTel(_) => "string".to_string(),
+            Self::InputText(_) => "string".to_string(),
+            Self::InputUrl(_) => "string".to_string(),
+            Self::TextArea(_) => "string".to_string(),
+            Self::SelectI32(_) => "i32".to_string(),
+            Self::SelectU32(_) => "u32".to_string(),
+            Self::SelectI64(_) => "i64".to_string(),
+            Self::SelectF64(_) => "f64".to_string(),
+            Self::ForeignKey(_) => "string".to_string(),
+            Self::ManyToMany(_) => "string".to_string(),
+            Self::OneToOne(_) => "string".to_string(),
         }
     }
 }
 
 /// Data types for the `value` attribute -----------------------------------------------------------
 #[derive(Debug, Clone, PartialEq)]
-pub enum DataType {
+pub enum SelectDataType {
     Text(String),
-    I64(i64),
     I32(i32),
     U32(u32),
+    I64(i64),
     F64(f64),
-    Bool(bool),
-    None,
 }
 
-impl Default for DataType {
+impl Default for SelectDataType {
     fn default() -> Self {
         DataType::Text(String::new())
     }
 }
 
-impl DataType {
-    pub fn get_data(&self) -> String {
+impl SelectDataType {
+    pub fn raw_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
             Self::I64(data) => data.to_string(),
@@ -88,11 +170,10 @@ impl DataType {
             Self::U32(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
             Self::Bool(data) => data.to_string(),
-            Self::None => String::new(),
         }
     }
 
-    pub fn get_type(&self) -> &'static str {
+    pub fn data_type(&self) -> &'static str {
         match self {
             Self::Text(_) => "Text",
             Self::I64(_) => "I64",
@@ -100,7 +181,6 @@ impl DataType {
             Self::U32(_) => "U32",
             Self::F64(_) => "F64",
             Self::Bool(_) => "Bool",
-            Self::None => "None",
         }
     }
 }
