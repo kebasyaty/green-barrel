@@ -50,7 +50,7 @@ macro_rules! create_model {
                     client.list_database_names(None, None).await.unwrap();
                 // Map of default values and value types from `value` attribute -
                 // (String, String) -> index 0 = type ; index 1 = value
-                let mut default_values: HashMap<&'static str, (String, String)> = HashMap::new();
+                let mut default_values: HashMap<&'static str, (&'static str, String)> = HashMap::new();
 
                 // Checking Widgets
                 for (field, widget) in attrs {
@@ -410,7 +410,16 @@ macro_rules! create_model {
                 //
                 let mut doc = doc! {};
                 for (k, v) in &default_values {
-                    doc.insert(k.to_string(), v);
+                    match v.0 {
+                        "Text" => doc.insert(k.to_string(), v.1.parse::<String>().unwrap()),
+                        "I64" => doc.insert(k.to_string(), v.1.parse::<i64>().unwrap()),
+                        "I32" => doc.insert(k.to_string(), v.1.parse::<i32>().unwrap()),
+                        "U32" => doc.insert(k.to_string(), v.1.parse::<i64>().unwrap()),
+                        "F64" => doc.insert(k.to_string(), v.1.parse::<f64>().unwrap()),
+                        "Bool" => doc.insert(k.to_string(), v.1.parse::<bool>().unwrap()),
+                        "None" => doc.insert(k.to_string(), Bson::Null),
+                        _ => panic!("Invalid data type."),
+                    };
                 }
                 println!("{:?}", doc);
             }

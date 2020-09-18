@@ -88,15 +88,15 @@ impl DataType {
         }
     }
 
-    pub fn get_type(&self) -> String {
+    pub fn get_type(&self) -> &'static str {
         match self {
-            Self::Text(_) => "Text".to_string(),
-            Self::I64(_) => "I64".to_string(),
-            Self::I32(_) => "I32".to_string(),
-            Self::U32(_) => "U32".to_string(),
-            Self::F64(_) => "F64".to_string(),
-            Self::Bool(_) => "Bool".to_string(),
-            Self::None => "None".to_string(),
+            Self::Text(_) => "Text",
+            Self::I64(_) => "I64",
+            Self::I32(_) => "I32",
+            Self::U32(_) => "U32",
+            Self::F64(_) => "F64",
+            Self::Bool(_) => "Bool",
+            Self::None => "None",
         }
     }
 }
