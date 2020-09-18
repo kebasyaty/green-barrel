@@ -315,7 +315,7 @@ macro_rules! create_model {
                             }
                         }
                         // ForeignKey --------------------------------------------------------------
-                        FieldType::ForeignKey(_) => {
+                        FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
@@ -329,7 +329,7 @@ macro_rules! create_model {
                             }
                         }
                         // ManyToMany --------------------------------------------------------------
-                        FieldType::ManyToMany(_) => {
+                        FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
@@ -343,7 +343,7 @@ macro_rules! create_model {
                             }
                         }
                         // OneToOne ----------------------------------------------------------------
-                        FieldType::OneToOne(_) => {
+                        FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
