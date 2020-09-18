@@ -49,7 +49,7 @@ macro_rules! create_model {
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
                 // Default values from `value` attribute
-                let mut default_values: HashMap<&'static str, String> = HashMap::new();
+                let mut default_values: HashMap<&'static str, (String, String)> = HashMap::new();
 
                 // Checking Widgets
                 for (field, widget) in attrs {
@@ -61,7 +61,7 @@ macro_rules! create_model {
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, widget.value.get_data());
+                    default_values.insert(field, ("".to_string(), widget.value.get_data()));
                     // Checking attribute states
                     match widget.field_type {
                         // InputCheckBox -----------------------------------------------------------
@@ -407,9 +407,11 @@ macro_rules! create_model {
                     println!("{}", field);
                 }
                 //
+                let mut doc = doc! {};
                 for (k, v) in &default_values {
-                    println!("{}: {:?}", k, v);
+                    doc.insert(k.to_string(), v);
                 }
+                println!("{:?}", doc);
             }
         }
     }
