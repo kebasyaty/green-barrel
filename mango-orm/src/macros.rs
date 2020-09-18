@@ -117,6 +117,20 @@ macro_rules! create_model {
                                 )
                             }
                         }
+                        // InputDateTime -----------------------------------------------------------
+                        FieldType::InputDateTime(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `relation_model` = only blank string.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `select` = only vec![].",
+                                    $service, STRUCT_NAME, field
+                                )
+                            }
+                        }
                         // InputEmail --------------------------------------------------------------
                         FieldType::InputEmail(_) => {
                             if widget.relation_model != String::new() {
@@ -132,15 +146,10 @@ macro_rules! create_model {
                             }
                         }
                         // InputFile ---------------------------------------------------------------
-                        FieldType::InputFile(_) => {
+                        FieldType::InputFile => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `relation_model` = only blank string.",
-                                    $service, STRUCT_NAME, field
-                                )
-                            } else if widget.value != DataType::Text(String::new()) {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -151,15 +160,10 @@ macro_rules! create_model {
                             }
                         }
                         // InputImage --------------------------------------------------------------
-                        FieldType::InputImage(_) => {
+                        FieldType::InputImage => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `relation_model` = only blank string.",
-                                    $service, STRUCT_NAME, field
-                                )
-                            } else if widget.value != DataType::Text(String::new()) {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
