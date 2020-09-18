@@ -411,12 +411,12 @@ macro_rules! create_model {
                 let mut doc = doc! {};
                 for (k, v) in &default_values {
                     match v.0 {
-                        "Text" => doc.insert(k.to_string(), v.1.parse::<String>().unwrap()),
-                        "I64" => doc.insert(k.to_string(), v.1.parse::<i64>().unwrap()),
-                        "I32" => doc.insert(k.to_string(), v.1.parse::<i32>().unwrap()),
-                        "U32" => doc.insert(k.to_string(), v.1.parse::<i64>().unwrap()),
-                        "F64" => doc.insert(k.to_string(), v.1.parse::<f64>().unwrap()),
-                        "Bool" => doc.insert(k.to_string(), v.1.parse::<bool>().unwrap()),
+                        "Text" => doc.insert(k.to_string(), Bson::String(v.1.clone())),
+                        "I64" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "I32" => doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
+                        "U32" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "F64" => doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
+                        "Bool" => doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
                         "None" => doc.insert(k.to_string(), Bson::Null),
                         _ => panic!("Invalid data type."),
                     };
