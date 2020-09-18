@@ -194,7 +194,7 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `relation_model` = only blank string.",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.value != DataType::Text(String::new()) {
+                            } else if widget.value != FieldType::InputPassword(String::new()) {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `value` = only DataType::Text(String::new()).",
                                     $service, STRUCT_NAME, field
