@@ -351,13 +351,22 @@ mod tests {
     #[test]
     fn test_data_types() {
         assert_eq!(
-            SelectDataType::Text("Some text".to_string()).get_data(),
+            SelectDataType::Text("Some text".to_string()).raw_data(),
             "Some text".to_string()
         );
-        assert_eq!(SelectDataType::I64(10_i64).get_data(), 10_i64.to_string());
-        assert_eq!(SelectDataType::I32(10_i32).get_data(), 10_i32.to_string());
-        assert_eq!(SelectDataType::U32(10_u32).get_data(), 10_u32.to_string());
-        assert_eq!(SelectDataType::F64(10_f64).get_data(), 10_f64.to_string());
+        assert_eq!(
+            SelectDataType::I64(-10_i64).raw_data(),
+            (-10_i64).to_string()
+        );
+        assert_eq!(
+            SelectDataType::I32(-10_i32).raw_data(),
+            (-10_i32).to_string()
+        );
+        assert_eq!(SelectDataType::U32(10_u32).raw_data(), 10_u32.to_string());
+        assert_eq!(
+            SelectDataType::F64(-10_f64).raw_data(),
+            (-10_f64).to_string()
+        );
     }
 
     // Testing Transport structure -----------------------------------------------------------------
