@@ -18,9 +18,8 @@ create_model! {
 }
 #[async_trait]
 impl Model for Category {
-    //
+    // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget> {
-        // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "title",
@@ -48,9 +47,8 @@ create_model! {
 }
 #[async_trait]
 impl Model for User {
-    //
+    // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget> {
-        // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "username",
