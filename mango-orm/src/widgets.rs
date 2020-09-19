@@ -413,7 +413,7 @@ mod tests {
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.raw_data(), String::new());
         // Methods
-        let mut attrs = widget.get_clean_attrs("");
+        let mut attrs = widget.clean_attrs("");
         attrs.select = vec![(
             String::new(),
             SelectDataType::Text(String::new()).raw_data(),
