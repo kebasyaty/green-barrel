@@ -401,7 +401,7 @@ macro_rules! create_model {
                     let curr_doc: Document = result.unwrap();
                     for field in FIELD_NAMES {
                         if curr_doc.contains_key(field) {
-                            // tmp_doc.insert(item.0, item.1));
+                            tmp_doc.insert(field.to_string(), Bson::Null);
                         }
                     }
                 }

@@ -4,7 +4,7 @@ use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{FieldType, Widget};
 use mongodb::{
-    bson::{doc, document::Document},
+    bson::{doc, document::Document, Bson},
     options::UpdateModifications,
     Client, Cursor, Database,
 };
