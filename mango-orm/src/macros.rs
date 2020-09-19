@@ -394,26 +394,18 @@ macro_rules! create_model {
 
                 // Check the field changes in the Model and (if required)
                 // update the documents in the appropriate Collection
+                let mut tmp_doc = doc! {};
                 let db: Database = client.database(&meta.database);
                 let mut cursor: Cursor = db.collection(&meta.collection).find(None, None).await.unwrap();
-                for field in FIELD_NAMES {
-                    println!("{}", field);
+                while let Some(result) = cursor.next().await {
+                    let curr_doc: Document = result.unwrap();
+                    for item in curr_doc.iter() {
+                        println!("{:?}", item);
+                    }
+                    for field in FIELD_NAMES {
+                        // tmp_doc.insert(field, Self::to_bson(default_values[field]));
+                    }
                 }
-                //
-                let mut tmp_doc = doc! {};
-                for (k, v) in &default_values {
-                    match v.0 {
-                        "string" => tmp_doc.insert(k.to_string(), Bson::String(v.1.clone())),
-                        "i32" => tmp_doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
-                        "u32" => tmp_doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "i64" => tmp_doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "f64" => tmp_doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
-                        "bool" => tmp_doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
-                        "none" => tmp_doc.insert(k.to_string(), Bson::Null),
-                        _ => panic!("Invalid data type."),
-                    };
-                }
-                println!("{:?}", tmp_doc);
             }
         }
     }

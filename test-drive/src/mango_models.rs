@@ -1,9 +1,10 @@
 use async_trait::async_trait;
+use futures::stream::StreamExt;
 use mango_orm::create_model;
 use mango_orm::models::{Meta, Model};
 use mango_orm::widgets::{FieldType, Widget};
 use mongodb::{
-    bson::{doc, Bson},
+    bson::{doc, document::Document},
     options::UpdateModifications,
     Client, Cursor, Database,
 };
