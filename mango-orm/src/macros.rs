@@ -402,6 +402,18 @@ macro_rules! create_model {
                     for field in FIELD_NAMES {
                         if curr_doc.contains_key(field) {
                             tmp_doc.insert(field.to_string(), Bson::Null);
+                        } else {
+                            let value = &default_values[field];
+                            tmp_doc.insert(field.to_string(), match value.0 {
+                                "string" => Bson::String(value.1.clone()),
+                                "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
+                                "u32" => Bson::Int64(value.1.parse::<i64>().unwrap()),
+                                "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
+                                "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
+                                "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
+                                "none" => Bson::Null,
+                                _ => panic!("Invalid data type."),
+                            });
                         }
                     }
                 }
