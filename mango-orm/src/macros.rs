@@ -399,11 +399,10 @@ macro_rules! create_model {
                 let mut cursor: Cursor = db.collection(&meta.collection).find(None, None).await.unwrap();
                 while let Some(result) = cursor.next().await {
                     let curr_doc: Document = result.unwrap();
-                    for item in curr_doc.iter() {
-                        println!("{:?}", item);
-                    }
                     for field in FIELD_NAMES {
-                        // tmp_doc.insert(field, Self::to_bson(default_values[field]));
+                        if curr_doc.contains_key(field) {
+                            // tmp_doc.insert(item.0, item.1));
+                        }
                     }
                 }
             }
