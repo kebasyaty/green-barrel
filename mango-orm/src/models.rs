@@ -33,7 +33,7 @@ pub trait Model {
         let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
         let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
         for (field, widget) in &raw_attrs {
-            clean_attrs.insert(field.to_string(), widget.get_clean_attrs(field));
+            clean_attrs.insert(field.to_string(), widget.clean_attrs(field));
         }
         clean_attrs
     }

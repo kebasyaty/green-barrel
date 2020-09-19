@@ -261,7 +261,7 @@ impl Default for Widget {
 
 impl Widget {
     // Get pure attributes from a widget
-    pub fn get_clean_attrs(&self, name: &str) -> Transport {
+    pub fn clean_attrs(&self, name: &str) -> Transport {
         let field_type = match self.hidden {
             true => "hidden".to_string(),
             false => self.value.input_type().to_string(),
