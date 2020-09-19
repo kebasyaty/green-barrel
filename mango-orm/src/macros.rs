@@ -362,14 +362,14 @@ macro_rules! create_model {
                 }
 
                 // Create a new database (if doesn't exist) and add new collection
-                let db = client.database(&meta.database);
+                let db: Database = client.database(&meta.database);
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
                     db.create_collection(&meta.collection, None).await.unwrap();
                 }
 
                 // Update the state of models for `models::Monitor`
-                let db = client.database(&mango_orm_keyword);
+                let db: Database = client.database(&mango_orm_keyword);
                 // Check if there is a technical database of the project, if not, causes panic
                 if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
@@ -394,6 +394,8 @@ macro_rules! create_model {
 
                 // Check the field changes in the Model and (if required)
                 // update the documents in the appropriate Collection
+                let db: Database = client.database(&meta.database);
+                let mut cursor: Cursor = db.collection(&meta.collection).find(None, None).await.unwrap();
                 for field in FIELD_NAMES {
                     println!("{}", field);
                 }

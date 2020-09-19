@@ -5,7 +5,7 @@ use mango_orm::widgets::{FieldType, Widget};
 use mongodb::{
     bson::{doc, Bson},
     options::UpdateModifications,
-    Client,
+    Client, Cursor, Database,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
