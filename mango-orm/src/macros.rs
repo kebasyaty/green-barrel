@@ -395,10 +395,15 @@ macro_rules! create_model {
                 // Check the field changes in the Model and (if required)
                 // update the documents in the appropriate Collection
                 let db: Database = client.database(&meta.database);
-                let mut cursor: Cursor = db.collection(&meta.collection).find(None, None).await.unwrap();
+                let collection: Collection = db.collection(&meta.collection);
+                let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                 while let Some(result) = cursor.next().await {
                     let mut tmp_doc = doc! {};
                     let curr_doc: Document = result.unwrap();
+                    if curr_doc.is_empty() {
+                        collection.delete_one(curr_doc, None).await.unwrap();
+                        continue;
+                    }
                     for field in FIELD_NAMES {
                         if curr_doc.contains_key(field) {
                             tmp_doc.insert(field.to_string(), Bson::Null);
