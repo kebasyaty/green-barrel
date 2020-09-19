@@ -319,8 +319,8 @@ mod tests {
             "datetime"
         );
         assert_eq!(FieldType::InputEmail(String::new()).input_type(), "email");
-        assert_eq!(FieldType::InputFile.input_type(), "file".to_string());
-        assert_eq!(FieldType::InputImage.input_type(), "image".to_string());
+        assert_eq!(FieldType::InputFile.input_type(), "file");
+        assert_eq!(FieldType::InputImage.input_type(), "image");
         assert_eq!(FieldType::InputNumberI32(-1_i32).input_type(), "number");
         assert_eq!(FieldType::InputNumberU32(0_u32).input_type(), "number");
         assert_eq!(FieldType::InputNumberI64(-1_i64).input_type(), "number");
