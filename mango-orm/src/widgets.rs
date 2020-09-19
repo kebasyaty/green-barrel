@@ -408,8 +408,8 @@ mod tests {
             "string"
         );
         assert_eq!(FieldType::InputEmail(String::new()).data_type(), "string");
-        assert_eq!(FieldType::InputFile.input_type(), "none");
-        assert_eq!(FieldType::InputImage.input_type(), "none");
+        assert_eq!(FieldType::InputFile.data_type(), "none");
+        assert_eq!(FieldType::InputImage.data_type(), "none");
         assert_eq!(FieldType::InputNumberI32(-1_i32).data_type(), "i32");
         assert_eq!(FieldType::InputNumberU32(0_u32).data_type(), "u32");
         assert_eq!(FieldType::InputNumberI64(-1_i64).data_type(), "i64");
