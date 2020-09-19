@@ -398,20 +398,20 @@ macro_rules! create_model {
                     println!("{}", field);
                 }
                 //
-                let mut doc = doc! {};
+                let mut tmp_doc = doc! {};
                 for (k, v) in &default_values {
                     match v.0 {
-                        "string" => doc.insert(k.to_string(), Bson::String(v.1.clone())),
-                        "i32" => doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
-                        "u32" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "i64" => doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
-                        "f64" => doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
-                        "bool" => doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
-                        "none" => doc.insert(k.to_string(), Bson::Null),
+                        "string" => tmp_doc.insert(k.to_string(), Bson::String(v.1.clone())),
+                        "i32" => tmp_doc.insert(k.to_string(), Bson::Int32(v.1.parse::<i32>().unwrap())),
+                        "u32" => tmp_doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "i64" => tmp_doc.insert(k.to_string(), Bson::Int64(v.1.parse::<i64>().unwrap())),
+                        "f64" => tmp_doc.insert(k.to_string(), Bson::Double(v.1.parse::<f64>().unwrap())),
+                        "bool" => tmp_doc.insert(k.to_string(), Bson::Boolean(v.1.parse::<bool>().unwrap())),
+                        "none" => tmp_doc.insert(k.to_string(), Bson::Null),
                         _ => panic!("Invalid data type."),
                     };
                 }
-                println!("{:?}", doc);
+                println!("{:?}", tmp_doc);
             }
         }
     }
