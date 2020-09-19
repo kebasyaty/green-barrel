@@ -72,14 +72,14 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `relation_model` = only blank string.",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.value != FieldType::InputCheckBox(false) || widget.value != FieldType::InputCheckBox(true) {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `value` = only false or true.",
-                                    $service, STRUCT_NAME, field
-                                )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `maxlength` = only 0 (zero).",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.other_attrs.contains("checked") {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `other_attrs` - must not contain the word `checked`.",
                                     $service, STRUCT_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -213,19 +213,19 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `relation_model` = only blank string.",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.value != FieldType::InputRadio(false) || widget.value != FieldType::InputRadio(true) {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `value` = only false or true.",
-                                    $service, STRUCT_NAME, field
-                                )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `maxlength` = only 0 (zero).",
                                     $service, STRUCT_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `other_attrs` - must not contain the word `checked`.",
+                                    $service, STRUCT_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `select` - must not be an empty vec![]",
                                     $service, STRUCT_NAME, field
                                 )
                             }
