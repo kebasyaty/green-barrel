@@ -84,7 +84,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -98,7 +98,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -112,7 +112,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -126,7 +126,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -140,7 +140,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -154,7 +154,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -168,7 +168,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -182,7 +182,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -201,7 +201,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -239,7 +239,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -253,7 +253,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -267,7 +267,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -281,7 +281,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -295,7 +295,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -323,7 +323,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -337,7 +337,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
@@ -351,7 +351,7 @@ macro_rules! create_model {
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `select` = only vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `select` = only blank vec![].",
                                     $service, STRUCT_NAME, field
                                 )
                             }
