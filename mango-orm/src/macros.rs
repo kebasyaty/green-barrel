@@ -406,7 +406,12 @@ macro_rules! create_model {
                     let mut tmp_doc = doc! {};
                     for field in FIELD_NAMES {
                         if curr_doc.contains_key(field) {
-                            tmp_doc.insert(field.to_string(), Bson::Null);
+                            for item in curr_doc.iter() {
+                                if item.0 == field {
+                                    tmp_doc.insert(field.to_string(), item.1);
+                                    break;
+                                }
+                            }
                         } else {
                             let value = &default_values[field];
                             tmp_doc.insert(field.to_string(), match value.0 {
