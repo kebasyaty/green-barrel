@@ -398,12 +398,12 @@ macro_rules! create_model {
                 let collection: Collection = db.collection(&meta.collection);
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                 while let Some(result) = cursor.next().await {
-                    let mut tmp_doc = doc! {};
                     let curr_doc: Document = result.unwrap();
                     if curr_doc.is_empty() {
                         collection.delete_one(curr_doc, None).await.unwrap();
                         continue;
                     }
+                    let mut tmp_doc = doc! {};
                     for field in FIELD_NAMES {
                         if curr_doc.contains_key(field) {
                             tmp_doc.insert(field.to_string(), Bson::Null);
