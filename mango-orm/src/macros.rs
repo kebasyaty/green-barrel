@@ -401,15 +401,19 @@ macro_rules! create_model {
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
-                // Iterate through all documents in a collection
+                // Iterate through all documents in a current (model) collection
                 while let Some(result) = cursor.next().await {
                     let curr_doc: Document = result.unwrap();
+                    // Delete blank document and go to a new iteration
                     if curr_doc.is_empty() {
                         collection.delete_one(curr_doc, None).await.unwrap();
                         continue;
                     }
+                    // Create temporary blank document
                     let mut tmp_doc = doc! {};
+                    // Loop over all fields of the model
                     for field in FIELD_NAMES {
+                        // If the field exists, get its value
                         if curr_doc.contains_key(field) {
                             for item in curr_doc.iter() {
                                 if item.0 == field {
@@ -418,6 +422,7 @@ macro_rules! create_model {
                                 }
                             }
                         } else {
+                            // If no field exists, get default value
                             let value = &default_values[field];
                             tmp_doc.insert(field.to_string(), match value.0 {
                                 "string" => Bson::String(value.1.clone()),
@@ -431,6 +436,7 @@ macro_rules! create_model {
                             });
                         }
                     }
+                    // Save updated document
                     if !tmp_doc.is_empty() {
                         let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
                         let update = UpdateModifications::Document(tmp_doc);
