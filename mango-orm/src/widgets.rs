@@ -345,6 +345,57 @@ mod tests {
         assert_eq!(FieldType::ForeignKey.input_type(), "select");
         assert_eq!(FieldType::ManyToMany.input_type(), "select");
         assert_eq!(FieldType::OneToOne.input_type(), "hidden");
+
+        // Method raw_data()
+        assert_eq!(FieldType::InputCheckBox(false).raw_data(), "false");
+        assert_eq!(
+            FieldType::InputColor(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(
+            FieldType::InputDate(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(
+            FieldType::InputEmail(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(FieldType::InputImage.raw_data(), String::new());
+        assert_eq!(FieldType::InputNumberI32(-1_i32).raw_data(), "-1");
+        assert_eq!(FieldType::InputNumberU32(0_u32).raw_data(), "0");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).raw_data(), "-1");
+        assert_eq!(FieldType::InputNumberF64(-1.3_f64).raw_data(), "-1.3");
+        assert_eq!(
+            FieldType::InputPassword(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(FieldType::InputRadio(false).raw_data(), "false");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).raw_data(), "-1");
+        assert_eq!(FieldType::InputRangeU32(0_u32).raw_data(), "0");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).raw_data(), "-1");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).raw_data(), "-1.3");
+        assert_eq!(FieldType::InputTel(String::new()).raw_data(), String::new());
+        assert_eq!(
+            FieldType::InputText(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(FieldType::InputUrl(String::new()).raw_data(), String::new());
+        assert_eq!(FieldType::TextArea(String::new()).raw_data(), String::new());
+        assert_eq!(
+            FieldType::SelectText(String::new()).raw_data(),
+            String::new()
+        );
+        assert_eq!(FieldType::SelectI32(-1_i32).raw_data(), "-1");
+        assert_eq!(FieldType::SelectU32(0_u32).raw_data(), "0");
+        assert_eq!(FieldType::SelectI64(-1_i64).raw_data(), "-1");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).raw_data(), "-1.3");
+        assert_eq!(FieldType::ForeignKey.raw_data(), String::new());
+        assert_eq!(FieldType::ManyToMany.raw_data(), String::new());
+        assert_eq!(FieldType::OneToOne.raw_data(), String::new());
     }
 
     // Testing Data types --------------------------------------------------------------------------
