@@ -169,9 +169,9 @@ impl SelectDataType {
     pub fn raw_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
-            Self::I64(data) => data.to_string(),
             Self::I32(data) => data.to_string(),
             Self::U32(data) => data.to_string(),
+            Self::I64(data) => data.to_string(),
             Self::F64(data) => data.to_string(),
         }
     }
@@ -179,9 +179,9 @@ impl SelectDataType {
     pub fn data_type(&self) -> &'static str {
         match self {
             Self::Text(_) => "string",
-            Self::I64(_) => "i64",
             Self::I32(_) => "i32",
             Self::U32(_) => "u32",
+            Self::I64(_) => "i64",
             Self::F64(_) => "f64",
         }
     }
@@ -440,13 +440,10 @@ mod tests {
     // Testing Data types --------------------------------------------------------------------------
     #[test]
     fn test_data_types() {
+        // Method raw_data()
         assert_eq!(
             SelectDataType::Text("Some text".to_string()).raw_data(),
             "Some text".to_string()
-        );
-        assert_eq!(
-            SelectDataType::I64(-10_i64).raw_data(),
-            (-10_i64).to_string()
         );
         assert_eq!(
             SelectDataType::I32(-10_i32).raw_data(),
@@ -454,9 +451,20 @@ mod tests {
         );
         assert_eq!(SelectDataType::U32(10_u32).raw_data(), 10_u32.to_string());
         assert_eq!(
+            SelectDataType::I64(-10_i64).raw_data(),
+            (-10_i64).to_string()
+        );
+        assert_eq!(
             SelectDataType::F64(-10_f64).raw_data(),
             (-10_f64).to_string()
         );
+
+        // Method data_type()
+        assert_eq!(SelectDataType::Text(String::new()).data_type(), "string");
+        assert_eq!(SelectDataType::I32(-10_i32).data_type(), "i32");
+        assert_eq!(SelectDataType::U32(10_u32).data_type(), "u32");
+        assert_eq!(SelectDataType::I64(-10_i64).data_type(), "i64");
+        assert_eq!(SelectDataType::F64(-10_f64).data_type(), "f64");
     }
 
     // Testing Transport structure -----------------------------------------------------------------
