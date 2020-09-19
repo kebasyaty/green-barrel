@@ -121,8 +121,8 @@ impl FieldType {
             Self::InputDate(_) => "string",
             Self::InputDateTime(_) => "string",
             Self::InputEmail(_) => "string",
-            Self::InputFile => "string",
-            Self::InputImage => "string",
+            Self::InputFile => "none",
+            Self::InputImage => "none",
             Self::InputNumberI32(_) => "i32",
             Self::InputNumberU32(_) => "u32",
             Self::InputNumberI64(_) => "i64",
@@ -319,6 +319,7 @@ mod tests {
             "datetime"
         );
         assert_eq!(FieldType::InputEmail(String::new()).input_type(), "email");
+        assert_eq!(FieldType::InputFile.input_type(), "file".to_string());
         assert_eq!(FieldType::InputImage.input_type(), "image".to_string());
         assert_eq!(FieldType::InputNumberI32(-1_i32).input_type(), "number");
         assert_eq!(FieldType::InputNumberU32(0_u32).input_type(), "number");
@@ -364,6 +365,7 @@ mod tests {
             FieldType::InputEmail(String::new()).raw_data(),
             String::new()
         );
+        assert_eq!(FieldType::InputFile.raw_data(), String::new());
         assert_eq!(FieldType::InputImage.raw_data(), String::new());
         assert_eq!(FieldType::InputNumberI32(-1_i32).raw_data(), "-1");
         assert_eq!(FieldType::InputNumberU32(0_u32).raw_data(), "0");
@@ -396,6 +398,43 @@ mod tests {
         assert_eq!(FieldType::ForeignKey.raw_data(), String::new());
         assert_eq!(FieldType::ManyToMany.raw_data(), String::new());
         assert_eq!(FieldType::OneToOne.raw_data(), String::new());
+
+        // Method data_type()
+        assert_eq!(FieldType::InputCheckBox(false).data_type(), "bool");
+        assert_eq!(FieldType::InputColor(String::new()).data_type(), "string");
+        assert_eq!(FieldType::InputDate(String::new()).data_type(), "string");
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputEmail(String::new()).data_type(), "string");
+        assert_eq!(FieldType::InputFile.input_type(), "none");
+        assert_eq!(FieldType::InputImage.input_type(), "none");
+        assert_eq!(FieldType::InputNumberI32(-1_i32).data_type(), "i32");
+        assert_eq!(FieldType::InputNumberU32(0_u32).data_type(), "u32");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).data_type(), "i64");
+        assert_eq!(FieldType::InputNumberF64(-1.3_f64).data_type(), "f64");
+        assert_eq!(
+            FieldType::InputPassword(String::new()).data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputRadio(false).data_type(), "bool");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).data_type(), "i32");
+        assert_eq!(FieldType::InputRangeU32(0_u32).data_type(), "u32");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).data_type(), "i64");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).data_type(), "f64");
+        assert_eq!(FieldType::InputTel(String::new()).data_type(), "string");
+        assert_eq!(FieldType::InputText(String::new()).data_type(), "string");
+        assert_eq!(FieldType::InputUrl(String::new()).data_type(), "string");
+        assert_eq!(FieldType::TextArea(String::new()).data_type(), "string");
+        assert_eq!(FieldType::SelectText(String::new()).data_type(), "string");
+        assert_eq!(FieldType::SelectI32(-1_i32).data_type(), "i32");
+        assert_eq!(FieldType::SelectU32(0_u32).data_type(), "u32");
+        assert_eq!(FieldType::SelectI64(-1_i64).data_type(), "i64");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).data_type(), "f64");
+        assert_eq!(FieldType::ForeignKey.data_type(), "none");
+        assert_eq!(FieldType::ManyToMany.data_type(), "none");
+        assert_eq!(FieldType::OneToOne.data_type(), "none");
     }
 
     // Testing Data types --------------------------------------------------------------------------
