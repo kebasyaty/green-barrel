@@ -397,10 +397,11 @@ macro_rules! create_model {
                 }
 
                 // Check the field changes in the Model and (if required)
-                // update the documents in the appropriate Collection
+                // update documents in the current Collection
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+                // Iterate through all documents in a collection
                 while let Some(result) = cursor.next().await {
                     let curr_doc: Document = result.unwrap();
                     if curr_doc.is_empty() {
