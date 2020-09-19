@@ -62,7 +62,7 @@ macro_rules! create_model {
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, (widget.value.data_type(), widget.value.raw_data()));
+                    default_values.insert(field, (widget.value.get_data_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
                         // InputCheckBox -----------------------------------------------------------

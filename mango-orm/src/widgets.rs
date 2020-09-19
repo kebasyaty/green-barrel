@@ -46,7 +46,7 @@ impl Default for FieldType {
 }
 
 impl FieldType {
-    pub fn input_type(&self) -> &'static str {
+    pub fn get_input_type(&self) -> &'static str {
         match self {
             Self::InputCheckBox(_) => "checkbox",
             Self::InputColor(_) => "color",
@@ -80,7 +80,7 @@ impl FieldType {
         }
     }
 
-    pub fn raw_data(&self) -> String {
+    pub fn get_raw_data(&self) -> String {
         match self {
             Self::InputCheckBox(data) => data.to_string(),
             Self::InputColor(data) => data.to_string(),
@@ -114,7 +114,7 @@ impl FieldType {
         }
     }
 
-    pub fn data_type(&self) -> &'static str {
+    pub fn get_data_type(&self) -> &'static str {
         match self {
             Self::InputCheckBox(_) => "bool",
             Self::InputColor(_) => "string",
@@ -166,7 +166,7 @@ impl Default for SelectDataType {
 }
 
 impl SelectDataType {
-    pub fn raw_data(&self) -> String {
+    pub fn get_raw_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
             Self::I32(data) => data.to_string(),
@@ -176,7 +176,7 @@ impl SelectDataType {
         }
     }
 
-    pub fn data_type(&self) -> &'static str {
+    pub fn get_data_type(&self) -> &'static str {
         match self {
             Self::Text(_) => "string",
             Self::I32(_) => "i32",
@@ -264,7 +264,7 @@ impl Widget {
     pub fn clean_attrs(&self, name: &str) -> Transport {
         let field_type = match self.hidden {
             true => "hidden".to_string(),
-            false => self.value.input_type().to_string(),
+            false => self.value.get_input_type().to_string(),
         };
         let checked = match self.value {
             FieldType::InputCheckBox(data) => data,
@@ -284,7 +284,7 @@ impl Widget {
             label: self.label.clone(),
             field_type: field_type,
             name: name.to_string(),
-            value: self.value.raw_data(),
+            value: self.value.get_raw_data(),
             maxlength: self.maxlength.clone(),
             required: self.required.clone(),
             checked: checked,
@@ -296,7 +296,7 @@ impl Widget {
             select: self
                 .select
                 .iter()
-                .map(|item| (item.0.clone(), item.1.raw_data()))
+                .map(|item| (item.0.clone(), item.1.get_raw_data()))
                 .collect::<Vec<(String, String)>>(),
         }
     }
@@ -310,161 +310,206 @@ mod tests {
     // Testing enum FieldTypes ---------------------------------------------------------------------
     #[test]
     fn test_field_types() {
-        // Method input_type()
-        assert_eq!(FieldType::InputCheckBox(false).input_type(), "checkbox");
-        assert_eq!(FieldType::InputColor(String::new()).input_type(), "color");
-        assert_eq!(FieldType::InputDate(String::new()).input_type(), "date");
+        // Method get_input_type()
+        assert_eq!(FieldType::InputCheckBox(false).get_input_type(), "checkbox");
         assert_eq!(
-            FieldType::InputDateTime(String::new()).input_type(),
+            FieldType::InputColor(String::new()).get_input_type(),
+            "color"
+        );
+        assert_eq!(FieldType::InputDate(String::new()).get_input_type(), "date");
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).get_input_type(),
             "datetime"
         );
-        assert_eq!(FieldType::InputEmail(String::new()).input_type(), "email");
-        assert_eq!(FieldType::InputFile.input_type(), "file");
-        assert_eq!(FieldType::InputImage.input_type(), "image");
-        assert_eq!(FieldType::InputNumberI32(-1_i32).input_type(), "number");
-        assert_eq!(FieldType::InputNumberU32(0_u32).input_type(), "number");
-        assert_eq!(FieldType::InputNumberI64(-1_i64).input_type(), "number");
-        assert_eq!(FieldType::InputNumberF64(-1.3_f64).input_type(), "number");
         assert_eq!(
-            FieldType::InputPassword(String::new()).input_type(),
+            FieldType::InputEmail(String::new()).get_input_type(),
+            "email"
+        );
+        assert_eq!(FieldType::InputFile.get_input_type(), "file");
+        assert_eq!(FieldType::InputImage.get_input_type(), "image");
+        assert_eq!(FieldType::InputNumberI32(-1_i32).get_input_type(), "number");
+        assert_eq!(FieldType::InputNumberU32(0_u32).get_input_type(), "number");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).get_input_type(), "number");
+        assert_eq!(
+            FieldType::InputNumberF64(-1.3_f64).get_input_type(),
+            "number"
+        );
+        assert_eq!(
+            FieldType::InputPassword(String::new()).get_input_type(),
             "password"
         );
-        assert_eq!(FieldType::InputRadio(false).input_type(), "radio");
-        assert_eq!(FieldType::InputRangeI32(-1_i32).input_type(), "range");
-        assert_eq!(FieldType::InputRangeU32(0_u32).input_type(), "range");
-        assert_eq!(FieldType::InputRangeI64(-1_i64).input_type(), "range");
-        assert_eq!(FieldType::InputRangeF64(-1.3_f64).input_type(), "range");
-        assert_eq!(FieldType::InputTel(String::new()).input_type(), "tel");
-        assert_eq!(FieldType::InputText(String::new()).input_type(), "text");
-        assert_eq!(FieldType::InputUrl(String::new()).input_type(), "url");
-        assert_eq!(FieldType::TextArea(String::new()).input_type(), "textarea");
-        assert_eq!(FieldType::SelectText(String::new()).input_type(), "select");
-        assert_eq!(FieldType::SelectI32(-1_i32).input_type(), "select");
-        assert_eq!(FieldType::SelectU32(0_u32).input_type(), "select");
-        assert_eq!(FieldType::SelectI64(-1_i64).input_type(), "select");
-        assert_eq!(FieldType::SelectF64(-1.3_f64).input_type(), "select");
-        assert_eq!(FieldType::ForeignKey.input_type(), "select");
-        assert_eq!(FieldType::ManyToMany.input_type(), "select");
-        assert_eq!(FieldType::OneToOne.input_type(), "hidden");
+        assert_eq!(FieldType::InputRadio(false).get_input_type(), "radio");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).get_input_type(), "range");
+        assert_eq!(FieldType::InputRangeU32(0_u32).get_input_type(), "range");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).get_input_type(), "range");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).get_input_type(), "range");
+        assert_eq!(FieldType::InputTel(String::new()).get_input_type(), "tel");
+        assert_eq!(FieldType::InputText(String::new()).get_input_type(), "text");
+        assert_eq!(FieldType::InputUrl(String::new()).get_input_type(), "url");
+        assert_eq!(
+            FieldType::TextArea(String::new()).get_input_type(),
+            "textarea"
+        );
+        assert_eq!(
+            FieldType::SelectText(String::new()).get_input_type(),
+            "select"
+        );
+        assert_eq!(FieldType::SelectI32(-1_i32).get_input_type(), "select");
+        assert_eq!(FieldType::SelectU32(0_u32).get_input_type(), "select");
+        assert_eq!(FieldType::SelectI64(-1_i64).get_input_type(), "select");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).get_input_type(), "select");
+        assert_eq!(FieldType::ForeignKey.get_input_type(), "select");
+        assert_eq!(FieldType::ManyToMany.get_input_type(), "select");
+        assert_eq!(FieldType::OneToOne.get_input_type(), "hidden");
 
-        // Method raw_data()
-        assert_eq!(FieldType::InputCheckBox(false).raw_data(), "false");
+        // Method get_raw_data()
+        assert_eq!(FieldType::InputCheckBox(false).get_raw_data(), "false");
         assert_eq!(
-            FieldType::InputColor(String::new()).raw_data(),
+            FieldType::InputColor(String::new()).get_raw_data(),
             String::new()
         );
         assert_eq!(
-            FieldType::InputDate(String::new()).raw_data(),
+            FieldType::InputDate(String::new()).get_raw_data(),
             String::new()
         );
         assert_eq!(
-            FieldType::InputDateTime(String::new()).raw_data(),
+            FieldType::InputDateTime(String::new()).get_raw_data(),
             String::new()
         );
         assert_eq!(
-            FieldType::InputEmail(String::new()).raw_data(),
+            FieldType::InputEmail(String::new()).get_raw_data(),
             String::new()
         );
-        assert_eq!(FieldType::InputFile.raw_data(), String::new());
-        assert_eq!(FieldType::InputImage.raw_data(), String::new());
-        assert_eq!(FieldType::InputNumberI32(-1_i32).raw_data(), "-1");
-        assert_eq!(FieldType::InputNumberU32(0_u32).raw_data(), "0");
-        assert_eq!(FieldType::InputNumberI64(-1_i64).raw_data(), "-1");
-        assert_eq!(FieldType::InputNumberF64(-1.3_f64).raw_data(), "-1.3");
+        assert_eq!(FieldType::InputFile.get_raw_data(), String::new());
+        assert_eq!(FieldType::InputImage.get_raw_data(), String::new());
+        assert_eq!(FieldType::InputNumberI32(-1_i32).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputNumberU32(0_u32).get_raw_data(), "0");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputNumberF64(-1.3_f64).get_raw_data(), "-1.3");
         assert_eq!(
-            FieldType::InputPassword(String::new()).raw_data(),
+            FieldType::InputPassword(String::new()).get_raw_data(),
             String::new()
         );
-        assert_eq!(FieldType::InputRadio(false).raw_data(), "false");
-        assert_eq!(FieldType::InputRangeI32(-1_i32).raw_data(), "-1");
-        assert_eq!(FieldType::InputRangeU32(0_u32).raw_data(), "0");
-        assert_eq!(FieldType::InputRangeI64(-1_i64).raw_data(), "-1");
-        assert_eq!(FieldType::InputRangeF64(-1.3_f64).raw_data(), "-1.3");
-        assert_eq!(FieldType::InputTel(String::new()).raw_data(), String::new());
+        assert_eq!(FieldType::InputRadio(false).get_raw_data(), "false");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputRangeU32(0_u32).get_raw_data(), "0");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).get_raw_data(), "-1.3");
         assert_eq!(
-            FieldType::InputText(String::new()).raw_data(),
+            FieldType::InputTel(String::new()).get_raw_data(),
             String::new()
         );
-        assert_eq!(FieldType::InputUrl(String::new()).raw_data(), String::new());
-        assert_eq!(FieldType::TextArea(String::new()).raw_data(), String::new());
         assert_eq!(
-            FieldType::SelectText(String::new()).raw_data(),
+            FieldType::InputText(String::new()).get_raw_data(),
             String::new()
         );
-        assert_eq!(FieldType::SelectI32(-1_i32).raw_data(), "-1");
-        assert_eq!(FieldType::SelectU32(0_u32).raw_data(), "0");
-        assert_eq!(FieldType::SelectI64(-1_i64).raw_data(), "-1");
-        assert_eq!(FieldType::SelectF64(-1.3_f64).raw_data(), "-1.3");
-        assert_eq!(FieldType::ForeignKey.raw_data(), String::new());
-        assert_eq!(FieldType::ManyToMany.raw_data(), String::new());
-        assert_eq!(FieldType::OneToOne.raw_data(), String::new());
+        assert_eq!(
+            FieldType::InputUrl(String::new()).get_raw_data(),
+            String::new()
+        );
+        assert_eq!(
+            FieldType::TextArea(String::new()).get_raw_data(),
+            String::new()
+        );
+        assert_eq!(
+            FieldType::SelectText(String::new()).get_raw_data(),
+            String::new()
+        );
+        assert_eq!(FieldType::SelectI32(-1_i32).get_raw_data(), "-1");
+        assert_eq!(FieldType::SelectU32(0_u32).get_raw_data(), "0");
+        assert_eq!(FieldType::SelectI64(-1_i64).get_raw_data(), "-1");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).get_raw_data(), "-1.3");
+        assert_eq!(FieldType::ForeignKey.get_raw_data(), String::new());
+        assert_eq!(FieldType::ManyToMany.get_raw_data(), String::new());
+        assert_eq!(FieldType::OneToOne.get_raw_data(), String::new());
 
-        // Method data_type()
-        assert_eq!(FieldType::InputCheckBox(false).data_type(), "bool");
-        assert_eq!(FieldType::InputColor(String::new()).data_type(), "string");
-        assert_eq!(FieldType::InputDate(String::new()).data_type(), "string");
+        // Method get_data_type()
+        assert_eq!(FieldType::InputCheckBox(false).get_data_type(), "bool");
         assert_eq!(
-            FieldType::InputDateTime(String::new()).data_type(),
+            FieldType::InputColor(String::new()).get_data_type(),
             "string"
         );
-        assert_eq!(FieldType::InputEmail(String::new()).data_type(), "string");
-        assert_eq!(FieldType::InputFile.data_type(), "none");
-        assert_eq!(FieldType::InputImage.data_type(), "none");
-        assert_eq!(FieldType::InputNumberI32(-1_i32).data_type(), "i32");
-        assert_eq!(FieldType::InputNumberU32(0_u32).data_type(), "u32");
-        assert_eq!(FieldType::InputNumberI64(-1_i64).data_type(), "i64");
-        assert_eq!(FieldType::InputNumberF64(-1.3_f64).data_type(), "f64");
         assert_eq!(
-            FieldType::InputPassword(String::new()).data_type(),
+            FieldType::InputDate(String::new()).get_data_type(),
             "string"
         );
-        assert_eq!(FieldType::InputRadio(false).data_type(), "bool");
-        assert_eq!(FieldType::InputRangeI32(-1_i32).data_type(), "i32");
-        assert_eq!(FieldType::InputRangeU32(0_u32).data_type(), "u32");
-        assert_eq!(FieldType::InputRangeI64(-1_i64).data_type(), "i64");
-        assert_eq!(FieldType::InputRangeF64(-1.3_f64).data_type(), "f64");
-        assert_eq!(FieldType::InputTel(String::new()).data_type(), "string");
-        assert_eq!(FieldType::InputText(String::new()).data_type(), "string");
-        assert_eq!(FieldType::InputUrl(String::new()).data_type(), "string");
-        assert_eq!(FieldType::TextArea(String::new()).data_type(), "string");
-        assert_eq!(FieldType::SelectText(String::new()).data_type(), "string");
-        assert_eq!(FieldType::SelectI32(-1_i32).data_type(), "i32");
-        assert_eq!(FieldType::SelectU32(0_u32).data_type(), "u32");
-        assert_eq!(FieldType::SelectI64(-1_i64).data_type(), "i64");
-        assert_eq!(FieldType::SelectF64(-1.3_f64).data_type(), "f64");
-        assert_eq!(FieldType::ForeignKey.data_type(), "none");
-        assert_eq!(FieldType::ManyToMany.data_type(), "none");
-        assert_eq!(FieldType::OneToOne.data_type(), "none");
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(
+            FieldType::InputEmail(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputFile.get_data_type(), "none");
+        assert_eq!(FieldType::InputImage.get_data_type(), "none");
+        assert_eq!(FieldType::InputNumberI32(-1_i32).get_data_type(), "i32");
+        assert_eq!(FieldType::InputNumberU32(0_u32).get_data_type(), "u32");
+        assert_eq!(FieldType::InputNumberI64(-1_i64).get_data_type(), "i64");
+        assert_eq!(FieldType::InputNumberF64(-1.3_f64).get_data_type(), "f64");
+        assert_eq!(
+            FieldType::InputPassword(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputRadio(false).get_data_type(), "bool");
+        assert_eq!(FieldType::InputRangeI32(-1_i32).get_data_type(), "i32");
+        assert_eq!(FieldType::InputRangeU32(0_u32).get_data_type(), "u32");
+        assert_eq!(FieldType::InputRangeI64(-1_i64).get_data_type(), "i64");
+        assert_eq!(FieldType::InputRangeF64(-1.3_f64).get_data_type(), "f64");
+        assert_eq!(FieldType::InputTel(String::new()).get_data_type(), "string");
+        assert_eq!(
+            FieldType::InputText(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputUrl(String::new()).get_data_type(), "string");
+        assert_eq!(FieldType::TextArea(String::new()).get_data_type(), "string");
+        assert_eq!(
+            FieldType::SelectText(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::SelectI32(-1_i32).get_data_type(), "i32");
+        assert_eq!(FieldType::SelectU32(0_u32).get_data_type(), "u32");
+        assert_eq!(FieldType::SelectI64(-1_i64).get_data_type(), "i64");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).get_data_type(), "f64");
+        assert_eq!(FieldType::ForeignKey.get_data_type(), "none");
+        assert_eq!(FieldType::ManyToMany.get_data_type(), "none");
+        assert_eq!(FieldType::OneToOne.get_data_type(), "none");
     }
 
     // Testing Data types --------------------------------------------------------------------------
     #[test]
-    fn test_data_types() {
-        // Method raw_data()
+    fn test_get_data_types() {
+        // Method get_raw_data()
         assert_eq!(
-            SelectDataType::Text("Some text".to_string()).raw_data(),
+            SelectDataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
         );
         assert_eq!(
-            SelectDataType::I32(-10_i32).raw_data(),
+            SelectDataType::I32(-10_i32).get_raw_data(),
             (-10_i32).to_string()
         );
-        assert_eq!(SelectDataType::U32(10_u32).raw_data(), 10_u32.to_string());
         assert_eq!(
-            SelectDataType::I64(-10_i64).raw_data(),
+            SelectDataType::U32(10_u32).get_raw_data(),
+            10_u32.to_string()
+        );
+        assert_eq!(
+            SelectDataType::I64(-10_i64).get_raw_data(),
             (-10_i64).to_string()
         );
         assert_eq!(
-            SelectDataType::F64(-10_f64).raw_data(),
+            SelectDataType::F64(-10_f64).get_raw_data(),
             (-10_f64).to_string()
         );
 
-        // Method data_type()
-        assert_eq!(SelectDataType::Text(String::new()).data_type(), "string");
-        assert_eq!(SelectDataType::I32(-10_i32).data_type(), "i32");
-        assert_eq!(SelectDataType::U32(10_u32).data_type(), "u32");
-        assert_eq!(SelectDataType::I64(-10_i64).data_type(), "i64");
-        assert_eq!(SelectDataType::F64(-10_f64).data_type(), "f64");
+        // Method get_data_type()
+        assert_eq!(
+            SelectDataType::Text(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(SelectDataType::I32(-10_i32).get_data_type(), "i32");
+        assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "u32");
+        assert_eq!(SelectDataType::I64(-10_i64).get_data_type(), "i64");
+        assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
     }
 
     // Testing Transport structure -----------------------------------------------------------------
@@ -497,8 +542,8 @@ mod tests {
         // Fields
         assert_eq!(widget.label, String::new());
         assert_eq!(
-            widget.value.input_type(),
-            FieldType::InputText(String::new()).input_type()
+            widget.value.get_input_type(),
+            FieldType::InputText(String::new()).get_input_type()
         );
         assert_eq!(widget.relation_model, String::new());
         assert_eq!(widget.maxlength, 0);
@@ -509,12 +554,12 @@ mod tests {
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
-        assert_eq!(widget.select[0].1.raw_data(), String::new());
+        assert_eq!(widget.select[0].1.get_raw_data(), String::new());
         // Methods
         let mut attrs = widget.clean_attrs("");
         attrs.select = vec![(
             String::new(),
-            SelectDataType::Text(String::new()).raw_data(),
+            SelectDataType::Text(String::new()).get_raw_data(),
         )];
 
         assert_eq!(attrs.id, String::new());
