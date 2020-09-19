@@ -39,6 +39,10 @@ macro_rules! create_model {
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                // Checking for the presence of fields
+                if FIELD_NAMES.len() == 0 {
+                    panic!("The model structure has no fields.");
+                }
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
                 // Technical database for `models::Monitor`
