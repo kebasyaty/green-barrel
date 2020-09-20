@@ -431,7 +431,7 @@ macro_rules! create_model {
                 // ---------------------------------------------------------------------------------
                 // Get the database for the current collection of Model
                 let db: Database = client.database(&meta.database);
-                //
+                // If there is no collection for the current Model, create it
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
                     db.create_collection(&meta.collection, None).await.unwrap();
