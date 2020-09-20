@@ -388,14 +388,13 @@ macro_rules! create_model {
                         "status": true
                     };
                     // Check if there is model state in the database
-                    if collection.count_documents(filter, None).await.unwrap() == 0_i64 {
+                    if collection.count_documents(filter.clone(), None).await.unwrap() == 0_i64 {
                         // Add model state information
                         collection.insert_one(doc, None).await.unwrap();
                     } else {
                         // Update model state information
-                        let query = doc! {"database": &meta.database, "collection": &meta.collection};
                         let update = UpdateModifications::Document(doc);
-                        collection.update_one(query, update, None).await.unwrap();
+                        collection.update_one(filter, update, None).await.unwrap();
                     }
                 }
 
