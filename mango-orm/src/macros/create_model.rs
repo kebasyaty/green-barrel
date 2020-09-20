@@ -379,19 +379,19 @@ macro_rules! create_model {
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
                 // Check if the set of fields in the collection of the current Model needs to be updated
-                let mut run_check: bool = false;
+                let mut run_modification: bool = false;
                 if FIELD_NAMES.len() != mango_orm_fnames.len() {
-                    run_check = true;
+                    run_modification = true;
                 } else {
                     for item in FIELD_NAMES {
                         if mango_orm_fnames.iter().any(|item2| item2 != item) {
-                            run_check = true;
+                            run_modification = true;
                             break;
                         }
                     }
                 }
                 // Start (if necessary) updating the set of fields in the current collection
-                if run_check {
+                if run_modification {
                     // Get the database and collection of the current Model
                     let db: Database = client.database(&meta.database);
                     let collection: Collection = db.collection(&meta.collection);
