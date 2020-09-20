@@ -400,15 +400,11 @@ macro_rules! create_model {
                 // update documents in the current Collection
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
+                let mango_orm_fnames = client.database(&mango_orm_keyword).collection("models").find_one();
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                 // Iterate through all documents in a current (model) collection
                 while let Some(result) = cursor.next().await {
                     let curr_doc: Document = result.unwrap();
-                    // Delete blank document and go to a new iteration
-                    if curr_doc.is_empty() {
-                        collection.delete_one(curr_doc, None).await.unwrap();
-                        continue;
-                    }
                     // Create temporary blank document
                     let mut tmp_doc = doc! {};
                     // Loop over all fields of the model
