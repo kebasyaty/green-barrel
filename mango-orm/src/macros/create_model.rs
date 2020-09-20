@@ -390,7 +390,7 @@ macro_rules! create_model {
                         }
                     }
                 }
-                // Begin (if required) restructuring of the field set for the collection of the current Model
+                // Start (if necessary) updating the set of fields in the current collection
                 if run_check {
                     // Get the database and collection of the current Model
                     let db: Database = client.database(&meta.database);
