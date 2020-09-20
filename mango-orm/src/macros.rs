@@ -437,13 +437,9 @@ macro_rules! create_model {
                         }
                     }
                     // Save updated document
-                    if !tmp_doc.is_empty() {
-                        let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
-                        let update = UpdateModifications::Document(tmp_doc);
-                        collection.update_one(query, update, None).await.unwrap();
-                    } else {
-                        collection.delete_one(curr_doc, None).await.unwrap();
-                    }
+                    let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
+                    let update = UpdateModifications::Document(tmp_doc);
+                    collection.update_one(query, update, None).await.unwrap();
                 }
             }
         }
