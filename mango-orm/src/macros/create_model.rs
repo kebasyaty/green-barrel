@@ -376,7 +376,7 @@ macro_rules! create_model {
                     let model: Document = client.database(&mango_orm_keyword)
                         .collection("models").find_one(filter, None).await.unwrap().unwrap();
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
-                    fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect::<Vec<String>>()
+                    fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
                 // Get the database and collection of the current Model
                 let db: Database = client.database(&meta.database);
