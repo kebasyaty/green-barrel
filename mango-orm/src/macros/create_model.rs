@@ -381,7 +381,10 @@ macro_rules! create_model {
                 //
                 let mut run_check: bool = false;
                 for item in mango_orm_fnames {
-                    //
+                    if FIELD_NAMES.iter().any(|&item2| item2 != item) {
+                        run_check = true;
+                        break;
+                    }
                 }
                 //
                 if run_check {
