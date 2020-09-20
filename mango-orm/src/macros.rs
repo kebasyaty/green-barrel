@@ -371,7 +371,7 @@ macro_rules! create_model {
                 // ---------------------------------------------------------------------------------
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
-                //
+                // Get a list of current model field names from the technical database `mango_orm_keyword`
                 let mango_orm_fnames: Vec<String> = {
                     let filter: Document = doc! {
                         "database": &meta.database, "collection": &meta.collection};
@@ -380,8 +380,7 @@ macro_rules! create_model {
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect::<Vec<String>>()
                 };
-                println!("{:?}", mango_orm_fnames);
-                //
+                // Get cursor to all documents of the current Model
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                 // Iterate through all documents in a current (model) collection
                 while let Some(result) = cursor.next().await {
