@@ -57,6 +57,7 @@ macro_rules! create_model {
                 let mut default_values: HashMap<&'static str, (&'static str, String)> = HashMap::new();
 
                 // Checking Widgets
+                // ---------------------------------------------------------------------------------
                 for (field, widget) in attrs {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
@@ -365,41 +366,9 @@ macro_rules! create_model {
                     }
                 }
 
-                // Create a new database (if doesn't exist) and add new collection
-                let db: Database = client.database(&meta.database);
-                if !database_names.contains(&meta.database) ||
-                    !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
-                    db.create_collection(&meta.collection, None).await.unwrap();
-                }
-
-                // Update the state of models for `models::Monitor`
-                let db: Database = client.database(&mango_orm_keyword);
-                // Check if there is a technical database of the project, if not, causes panic
-                if !database_names.contains(&mango_orm_keyword) ||
-                    !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
-                    panic!("For migration not used `models::Monitor.refresh()`.");
-                } else {
-                    let collection = db.collection("models");
-                    let filter = doc! {"database": &meta.database, "collection": &meta.collection};
-                    let doc = doc!{
-                        "database": &meta.database,
-                        "collection": &meta.collection,
-                        "fields": FIELD_NAMES,
-                        "status": true
-                    };
-                    // Check if there is model state in the database
-                    if collection.count_documents(filter.clone(), None).await.unwrap() == 0_i64 {
-                        // Add model state information
-                        collection.insert_one(doc, None).await.unwrap();
-                    } else {
-                        // Update model state information
-                        let update = UpdateModifications::Document(doc);
-                        collection.update_one(filter, update, None).await.unwrap();
-                    }
-                }
-
                 // Check the field changes in the Model and (if required)
                 // update documents in the current Collection
+                // ---------------------------------------------------------------------------------
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
                 //
@@ -444,6 +413,40 @@ macro_rules! create_model {
                     let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
                     let update = UpdateModifications::Document(tmp_doc);
                     collection.update_one(query, update, None).await.unwrap();
+                }
+
+                // Create a new database (if doesn't exist) and add new collection
+                // ---------------------------------------------------------------------------------
+                let db: Database = client.database(&meta.database);
+                if !database_names.contains(&meta.database) ||
+                    !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
+                    db.create_collection(&meta.collection, None).await.unwrap();
+                }
+
+                // Update the state of models for `models::Monitor`
+                let db: Database = client.database(&mango_orm_keyword);
+                // Check if there is a technical database of the project, if not, causes panic
+                if !database_names.contains(&mango_orm_keyword) ||
+                    !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
+                    panic!("For migration not used `models::Monitor.refresh()`.");
+                } else {
+                    let collection = db.collection("models");
+                    let filter = doc! {"database": &meta.database, "collection": &meta.collection};
+                    let doc = doc!{
+                        "database": &meta.database,
+                        "collection": &meta.collection,
+                        "fields": FIELD_NAMES,
+                        "status": true
+                    };
+                    // Check if there is model state in the database
+                    if collection.count_documents(filter.clone(), None).await.unwrap() == 0_i64 {
+                        // Add model state information
+                        collection.insert_one(doc, None).await.unwrap();
+                    } else {
+                        // Update model state information
+                        let update = UpdateModifications::Document(doc);
+                        collection.update_one(filter, update, None).await.unwrap();
+                    }
                 }
             }
         }
