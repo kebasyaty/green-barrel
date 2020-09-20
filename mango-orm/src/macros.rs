@@ -381,17 +381,20 @@ macro_rules! create_model {
                 } else {
                     let collection = db.collection("models");
                     let filter = doc! {"database": &meta.database, "collection": &meta.collection};
+                    let doc = doc!{
+                        "database": &meta.database,
+                        "collection": &meta.collection,
+                        "fields": FIELD_NAMES,
+                        "status": true
+                    };
                     // Check if there is model state in the database
                     if collection.count_documents(filter, None).await.unwrap() == 0_i64 {
                         // Add model state information
-                        let doc = doc!{"database": &meta.database, "collection": &meta.collection, "status": true};
                         collection.insert_one(doc, None).await.unwrap();
                     } else {
                         // Update model state information
                         let query = doc! {"database": &meta.database, "collection": &meta.collection};
-                        let update = UpdateModifications::Document(
-                            doc!{"database": &meta.database, "collection": &meta.collection, "status": true}
-                        );
+                        let update = UpdateModifications::Document(doc);
                         collection.update_one(query, update, None).await.unwrap();
                     }
                 }
@@ -400,6 +403,7 @@ macro_rules! create_model {
                 // update documents in the current Collection
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
+                //
                 let mango_orm_fnames = {
                     let filter = doc! {"database": &meta.database, "collection": &meta.collection};
                     let model = client.database(&mango_orm_keyword).collection("models")
