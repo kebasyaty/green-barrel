@@ -372,12 +372,14 @@ macro_rules! create_model {
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
                 //
-                let mango_orm_fnames = {
-                    let filter = doc! {"database": &meta.database, "collection": &meta.collection};
-                    let model = client.database(&mango_orm_keyword).collection("models")
-                        .find_one(filter, None).await.unwrap();
+                let mango_orm_fnames: Vec<&str> = {
+                    let filter: Document = doc! {
+                        "database": &meta.database, "collection": &meta.collection};
+                    let model: Document = client.database(&mango_orm_keyword)
+                        .collection("models").find_one(filter, None).await.unwrap().unwrap();
                     model
                 };
+                //
                 let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                 // Iterate through all documents in a current (model) collection
                 while let Some(result) = cursor.next().await {

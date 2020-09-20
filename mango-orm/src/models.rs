@@ -41,9 +41,10 @@ pub trait Model {
 // For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
 #[derive(Serialize, Deserialize)]
-pub struct MangoOrmModelState {
+pub struct ModelState {
     pub database: String,
     pub collection: String,
+    pub fields: Vec<String>,
     pub status: bool,
 }
 
@@ -81,7 +82,7 @@ impl<'a> Monitor<'a> {
             while let Some(result) = cursor.next().await {
                 match result {
                     Ok(document) => {
-                        let mut model_state: MangoOrmModelState =
+                        let mut model_state: ModelState =
                             bson::de::from_document(document).unwrap();
                         model_state.status = false;
                         let query: Document = bson::doc! {
@@ -115,8 +116,7 @@ impl<'a> Monitor<'a> {
         for result in results {
             match result {
                 Ok(document) => {
-                    let model_state: MangoOrmModelState =
-                        bson::de::from_document(document).unwrap();
+                    let model_state: ModelState = bson::de::from_document(document).unwrap();
                     if !model_state.status {
                         // Delete Collection (left without a model)
                         self.client
