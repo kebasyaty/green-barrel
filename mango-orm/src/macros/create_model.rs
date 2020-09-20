@@ -378,7 +378,7 @@ macro_rules! create_model {
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
-                //
+                // Check if the set of fields in the collection of the current Model needs to be updated
                 let mut run_check: bool = false;
                 if FIELD_NAMES.len() != mango_orm_fnames.len() {
                     run_check = true;
@@ -390,7 +390,7 @@ macro_rules! create_model {
                         }
                     }
                 }
-                //
+                // Begin (if required) restructuring of the field set for the collection of the current Model
                 if run_check {
                     // Get the database and collection of the current Model
                     let db: Database = client.database(&meta.database);
