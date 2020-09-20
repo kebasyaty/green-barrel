@@ -48,7 +48,7 @@ create_model! {
     struct User {
         username: String,
         email: String,
-        timestamp: u32
+        timestamp: String
     }
 }
 #[async_trait]
