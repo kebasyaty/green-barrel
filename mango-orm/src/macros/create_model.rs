@@ -380,10 +380,14 @@ macro_rules! create_model {
                 };
                 //
                 let mut run_check: bool = false;
-                for item in mango_orm_fnames {
-                    if FIELD_NAMES.iter().any(|&item2| item2 != item) {
-                        run_check = true;
-                        break;
+                if FIELD_NAMES.len() != mango_orm_fnames.len() {
+                    run_check = true;
+                } else {
+                    for item in FIELD_NAMES {
+                        if mango_orm_fnames.iter().any(|item2| item2 != item) {
+                            run_check = true;
+                            break;
+                        }
                     }
                 }
                 //
