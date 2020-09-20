@@ -378,7 +378,7 @@ macro_rules! create_model {
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect::<Vec<String>>()
                 };
-                //
+                // Get the database and collection of the current Model
                 let db: Database = client.database(&meta.database);
                 let collection: Collection = db.collection(&meta.collection);
                 // Get cursor to all documents of the current Model
