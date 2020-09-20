@@ -18,7 +18,8 @@ create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
     struct Category {
-        title: String
+        title: String,
+        datetime: String
     }
 }
 #[async_trait]
@@ -46,7 +47,8 @@ create_model! {
     DATABASE_NAME,
     struct User {
         username: String,
-        email: String
+        email: String,
+        timestamp: u32
     }
 }
 #[async_trait]
