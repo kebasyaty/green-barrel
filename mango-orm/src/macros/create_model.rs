@@ -378,10 +378,12 @@ macro_rules! create_model {
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
+                //
                 let mut run_check: bool = false;
                 for item in mango_orm_fnames {
                     //
                 }
+                //
                 if run_check {
                     // Get the database and collection of the current Model
                     let db: Database = client.database(&meta.database);
@@ -426,14 +428,18 @@ macro_rules! create_model {
                 }
 
                 // Create a new database (if doesn't exist) and add new collection
-                // -----------------------------------------------------------------------------
+                // ---------------------------------------------------------------------------------
+                // Get the database for the current collection of Model
                 let db: Database = client.database(&meta.database);
+                //
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
                     db.create_collection(&meta.collection, None).await.unwrap();
                 }
 
                 // Update the state of models for `models::Monitor`
+                // ---------------------------------------------------------------------------------
+                // Get the technical database `mango_orm_keyword` for the current model
                 let db: Database = client.database(&mango_orm_keyword);
                 // Check if there is a technical database of the project, if not, causes panic
                 if !database_names.contains(&mango_orm_keyword) ||
