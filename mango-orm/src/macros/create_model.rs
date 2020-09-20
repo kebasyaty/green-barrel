@@ -378,49 +378,55 @@ macro_rules! create_model {
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
-                // Get the database and collection of the current Model
-                let db: Database = client.database(&meta.database);
-                let collection: Collection = db.collection(&meta.collection);
-                // Get cursor to all documents of the current Model
-                let mut cursor: Cursor = collection.find(None, None).await.unwrap();
-                // Iterate through all documents in a current (model) collection
-                while let Some(result) = cursor.next().await {
-                    let curr_doc: Document = result.unwrap();
-                    // Create temporary blank document
-                    let mut tmp_doc = doc! {};
-                    // Loop over all fields of the model
-                    for field in FIELD_NAMES {
-                        // If the field exists, get its value
-                        if curr_doc.contains_key(field) {
-                            for item in curr_doc.iter() {
-                                if item.0 == field {
-                                    tmp_doc.insert(field.to_string(), item.1);
-                                    break;
+                let mut run_check: bool = false;
+                for item in mango_orm_fnames {
+                    //
+                }
+                if run_check {
+                    // Get the database and collection of the current Model
+                    let db: Database = client.database(&meta.database);
+                    let collection: Collection = db.collection(&meta.collection);
+                    // Get cursor to all documents of the current Model
+                    let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+                    // Iterate through all documents in a current (model) collection
+                    while let Some(result) = cursor.next().await {
+                        let curr_doc: Document = result.unwrap();
+                        // Create temporary blank document
+                        let mut tmp_doc = doc! {};
+                        // Loop over all fields of the model
+                        for field in FIELD_NAMES {
+                            // If the field exists, get its value
+                            if curr_doc.contains_key(field) {
+                                for item in curr_doc.iter() {
+                                    if item.0 == field {
+                                        tmp_doc.insert(field.to_string(), item.1);
+                                        break;
+                                    }
                                 }
+                            } else {
+                                // If no field exists, get default value
+                                let value = &default_values[field];
+                                tmp_doc.insert(field.to_string(), match value.0 {
+                                    "string" => Bson::String(value.1.clone()),
+                                    "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
+                                    "u32" => Bson::Int64(value.1.parse::<i64>().unwrap()),
+                                    "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
+                                    "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
+                                    "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
+                                    "none" => Bson::Null,
+                                    _ => panic!("Invalid data type."),
+                                });
                             }
-                        } else {
-                            // If no field exists, get default value
-                            let value = &default_values[field];
-                            tmp_doc.insert(field.to_string(), match value.0 {
-                                "string" => Bson::String(value.1.clone()),
-                                "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
-                                "u32" => Bson::Int64(value.1.parse::<i64>().unwrap()),
-                                "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
-                                "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
-                                "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
-                                "none" => Bson::Null,
-                                _ => panic!("Invalid data type."),
-                            });
                         }
+                        // Save updated document
+                        let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
+                        let update = UpdateModifications::Document(tmp_doc);
+                        collection.update_one(query, update, None).await.unwrap();
                     }
-                    // Save updated document
-                    let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
-                    let update = UpdateModifications::Document(tmp_doc);
-                    collection.update_one(query, update, None).await.unwrap();
                 }
 
                 // Create a new database (if doesn't exist) and add new collection
-                // ---------------------------------------------------------------------------------
+                // -----------------------------------------------------------------------------
                 let db: Database = client.database(&meta.database);
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
