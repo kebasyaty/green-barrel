@@ -115,6 +115,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputDate ---------------------------------------------------------------
@@ -127,6 +132,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -143,6 +153,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputEmail --------------------------------------------------------------
@@ -155,6 +170,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -171,6 +191,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputImage --------------------------------------------------------------
@@ -185,6 +210,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputNumber -------------------------------------------------------------
@@ -197,6 +227,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "i32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i32`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -216,6 +251,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -242,6 +282,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `select` - must not be an empty vec![]",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "bool" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `bool`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputRange --------------------------------------------------------------
@@ -254,6 +299,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "i32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i32`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -270,6 +320,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputText ---------------------------------------------------------------
@@ -282,6 +337,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -298,6 +358,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // TextArea ----------------------------------------------------------------
@@ -310,6 +375,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -326,6 +396,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // ForeignKey --------------------------------------------------------------
@@ -338,6 +413,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
@@ -354,6 +434,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // OneToOne ----------------------------------------------------------------
@@ -366,6 +451,11 @@ macro_rules! create_model {
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
