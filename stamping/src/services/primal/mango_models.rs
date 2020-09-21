@@ -11,7 +11,7 @@ use mongodb::{
     Client, Collection, Cursor, Database,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json;
 use std::collections::HashMap;
 
 const SERVICE_NAME: &'static str = "test_service";

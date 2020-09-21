@@ -11,7 +11,7 @@ use mongodb::{
     Client, Collection, Cursor, Database,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json;
 use std::collections::HashMap;
 
 const SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME
@@ -21,8 +21,7 @@ create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
     struct Category {
-        title: String,
-        datetime: String
+        title: String
     }
 }
 #[async_trait]
@@ -50,8 +49,7 @@ create_model! {
     DATABASE_NAME,
     struct User {
         username: String,
-        email: String,
-        timestamp: String
+        email: String
     }
 }
 #[async_trait]
