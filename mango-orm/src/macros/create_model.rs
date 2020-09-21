@@ -39,6 +39,10 @@ macro_rules! create_model {
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static STRUCT_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                let map_field_types: HashMap<&'static str, &'static str> =
+                    FIELD_NAMES.iter().map(|item| item.to_owned())
+                    .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
+                println!("{:?}", map_field_types);
                 // Checking for the presence of fields
                 if FIELD_NAMES.len() == 0 {
                     panic!("The model structure has no fields.");
