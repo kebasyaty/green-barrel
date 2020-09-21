@@ -22,6 +22,7 @@ pub struct Meta {
     pub database: String,
     pub collection: String,
 }
+
 // Model -------------------------------------------------------------------------------------------
 /// Defining common behavior of models
 #[async_trait]
@@ -38,6 +39,7 @@ pub trait Model {
         clean_attrs
     }
 }
+
 // For Migration -----------------------------------------------------------------------------------
 /// Creation and updating of a technical database for monitoring the state of models
 #[derive(Serialize, Deserialize)]
