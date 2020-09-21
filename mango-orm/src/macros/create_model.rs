@@ -384,8 +384,8 @@ macro_rules! create_model {
                                 )
                             }
                         }
-                        // Select ------------------------------------------------------------------
-                        FieldType::SelectText(_) | FieldType::SelectI32(_) | FieldType::SelectU32(_) | FieldType::SelectI64(_) | FieldType::SelectF64(_) => {
+                        // Select - Text -----------------------------------------------------------
+                        FieldType::SelectText(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
@@ -399,6 +399,82 @@ macro_rules! create_model {
                             } else if map_field_types[field] != "String" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // Select - i32 ------------------------------------------------------------
+                        FieldType::SelectI32(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "i32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // Select - u32 ------------------------------------------------------------
+                        FieldType::SelectU32(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "u32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `u32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // Select - i64 ------------------------------------------------------------
+                        FieldType::SelectI64(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "i64" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i64`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // Select - f64 ------------------------------------------------------------
+                        FieldType::SelectF64(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() == 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "f64" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `f64`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
