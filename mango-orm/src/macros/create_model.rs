@@ -96,6 +96,11 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
+                            } else if map_field_types[field] != "bool" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `bool`.",
+                                    $service, MODEL_NAME, field
+                                )
                             }
                         }
                         // InputColor --------------------------------------------------------------
