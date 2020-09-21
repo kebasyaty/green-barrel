@@ -14,8 +14,8 @@ macro_rules! create_model {
         }
 
         impl $sname {
-            // Get structure name
-            pub fn struct_name() -> &'static str {
+            // Get model name
+            pub fn model_name() -> &'static str {
                 stringify!($sname)
             }
 
