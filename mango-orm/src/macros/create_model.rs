@@ -35,18 +35,34 @@ macro_rules! create_model {
                 }
             }
 
+            // Get pure attributes for a page templating engine
+            pub fn form_attrs() -> HashMap<String, Transport> {
+                let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
+                let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
+                for (field, widget) in &raw_attrs {
+                    clean_attrs.insert(field.to_string(), widget.clean_attrs(field));
+                }
+                clean_attrs
+            }
+
+            // Get Json attributes for page templating engine
+            pub fn json_attrs() -> String {
+                let attrs: HashMap<String, Transport> = Self::form_attrs();
+                json!(attrs).to_string()
+            }
+
             // Check model changes and (if required) apply to the database
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                let map_field_types: HashMap<&'static str, &'static str> =
-                    FIELD_NAMES.iter().map(|item| item.to_owned())
-                    .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
-                println!("{:?}", map_field_types);
                 // Checking for the presence of fields
                 if FIELD_NAMES.len() == 0 {
                     panic!("The model structure has no fields.");
                 }
+                // Create a map with field types
+                let map_field_types: HashMap<&'static str, &'static str> =
+                FIELD_NAMES.iter().map(|item| item.to_owned())
+                .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta();
                 // Technical database for `models::Monitor`

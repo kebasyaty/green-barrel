@@ -4,7 +4,7 @@
 //! `Model` - Defining common behavior of models.
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 
-use crate::widgets::{Transport, Widget};
+use crate::widgets::Widget;
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mongodb::{
@@ -29,15 +29,6 @@ pub struct Meta {
 pub trait Model {
     // Get raw attributes for further processing
     fn raw_attrs() -> HashMap<&'static str, Widget>;
-    // Get pure attributes for a page templating engine
-    fn form_attrs() -> HashMap<String, Transport> {
-        let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
-        let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-        for (field, widget) in &raw_attrs {
-            clean_attrs.insert(field.to_string(), widget.clean_attrs(field));
-        }
-        clean_attrs
-    }
 }
 
 // For Migration -----------------------------------------------------------------------------------
