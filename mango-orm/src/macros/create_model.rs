@@ -46,7 +46,7 @@ macro_rules! create_model {
             }
 
             // Get Json attributes for page templating engine
-            pub fn json_attrs() -> serde_json::Value {
+            pub fn json_attrs() -> serde_json::value::Value {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
                 serde_json::json!(attrs)
             }
