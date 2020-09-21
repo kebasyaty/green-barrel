@@ -66,7 +66,7 @@ macro_rules! create_model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> Field: `{}` : Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> raw_attrs() : `{}` - Incorrect field name.",
                             $service, MODEL_NAME, field
                         )
                     }
