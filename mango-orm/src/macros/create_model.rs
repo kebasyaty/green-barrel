@@ -289,8 +289,8 @@ macro_rules! create_model {
                                 )
                             }
                         }
-                        // InputRange --------------------------------------------------------------
-                        FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_) | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
+                        // InputRange - i32 --------------------------------------------------------
+                        FieldType::InputRangeI32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
@@ -304,6 +304,63 @@ macro_rules! create_model {
                             } else if map_field_types[field] != "i32" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // InputRange - u32 --------------------------------------------------------
+                        FieldType::InputRangeU32(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "u32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `u32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // InputRange - i64 --------------------------------------------------------
+                        FieldType::InputRangeI64(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "i64" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i64`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+                        // InputRange f64 ----------------------------------------------------------
+                        FieldType::InputRangeF64(_) => {
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if map_field_types[field] != "f64" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `f64`.",
                                     $service, MODEL_NAME, field
                                 )
                             }
