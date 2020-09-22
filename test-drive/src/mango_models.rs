@@ -67,13 +67,14 @@ impl Model for Category {
                 "color" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
-                        "{}\n{}\n<input type=\"{}\" id=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        "{}\n{}\n<input type=\"{}\" id=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
                         trans.field_type,
                         trans.id,
                         trans.name,
                         trans.value,
+                        trans.maxlength,
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
