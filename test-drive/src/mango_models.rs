@@ -265,7 +265,7 @@ impl Model for Category {
                 "textarea" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
-                        "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea>",
+                        "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>\n{}\n</textarea>",
                         form_text,
                         label,
                         trans.id,
@@ -279,8 +279,15 @@ impl Model for Category {
                 }
                 "select" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    let mut options = String::new();
+                    for item in trans.select {
+                        options = format!(
+                            "{}\n<option value=\"{}\">{}</option>",
+                            options, item.1, item.0
+                        );
+                    }
                     form_text = format!(
-                        "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select>",
+                        "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>\n{}\n</select>",
                         form_text,
                         label,
                         trans.id,
@@ -288,7 +295,7 @@ impl Model for Category {
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs,
-                        trans.value,
+                        options,
                     );
                 }
                 _ => panic!("Invalid input type."),
