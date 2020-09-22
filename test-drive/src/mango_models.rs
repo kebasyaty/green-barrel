@@ -46,7 +46,7 @@ impl Model for Category {
     fn form() -> String {
         let attrs: HashMap<String, Transport> = Self::form_attrs();
         let form_text = String::from("<form action=\"/\" method=\"GET\">");
-        for (_key, _val) in attrs {
+        for (field, trans) in attrs {
             //
         }
         format!("{}\n</form>", form_text)
