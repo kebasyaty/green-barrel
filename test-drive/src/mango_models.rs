@@ -47,9 +47,25 @@ impl Model for Category {
     // Define (If necessary) HTML form for page templates
     fn form() -> String {
         let attrs: HashMap<String, Transport> = Self::form_attrs();
-        let form_text = String::from("<form action=\"/\" method=\"GET\">");
-        for (field, trans) in attrs {
-            //
+        let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
+        for (_, trans) in attrs {
+            match trans.field_type.as_str() {
+                "checkbox" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input type=\"{}\" id=\"{}\" name=\"{}\" {} class={} {}>",
+                        form_text,
+                        label,
+                        trans.field_type,
+                        trans.id,
+                        trans.name,
+                        if trans.checked { "checked" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                _ => panic!("Invalid input type."),
+            }
         }
         format!("{}\n</form>", form_text)
     }
