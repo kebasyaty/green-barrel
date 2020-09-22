@@ -69,12 +69,13 @@ impl Model for Category {
                 "checkbox" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class={} {}>",
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                         form_text,
                         label,
                         trans.id,
                         trans.field_type,
                         trans.name,
+                        trans.value,
                         if trans.checked { "checked" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
@@ -83,12 +84,13 @@ impl Model for Category {
                 "radio" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class={} {}>",
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                         form_text,
                         label,
                         trans.id,
                         trans.field_type,
                         trans.name,
+                        trans.value,
                         if trans.checked { "checked" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
