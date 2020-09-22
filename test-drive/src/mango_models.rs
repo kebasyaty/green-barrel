@@ -305,6 +305,21 @@ impl Model for Category {
                         options,
                     );
                 }
+                "hidden" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
                 _ => panic!("Invalid input type."),
             }
         }
