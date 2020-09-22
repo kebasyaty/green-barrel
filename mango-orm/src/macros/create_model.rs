@@ -49,12 +49,12 @@ macro_rules! create_model {
             pub fn json_attrs() -> String {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
                 let mut json_text = String::new();
-                for (key, val) in attrs {
-                    let tmp = serde_json::to_string(&val).unwrap(); // Transport
+                for (field, trans) in attrs {
+                    let tmp = serde_json::to_string(&trans).unwrap(); // Transport
                     if json_text.len() > 0 {
-                        json_text = format!("{},\"{}\":{}", json_text, key, tmp);
+                        json_text = format!("{},\"{}\":{}", json_text, field, tmp);
                     } else {
-                        json_text = format!("\"{}\":{}", key, tmp);
+                        json_text = format!("\"{}\":{}", field, tmp);
                     }
                 }
                 format!("{{{}}}", json_text)

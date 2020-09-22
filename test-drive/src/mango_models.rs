@@ -44,7 +44,11 @@ impl Model for Category {
     }
     // Define (If necessary) HTML form for page templates
     fn form() -> String {
+        let attrs: HashMap<String, Transport> = Self::form_attrs();
         let form_text = String::from("<form action=\"/\" method=\"GET\">");
+        for (_key, _val) in attrs {
+            //
+        }
         format!("{}\n</form>", form_text)
     }
 }
