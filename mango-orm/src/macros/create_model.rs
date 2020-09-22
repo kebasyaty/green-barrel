@@ -60,7 +60,7 @@ macro_rules! create_model {
                 format!("{{{}}}", json_text)
             }
 
-            //
+            // Get Html form for page templates
             pub fn form_html() -> String {
                 Self::form()
             }
