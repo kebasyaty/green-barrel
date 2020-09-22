@@ -45,7 +45,7 @@ macro_rules! create_model {
                 clean_attrs
             }
 
-            // Get Json attributes for page templating engine
+            // Get attribute string in Json format for page templating engine
             pub fn json_attrs() -> String {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
                 let mut json = String::new();
