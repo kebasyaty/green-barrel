@@ -64,6 +64,20 @@ impl Model for Category {
                         trans.other_attrs
                     );
                 }
+                "radio" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class={} {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        if trans.checked { "checked" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
                 "color" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
@@ -138,6 +152,130 @@ impl Model for Category {
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
+                    );
+                }
+                "image" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "number" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "password" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "range" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "tel" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "text" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "url" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "textarea" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<textarea id=\"{}\" type=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs,
+                        trans.value,
                     );
                 }
                 _ => panic!("Invalid input type."),
