@@ -50,7 +50,7 @@ macro_rules! create_model {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
                 let mut json = String::new();
                 for (key, val) in attrs {
-                    let tmp = serde_json::to_string(&val).unwrap();
+                    let tmp = serde_json::to_string(&val).unwrap(); // Transport
                     if json.len() > 0 {
                         json = format!("{},\"{}\":{}", json, key, tmp);
                     } else {
