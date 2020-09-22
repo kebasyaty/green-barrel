@@ -83,18 +83,21 @@ impl Model for Category {
                 }
                 "radio" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.checked { "checked" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
+                    let mut tags = String::new();
+                    for item in trans.select {
+                        tags = format!(
+                            "{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
+                            label,
+                            trans.id,
+                            trans.field_type,
+                            trans.name,
+                            item.1,
+                            if trans.checked { "checked" } else { "" },
+                            trans.some_classes,
+                            trans.other_attrs
+                        );
+                    }
+                    form_text = format!("{}\n{}", form_text, tags);
                 }
                 "date" | "datetime" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
