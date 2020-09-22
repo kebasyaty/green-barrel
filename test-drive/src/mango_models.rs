@@ -43,6 +43,9 @@ impl Model for Category {
         );
         raw_attrs
     }
+    fn form(_attrs: HashMap<String, Transport>) -> String {
+        "Test text".to_string()
+    }
 }
 
 create_model! {
