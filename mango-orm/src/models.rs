@@ -214,7 +214,10 @@ pub trait Model {
                 _ => panic!("Invalid input type."),
             }
         }
-        format!("{}</form>", form_text)
+        format!(
+            "{}<input type=\"submit\" value=\"Submit\"></form>",
+            form_text
+        )
     }
 }
 
