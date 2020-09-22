@@ -29,5 +29,5 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    println!("{}", mango_models::User::form_html());
+    println!("{}", mango_models::User::form_html("/"));
 }

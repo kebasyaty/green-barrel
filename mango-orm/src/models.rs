@@ -30,10 +30,10 @@ pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define (If necessary) HTML form for page templates
-    fn form(attrs: HashMap<String, Transport>, model_name: &str) -> String {
+    fn form(attrs: HashMap<String, Transport>, model_name: &str, action: &str) -> String {
         let mut form_text = format!(
-            "<form id\"{}-form\" action=\"/\" method=\"get\">",
-            model_name
+            "<form id\"{}-form\" action=\"{}\" method=\"get\">",
+            model_name, action
         );
         for (_, trans) in attrs {
             let id_field = format!("{}--{}", model_name, trans.id);
