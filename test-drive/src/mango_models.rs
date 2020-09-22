@@ -42,7 +42,7 @@ impl Model for Category {
         );
         raw_attrs
     }
-    // Define HTML form for page templates
+    // Define (If necessary) HTML form for page templates
     fn form() -> String {
         let form_text = String::from("<form action=\"/\" method=\"GET\">");
         format!("{}\n</form>", form_text)
