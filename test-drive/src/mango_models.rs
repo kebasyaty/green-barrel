@@ -50,6 +50,22 @@ impl Model for Category {
         let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
         for (_, trans) in attrs {
             match trans.field_type.as_str() {
+                "text" | "url" | "tel" | "password" | "email" | "color" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
                 "checkbox" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
@@ -78,23 +94,7 @@ impl Model for Category {
                         trans.other_attrs
                     );
                 }
-                "color" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "date" => {
+                "date" | "datetime" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
@@ -104,37 +104,6 @@ impl Model for Category {
                         trans.field_type,
                         trans.name,
                         trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "datetime" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "email" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
@@ -183,22 +152,6 @@ impl Model for Category {
                         trans.other_attrs
                     );
                 }
-                "password" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
                 "range" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
@@ -209,54 +162,6 @@ impl Model for Category {
                         trans.field_type,
                         trans.name,
                         trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "tel" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "text" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "url" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
-                    form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
-                        form_text,
-                        label,
-                        trans.id,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        trans.maxlength,
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs
