@@ -30,5 +30,5 @@ async fn main() {
     mango_migration().await;
 
     // let json_attrs: String = mango_models::User::json_attrs();
-    println!("{:#?}", mango_models::User::json_attrs());
+    println!("{}", mango_models::User::json_attrs());
 }
