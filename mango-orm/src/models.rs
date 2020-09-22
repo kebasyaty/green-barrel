@@ -4,7 +4,7 @@
 //! `Model` - Defining common behavior of models.
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 
-use crate::widgets::Widget;
+use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mongodb::{
@@ -30,8 +30,7 @@ pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define (If necessary) HTML form for page templates
-    fn form() -> String {
-        let attrs: HashMap<String, Transport> = Self::form_attrs();
+    fn form(attrs: HashMap<String, Transport>) -> String {
         let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
         for (_, trans) in attrs {
             match trans.field_type.as_str() {
