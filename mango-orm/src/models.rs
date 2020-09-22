@@ -24,11 +24,15 @@ pub struct Meta {
 }
 
 // Model -------------------------------------------------------------------------------------------
-/// Defining common behavior of models
+/// Custom behavior definition for models
 #[async_trait]
 pub trait Model {
     // Get raw attributes for further processing
     fn raw_attrs() -> HashMap<&'static str, Widget>;
+    //
+    fn form_html() -> String {
+        String::new()
+    }
 }
 
 // For Migration -----------------------------------------------------------------------------------
