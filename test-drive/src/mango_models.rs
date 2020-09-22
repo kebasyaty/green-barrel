@@ -282,8 +282,15 @@ impl Model for Category {
                     let mut options = String::new();
                     for item in trans.select {
                         options = format!(
-                            "{}\n<option value=\"{}\">{}</option>",
-                            options, item.1, item.0
+                            "{}\n<option {} value=\"{}\">{}</option>",
+                            options,
+                            if trans.value == item.1 {
+                                "selected"
+                            } else {
+                                ""
+                            },
+                            item.1,
+                            item.0
                         );
                     }
                     form_text = format!(
