@@ -30,8 +30,8 @@ pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define (If necessary) HTML form for page templates
+    // For customization in models - fn form(Self::form_attrs();) -> String {}
     fn form(attrs: HashMap<String, Transport>) -> String {
-        // let attrs: HashMap<String, Transport> = Self::form_attrs();
         let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
         for (_, trans) in attrs {
             match trans.field_type.as_str() {
