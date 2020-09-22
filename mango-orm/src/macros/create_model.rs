@@ -35,7 +35,7 @@ macro_rules! create_model {
                 }
             }
 
-            // Get map of pure attributes for a page templating engine
+            // Get a map of pure attributes for page templates
             pub fn form_attrs() -> HashMap<String, Transport> {
                 let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
