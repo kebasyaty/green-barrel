@@ -35,10 +35,11 @@ pub trait Model {
         model_name: &str,
         action: &str,
         method: &str,
+        enctype: &str,
     ) -> String {
         let mut form_text = format!(
-            "<form id\"{}-form\" action=\"{}\" method=\"{}\">",
-            model_name, action, method
+            "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
+            model_name, action, method, enctype
         );
         for (_, trans) in attrs {
             let id_field = format!("{}--{}", model_name, trans.id);

@@ -29,5 +29,6 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    println!("{}", mango_models::User::form_html("/", None));
+    // println!("{}",mango_models::User::form_html("/", Some("post"), Some("multipart/form-data")));
+    println!("{}", mango_models::User::form_html("/", None, None));
 }

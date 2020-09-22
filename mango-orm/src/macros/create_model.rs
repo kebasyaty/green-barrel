@@ -61,13 +61,14 @@ macro_rules! create_model {
             }
 
             // Get Html form for page templates
-            pub fn form_html(action: &str, method: Option<&str>) -> String {
-                let method = if method.is_some() {
-                    method.unwrap()
-                } else {
-                    "get"
-                };
-                Self::form(Self::form_attrs(), &stringify!($sname).to_lowercase(), action, method)
+            pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) -> String {
+                Self::form(
+                    Self::form_attrs(),
+                    &stringify!($sname).to_lowercase(),
+                    action,
+                    if method.is_some() { method.unwrap() } else { "get" },
+                    if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
+                )
             }
 
             // Check model changes and (if required) apply to the database
