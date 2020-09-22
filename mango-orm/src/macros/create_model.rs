@@ -48,16 +48,16 @@ macro_rules! create_model {
             // Get attribute string in Json format for page templating engine
             pub fn json_attrs() -> String {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
-                let mut json = String::new();
+                let mut json_text = String::new();
                 for (key, val) in attrs {
                     let tmp = serde_json::to_string(&val).unwrap(); // Transport
-                    if json.len() > 0 {
-                        json = format!("{},\"{}\":{}", json, key, tmp);
+                    if json_text.len() > 0 {
+                        json_text = format!("{},\"{}\":{}", json_text, key, tmp);
                     } else {
-                        json = format!("\"{}\":{}", key, tmp);
+                        json_text = format!("\"{}\":{}", key, tmp);
                     }
                 }
-                format!("{{{}}}", json)
+                format!("{{{}}}", json_text)
             }
 
             // Check model changes and (if required) apply to the database
