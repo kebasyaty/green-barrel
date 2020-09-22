@@ -265,13 +265,26 @@ impl Model for Category {
                 "textarea" => {
                     let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
-                        "{}\n{}\n<textarea id=\"{}\" type=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea>",
+                        "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea>",
                         form_text,
                         label,
                         trans.id,
-                        trans.field_type,
                         trans.name,
                         trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs,
+                        trans.value,
+                    );
+                }
+                "select" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.name,
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
                         trans.other_attrs,
