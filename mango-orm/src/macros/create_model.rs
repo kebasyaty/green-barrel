@@ -62,8 +62,7 @@ macro_rules! create_model {
 
             // Get Html form for page templates
             pub fn form_html() -> String {
-                let attrs: HashMap<String, Transport> = Self::form_attrs();
-                Self::form(attrs)
+                Self::form(Self::form_attrs(), stringify!($sname))
             }
 
             // Check model changes and (if required) apply to the database

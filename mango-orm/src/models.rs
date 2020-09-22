@@ -30,8 +30,11 @@ pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define (If necessary) HTML form for page templates
-    fn form(attrs: HashMap<String, Transport>) -> String {
-        let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
+    fn form(attrs: HashMap<String, Transport>, model_name: &str) -> String {
+        let mut form_text = format!(
+            "<form id\"{}-Form\" action=\"/\" method=\"GET\">",
+            model_name
+        );
         for (_, trans) in attrs {
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
