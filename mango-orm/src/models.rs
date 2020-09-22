@@ -94,7 +94,7 @@ impl<'a> Monitor<'a> {
                             .await
                             .unwrap();
                     }
-                    Err(e) => panic!("{}", e),
+                    Err(err) => panic!("{}", err),
                 }
             }
         }
@@ -130,7 +130,7 @@ impl<'a> Monitor<'a> {
                         mango_orm_collection.delete_one(query, None).await.unwrap();
                     }
                 }
-                Err(e) => panic!("{}", e),
+                Err(err) => panic!("{}", err),
             }
         }
     }
