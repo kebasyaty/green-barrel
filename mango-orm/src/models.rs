@@ -37,11 +37,14 @@ pub trait Model {
         );
         for (_, trans) in attrs {
             let id_field = format!("{}--{}", model_name, trans.id);
-            let label = format!("<label for=\"{}\">{}:</label>", id_field, trans.label);
+            let label = format!(
+                "<p><label for=\"{}\">{}:</label><br>",
+                id_field, trans.label
+            );
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -56,7 +59,7 @@ pub trait Model {
                 }
                 "checkbox" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -72,7 +75,7 @@ pub trait Model {
                     let mut tags = String::new();
                     for item in trans.select {
                         tags = format!(
-                            "{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
+                            "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                             label,
                             id_field,
                             trans.field_type,
@@ -83,11 +86,11 @@ pub trait Model {
                             trans.other_attrs
                         );
                     }
-                    form_text = format!("{}\n{}", form_text, tags);
+                    form_text = format!("{}{}</p>", form_text, tags);
                 }
                 "date" | "datetime" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -101,7 +104,7 @@ pub trait Model {
                 }
                 "file" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -114,7 +117,7 @@ pub trait Model {
                 }
                 "image" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -127,7 +130,7 @@ pub trait Model {
                 }
                 "number" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -141,7 +144,7 @@ pub trait Model {
                 }
                 "range" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -155,7 +158,7 @@ pub trait Model {
                 }
                 "textarea" => {
                     form_text = format!(
-                        "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>\n{}\n</textarea>",
+                        "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
                         form_text,
                         label,
                         id_field,
@@ -171,7 +174,7 @@ pub trait Model {
                     let mut options = String::new();
                     for item in trans.select {
                         options = format!(
-                            "{}\n<option {} value=\"{}\">{}</option>",
+                            "{}<option {} value=\"{}\">{}</option>",
                             options,
                             if trans.value == item.1 {
                                 "selected"
@@ -183,7 +186,7 @@ pub trait Model {
                         );
                     }
                     form_text = format!(
-                        "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>\n{}\n</select>",
+                        "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
                         form_text,
                         label,
                         id_field,
@@ -196,7 +199,7 @@ pub trait Model {
                 }
                 "hidden" => {
                     form_text = format!(
-                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         form_text,
                         label,
                         id_field,
@@ -211,7 +214,7 @@ pub trait Model {
                 _ => panic!("Invalid input type."),
             }
         }
-        format!("{}\n</form>", form_text)
+        format!("{}</form>", form_text)
     }
 }
 
