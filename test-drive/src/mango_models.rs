@@ -26,6 +26,7 @@ create_model! {
 }
 #[async_trait]
 impl Model for Category {
+    // Example
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
@@ -42,6 +43,7 @@ impl Model for Category {
         );
         raw_attrs
     }
+    // Example
     // Define (If necessary) HTML form for page templates
     fn form() -> String {
         let attrs: HashMap<String, Transport> = Self::form_attrs();
@@ -63,6 +65,7 @@ create_model! {
 }
 #[async_trait]
 impl Model for User {
+    // Example
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
