@@ -62,7 +62,7 @@ macro_rules! create_model {
 
             // Get Html form for page templates
             pub fn form_html() -> String {
-                Self::form(Self::form_attrs(), stringify!($sname))
+                Self::form(Self::form_attrs(), &stringify!($sname).to_lowercase())
             }
 
             // Check model changes and (if required) apply to the database
