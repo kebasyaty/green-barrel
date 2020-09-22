@@ -60,6 +60,11 @@ macro_rules! create_model {
                 format!("{{{}}}", json_text)
             }
 
+            //
+            pub fn form_html() -> String {
+                Self::form()
+            }
+
             // Check model changes and (if required) apply to the database
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);

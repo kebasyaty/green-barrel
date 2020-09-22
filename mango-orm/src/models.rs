@@ -30,7 +30,7 @@ pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define HTML form for page templates
-    fn form_html() -> String {
+    fn form() -> String {
         String::new()
     }
 }
