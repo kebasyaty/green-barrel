@@ -31,7 +31,194 @@ pub trait Model {
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     // Define (If necessary) HTML form for page templates
     fn form() -> String {
-        String::new()
+        let attrs: HashMap<String, Transport> = Self::form_attrs();
+        let mut form_text = String::from("<form action=\"/\" method=\"GET\">");
+        for (_, trans) in attrs {
+            match trans.field_type.as_str() {
+                "text" | "url" | "tel" | "password" | "email" | "color" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "checkbox" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.checked { "checked" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "radio" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    let mut tags = String::new();
+                    for item in trans.select {
+                        tags = format!(
+                            "{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
+                            label,
+                            trans.id,
+                            trans.field_type,
+                            trans.name,
+                            item.1,
+                            if trans.checked { "checked" } else { "" },
+                            trans.some_classes,
+                            trans.other_attrs
+                        );
+                    }
+                    form_text = format!("{}\n{}", form_text, tags);
+                }
+                "date" | "datetime" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "file" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "image" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "number" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "range" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                "textarea" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>\n{}\n</textarea>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.name,
+                        trans.maxlength,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs,
+                        trans.value,
+                    );
+                }
+                "select" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    let mut options = String::new();
+                    for item in trans.select {
+                        options = format!(
+                            "{}\n<option {} value=\"{}\">{}</option>",
+                            options,
+                            if trans.value == item.1 {
+                                "selected"
+                            } else {
+                                ""
+                            },
+                            item.1,
+                            item.0
+                        );
+                    }
+                    form_text = format!(
+                        "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>\n{}\n</select>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.name,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs,
+                        options,
+                    );
+                }
+                "hidden" => {
+                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
+                    form_text = format!(
+                        "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
+                        form_text,
+                        label,
+                        trans.id,
+                        trans.field_type,
+                        trans.name,
+                        trans.value,
+                        if trans.required { "required" } else { "" },
+                        trans.some_classes,
+                        trans.other_attrs
+                    );
+                }
+                _ => panic!("Invalid input type."),
+            }
+        }
+        format!("{}\n</form>", form_text)
     }
 }
 
