@@ -87,6 +87,7 @@ macro_rules! create_model {
 
                 // Checking Widgets
                 // ---------------------------------------------------------------------------------
+                // Looping over fields and attributes
                 for (field, widget) in attrs {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
