@@ -36,14 +36,15 @@ pub trait Model {
             model_name
         );
         for (_, trans) in attrs {
+            let id_field = format!("{}--{}", model_name, trans.id);
+            let label = format!("<label for=\"{}\">{}:</label>", id_field, trans.label);
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
@@ -54,12 +55,11 @@ pub trait Model {
                     );
                 }
                 "checkbox" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
@@ -69,13 +69,12 @@ pub trait Model {
                     );
                 }
                 "radio" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     let mut tags = String::new();
                     for item in trans.select {
                         tags = format!(
                             "{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                             label,
-                            format!("{}--{}", model_name, trans.id),
+                            id_field,
                             trans.field_type,
                             trans.name,
                             item.1,
@@ -87,12 +86,11 @@ pub trait Model {
                     form_text = format!("{}\n{}", form_text, tags);
                 }
                 "date" | "datetime" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
@@ -102,12 +100,11 @@ pub trait Model {
                     );
                 }
                 "file" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         if trans.required { "required" } else { "" },
@@ -116,12 +113,11 @@ pub trait Model {
                     );
                 }
                 "image" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         if trans.required { "required" } else { "" },
@@ -130,12 +126,11 @@ pub trait Model {
                     );
                 }
                 "number" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
@@ -145,12 +140,11 @@ pub trait Model {
                     );
                 }
                 "range" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
@@ -160,12 +154,11 @@ pub trait Model {
                     );
                 }
                 "textarea" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>\n{}\n</textarea>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.name,
                         trans.maxlength,
                         if trans.required { "required" } else { "" },
@@ -175,7 +168,6 @@ pub trait Model {
                     );
                 }
                 "select" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     let mut options = String::new();
                     for item in trans.select {
                         options = format!(
@@ -194,7 +186,7 @@ pub trait Model {
                         "{}\n{}\n<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>\n{}\n</select>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.name,
                         if trans.required { "required" } else { "" },
                         trans.some_classes,
@@ -203,12 +195,11 @@ pub trait Model {
                     );
                 }
                 "hidden" => {
-                    let label = format!("<label for=\"{}\">{}:</label>", trans.id, trans.label);
                     form_text = format!(
                         "{}\n{}\n<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}>",
                         form_text,
                         label,
-                        format!("{}--{}", model_name, trans.id),
+                        id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
