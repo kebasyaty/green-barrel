@@ -29,7 +29,7 @@ pub struct Meta {
 pub trait Model {
     // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
-    // Define HTML Form for Template Engine
+    // Define HTML form for page templates
     fn form_html() -> String {
         String::new()
     }
