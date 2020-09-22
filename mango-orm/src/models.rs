@@ -27,7 +27,7 @@ pub struct Meta {
 /// Custom behavior definition for models
 #[async_trait]
 pub trait Model {
-    // Get raw attributes for further processing
+    // Define attributes for widgets of fields
     fn raw_attrs() -> HashMap<&'static str, Widget>;
     //
     fn form_html() -> String {
