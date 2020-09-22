@@ -29,6 +29,5 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    // let json_attrs: String = mango_models::User::json_attrs();
-    println!("{}", mango_models::Category::form_html());
+    println!("{}", mango_models::User::form_html());
 }
