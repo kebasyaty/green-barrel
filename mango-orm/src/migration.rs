@@ -10,8 +10,7 @@ use mongodb::{
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-// MODELS ==========================================================================================
-// For Migration
+// MIGRATION =======================================================================================
 /// Creation and updating of a technical database for monitoring the state of models
 #[derive(Serialize, Deserialize)]
 pub struct ModelState {
