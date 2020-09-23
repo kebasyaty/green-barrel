@@ -173,7 +173,10 @@ macro_rules! create_model {
                         // InputDateTime
                         // InputEmail
                         // InputPassword
-                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) => {
+                        // InputText
+                        // InputUrl
+                        // TextArea
+                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) | FieldType::InputText(_) | FieldType::InputUrl(_) | FieldType::TextArea(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
                                 FieldType::InputColor(_) => { enum_field_type = "InputColor".to_string(); }
@@ -181,6 +184,9 @@ macro_rules! create_model {
                                 FieldType::InputDateTime(_) => { enum_field_type = "InputDateTime".to_string(); }
                                 FieldType::InputEmail(_) => { enum_field_type = "InputEmail".to_string(); }
                                 FieldType::InputPassword(_) => { enum_field_type = "InputPassword".to_string(); }
+                                FieldType::InputText(_) => { enum_field_type = "InputText".to_string(); }
+                                FieldType::InputUrl(_) => { enum_field_type = "InputUrl".to_string(); }
+                                FieldType::TextArea(_) => { enum_field_type = "TextArea".to_string(); }
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -334,63 +340,6 @@ macro_rules! create_model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                     $service, MODEL_NAME, field, map_field_types[field]
-                                )
-                            }
-                        }
-                        // InputText ---------------------------------------------------------------
-                        FieldType::InputText(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputText` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputText` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // InputUrl ----------------------------------------------------------------
-                        FieldType::InputUrl(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputUrl` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputUrl` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // TextArea ----------------------------------------------------------------
-                        FieldType::TextArea(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `TextArea` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `TextArea` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
                                 )
                             }
                         }
