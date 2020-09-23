@@ -521,7 +521,7 @@ macro_rules! create_model {
                                 // If no field exists, get default value
                                 let value = &default_values[field];
                                 tmp_doc.insert(field.to_string(), match value.0 {
-                                    "string" => Bson::String(value.1.clone()),
+                                    "String" => Bson::String(value.1.clone()),
                                     "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
                                     "u32" => Bson::Int64(value.1.parse::<i64>().unwrap()),
                                     "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
