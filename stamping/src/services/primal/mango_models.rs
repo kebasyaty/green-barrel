@@ -29,9 +29,9 @@ create_model! {
 }
 #[async_trait]
 impl Form for User {
-    //
+    // Example:
+    // Customizing widgets by model fields
     fn widgets() -> HashMap<&'static str, Widget> {
-        // Map of matching fields and widgets.
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "username",

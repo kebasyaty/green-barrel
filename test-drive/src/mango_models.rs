@@ -28,7 +28,7 @@ create_model! {
 #[async_trait]
 impl Form for Category {
     // Example:
-    // Define attributes for widgets of fields
+    // Customizing widgets by model fields
     fn widgets() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
@@ -57,7 +57,7 @@ create_model! {
 #[async_trait]
 impl Form for User {
     // Example:
-    // Define attributes for widgets of fields
+    // Customizing widgets by model fields
     fn widgets() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
