@@ -224,20 +224,28 @@ macro_rules! create_model {
                         }
                         // InputNumber - i32 -------------------------------------------------------
                         FieldType::InputNumberI32(_) => {
+                            let mut enum_field_type = String::new();
+                            let mut data_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputNumberI32(_) => {
+                                    enum_field_type = "InputNumberI32".to_string();
+                                    data_field_type = "i32".to_string();
+                                }
+                            }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if map_field_types[field] != "i32" {
+                            }  else if data_field_type != map_field_types[field] {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i32`.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
+                                    $service, MODEL_NAME, field, map_field_types[field]
                                 )
                             }
                         }
