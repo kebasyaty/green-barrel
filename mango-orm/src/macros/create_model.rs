@@ -298,6 +298,7 @@ macro_rules! create_model {
                         // InputRangeI32 -----------------------------------------------------------
                         // InputRangeU32
                         // InputRangeI64
+                        // InputRangeF64
                         FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_) | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
