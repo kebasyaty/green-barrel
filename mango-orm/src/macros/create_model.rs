@@ -111,111 +111,84 @@ macro_rules! create_model {
                     default_values.insert(field, (widget.value.get_data_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
-                        // InputCheckBox -----------------------------------------------------------
+                        // InputCheckBoxText -------------------------------------------------------
+                        // InputCheckBoxI32
+                        // InputCheckBoxU32
+                        // InputCheckBoxI64
+                        // InputCheckBoxF64
                         FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_) | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_) | FieldType::InputCheckBoxF64(_) => {
                             let mut enum_field_type = String::new();
-                            let mut field_type = String::new();
+                            let mut data_field_type = String::new();
                             match widget.value {
                                 FieldType::InputCheckBoxText(_) => {
-                                    field_type = "InputCheckBoxText".to_string();
-                                    field_type = "string".to_string();
+                                    enum_field_type = "InputCheckBoxText".to_string();
+                                    data_field_type = "string".to_string();
                                 }
                                 FieldType::InputCheckBoxI32(_) => {
-                                    field_type = "InputCheckBoxI32".to_string();
-                                    field_type = "i32".to_string();
+                                    enum_field_type = "InputCheckBoxI32".to_string();
+                                    data_field_type = "i32".to_string();
                                 }
                                 FieldType::InputCheckBoxU32(_) => {
-                                    field_type = "InputCheckBoxU32".to_string();
-                                    field_type = "u32".to_string();
+                                    enum_field_type = "InputCheckBoxU32".to_string();
+                                    data_field_type = "u32".to_string();
                                 }
                                 FieldType::InputCheckBoxI64(_) => {
-                                    field_type = "InputCheckBoxI64".to_string();
-                                    field_type = "i64".to_string();
+                                    enum_field_type = "InputCheckBoxI64".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::InputCheckBoxF64(_) => {
-                                    field_type = "InputCheckBoxF64".to_string();
-                                    field_type = "f64".to_string();
+                                    enum_field_type = "InputCheckBoxF64".to_string();
+                                    data_field_type = "f64".to_string();
                                 }
+                            }
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if widget.maxlength != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if widget.other_attrs.contains("checked") {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if data_field_type != map_field_types[field] {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
+                                    $service, MODEL_NAME, field, map_field_types[field]
+                                )
+                            }
+                        }
+                        // InputColor --------------------------------------------------------------
+                        // InputDate
+                        // InputDateTime
+                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
+                            let mut enum_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputColor(_) => { enum_field_type = "InputColor".to_string(); }
+                                FieldType::InputDate(_) => { enum_field_type = "InputDate".to_string(); }
+                                FieldType::InputDateTime(_) => { enum_field_type = "InputDateTime".to_string(); }
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
-                            } else if widget.maxlength != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.other_attrs.contains("checked") {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
-                                    $service, MODEL_NAME, field
-                                )
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field, nut enum_field_type
-                                )
-                            } else if field_type != map_field_types[field] {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
-                                        $service, MODEL_NAME, field, map_field_types[field]
-                                    )
-                                }
-                            }
-                        }
-                        // InputColor --------------------------------------------------------------
-                        FieldType::InputColor(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputColor` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputColor` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // InputDate ---------------------------------------------------------------
-                        FieldType::InputDate(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDate` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDate` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // InputDateTime -----------------------------------------------------------
-                        FieldType::InputDateTime(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDateTime` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDateTime` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
+                            } else if map_field_types[field] != "string" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
