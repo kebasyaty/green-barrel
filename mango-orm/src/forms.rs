@@ -1,6 +1,5 @@
 //! # Forms
 //!
-//! `Meta` - Metadata of model (database name, collection name, etc).
 //! `Form` - Define general form behavior for models.
 
 use crate::widgets::{Transport, Widget};
@@ -8,14 +7,6 @@ use async_trait::async_trait;
 use std::collections::HashMap;
 
 // FORMS ===========================================================================================
-/// Metadata
-#[derive(Debug)]
-pub struct Meta {
-    pub database: String,
-    pub collection: String,
-}
-
-// Model -------------------------------------------------------------------------------------------
 /// Custom behavior definition for models
 #[async_trait]
 pub trait Form {

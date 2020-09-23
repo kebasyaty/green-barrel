@@ -2,7 +2,8 @@ use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mango_orm::{
     create_model,
-    forms::{Form, Meta},
+    forms::Form,
+    models::Meta,
     widgets::{FieldType, Transport, Widget},
 };
 use mongodb::{
