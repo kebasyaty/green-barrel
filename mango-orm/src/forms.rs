@@ -1,18 +1,18 @@
 //! # Forms
 //!
-//! `Form` - Define general form behavior for models.
+//! `Form` - Define form settings for models.
 
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use std::collections::HashMap;
 
 // FORMS ===========================================================================================
-/// Custom behavior definition for models
+/// Define form settings for models.
 #[async_trait]
 pub trait Form {
-    // Define attributes for widgets of fields
+    // Customizing widgets by model fields
     fn widgets() -> HashMap<&'static str, Widget>;
-    // Define (If necessary) HTML form for page templates
+    // Customizing HTML form  (If necessary) for page templates
     fn html(
         attrs: HashMap<String, Transport>,
         model_name: &str,
