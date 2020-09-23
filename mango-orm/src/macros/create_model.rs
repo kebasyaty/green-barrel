@@ -66,7 +66,7 @@ macro_rules! create_model {
                     Self::form_attrs(),
                     &stringify!($sname).to_lowercase(),
                     action,
-                    if method.is_some() { method.unwrap() } else { "get" },
+                    if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
                     if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
                 )
             }

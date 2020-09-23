@@ -17,10 +17,9 @@ pub trait Form {
         attrs: HashMap<String, Transport>,
         model_name: &str,
         action: &str,
-        method: &str,
+        method: String,
         enctype: &str,
     ) -> String {
-        let method: &str = &method.to_lowercase();
         let mut form_text = format!(
             "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
             model_name, action, method, enctype
