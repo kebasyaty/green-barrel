@@ -398,7 +398,17 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_input_type(), "hidden");
 
         // Method get_raw_data()
-        assert_eq!(FieldType::InputCheckBox(false).get_raw_data(), "false");
+        assert_eq!(
+            FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
+            "Some text"
+        );
+        assert_eq!(FieldType::InputCheckBoxI32(-1_i32).get_raw_data(), "-1_i32");
+        assert_eq!(FieldType::InputCheckBoxU32(0_32).get_raw_data(), "0_32");
+        assert_eq!(FieldType::InputCheckBoxI64(-1_i64).get_raw_data(), "-1_i64");
+        assert_eq!(
+            FieldType::InputCheckBoxF64(1.3_f64).get_raw_data(),
+            "1.3_f64"
+        );
         assert_eq!(
             FieldType::InputColor(String::new()).get_raw_data(),
             String::new()
@@ -459,7 +469,14 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_raw_data(), String::new());
 
         // Method get_data_type()
-        assert_eq!(FieldType::InputCheckBox(false).get_data_type(), "bool");
+        assert_eq!(
+            FieldType::InputCheckBoxText(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputCheckBoxI32(-1_i32).get_data_type(), "i32");
+        assert_eq!(FieldType::InputCheckBoxU32(0_u32).get_data_type(), "u32");
+        assert_eq!(FieldType::InputCheckBoxI64(-1_i64).get_data_type(), "i64");
+        assert_eq!(FieldType::InputCheckBoxF64(1.3_f64).get_data_type(), "f64");
         assert_eq!(
             FieldType::InputColor(String::new()).get_data_type(),
             "string"
