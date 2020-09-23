@@ -24,7 +24,11 @@ pub enum FieldType {
     InputNumberI64(i64),
     InputNumberF64(f64),
     InputPassword(String),
-    InputRadio(bool),
+    InputRadioText(String),
+    InputRadioI32(i32),
+    InputRadioU32(u32),
+    InputRadioI64(i64),
+    InputRadioF64(f64),
     InputRangeI32(i32),
     InputRangeU32(u32),
     InputRangeI64(i64),
@@ -68,7 +72,11 @@ impl FieldType {
             Self::InputNumberI64(_) => "number",
             Self::InputNumberF64(_) => "number",
             Self::InputPassword(_) => "password",
-            Self::InputRadio(_) => "radio",
+            Self::InputRadioText(_) => "radio",
+            Self::InputRadioI32(_) => "radio",
+            Self::InputRadioU32(_) => "radio",
+            Self::InputRadioI64(_) => "radio",
+            Self::InputRadioF64(_) => "radio",
             Self::InputRangeI32(_) => "range",
             Self::InputRangeU32(_) => "range",
             Self::InputRangeI64(_) => "range",
@@ -106,7 +114,11 @@ impl FieldType {
             Self::InputNumberI64(data) => data.to_string(),
             Self::InputNumberF64(data) => data.to_string(),
             Self::InputPassword(data) => data.to_string(),
-            Self::InputRadio(data) => data.to_string(),
+            Self::InputRadioText(data) => data.to_string(),
+            Self::InputRadioI32(data) => data.to_string(),
+            Self::InputRadioU32(data) => data.to_string(),
+            Self::InputRadioI64(data) => data.to_string(),
+            Self::InputRadioF64(data) => data.to_string(),
             Self::InputRangeI32(data) => data.to_string(),
             Self::InputRangeU32(data) => data.to_string(),
             Self::InputRangeI64(data) => data.to_string(),
@@ -144,7 +156,11 @@ impl FieldType {
             Self::InputNumberI64(_) => "i64",
             Self::InputNumberF64(_) => "f64",
             Self::InputPassword(_) => "string",
-            Self::InputRadio(_) => "bool",
+            Self::InputRadioText(_) => "string",
+            Self::InputRadioI32(_) => "i32",
+            Self::InputRadioU32(_) => "u32",
+            Self::InputRadioI64(_) => "i64",
+            Self::InputRadioF64(_) => "f64",
             Self::InputRangeI32(_) => "i32",
             Self::InputRangeU32(_) => "u32",
             Self::InputRangeI64(_) => "i64",
@@ -370,7 +386,14 @@ mod tests {
             FieldType::InputPassword(String::new()).get_input_type(),
             "password"
         );
-        assert_eq!(FieldType::InputRadio(false).get_input_type(), "radio");
+        assert_eq!(
+            FieldType::InputRadioText(String::new()).get_input_type(),
+            "radio"
+        );
+        assert_eq!(FieldType::InputRadioI32(-1_i32).get_input_type(), "radio");
+        assert_eq!(FieldType::InputRadioU32(0_u32).get_input_type(), "radio");
+        assert_eq!(FieldType::InputRadioI64(-1_i64).get_input_type(), "radio");
+        assert_eq!(FieldType::InputRadioF64(1.3_f64).get_input_type(), "radio");
         assert_eq!(FieldType::InputRangeI32(-1_i32).get_input_type(), "range");
         assert_eq!(FieldType::InputRangeU32(0_u32).get_input_type(), "range");
         assert_eq!(FieldType::InputRangeI64(-1_i64).get_input_type(), "range");
@@ -429,7 +452,14 @@ mod tests {
             FieldType::InputPassword(String::new()).get_raw_data(),
             String::new()
         );
-        assert_eq!(FieldType::InputRadio(false).get_raw_data(), "false");
+        assert_eq!(
+            FieldType::InputRadioText(String::new()).get_raw_data(),
+            "string"
+        );
+        assert_eq!(FieldType::InputRadioI32(-1_i32).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputRadioU32(0_u32).get_raw_data(), "0");
+        assert_eq!(FieldType::InputRadioI64(-1_i64).get_raw_data(), "-1");
+        assert_eq!(FieldType::InputRadioF64(1.3_f64).get_raw_data(), "1.3");
         assert_eq!(FieldType::InputRangeI32(-1_i32).get_raw_data(), "-1");
         assert_eq!(FieldType::InputRangeU32(0_u32).get_raw_data(), "0");
         assert_eq!(FieldType::InputRangeI64(-1_i64).get_raw_data(), "-1");
