@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mango_orm::{
     create_model,
-    models::{Meta, Model},
+    forms::{Form, Meta},
     widgets::{FieldType, Transport, Widget},
 };
 use mongodb::{
@@ -25,10 +25,10 @@ create_model! {
     }
 }
 #[async_trait]
-impl Model for Category {
+impl Form for Category {
     // Example:
     // Define attributes for widgets of fields
-    fn raw_attrs() -> HashMap<&'static str, Widget> {
+    fn widgets() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "title",
@@ -54,10 +54,10 @@ create_model! {
     }
 }
 #[async_trait]
-impl Model for User {
+impl Form for User {
     // Example:
     // Define attributes for widgets of fields
-    fn raw_attrs() -> HashMap<&'static str, Widget> {
+    fn widgets() -> HashMap<&'static str, Widget> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "username",

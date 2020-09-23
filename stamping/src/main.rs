@@ -4,7 +4,7 @@ use actix_session::CookieSession;
 use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use chrono;
 use env_logger;
-use mango_orm::models::Monitor;
+use mango_orm::migration::Monitor;
 use mongodb::Client;
 use tera::Tera;
 

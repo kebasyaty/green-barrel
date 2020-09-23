@@ -1,4 +1,4 @@
-use mango_orm::models::Monitor;
+use mango_orm::migration::Monitor;
 use mongodb::Client;
 
 mod mango_models;

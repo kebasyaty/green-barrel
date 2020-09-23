@@ -37,7 +37,7 @@ macro_rules! create_model {
 
             // Get a map of pure attributes for page templates
             pub fn form_attrs() -> HashMap<String, Transport> {
-                let raw_attrs: HashMap<&str, Widget> = Self::raw_attrs();
+                let raw_attrs: HashMap<&str, Widget> = Self::widgets();
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &raw_attrs {
                     clean_attrs.insert(field.to_string(), widget.clean_attrs(field));
@@ -62,7 +62,7 @@ macro_rules! create_model {
 
             // Get Html form for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) -> String {
-                Self::form(
+                Self::html(
                     Self::form_attrs(),
                     &stringify!($sname).to_lowercase(),
                     action,
@@ -88,7 +88,7 @@ macro_rules! create_model {
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let attrs: HashMap<&'static str, Widget> = Self::raw_attrs();
+                let attrs: HashMap<&'static str, Widget> = Self::widgets();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
