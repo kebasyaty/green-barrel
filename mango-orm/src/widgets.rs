@@ -400,7 +400,7 @@ mod tests {
             "Some text"
         );
         assert_eq!(FieldType::InputCheckBoxI32(-1_i32).get_raw_data(), "-1");
-        assert_eq!(FieldType::InputCheckBoxU32(0_32).get_raw_data(), "0");
+        assert_eq!(FieldType::InputCheckBoxU32(0_u32).get_raw_data(), "0");
         assert_eq!(FieldType::InputCheckBoxI64(-1_i64).get_raw_data(), "-1");
         assert_eq!(FieldType::InputCheckBoxF64(1.3_f64).get_raw_data(), "1.3");
         assert_eq!(
