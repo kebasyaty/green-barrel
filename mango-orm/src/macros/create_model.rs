@@ -348,7 +348,7 @@ macro_rules! create_model {
                         // SelectU32
                         // SelectI64
                         // SelectF64
-                        FieldType::SelectText(_) => {
+                         FieldType::SelectText(_) | FieldType::SelectI32(_) | FieldType::SelectU32(_) | FieldType::SelectI64(_) | FieldType::SelectF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
@@ -387,25 +387,6 @@ macro_rules! create_model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                     $service, MODEL_NAME, field, map_field_types[field]
-                                )
-                            }
-                        }
-                        // Select - f64 ------------------------------------------------------------
-                        FieldType::SelectF64(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() == 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "f64" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `f64`.",
-                                    $service, MODEL_NAME, field
                                 )
                             }
                         }
