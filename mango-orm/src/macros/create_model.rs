@@ -140,6 +140,7 @@ macro_rules! create_model {
                                     enum_field_type = "InputCheckBoxF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -187,16 +188,17 @@ macro_rules! create_model {
                                 FieldType::InputText(_) => { enum_field_type = "InputText".to_string(); }
                                 FieldType::InputUrl(_) => { enum_field_type = "InputUrl".to_string(); }
                                 FieldType::TextArea(_) => { enum_field_type = "TextArea".to_string(); }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if map_field_types[field] != "string" {
                                 panic!(
@@ -212,6 +214,7 @@ macro_rules! create_model {
                             match widget.value {
                                 FieldType::InputFile => { enum_field_type = "InputFile".to_string(); }
                                 FieldType::InputImage => { enum_field_type = "InputImage".to_string(); }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -254,6 +257,7 @@ macro_rules! create_model {
                                     enum_field_type = "InputNumberF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -325,6 +329,7 @@ macro_rules! create_model {
                                     enum_field_type = "InputRangeI64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -372,6 +377,7 @@ macro_rules! create_model {
                                     enum_field_type = "SelectF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
+                                _ => {}
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
