@@ -204,8 +204,9 @@ pub trait Form {
             }
         }
         format!(
-            "{}<input type=\"submit\" value=\"Submit\"></form>",
-            form_text
+            "{}<input type=\"submit\" value=\"{}\"></form>",
+            form_text,
+            if method == "get" { "Submit" } else { "Save" }
         )
     }
 }
