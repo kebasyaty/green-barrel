@@ -129,7 +129,7 @@ impl FieldType {
     pub fn get_data_type(&self) -> &'static str {
         match self {
             Self::InputCheckBoxText(_) => "string",
-            Self::InputCheckBoxI64(_) => "i32",
+            Self::InputCheckBoxI32(_) => "i32",
             Self::InputCheckBoxU32(_) => "u32",
             Self::InputCheckBoxI64(_) => "i64",
             Self::InputCheckBoxF64(_) => "f64",
