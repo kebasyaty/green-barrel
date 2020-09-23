@@ -113,34 +113,51 @@ macro_rules! create_model {
                     match widget.value {
                         // InputCheckBox -----------------------------------------------------------
                         FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_) | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_) | FieldType::InputCheckBoxF64(_) => {
+                            let nut enum_field_type = String::new();
+                            let nut field_type = String::new();
+                            match widget.value {
+                                FieldType::InputCheckBoxText(_) => {
+                                    field_type = "InputCheckBoxText".to_string();
+                                    field_type = "string".to_string();
+                                }
+                                FieldType::InputCheckBoxI32(_) => {
+                                    field_type = "InputCheckBoxI32".to_string();
+                                    field_type = "i32".to_string();
+                                }
+                                FieldType::InputCheckBoxU32(_) => {
+                                    field_type = "InputCheckBoxU32".to_string();
+                                    field_type = "u32".to_string();
+                                }
+                                FieldType::InputCheckBoxI64(_) => {
+                                    field_type = "InputCheckBoxI64".to_string();
+                                    field_type = "i64".to_string();
+                                }
+                                FieldType::InputCheckBoxF64(_) => {
+                                    field_type = "InputCheckBoxF64".to_string();
+                                    field_type = "f64".to_string();
+                                }
+                            }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `maxlength` = only 0 (zero).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `other_attrs` - must not contain the word `checked`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field, nut enum_field_type
                                 )
                             } else {
-                                let nut field_type = String::new();
-                                match widget.value {
-                                    FieldType::InputCheckBoxText(_) => { field_type = "string".to_string(); }
-                                    FieldType::InputCheckBoxI32(_) => { field_type = "i32".to_string(); }
-                                    FieldType::InputCheckBoxU32(_) => { field_type = "u32".to_string(); }
-                                    FieldType::InputCheckBoxI64(_) => { field_type = "i64".to_string(); }
-                                    FieldType::InputCheckBoxF64(_) => { field_type = "f64".to_string(); }
                                 if field_type != map_field_types[field] {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
