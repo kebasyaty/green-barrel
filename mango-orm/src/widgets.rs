@@ -453,8 +453,8 @@ mod tests {
             String::new()
         );
         assert_eq!(
-            FieldType::InputRadioText(String::new()).get_raw_data(),
-            "string"
+            FieldType::InputRadioText("Some text".to_string()).get_raw_data(),
+            "Some text"
         );
         assert_eq!(FieldType::InputRadioI32(-1_i32).get_raw_data(), "-1");
         assert_eq!(FieldType::InputRadioU32(0_u32).get_raw_data(), "0");
