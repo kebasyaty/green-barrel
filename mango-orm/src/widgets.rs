@@ -527,7 +527,14 @@ mod tests {
             FieldType::InputPassword(String::new()).get_data_type(),
             "string"
         );
-        assert_eq!(FieldType::InputRadio(false).get_data_type(), "bool");
+        assert_eq!(
+            FieldType::InputRadioText(String::new()).get_data_type(),
+            "string"
+        );
+        assert_eq!(FieldType::InputRadioI32(-1_i32).get_data_type(), "i32");
+        assert_eq!(FieldType::InputRadioU32(0_u32).get_data_type(), "u32");
+        assert_eq!(FieldType::InputRadioI64(-1_i64).get_data_type(), "i64");
+        assert_eq!(FieldType::InputRadioF64(1.3_f64).get_data_type(), "f64");
         assert_eq!(FieldType::InputRangeI32(-1_i32).get_data_type(), "i32");
         assert_eq!(FieldType::InputRangeU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputRangeI64(-1_i64).get_data_type(), "i64");
