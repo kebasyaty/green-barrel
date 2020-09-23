@@ -249,6 +249,7 @@ pub struct Widget {
     pub value: FieldType,
     pub maxlength: u32,
     pub required: bool,
+    pub checked: bool, // For <input type="checkbox|radio">
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
@@ -265,6 +266,7 @@ impl Default for Widget {
             value: FieldType::default(),
             maxlength: 0_u32,
             required: true,
+            checked: false, // For <input type="checkbox|radio">
             hint: String::new(),
             unique: false,
             hidden: false,
@@ -282,11 +284,6 @@ impl Widget {
             true => "hidden".to_string(),
             false => self.value.get_input_type().to_string(),
         };
-        let checked = match self.value {
-            FieldType::InputCheckBox(data) => data,
-            FieldType::InputRadio(data) => data,
-            _ => false,
-        };
         let other_attrs = match self.value {
             FieldType::ManyToMany => match self.other_attrs.contains("multiple") {
                 true => self.other_attrs.clone(),
@@ -303,7 +300,7 @@ impl Widget {
             value: self.value.get_raw_data(),
             maxlength: self.maxlength.clone(),
             required: self.required.clone(),
-            checked: checked,
+            checked: self.checked.clone(),
             hint: self.hint.clone(),
             unique: self.unique.clone(),
             hidden: self.hidden.clone(),
