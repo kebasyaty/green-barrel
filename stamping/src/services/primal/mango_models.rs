@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 
-const SERVICE_NAME: &'static str = "test_service";
-const DATABASE_NAME: &'static str = "dev_db";
+const SERVICE_NAME: &'static str = "test_service"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
+const DATABASE_NAME: &'static str = "dev_db"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
 
 // User --------------------------------------------------------------------------------------------
 create_model! {
