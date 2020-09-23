@@ -172,13 +172,15 @@ macro_rules! create_model {
                         // InputDate
                         // InputDateTime
                         // InputEmail
-                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) => {
+                        // InputPassword
+                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
                                 FieldType::InputColor(_) => { enum_field_type = "InputColor".to_string(); }
                                 FieldType::InputDate(_) => { enum_field_type = "InputDate".to_string(); }
                                 FieldType::InputDateTime(_) => { enum_field_type = "InputDateTime".to_string(); }
                                 FieldType::InputEmail(_) => { enum_field_type = "InputEmail".to_string(); }
+                                FieldType::InputPassword(_) => { enum_field_type = "InputPassword".to_string(); }
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -261,30 +263,6 @@ macro_rules! create_model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                     $service, MODEL_NAME, field, map_field_types[field]
-                                )
-                            }
-                        }
-                        // InputPassword -----------------------------------------------------------
-                        FieldType::InputPassword(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.value != FieldType::InputPassword(String::new()) {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `value` = only DataType::Text(String::new()).",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
                                 )
                             }
                         }
