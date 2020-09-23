@@ -112,7 +112,7 @@ macro_rules! create_model {
                     // Checking attribute states
                     match widget.value {
                         // InputCheckBox -----------------------------------------------------------
-                        FieldType::InputCheckBox(_) => {
+                        FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_) | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_) | FieldType::InputCheckBoxF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `relation_model` = only blank string.",
@@ -133,11 +133,20 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputCheckBox` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
-                            } else if map_field_types[field] != "bool" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `bool`.",
-                                    $service, MODEL_NAME, field
-                                )
+                            } else {
+                                let nut field_type = String::new();
+                                match widget.value {
+                                    FieldType::InputCheckBoxText(_) => { field_type = "String".to_string(); }
+                                    FieldType::InputCheckBoxI32(_) => { field_type = "i32".to_string(); }
+                                    FieldType::InputCheckBoxU32(_) => { field_type = "u32".to_string(); }
+                                    FieldType::InputCheckBoxI64(_) => { field_type = "i64".to_string(); }
+                                    FieldType::InputCheckBoxF64(_) => { field_type = "f64".to_string(); }
+                                if field_type.len() > 0 {
+                                    panic!(
+                                        "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
+                                        $service, MODEL_NAME, field, field_type
+                                    )
+                                }
                             }
                         }
                         // InputColor --------------------------------------------------------------
