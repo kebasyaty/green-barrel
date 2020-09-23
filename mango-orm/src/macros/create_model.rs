@@ -113,8 +113,8 @@ macro_rules! create_model {
                     match widget.value {
                         // InputCheckBox -----------------------------------------------------------
                         FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_) | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_) | FieldType::InputCheckBoxF64(_) => {
-                            let nut enum_field_type = String::new();
-                            let nut field_type = String::new();
+                            let mut enum_field_type = String::new();
+                            let mut field_type = String::new();
                             match widget.value {
                                 FieldType::InputCheckBoxText(_) => {
                                     field_type = "InputCheckBoxText".to_string();
@@ -157,8 +157,7 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, nut enum_field_type
                                 )
-                            } else {
-                                if field_type != map_field_types[field] {
+                            } else if field_type != map_field_types[field] {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                         $service, MODEL_NAME, field, map_field_types[field]
