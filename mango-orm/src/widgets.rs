@@ -327,7 +327,26 @@ mod tests {
     #[test]
     fn test_field_types() {
         // Method get_input_type()
-        assert_eq!(FieldType::InputCheckBox(false).get_input_type(), "checkbox");
+        assert_eq!(
+            FieldType::InputCheckBoxText(String::new()).get_input_type(),
+            "checkbox"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxI32(-1_i32).get_input_type(),
+            "checkbox"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxU32(0_u32).get_input_type(),
+            "checkbox"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxI64(-1_i64).get_input_type(),
+            "checkbox"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxF64(1.3_f64).get_input_type(),
+            "checkbox"
+        );
         assert_eq!(
             FieldType::InputColor(String::new()).get_input_type(),
             "color"
