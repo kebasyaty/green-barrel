@@ -171,12 +171,14 @@ macro_rules! create_model {
                         // InputColor --------------------------------------------------------------
                         // InputDate
                         // InputDateTime
-                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
+                        // InputEmail
+                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
                                 FieldType::InputColor(_) => { enum_field_type = "InputColor".to_string(); }
                                 FieldType::InputDate(_) => { enum_field_type = "InputDate".to_string(); }
                                 FieldType::InputDateTime(_) => { enum_field_type = "InputDateTime".to_string(); }
+                                FieldType::InputEmail(_) => { enum_field_type = "InputEmail".to_string(); }
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
@@ -195,55 +197,23 @@ macro_rules! create_model {
                                 )
                             }
                         }
-                        // InputEmail --------------------------------------------------------------
-                        FieldType::InputEmail(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputEmail` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputEmail` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
                         // InputFile ---------------------------------------------------------------
-                        FieldType::InputFile => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputFile` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputFile` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "String" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
-                                    $service, MODEL_NAME, field
-                                )
+                        // InputImage
+                        FieldType::InputFile | FieldType::InputImage => {
+                            let mut enum_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputFile => { enum_field_type = "InputFile".to_string(); }
+                                FieldType::InputImage => { enum_field_type = "InputImage".to_string(); }
                             }
-                        }
-                        // InputImage --------------------------------------------------------------
-                        FieldType::InputImage => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputImage` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputImage` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if map_field_types[field] != "String" {
                                 panic!(
