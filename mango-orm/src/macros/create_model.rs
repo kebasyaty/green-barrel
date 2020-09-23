@@ -136,15 +136,15 @@ macro_rules! create_model {
                             } else {
                                 let nut field_type = String::new();
                                 match widget.value {
-                                    FieldType::InputCheckBoxText(_) => { field_type = "String".to_string(); }
+                                    FieldType::InputCheckBoxText(_) => { field_type = "string".to_string(); }
                                     FieldType::InputCheckBoxI32(_) => { field_type = "i32".to_string(); }
                                     FieldType::InputCheckBoxU32(_) => { field_type = "u32".to_string(); }
                                     FieldType::InputCheckBoxI64(_) => { field_type = "i64".to_string(); }
                                     FieldType::InputCheckBoxF64(_) => { field_type = "f64".to_string(); }
-                                if field_type.len() > 0 {
+                                if field_type != map_field_types[field] {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
-                                        $service, MODEL_NAME, field, field_type
+                                        $service, MODEL_NAME, field, map_field_types[field]
                                     )
                                 }
                             }
