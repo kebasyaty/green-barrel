@@ -140,23 +140,23 @@ impl FieldType {
 
     pub fn get_data_type(&self) -> &'static str {
         match self {
-            Self::InputCheckBoxText(_) => "string",
+            Self::InputCheckBoxText(_) => "String",
             Self::InputCheckBoxI32(_) => "i32",
             Self::InputCheckBoxU32(_) => "u32",
             Self::InputCheckBoxI64(_) => "i64",
             Self::InputCheckBoxF64(_) => "f64",
-            Self::InputColor(_) => "string",
-            Self::InputDate(_) => "string",
-            Self::InputDateTime(_) => "string",
-            Self::InputEmail(_) => "string",
+            Self::InputColor(_) => "String",
+            Self::InputDate(_) => "String",
+            Self::InputDateTime(_) => "String",
+            Self::InputEmail(_) => "String",
             Self::InputFile => "none",
             Self::InputImage => "none",
             Self::InputNumberI32(_) => "i32",
             Self::InputNumberU32(_) => "u32",
             Self::InputNumberI64(_) => "i64",
             Self::InputNumberF64(_) => "f64",
-            Self::InputPassword(_) => "string",
-            Self::InputRadioText(_) => "string",
+            Self::InputPassword(_) => "String",
+            Self::InputRadioText(_) => "String",
             Self::InputRadioI32(_) => "i32",
             Self::InputRadioU32(_) => "u32",
             Self::InputRadioI64(_) => "i64",
@@ -165,11 +165,11 @@ impl FieldType {
             Self::InputRangeU32(_) => "u32",
             Self::InputRangeI64(_) => "i64",
             Self::InputRangeF64(_) => "f64",
-            Self::InputTel(_) => "string",
-            Self::InputText(_) => "string",
-            Self::InputUrl(_) => "string",
-            Self::TextArea(_) => "string",
-            Self::SelectText(_) => "string",
+            Self::InputTel(_) => "String",
+            Self::InputText(_) => "String",
+            Self::InputUrl(_) => "String",
+            Self::TextArea(_) => "String",
+            Self::SelectText(_) => "String",
             Self::SelectI32(_) => "i32",
             Self::SelectU32(_) => "u32",
             Self::SelectI64(_) => "i64",
@@ -210,7 +210,7 @@ impl SelectDataType {
 
     pub fn get_data_type(&self) -> &'static str {
         match self {
-            Self::Text(_) => "string",
+            Self::Text(_) => "String",
             Self::I32(_) => "i32",
             Self::U32(_) => "u32",
             Self::I64(_) => "i64",
@@ -495,7 +495,7 @@ mod tests {
         // Method get_data_type()
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(FieldType::InputCheckBoxI32(-1_i32).get_data_type(), "i32");
         assert_eq!(FieldType::InputCheckBoxU32(0_u32).get_data_type(), "u32");
@@ -503,19 +503,19 @@ mod tests {
         assert_eq!(FieldType::InputCheckBoxF64(1.3_f64).get_data_type(), "f64");
         assert_eq!(
             FieldType::InputColor(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(
             FieldType::InputDate(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(
             FieldType::InputDateTime(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(
             FieldType::InputEmail(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(FieldType::InputFile.get_data_type(), "none");
         assert_eq!(FieldType::InputImage.get_data_type(), "none");
@@ -525,11 +525,11 @@ mod tests {
         assert_eq!(FieldType::InputNumberF64(-1.3_f64).get_data_type(), "f64");
         assert_eq!(
             FieldType::InputPassword(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(
             FieldType::InputRadioText(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(FieldType::InputRadioI32(-1_i32).get_data_type(), "i32");
         assert_eq!(FieldType::InputRadioU32(0_u32).get_data_type(), "u32");
@@ -539,16 +539,16 @@ mod tests {
         assert_eq!(FieldType::InputRangeU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputRangeI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::InputRangeF64(-1.3_f64).get_data_type(), "f64");
-        assert_eq!(FieldType::InputTel(String::new()).get_data_type(), "string");
+        assert_eq!(FieldType::InputTel(String::new()).get_data_type(), "String");
         assert_eq!(
             FieldType::InputText(String::new()).get_data_type(),
-            "string"
+            "String"
         );
-        assert_eq!(FieldType::InputUrl(String::new()).get_data_type(), "string");
-        assert_eq!(FieldType::TextArea(String::new()).get_data_type(), "string");
+        assert_eq!(FieldType::InputUrl(String::new()).get_data_type(), "String");
+        assert_eq!(FieldType::TextArea(String::new()).get_data_type(), "String");
         assert_eq!(
             FieldType::SelectText(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(FieldType::SelectI32(-1_i32).get_data_type(), "i32");
         assert_eq!(FieldType::SelectU32(0_u32).get_data_type(), "u32");
@@ -587,7 +587,7 @@ mod tests {
         // Method get_data_type()
         assert_eq!(
             SelectDataType::Text(String::new()).get_data_type(),
-            "string"
+            "String"
         );
         assert_eq!(SelectDataType::I32(-10_i32).get_data_type(), "i32");
         assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "u32");
