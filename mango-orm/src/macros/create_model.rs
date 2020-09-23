@@ -276,32 +276,45 @@ macro_rules! create_model {
                                 )
                             }
                         }
-                        // InputRadio --------------------------------------------------------------
-                        FieldType::InputRadio(_) => {
+                        // InputRadioText ----------------------------------------------------------
+                        // InputRadioI32
+                        // InputRadioU32
+                        // InputRadioI64
+                        // InputRadioF64
+                        FieldType::InputRadioText(_) => {
+                            let mut enum_field_type = String::new();
+                            let mut data_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputRadioText(_) => {
+                                    enum_field_type = "InputRadioText".to_string();
+                                    data_field_type = "string".to_string();
+                                }
+                                _ => {}
+                            }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `maxlength` = only 0 (zero).",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `other_attrs` - must not contain the word `checked`.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `select` - must not be an empty vec![]",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` - must not be an empty vec![]",
+                                    $service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if map_field_types[field] != "bool" {
+                            }  else if data_field_type != map_field_types[field] {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `bool`.",
-                                    $service, MODEL_NAME, field
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
+                                    $service, MODEL_NAME, field, map_field_types[field]
                                 )
                             }
                         }
