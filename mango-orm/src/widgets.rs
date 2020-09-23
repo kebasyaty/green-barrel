@@ -8,7 +8,11 @@ use serde::Serialize;
 /// Field types for Widgets
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldType {
-    InputCheckBox(bool),
+    InputCheckBoxText(String),
+    InputCheckBoxI32(i32),
+    InputCheckBoxU32(u32),
+    InputCheckBoxI64(i64),
+    InputCheckBoxF64(f64),
     InputColor(String),
     InputDate(String),
     InputDateTime(String),
@@ -48,7 +52,11 @@ impl Default for FieldType {
 impl FieldType {
     pub fn get_input_type(&self) -> &'static str {
         match self {
-            Self::InputCheckBox(_) => "checkbox",
+            Self::InputCheckBoxText(_) => "checkbox",
+            Self::InputCheckBoxI32(_) => "checkbox",
+            Self::InputCheckBoxU32(_) => "checkbox",
+            Self::InputCheckBoxI64(_) => "checkbox",
+            Self::InputCheckBoxF64(_) => "checkbox",
             Self::InputColor(_) => "color",
             Self::InputDate(_) => "date",
             Self::InputDateTime(_) => "datetime",
@@ -82,7 +90,11 @@ impl FieldType {
 
     pub fn get_raw_data(&self) -> String {
         match self {
-            Self::InputCheckBox(data) => data.to_string(),
+            Self::InputCheckBoxText(data) => data.to_string(),
+            Self::InputCheckBoxI32(data) => data.to_string(),
+            Self::InputCheckBoxU32(data) => data.to_string(),
+            Self::InputCheckBoxI64(data) => data.to_string(),
+            Self::InputCheckBoxF64(data) => data.to_string(),
             Self::InputColor(data) => data.to_string(),
             Self::InputDate(data) => data.to_string(),
             Self::InputDateTime(data) => data.to_string(),
@@ -116,7 +128,11 @@ impl FieldType {
 
     pub fn get_data_type(&self) -> &'static str {
         match self {
-            Self::InputCheckBox(_) => "bool",
+            Self::InputCheckBoxText(_) => "string",
+            Self::InputCheckBoxI64(_) => "i32",
+            Self::InputCheckBoxU32(_) => "u32",
+            Self::InputCheckBoxI64(_) => "i64",
+            Self::InputCheckBoxF64(_) => "f64",
             Self::InputColor(_) => "string",
             Self::InputDate(_) => "string",
             Self::InputDateTime(_) => "string",
