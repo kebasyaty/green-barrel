@@ -200,7 +200,7 @@ macro_rules! create_model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if map_field_types[field] != "string" {
+                            } else if map_field_types[field] != "String" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
