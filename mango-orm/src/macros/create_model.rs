@@ -223,13 +223,28 @@ macro_rules! create_model {
                             }
                         }
                         // InputNumber - i32 -------------------------------------------------------
-                        FieldType::InputNumberI32(_) => {
+                        // InputNumber - u32
+                        // InputNumber - i64
+                        // InputNumber - f64
+                        FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_) | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
                                 FieldType::InputNumberI32(_) => {
                                     enum_field_type = "InputNumberI32".to_string();
                                     data_field_type = "i32".to_string();
+                                }
+                                FieldType::InputNumberU32(_) => {
+                                    enum_field_type = "InputNumberU32".to_string();
+                                    data_field_type = "u32".to_string();
+                                }
+                                FieldType::InputNumberI64(_) => {
+                                    enum_field_type = "InputNumberI64".to_string();
+                                    data_field_type = "i64".to_string();
+                                }
+                                FieldType::InputNumberF64(_) => {
+                                    enum_field_type = "InputNumberF64".to_string();
+                                    data_field_type = "f64".to_string();
                                 }
                             }
                             if widget.relation_model != String::new() {
@@ -246,63 +261,6 @@ macro_rules! create_model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                     $service, MODEL_NAME, field, map_field_types[field]
-                                )
-                            }
-                        }
-                        // InputNumber - u32 -------------------------------------------------------
-                        FieldType::InputNumberU32(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "u32" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `u32`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // InputNumber - i64 -------------------------------------------------------
-                        FieldType::InputNumberI64(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "i64" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `i64`.",
-                                    $service, MODEL_NAME, field
-                                )
-                            }
-                        }
-                        // InputNumber - f64 -------------------------------------------------------
-                        FieldType::InputNumberF64(_) => {
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field
-                                )
-                            } else if map_field_types[field] != "f64" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `f64`.",
-                                    $service, MODEL_NAME, field
                                 )
                             }
                         }
