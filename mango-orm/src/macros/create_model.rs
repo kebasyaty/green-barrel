@@ -169,12 +169,12 @@ macro_rules! create_model {
                         FieldType::InputColor(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputColor` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputColor` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputColor` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -188,12 +188,12 @@ macro_rules! create_model {
                         FieldType::InputDate(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDate` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDate` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDate` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -207,12 +207,12 @@ macro_rules! create_model {
                         FieldType::InputDateTime(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDateTime` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputDateTime` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputDateTime` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -226,12 +226,12 @@ macro_rules! create_model {
                         FieldType::InputEmail(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputEmail` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputEmail` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputEmail` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -245,12 +245,12 @@ macro_rules! create_model {
                         FieldType::InputFile => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputFile` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputFile` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputFile` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -264,12 +264,12 @@ macro_rules! create_model {
                         FieldType::InputImage => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputImage` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputImage` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputImage` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -283,12 +283,12 @@ macro_rules! create_model {
                         FieldType::InputNumberI32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i32" {
@@ -302,12 +302,12 @@ macro_rules! create_model {
                         FieldType::InputNumberU32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "u32" {
@@ -321,12 +321,12 @@ macro_rules! create_model {
                         FieldType::InputNumberI64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i64" {
@@ -340,12 +340,12 @@ macro_rules! create_model {
                         FieldType::InputNumberF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputNumber` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputNumber` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "f64" {
@@ -359,17 +359,17 @@ macro_rules! create_model {
                         FieldType::InputPassword(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.value != FieldType::InputPassword(String::new()) {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `value` = only DataType::Text(String::new()).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `value` = only DataType::Text(String::new()).",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputPassword` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputPassword` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -383,22 +383,22 @@ macro_rules! create_model {
                         FieldType::InputRadio(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `maxlength` = only 0 (zero).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `maxlength` = only 0 (zero).",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `other_attrs` - must not contain the word `checked`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `other_attrs` - must not contain the word `checked`.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRadio` : `select` - must not be an empty vec![]",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRadio` : `select` - must not be an empty vec![]",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "bool" {
@@ -412,12 +412,12 @@ macro_rules! create_model {
                         FieldType::InputRangeI32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i32" {
@@ -431,12 +431,12 @@ macro_rules! create_model {
                         FieldType::InputRangeU32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "u32" {
@@ -450,12 +450,12 @@ macro_rules! create_model {
                         FieldType::InputRangeI64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i64" {
@@ -469,12 +469,12 @@ macro_rules! create_model {
                         FieldType::InputRangeF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputRange` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputRange` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "f64" {
@@ -488,12 +488,12 @@ macro_rules! create_model {
                         FieldType::InputTel(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputTel` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputTel` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputTel` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -507,12 +507,12 @@ macro_rules! create_model {
                         FieldType::InputText(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputText` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputText` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputText` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -526,12 +526,12 @@ macro_rules! create_model {
                         FieldType::InputUrl(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputUrl` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `InputUrl` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `InputUrl` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -545,12 +545,12 @@ macro_rules! create_model {
                         FieldType::TextArea(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `TextArea` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `TextArea` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `TextArea` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -564,12 +564,12 @@ macro_rules! create_model {
                         FieldType::SelectText(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -583,12 +583,12 @@ macro_rules! create_model {
                         FieldType::SelectI32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i32" {
@@ -602,12 +602,12 @@ macro_rules! create_model {
                         FieldType::SelectU32(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "u32" {
@@ -621,12 +621,12 @@ macro_rules! create_model {
                         FieldType::SelectI64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "i64" {
@@ -640,12 +640,12 @@ macro_rules! create_model {
                         FieldType::SelectF64(_) => {
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `Select` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `Select` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "f64" {
@@ -659,12 +659,12 @@ macro_rules! create_model {
                         FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ForeignKey` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ForeignKey` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -678,12 +678,12 @@ macro_rules! create_model {
                         FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `ManyToMany` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ManyToMany` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -697,12 +697,12 @@ macro_rules! create_model {
                         FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> FieldType `OneToOne` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `OneToOne` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
