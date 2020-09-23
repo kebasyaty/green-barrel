@@ -122,7 +122,7 @@ macro_rules! create_model {
                             match widget.value {
                                 FieldType::InputCheckBoxText(_) => {
                                     enum_field_type = "InputCheckBoxText".to_string();
-                                    data_field_type = "string".to_string();
+                                    data_field_type = "String".to_string();
                                 }
                                 FieldType::InputCheckBoxI32(_) => {
                                     enum_field_type = "InputCheckBoxI32".to_string();
@@ -287,7 +287,7 @@ macro_rules! create_model {
                             match widget.value {
                                 FieldType::InputRadioText(_) => {
                                     enum_field_type = "InputRadioText".to_string();
-                                    data_field_type = "string".to_string();
+                                    data_field_type = "String".to_string();
                                 }
                                 _ => {}
                             }
@@ -372,7 +372,7 @@ macro_rules! create_model {
                             match widget.value {
                                 FieldType::SelectText(_) => {
                                     enum_field_type = "SelectText".to_string();
-                                    data_field_type = "string".to_string();
+                                    data_field_type = "String".to_string();
                                 }
                                 FieldType::SelectI32(_) => {
                                     enum_field_type = "SelectI32".to_string();
