@@ -71,6 +71,12 @@ macro_rules! create_model {
                 )
             }
 
+            // Save to database as a new document
+            // (returns the hash of the identifier)
+            pub async fn save(&self, client: &Client) -> String {
+                String::new()
+            }
+
             // Check model changes and (if required) apply to the database
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
