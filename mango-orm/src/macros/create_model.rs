@@ -35,7 +35,7 @@ macro_rules! create_model {
                 }
             }
 
-            // Get a map of pure attributes for page templates
+            // Get a map of pure attributes of Form for page templates
             pub fn form_attrs() -> HashMap<String, Transport> {
                 let raw_attrs: HashMap<&str, Widget> = Self::widgets();
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
@@ -45,7 +45,7 @@ macro_rules! create_model {
                 clean_attrs
             }
 
-            // Get form attributes Json format for page templates
+            // Get Form attributes in Json format for page templates
             pub fn json_attrs() -> String {
                 let attrs: HashMap<String, Transport> = Self::form_attrs();
                 let mut json_text = String::new();
@@ -60,7 +60,7 @@ macro_rules! create_model {
                 format!("{{{}}}", json_text)
             }
 
-            // Get Html form for page templates
+            // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) -> String {
                 Self::html(
                     Self::form_attrs(),
