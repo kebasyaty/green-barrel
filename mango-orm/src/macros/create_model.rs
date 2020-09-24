@@ -73,8 +73,12 @@ macro_rules! create_model {
 
             // Save to database as a new document
             // (returns the hash of the identifier)
-            pub async fn save(&self, client: &Client) -> String {
-                String::new()
+            pub async fn save(&self, client: &Client) {
+                let meta: Meta = Self::meta();
+                let doc: Document = to_document(self).unwrap();
+                let coll = client.database(&meta.database).collection(&meta.collection);
+                let result = coll.insert_one(doc, None).await.unwrap();
+                println!("{:?}", result);
             }
 
             // Check model changes and (if required) apply to the database
