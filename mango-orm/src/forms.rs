@@ -11,7 +11,7 @@ use std::collections::HashMap;
 #[async_trait]
 pub trait Form {
     // Customizing widgets by model fields
-    fn widgets() -> HashMap<&'static str, Widget>;
+    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>>;
     // Customizing HTML form  (If necessary) for page templates
     fn html(
         attrs: HashMap<String, Transport>,
@@ -19,7 +19,7 @@ pub trait Form {
         action: &str,
         method: String,
         enctype: &str,
-    ) -> String {
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let mut form_text = format!(
             "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
             model_name, action, method, enctype
@@ -203,11 +203,11 @@ pub trait Form {
                 _ => panic!("Invalid input type."),
             }
         }
-        format!(
+        Ok(format!(
             "{}<input type=\"submit\" value=\"{}\"></form>",
             form_text,
             if method == "get" { "Submit" } else { "Save" }
-        )
+        ))
     }
 }
 

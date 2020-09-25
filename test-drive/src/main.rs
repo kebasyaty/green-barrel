@@ -29,8 +29,8 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    // println!("{}",mango_models::User::form_html("/", Some("post"), Some("multipart/form-data")));
-    // println!("{}", mango_models::User::form_html("/", None, None));
+    // println!("{}", mango_models::User::form_html("/", Some("post"), Some("multipart/form-data")).unwrap());
+    // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
 
     let user = mango_models::User {
         username: "Rust".to_string(),
@@ -39,5 +39,5 @@ async fn main() {
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
-    user.save(&client).await;
+    println!("{}", user.save(&client).await.unwrap());
 }

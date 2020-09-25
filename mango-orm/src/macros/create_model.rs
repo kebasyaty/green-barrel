@@ -15,39 +15,39 @@ macro_rules! create_model {
 
         impl $sname {
             // Get model name
-            pub fn model_name() -> &'static str {
-                stringify!($sname)
+            pub fn model_name() -> Result<&'static str, Box<dyn std::error::Error>> {
+                Ok(stringify!($sname))
             }
 
             // Get array of field names
-            pub fn field_names() -> &'static [&'static str] {
-                &[$(stringify!($fname)),*]
+            pub fn field_names() -> Result<&'static [&'static str], Box<dyn std::error::Error>> {
+                Ok(&[$(stringify!($fname)),*])
             }
 
             // Metadata (database name, collection name, etc)
-            pub fn meta() -> Meta {
-                Meta {
+            pub fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
+                Ok(Meta {
                     database: $database.to_lowercase(),
                     collection: format!("{}__{}",
                         $service.to_lowercase(),
                         stringify!($sname).to_lowercase()
                     )
-                }
+                })
             }
 
             // Get a map of pure attributes of Form for page templates
-            pub fn form_attrs() -> HashMap<String, Transport> {
-                let raw_attrs: HashMap<&str, Widget> = Self::widgets();
+            pub fn form_attrs() -> Result<HashMap<String, Transport>, Box<dyn std::error::Error>> {
+                let raw_attrs: HashMap<&str, Widget> = Self::widgets()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &raw_attrs {
-                    clean_attrs.insert(field.to_string(), widget.clean_attrs(field));
+                    clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
                 }
-                clean_attrs
+                Ok(clean_attrs)
             }
 
             // Get Form attributes in Json format for page templates
-            pub fn json_attrs() -> String {
-                let attrs: HashMap<String, Transport> = Self::form_attrs();
+            pub fn json_attrs() -> Result<String, Box<dyn std::error::Error>> {
+                let attrs: HashMap<String, Transport> = Self::form_attrs()?;
                 let mut json_text = String::new();
                 for (field, trans) in attrs {
                     let tmp = serde_json::to_string(&trans).unwrap(); // Transport
@@ -57,28 +57,29 @@ macro_rules! create_model {
                         json_text = format!("\"{}\":{}", field, tmp);
                     }
                 }
-                format!("{{{}}}", json_text)
+                Ok(format!("{{{}}}", json_text))
             }
 
             // Get Html Form of Model for page templates
-            pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) -> String {
-                Self::html(
-                    Self::form_attrs(),
+            pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
+                Result<String, Box<dyn std::error::Error>> {
+                Ok(Self::html(
+                    Self::form_attrs()?,
                     &stringify!($sname).to_lowercase(),
                     action,
                     if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
                     if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
-                )
+                )?)
             }
 
             // Save to database as a new document
             // (returns the hash of the identifier)
-            pub async fn save(&self, client: &Client) {
-                let meta: Meta = Self::meta();
-                let doc: Document = to_document(self).unwrap();
+            pub async fn save(&self, client: &Client) -> Result<String, mongodb_error::Error> {
+                let meta: Meta = Self::meta().unwrap();
+                let doc: Document = to_document(self)?;
                 let coll = client.database(&meta.database).collection(&meta.collection);
-                let result = coll.insert_one(doc, None).await.unwrap();
-                println!("{:?}", result);
+                let result = coll.insert_one(doc, None).await?;
+                Ok(format!("{:?}", result.inserted_id))
             }
 
             // Check model changes and (if required) apply to the database
@@ -94,11 +95,11 @@ macro_rules! create_model {
                 FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
-                let meta: Meta = Self::meta();
+                let meta: Meta = Self::meta().unwrap();
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let attrs: HashMap<&'static str, Widget> = Self::widgets();
+                let attrs: HashMap<&'static str, Widget> = Self::widgets().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();

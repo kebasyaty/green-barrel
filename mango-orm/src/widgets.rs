@@ -295,7 +295,7 @@ impl Default for Widget {
 
 impl Widget {
     // Get pure attributes from a widget
-    pub fn clean_attrs(&self, name: &str) -> Transport {
+    pub fn clean_attrs(&self, name: &str) -> Result<Transport, Box<dyn std::error::Error>> {
         let field_type = match self.hidden {
             true => "hidden".to_string(),
             false => self.value.get_input_type().to_string(),
@@ -308,7 +308,7 @@ impl Widget {
             _ => self.other_attrs.clone(),
         };
 
-        Transport {
+        Ok(Transport {
             id: name.to_string(),
             label: self.label.clone(),
             field_type: field_type,
@@ -327,7 +327,7 @@ impl Widget {
                 .iter()
                 .map(|item| (item.0.clone(), item.1.get_raw_data()))
                 .collect::<Vec<(String, String)>>(),
-        }
+        })
     }
 }
 
@@ -639,7 +639,7 @@ mod tests {
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_raw_data(), String::new());
         // Methods
-        let mut attrs = widget.clean_attrs("");
+        let mut attrs = widget.clean_attrs("").unwrap();
         attrs.select = vec![(
             String::new(),
             SelectDataType::Text(String::new()).get_raw_data(),

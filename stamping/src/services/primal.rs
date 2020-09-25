@@ -34,7 +34,7 @@ pub mod request_handlers {
             "description",
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         );
-        ctx.insert("form", &mango_models::User::form_attrs());
+        ctx.insert("form", &mango_models::User::form_attrs().unwrap());
         let rendered = tmpl.render("index.html", &ctx).unwrap();
         HttpResponse::Ok().content_type("text/html").body(rendered)
     }

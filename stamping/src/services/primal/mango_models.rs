@@ -8,6 +8,7 @@ use mango_orm::{
 };
 use mongodb::{
     bson::{doc, document::Document, ser::to_document, Bson},
+    error as mongodb_error,
     options::UpdateModifications,
     Client, Collection, Cursor, Database,
 };
@@ -31,7 +32,7 @@ create_model! {
 impl Form for User {
     // Example:
     // Customizing widgets by model fields
-    fn widgets() -> HashMap<&'static str, Widget> {
+    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "username",
@@ -58,6 +59,6 @@ impl Form for User {
                 ..Default::default()
             },
         );
-        raw_attrs
+        Ok(raw_attrs)
     }
 }
