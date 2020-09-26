@@ -26,13 +26,18 @@ macro_rules! create_model {
 
             // Metadata (database name, collection name, etc)
             pub fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
-                Ok(Meta {
-                    database: $database.to_lowercase(),
-                    collection: format!("{}__{}",
-                        $service.to_lowercase(),
-                        stringify!($sname).to_lowercase()
-                    )
-                })
+                if $service.len() > 0 && $database.len() > 0 {
+                    Ok(Meta {
+                        database: $database.to_lowercase(),
+                        collection: format!("{}__{}",
+                            $service.to_lowercase(),
+                            stringify!($sname).to_lowercase()
+                        )
+                    })
+                } else {
+                    panic!("Model: {} -> Service name (App name) and database name should not be empty.",
+                        stringify!($sname));
+                }
             }
 
             // Get a map of pure attributes of Form for page templates
