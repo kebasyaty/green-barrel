@@ -497,7 +497,7 @@ macro_rules! create_model {
                     let coll: Collection = client.database(&mango_orm_keyword).collection("models");
                     let model: Option<Document> = coll.find_one(filter, None).await.unwrap();
                     if model.is_none() {
-                        vec![]
+                        panic!("Model: {} -> No data in mango_orm_keyword.", &meta.database);
                     }
                     let model: Document = model.unwrap();
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
