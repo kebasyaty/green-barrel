@@ -88,12 +88,17 @@ macro_rules! create_model {
             // *************************************************************************************
             // Save to database as a new document
             // (returns the hash of the identifier)
-            pub async fn save(&self, client: &Client) -> Result<String, mongodb_error::Error> {
-                let meta: Meta = Self::meta().unwrap();
-                let doc: Document = to_document(self)?;
+            pub async fn save(&self, client: &Client) -> Result<String, Box<dyn std::error::Error>> {
+                let meta: Meta = Self::meta()?;
+                let doc: Document = to_document(self).unwrap_or_else(|err| {
+                    panic!("{:?}", err)
+                });
                 let coll = client.database(&meta.database).collection(&meta.collection);
-                let result = coll.insert_one(doc, None).await?;
-                Ok(result.inserted_id.as_object_id().unwrap().to_hex())
+                let result = coll.insert_one(doc, None).await.unwrap_or_else(|err| {
+                    panic!("{:?}", err)
+                });
+                let id = result.inserted_id.as_object_id().unwrap();
+                Ok(id.to_hex())
             }
 
             // Migrating Model

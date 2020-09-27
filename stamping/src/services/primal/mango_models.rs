@@ -8,7 +8,6 @@ use mango_orm::{
 };
 use mongodb::{
     bson::{doc, document::Document, ser::to_document, Bson},
-    error as mongodb_error,
     options::UpdateModifications,
     Client, Collection, Cursor, Database,
 };
