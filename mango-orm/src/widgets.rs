@@ -181,7 +181,8 @@ impl FieldType {
     }
 }
 
-/// Data types for the `value` attribute -----------------------------------------------------------
+/// Data types for the `value` attribute
+/// ************************************************************************************************
 #[derive(Debug, Clone)]
 pub enum SelectDataType {
     Text(String),
@@ -219,7 +220,8 @@ impl SelectDataType {
     }
 }
 
-/// Mediator for transporting widget attributes ----------------------------------------------------
+/// Mediator for transporting widget attributes
+/// ************************************************************************************************
 #[derive(Serialize, Debug, Default)]
 pub struct Transport {
     pub id: String, // "id-name" or auto
@@ -238,9 +240,9 @@ pub struct Transport {
     pub select: Vec<(String, String)>,
 }
 
-/// Attributes for the widget ----------------------------------------------------------------------
-/// For standard widgets
-/// Use for:
+/// Attributes for the widget
+/// ************************************************************************************************
+/// For standard widgets:
 /// <input type="checkbox">
 /// <input type="color">
 /// <input type="date">
@@ -336,10 +338,11 @@ impl Widget {
 mod tests {
     use super::*;
 
-    // Testing enum FieldTypes ---------------------------------------------------------------------
+    // Testing enum FieldTypes
+    // *********************************************************************************************
     #[test]
     fn test_field_types() {
-        // Method get_input_type()
+        // Method get_input_type() -----------------------------------------------------------------
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_input_type(),
             "checkbox"
@@ -417,7 +420,7 @@ mod tests {
         assert_eq!(FieldType::ManyToMany.get_input_type(), "select");
         assert_eq!(FieldType::OneToOne.get_input_type(), "hidden");
 
-        // Method get_raw_data()
+        // Method get_raw_data() -------------------------------------------------------------------
         assert_eq!(
             FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
             "Some text"
@@ -492,7 +495,7 @@ mod tests {
         assert_eq!(FieldType::ManyToMany.get_raw_data(), String::new());
         assert_eq!(FieldType::OneToOne.get_raw_data(), String::new());
 
-        // Method get_data_type()
+        // Method get_data_type() ------------------------------------------------------------------
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
             "String"
@@ -559,10 +562,11 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_data_type(), "none");
     }
 
-    // Testing Data types --------------------------------------------------------------------------
+    // Testing Data types
+    // *********************************************************************************************
     #[test]
     fn test_get_data_types() {
-        // Method get_raw_data()
+        // Method get_raw_data() -------------------------------------------------------------------
         assert_eq!(
             SelectDataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -584,7 +588,7 @@ mod tests {
             (-10_f64).to_string()
         );
 
-        // Method get_data_type()
+        // Method get_data_type() ------------------------------------------------------------------
         assert_eq!(
             SelectDataType::Text(String::new()).get_data_type(),
             "String"
@@ -595,11 +599,12 @@ mod tests {
         assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
     }
 
-    // Testing Transport structure -----------------------------------------------------------------
+    // Testing Transport structure
+    // *********************************************************************************************
     #[test]
     fn test_transport() {
         let trans: Transport = Default::default();
-        // Fields
+        // Fields ----------------------------------------------------------------------------------
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
@@ -614,15 +619,16 @@ mod tests {
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
-        // Methods
+        // Methods ---------------------------------------------------------------------------------
     }
 
-    // Testing Widget structure --------------------------------------------------------------------
+    // Testing Widget structure
+    // *********************************************************************************************
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
         widget.select = vec![(String::new(), SelectDataType::Text(String::new()))];
-        // Fields
+        // Fields ----------------------------------------------------------------------------------
         assert_eq!(widget.label, String::new());
         assert_eq!(
             widget.value.get_input_type(),
@@ -638,7 +644,7 @@ mod tests {
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_raw_data(), String::new());
-        // Methods
+        // Methods ---------------------------------------------------------------------------------
         let mut attrs = widget.clean_attrs("").unwrap();
         attrs.select = vec![(
             String::new(),
