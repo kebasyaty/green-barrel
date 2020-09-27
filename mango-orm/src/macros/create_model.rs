@@ -93,12 +93,15 @@ macro_rules! create_model {
                 let doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
-                let coll = client.database(&meta.database).collection(&meta.collection);
+                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 let result = coll.insert_one(doc, None).await.unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
-                let id = result.inserted_id.as_object_id().unwrap();
-                Ok(id.to_hex())
+                let id: Option<&ObjectId> = result.inserted_id.as_object_id();
+                if id.is_none() {
+                    panic!("Database Query API -> Method `save()` did not return `ObjectId`.")
+                }
+                Ok(id.unwrap().to_hex())
             }
 
             // Migrating Model
