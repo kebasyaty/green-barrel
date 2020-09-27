@@ -45,30 +45,32 @@ impl<'a> Monitor<'a> {
                 .create_collection(collection_name, None)
                 .await
                 .unwrap();
-        }
-        // Reset model state information
-        let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
-        let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
-        let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
+        } else {
+            // Reset model state information
+            let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
+            let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
+            let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
 
-        while let Some(result) = cursor.next().await {
-            match result {
-                Ok(document) => {
-                    let mut model_state: ModelState = bson::de::from_document(document).unwrap();
-                    model_state.status = false;
-                    let query: Document = bson::doc! {
-                        "database": &model_state.database,
-                        "collection": &model_state.collection
-                    };
-                    let update: UpdateModifications = UpdateModifications::Document(
-                        bson::ser::to_document(&model_state).unwrap(),
-                    );
-                    mango_orm_collection
-                        .update_one(query, update, None)
-                        .await
-                        .unwrap();
+            while let Some(result) = cursor.next().await {
+                match result {
+                    Ok(document) => {
+                        let mut model_state: ModelState =
+                            bson::de::from_document(document).unwrap();
+                        model_state.status = false;
+                        let query: Document = bson::doc! {
+                            "database": &model_state.database,
+                            "collection": &model_state.collection
+                        };
+                        let update: UpdateModifications = UpdateModifications::Document(
+                            bson::ser::to_document(&model_state).unwrap(),
+                        );
+                        mango_orm_collection
+                            .update_one(query, update, None)
+                            .await
+                            .unwrap();
+                    }
+                    Err(err) => panic!("{}", err),
                 }
-                Err(err) => panic!("{}", err),
             }
         }
     }
