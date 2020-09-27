@@ -494,25 +494,29 @@ macro_rules! create_model {
                 let mango_orm_fnames: Vec<String> = {
                     let filter: Document = doc! {
                         "database": &meta.database, "collection": &meta.collection};
-                    let model: Document = client.database(&mango_orm_keyword)
-                        .collection("models").find_one(filter, None).await.unwrap().unwrap();
+                    let coll: Collection = client.database(&mango_orm_keyword).collection("models");
+                    let model: Option<Document> = coll.find_one(filter, None).await.unwrap();
+                    if model.is_none() {
+                        vec![]
+                    }
+                    let model: Document = model.unwrap();
                     let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
                     fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
                 };
                 // Check if the set of fields in the collection of the current Model needs to be updated
-                let mut run_document_modification: bool = false;
+                let mut run_documents_modification: bool = false;
                 if FIELD_NAMES.len() != mango_orm_fnames.len() {
-                    run_document_modification = true;
+                    run_documents_modification = true;
                 } else {
                     for item in FIELD_NAMES {
                         if mango_orm_fnames.iter().any(|item2| item2 != item) {
-                            run_document_modification = true;
+                            run_documents_modification = true;
                             break;
                         }
                     }
                 }
                 // Start (if necessary) updating the set of fields in the current collection
-                if run_document_modification {
+                if run_documents_modification {
                     // Get the database and collection of the current Model
                     let db: Database = client.database(&meta.database);
                     let collection: Collection = db.collection(&meta.collection);
