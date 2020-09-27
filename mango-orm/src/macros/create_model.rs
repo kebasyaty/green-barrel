@@ -83,7 +83,7 @@ macro_rules! create_model {
                 )?)
             }
 
-            //
+            // Database Query API
             // -------------------------------------------------------------------------------------
             // Save to database as a new document
             // (returns the hash of the identifier)
