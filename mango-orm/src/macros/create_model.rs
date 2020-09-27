@@ -93,7 +93,7 @@ macro_rules! create_model {
                 let doc: Document = to_document(self)?;
                 let coll = client.database(&meta.database).collection(&meta.collection);
                 let result = coll.insert_one(doc, None).await?;
-                Ok(format!("{:?}", result.inserted_id))
+                Ok(result.inserted_id.as_object_id().unwrap().to_hex())
             }
 
             // Migrating Model
