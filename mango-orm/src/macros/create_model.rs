@@ -2,7 +2,7 @@
 //!
 //!  `create_model` - Macro for converting Structure to Model.
 
-// MACRO ###########################################################################################
+// MACRO ===========================================================================================
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! create_model {
@@ -15,7 +15,7 @@ macro_rules! create_model {
 
         impl $sname {
             // Info Model
-            // =====================================================================================
+            // *************************************************************************************
             // Get model name
             pub fn model_name() -> Result<&'static str, Box<dyn std::error::Error>> {
                 Ok(stringify!($sname))
@@ -43,7 +43,7 @@ macro_rules! create_model {
             }
 
             // Form Attributes
-            // =====================================================================================
+            // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_attrs() -> Result<HashMap<String, Transport>, Box<dyn std::error::Error>> {
                 let raw_attrs: HashMap<&str, Widget> = Self::widgets()?;
@@ -70,7 +70,7 @@ macro_rules! create_model {
             }
 
             // HTML form
-            // =====================================================================================
+            // *************************************************************************************
             // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn std::error::Error>> {
@@ -84,7 +84,7 @@ macro_rules! create_model {
             }
 
             // Database Query API
-            // =====================================================================================
+            // *************************************************************************************
             // Save to database as a new document
             // (returns the hash of the identifier)
             pub async fn save(&self, client: &Client) -> Result<String, mongodb_error::Error> {
@@ -96,7 +96,7 @@ macro_rules! create_model {
             }
 
             // Migrating Model
-            // =====================================================================================
+            // *************************************************************************************
             // Check model changes and (if required) apply to the database
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
@@ -610,7 +610,7 @@ macro_rules! create_model {
     }
 }
 
-// TESTS ###########################################################################################
+// TESTS ===========================================================================================
 #[cfg(test)]
 mod tests {
     //
