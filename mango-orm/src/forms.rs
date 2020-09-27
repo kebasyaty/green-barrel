@@ -6,11 +6,13 @@ use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use std::collections::HashMap;
 
-// FORMS ===========================================================================================
+// FORMS
+// =================================================================================================
 /// Define form settings for models.
+/// ************************************************************************************************
 #[async_trait]
 pub trait Form {
-    // Customizing widgets by model fields
+    // Customizing widgets by model fields ---------------------------------------------------------
     fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>>;
     // Customizing HTML form  (If necessary) for page templates
     fn html(
@@ -211,7 +213,8 @@ pub trait Form {
     }
 }
 
-// TESTS ===========================================================================================
+// TESTS
+// =================================================================================================
 #[cfg(test)]
 mod tests {
     //
