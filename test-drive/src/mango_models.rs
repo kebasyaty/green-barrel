@@ -30,7 +30,7 @@ create_model! {
 impl Form for Category {
     // Example:
     // Customizing widgets by model fields
-    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>> {
+    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "title",
@@ -59,7 +59,7 @@ create_model! {
 impl Form for User {
     // Example:
     // Customizing widgets by model fields
-    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>> {
+    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
         let mut raw_attrs = HashMap::new();
         raw_attrs.insert(
             "username",

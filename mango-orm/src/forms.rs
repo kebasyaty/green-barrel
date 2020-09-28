@@ -5,6 +5,7 @@
 use crate::widgets::{Transport, Widget};
 use async_trait::async_trait;
 use std::collections::HashMap;
+use std::error::Error;
 
 // FORMS
 // =================================================================================================
@@ -13,7 +14,7 @@ use std::collections::HashMap;
 #[async_trait]
 pub trait Form {
     // Customizing widgets by model fields ---------------------------------------------------------
-    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn std::error::Error>>;
+    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>>;
     // Customizing HTML form  (If necessary) for page templates
     fn html(
         attrs: HashMap<String, Transport>,
@@ -21,7 +22,7 @@ pub trait Form {
         action: &str,
         method: String,
         enctype: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, Box<dyn Error>> {
         let mut form_text = format!(
             "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
             model_name, action, method, enctype
