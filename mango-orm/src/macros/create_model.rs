@@ -7,12 +7,15 @@
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! create_model {
-    ($service:expr, $database:expr, $(#[$sattr:meta])* struct $sname:ident { $($fname:ident : $ftype:ty),* }) => {
+    ($service:expr, $database:expr, $(#[$sattr:meta])* struct $sname:ident { $($fname:ident : $ftype:ty),* } $(#[$iattr:meta])* $($impls:item)* => {
 
         $(#[$sattr])*
         pub struct $sname {
             $(pub $fname : $ftype),*
         }
+
+        $(#[$iattr])*
+        $($impls)*
 
         impl $sname {
             // Info Model
