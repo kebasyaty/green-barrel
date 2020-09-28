@@ -53,9 +53,9 @@ macro_rules! model {
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
-                let raw_attrs: HashMap<&str, Widget> = Self::widgets()?;
+                let widgets: HashMap<&str, Widget> = Self::widgets()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                for (field, widget) in &raw_attrs {
+                for (field, widget) in &widgets {
                     clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
                 }
                 Ok(clean_attrs)
@@ -144,7 +144,7 @@ macro_rules! model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> raw_attrs() : `{}` - Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> widgets() : `{}` - Incorrect field name.",
                             $service, MODEL_NAME, field
                         )
                     }

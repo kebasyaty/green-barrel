@@ -15,8 +15,8 @@ use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 
-const _SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
-const _DATABASE_NAME: &'static str = "test_drive"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
+const _SERVICE_NAME: &'static str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
+const _DATABASE_NAME: &'static str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 
 model! {
     _SERVICE_NAME,
@@ -31,8 +31,8 @@ model! {
         // Example:
         // Customizing widgets by model fields
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-            let mut raw_attrs = HashMap::new();
-            raw_attrs.insert(
+            let mut map = HashMap::new();
+            map.insert(
                 "title",
                 Widget {
                     label: "Category Name".to_string(),
@@ -43,7 +43,7 @@ model! {
                     ..Default::default()
                 },
             );
-            Ok(raw_attrs)
+            Ok(map)
         }
     }
 }
@@ -62,8 +62,8 @@ model! {
         // Example:
         // Customizing widgets by model fields
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-            let mut raw_attrs = HashMap::new();
-            raw_attrs.insert(
+            let mut map = HashMap::new();
+            map.insert(
                 "username",
                 Widget {
                     label: "Your Name".to_string(),
@@ -74,7 +74,7 @@ model! {
                     ..Default::default()
                 },
             );
-            raw_attrs.insert(
+            map.insert(
                 "email",
                 Widget {
                     label: "Your Email".to_string(),
@@ -86,7 +86,7 @@ model! {
                     ..Default::default()
                 },
             );
-            Ok(raw_attrs)
+            Ok(map)
         }
     }
 }
