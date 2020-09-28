@@ -10,7 +10,7 @@ macro_rules! model {
     ($service:expr, $database:expr,
         $(#[$sattr:meta])*
         struct $sname:ident { $($fname:ident : $ftype:ty),* }
-        $(#[$iattr:meta])* $($impls:item)*) => {
+        $(#[$iattr:meta])* $($impls:item)+) => {
 
         $(#[$sattr])*
         pub struct $sname {
@@ -18,7 +18,7 @@ macro_rules! model {
         }
 
         $(#[$iattr])*
-        $($impls)*
+        $($impls)+
 
         impl $sname {
             // Info Model
