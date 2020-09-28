@@ -46,7 +46,7 @@ macro_rules! create_model {
             // Form Attributes
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
-            pub fn form_attrs() -> Result<HashMap<String, Transport>, Box<dyn std::error::Error>> {
+            pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn std::error::Error>> {
                 let raw_attrs: HashMap<&str, Widget> = Self::widgets()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &raw_attrs {
@@ -56,8 +56,8 @@ macro_rules! create_model {
             }
 
             // Get Form attributes in Json format for page templates
-            pub fn json_attrs() -> Result<String, Box<dyn std::error::Error>> {
-                let attrs: HashMap<String, Transport> = Self::form_attrs()?;
+            pub fn form_json_attrs() -> Result<String, Box<dyn std::error::Error>> {
+                let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
                 let mut json_text = String::new();
                 for (field, trans) in attrs {
                     let tmp = serde_json::to_string(&trans).unwrap();
@@ -76,7 +76,7 @@ macro_rules! create_model {
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn std::error::Error>> {
                 Ok(Self::html(
-                    Self::form_attrs()?,
+                    Self::form_map_attrs()?,
                     &stringify!($sname).to_lowercase(),
                     action,
                     if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
