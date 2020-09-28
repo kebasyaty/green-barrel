@@ -52,7 +52,7 @@ macro_rules! model {
             // Get full map of Widgets (with widget for id field)
             // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&'static str, Widget> = Self::widgets_full_map()?;
+                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
                 map.insert(
                     "id",
                     Widget {
