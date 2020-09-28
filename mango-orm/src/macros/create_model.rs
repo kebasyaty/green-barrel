@@ -1,6 +1,6 @@
 //! # Create Model
 //!
-//!  `create_model` - Macro for converting Structure to Model.
+//!  `model` - Macro for converting Structure to Model.
 
 // MACRO
 // =================================================================================================
