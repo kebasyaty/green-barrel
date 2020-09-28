@@ -15,12 +15,12 @@ use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 
-const SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
-const DATABASE_NAME: &'static str = "test_drive"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
+const _SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
+const _DATABASE_NAME: &'static str = "test_drive"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
 
 model! {
-    SERVICE_NAME,
-    DATABASE_NAME,
+    _SERVICE_NAME,
+    _DATABASE_NAME,
 
     #[derive(Serialize, Deserialize, Debug, Default)]
     struct Category {
@@ -49,8 +49,8 @@ model! {
 }
 
 model! {
-    SERVICE_NAME,
-    DATABASE_NAME,
+    _SERVICE_NAME,
+    _DATABASE_NAME,
 
     #[derive(Serialize, Deserialize, Debug, Default)]
     struct User {

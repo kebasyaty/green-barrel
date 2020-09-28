@@ -17,8 +17,8 @@ async fn mango_migration() {
     // Refresh models state
     monitor.refresh().await;
     // Register models
-    mango_models::User::migrat(KEYWORD, &client).await;
-    mango_models::Category::migrat(KEYWORD, &client).await;
+    // mango_models::User::migrat(KEYWORD, &client).await;
+    // mango_models::Category::migrat(KEYWORD, &client).await;
     // Reorganize databases state
     // (full delete of orphaned collections and databases)
     monitor.napalm().await;
@@ -33,12 +33,12 @@ async fn main() {
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
     // println!("{:?}", mango_models::User::widgets().unwrap());
 
-    let user = mango_models::User {
-        username: "Rust".to_string(),
-        email: "x@x.xx".to_string(),
-    };
-    let client: Client = Client::with_uri_str("mongodb://localhost:27017")
-        .await
-        .unwrap();
-    println!("{}", user.save(&client).await.unwrap());
+    //let user = mango_models::User {
+    //username: "Rust".to_string(),
+    //email: "x@x.xx".to_string(),
+    //};
+    //let client: Client = Client::with_uri_str("mongodb://localhost:27017")
+    //.await
+    //.unwrap();
+    //println!("{}", user.save(&client).await.unwrap());
 }
