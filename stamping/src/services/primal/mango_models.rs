@@ -14,6 +14,7 @@ use mongodb::{
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
+use std::error::Error;
 
 const SERVICE_NAME: &'static str = "test_service"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
 const DATABASE_NAME: &'static str = "dev_db"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...

@@ -18,17 +18,17 @@ macro_rules! create_model {
             // Info Model
             // *************************************************************************************
             // Get model name
-            pub fn model_name() -> Result<&'static str, Box<dyn std::error::Error>> {
+            pub fn model_name() -> Result<&'static str, Box<dyn Error>> {
                 Ok(stringify!($sname))
             }
 
             // Get array of field names
-            pub fn field_names() -> Result<&'static [&'static str], Box<dyn std::error::Error>> {
+            pub fn field_names() -> Result<&'static [&'static str], Box<dyn Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
 
             // Metadata (database name, collection name, etc)
-            pub fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
+            pub fn meta() -> Result<Meta, Box<dyn Error>> {
                 if $service.len() > 0 && $database.len() > 0 {
                     Ok(Meta {
                         database: $database.to_lowercase(),
@@ -46,7 +46,7 @@ macro_rules! create_model {
             // Form Attributes
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
-            pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn std::error::Error>> {
+            pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let raw_attrs: HashMap<&str, Widget> = Self::widgets()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &raw_attrs {
@@ -56,7 +56,7 @@ macro_rules! create_model {
             }
 
             // Get Form attributes in Json format for page templates
-            pub fn form_json_attrs() -> Result<String, Box<dyn std::error::Error>> {
+            pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
                 let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
                 let mut json_text = String::new();
                 for (field, trans) in attrs {
@@ -74,7 +74,7 @@ macro_rules! create_model {
             // *************************************************************************************
             // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
-                Result<String, Box<dyn std::error::Error>> {
+                Result<String, Box<dyn Error>> {
                 Ok(Self::html(
                     Self::form_map_attrs()?,
                     &stringify!($sname).to_lowercase(),
@@ -88,7 +88,7 @@ macro_rules! create_model {
             // *************************************************************************************
             // Save to database as a new document
             // (returns the hash of the identifier)
-            pub async fn save(&self, client: &Client) -> Result<String, Box<dyn std::error::Error>> {
+            pub async fn save(&self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let meta: Meta = Self::meta()?;
                 let doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err);
