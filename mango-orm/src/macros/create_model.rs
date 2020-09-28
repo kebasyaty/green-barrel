@@ -7,9 +7,9 @@
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! create_model {
-    ($service:expr, $database:expr, struct $sname:ident { $($fname:ident : $ftype:ty),* }) => {
+    ($service:expr, $database:expr, $(#[$sattr:meta])* struct $sname:ident { $($fname:ident : $ftype:ty),* }) => {
 
-        #[derive(Serialize, Deserialize, Debug, Default)]
+        $(#[$sattr])*
         pub struct $sname {
             $(pub $fname : $ftype),*
         }

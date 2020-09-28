@@ -22,6 +22,7 @@ const DATABASE_NAME: &'static str = "test_drive"; // SERVICE_NAME or APP_NAME or
 create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
+    #[derive(Serialize, Deserialize, Debug, Default)]
     struct Category {
         title: String
     }
@@ -50,6 +51,7 @@ impl Form for Category {
 create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
+    #[derive(Serialize, Deserialize, Debug, Default)]
     struct User {
         username: String,
         email: String

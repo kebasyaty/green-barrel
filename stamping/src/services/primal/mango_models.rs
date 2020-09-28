@@ -23,6 +23,7 @@ const DATABASE_NAME: &'static str = "dev_db"; // SERVICE_NAME or APP_NAME or PRO
 create_model! {
     SERVICE_NAME,
     DATABASE_NAME,
+    #[derive(Serialize, Deserialize, Debug, Default)]
     struct User {
         username: String,
         email: String
