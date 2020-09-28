@@ -6,7 +6,7 @@
 // =================================================================================================
 /// Macro for converting Structure to Model
 #[macro_export]
-macro_rules! create_model {
+macro_rules! model {
     ($service:expr, $database:expr,
         $(#[$sattr:meta])*
         struct $sname:ident { $($fname:ident : $ftype:ty),* }

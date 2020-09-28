@@ -1,7 +1,7 @@
 use futures::stream::StreamExt;
 use mango_orm::{
-    create_model,
     forms::Form,
+    model,
     models::Meta,
     widgets::{FieldType, Transport, Widget},
 };
@@ -18,7 +18,7 @@ use std::error::Error;
 const SERVICE_NAME: &'static str = "account"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
 const DATABASE_NAME: &'static str = "test_drive"; // SERVICE_NAME or APP_NAME or PROJECT_NAME etc...
 
-create_model! {
+model! {
     SERVICE_NAME,
     DATABASE_NAME,
 
@@ -48,7 +48,7 @@ create_model! {
     }
 }
 
-create_model! {
+model! {
     SERVICE_NAME,
     DATABASE_NAME,
 
