@@ -171,17 +171,7 @@ macro_rules! model {
                         FieldType::ID => {
                             let enum_field_type = "ID".to_string();
                             let data_field_type = "String".to_string();
-                            if widget.relation_model != String::new() {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
-                                    $service, MODEL_NAME, field, enum_field_type
-                                )
-                            } else if widget.select.len() != 0 {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field, enum_field_type
-                                )
-                            } else if map_field_types[field] != "String" {
+                            if map_field_types[field] != "String" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `String`.",
                                     $service, MODEL_NAME, field
