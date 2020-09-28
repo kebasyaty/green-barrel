@@ -17,8 +17,8 @@ async fn mango_migration() {
     // Refresh models state
     monitor.refresh().await;
     // Register models
-    //mango_models::User::migrat(KEYWORD, &client).await;
-    //mango_models::Category::migrat(KEYWORD, &client).await;
+    mango_models::User::migrat(KEYWORD, &client).await;
+    mango_models::Category::migrat(KEYWORD, &client).await;
     // Reorganize databases state
     // (full delete of orphaned collections and databases)
     monitor.napalm().await;
