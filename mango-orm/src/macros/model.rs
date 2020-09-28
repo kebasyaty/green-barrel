@@ -52,7 +52,7 @@ macro_rules! model {
             // Get full map of Widgets (with widget for id field)
             // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
+                let mut map: HashMap<&'static str, Widget> = Self::widgets_full_map()?;
                 map.insert(
                     "id",
                     Widget {
@@ -68,7 +68,7 @@ macro_rules! model {
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
-                let widgets: HashMap<&str, Widget> = Self::widgets()?;
+                let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &widgets {
                     clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
@@ -144,7 +144,7 @@ macro_rules! model {
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let attrs: HashMap<&'static str, Widget> = Self::widgets().unwrap();
+                let attrs: HashMap<&'static str, Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
@@ -159,7 +159,7 @@ macro_rules! model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> widgets() : `{}` - Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> widgets_full_map() : `{}` - Incorrect field name.",
                             $service, MODEL_NAME, field
                         )
                     }
