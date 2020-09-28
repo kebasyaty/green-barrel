@@ -14,6 +14,7 @@ pub trait Form {
     // Customizing widgets by model fields ---------------------------------------------------------
     fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>>;
     // Customizing HTML form  (If necessary) for page templates
+    // Call the method as Struct::form_html()
     fn html(
         attrs: HashMap<String, Transport>,
         model_name: &str,
