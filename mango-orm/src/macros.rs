@@ -1,5 +1,5 @@
 //! # Macros
 //!
-//!  `create_model` - Macro for converting Structure to Model.
+//!  `model` - Macro for converting Structure to Model.
 
-pub mod create_model;
+pub mod model;

@@ -33,6 +33,7 @@ async fn main() {
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
 
     let user = mango_models::User {
+        id: String::new(),
         username: "Rust".to_string(),
         email: "x@x.xx".to_string(),
     };

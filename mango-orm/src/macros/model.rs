@@ -49,6 +49,19 @@ macro_rules! model {
                 }
             }
 
+            // Get full map of Widgets (with widget for id field)
+            // *************************************************************************************
+            pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
+                Ok(Self::widgets()?.insert(
+                    "id",
+                    Widget {
+                        value: FieldType::ID,
+                        hidden: true,
+                        ..Default::default()
+                    },
+                ))
+            }
+
             // Form Attributes
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates

@@ -24,6 +24,7 @@ model! {
 
     #[derive(Serialize, Deserialize, Debug, Default)]
     struct Category {
+        id: String, // Required field
         title: String
     }
 
@@ -32,6 +33,7 @@ model! {
         // Customizing widgets by model fields
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
+            // Title
             map.insert(
                 "title",
                 Widget {
@@ -54,6 +56,7 @@ model! {
 
     #[derive(Serialize, Deserialize, Debug, Default)]
     struct User {
+        id: String, // Required field
         username: String,
         email: String
     }
@@ -63,6 +66,7 @@ model! {
         // Customizing widgets by model fields
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
+            // Username
             map.insert(
                 "username",
                 Widget {
@@ -74,6 +78,7 @@ model! {
                     ..Default::default()
                 },
             );
+            // Email
             map.insert(
                 "email",
                 Widget {
