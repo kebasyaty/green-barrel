@@ -52,14 +52,16 @@ macro_rules! model {
             // Get full map of Widgets (with widget for id field)
             // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-                Ok(Self::widgets()?.insert(
+                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
+                map.insert(
                     "id",
                     Widget {
                         value: FieldType::ID,
                         hidden: true,
                         ..Default::default()
-                    },
-                ))
+                    }
+                );
+                Ok(map)
             }
 
             // Form Attributes
