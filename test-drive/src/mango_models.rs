@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mango_orm::{
     create_model,
@@ -28,7 +27,6 @@ create_model! {
         title: String
     }
 
-    #[async_trait]
     impl Form for Category {
         // Example:
         // Customizing widgets by model fields
@@ -60,7 +58,6 @@ create_model! {
         email: String
     }
 
-    #[async_trait]
     impl Form for User {
         // Example:
         // Customizing widgets by model fields

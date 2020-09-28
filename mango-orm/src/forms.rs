@@ -3,7 +3,6 @@
 //! `Form` - Define form settings for models.
 
 use crate::widgets::{Transport, Widget};
-use async_trait::async_trait;
 use std::collections::HashMap;
 use std::error::Error;
 
@@ -11,7 +10,6 @@ use std::error::Error;
 // =================================================================================================
 /// Define form settings for models.
 /// ************************************************************************************************
-#[async_trait]
 pub trait Form {
     // Customizing widgets by model fields ---------------------------------------------------------
     fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>>;
