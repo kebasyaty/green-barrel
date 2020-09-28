@@ -144,7 +144,7 @@ macro_rules! model {
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let attrs: HashMap<&'static str, Widget> = Self::widgets_full_map().unwrap();
+                let map_widgets: HashMap<&'static str, Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
@@ -155,7 +155,7 @@ macro_rules! model {
                 // Checking Widgets
                 // ---------------------------------------------------------------------------------
                 // Looping over fields and attributes
-                for (field, widget) in attrs {
+                for (field, widget) in map_widgets {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
