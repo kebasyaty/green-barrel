@@ -109,7 +109,7 @@ macro_rules! model {
             // *************************************************************************************
             // Save to database as a new document
             // (returns the hash of the identifier)
-            pub async fn save(&self, client: &Client) -> Result<String, Box<dyn Error>> {
+            pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let meta: Meta = Self::meta()?;
                 let doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
@@ -122,7 +122,8 @@ macro_rules! model {
                 if id.is_none() {
                     panic!("Database Query API -> Method `save()` did not return `ObjectId`.")
                 }
-                Ok(id.unwrap().to_hex())
+                self.id = id.unwrap().to_hex();
+                Ok(self.id.clone())
             }
 
             // Migrating Model
