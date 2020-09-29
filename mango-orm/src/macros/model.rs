@@ -115,15 +115,24 @@ macro_rules! model {
                     panic!("{:?}", err)
                 });
                 doc.remove("id").unwrap();
+                let mut id = String::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
-                let result = coll.insert_one(doc, None).await.unwrap_or_else(|err| {
-                    panic!("{:?}", err)
-                });
-                let id: Option<&ObjectId> = result.inserted_id.as_object_id();
-                if id.is_none() {
-                    panic!("Database Query API -> Method `save()` did not return `ObjectId`.")
+                if self.id.len() == 0 {
+                    let result = coll.insert_one(doc, None).await.unwrap_or_else(|err| {
+                        panic!("{:?}", err)
+                    });
+                    id = result.inserted_id.as_object_id().unwrap().to_hex();
+                } else {
+                    let object_id: ObjectId = ObjectId::with_string(&self.id).unwrap_or_else(|err| {
+                        panic!("{:?}", err)
+                    });
+                    let query: Document = doc!{"_id": object_id};
+                    let result = coll.update_one(query, doc, None).await.unwrap_or_else(|err| {
+                        panic!("{:?}", err)
+                    });
+                    id = result.upserted_id.unwrap().as_object_id().unwrap().to_hex();
                 }
-                self.id = id.unwrap().to_hex();
+                self.id = id;
                 Ok(self.id.clone())
             }
 
