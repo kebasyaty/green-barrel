@@ -131,14 +131,17 @@ macro_rules! model {
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                // List field names without `id` field
+                let field_names_no_id: Vec<&str> = FIELD_NAMES.iter()
+                    .map(|field| field.clone()).filter(|field| field != &"id").collect();
                 // Checking for the presence of fields
-                if FIELD_NAMES.len() == 0 {
+                if field_names_no_id.len() == 0 {
                     panic!("The model structure has no fields.");
                 }
                 // Create a map with field types
                 let map_field_types: HashMap<&'static str, &'static str> =
-                FIELD_NAMES.iter().map(|item| item.to_owned())
-                .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
+                    FIELD_NAMES.iter().map(|item| item.to_owned())
+                    .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
                 let meta: Meta = Self::meta().unwrap();
                 // Technical database for `models::Monitor`
@@ -159,7 +162,7 @@ macro_rules! model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> widgets_full_map() : `{}` - Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> widgets() : `{}` - Incorrect field name.",
                             $service, MODEL_NAME, field
                         )
                     }
@@ -554,10 +557,10 @@ macro_rules! model {
                     };
                     // Check if the set of fields in the collection of the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
-                    if FIELD_NAMES.len() != mango_orm_fnames.len() {
+                    if field_names_no_id.len() != mango_orm_fnames.len() {
                         run_documents_modification = true;
                     } else {
-                        for item in FIELD_NAMES {
+                        for item in field_names_no_id {
                             if mango_orm_fnames.iter().any(|item2| item2 != item) {
                                 run_documents_modification = true;
                                 break;
@@ -578,6 +581,9 @@ macro_rules! model {
                             let mut tmp_doc = doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
+                                if field == &"id" {
+                                    continue;
+                                }
                                 // If the field exists, get its value
                                 if curr_doc.contains_key(field) {
                                     for item in curr_doc.iter() {
