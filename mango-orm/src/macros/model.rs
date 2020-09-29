@@ -14,6 +14,7 @@ macro_rules! model {
 
         $(#[$sattr])*
         pub struct $sname {
+            pub id: String,
             $(pub $fname : $ftype),*
         }
 
