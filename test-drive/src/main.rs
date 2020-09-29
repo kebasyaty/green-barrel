@@ -32,7 +32,7 @@ async fn main() {
     // println!("{}", mango_models::User::form_html("/", Some("post"), Some("multipart/form-data")).unwrap());
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
 
-    let user = mango_models::User {
+    let mut user = mango_models::User {
         id: String::new(),
         username: "Rust".to_string(),
         email: "x@x.xx".to_string(),
