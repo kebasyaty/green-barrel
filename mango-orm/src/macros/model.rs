@@ -132,7 +132,7 @@ macro_rules! model {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 // List field names without `id` field
-                let field_names_no_id: Vec<&str> = FIELD_NAMES.iter()
+                let field_names_no_id: Vec<&'static str> = FIELD_NAMES.iter()
                     .map(|field| field.clone()).filter(|field| field != &"id").collect();
                 // Checking for the presence of fields
                 if field_names_no_id.len() == 0 {
@@ -561,7 +561,7 @@ macro_rules! model {
                         run_documents_modification = true;
                     } else {
                         for item in field_names_no_id {
-                            if mango_orm_fnames.iter().any(|item2| item2 != item) {
+                            if mango_orm_fnames.iter().any(|item2| item2 != &item) {
                                 run_documents_modification = true;
                                 break;
                             }
@@ -639,7 +639,8 @@ macro_rules! model {
                     let doc = doc!{
                         "database": &meta.database,
                         "collection": &meta.collection,
-                        "fields": FIELD_NAMES,
+                        "fields": FIELD_NAMES.iter().map(|item| item.to_string())
+                            .filter(|item| item != "id").collect::<Vec<String>>(),
                         "status": true
                     };
                     // Check if there is model state in the database
