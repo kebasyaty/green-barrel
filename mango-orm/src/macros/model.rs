@@ -132,6 +132,13 @@ macro_rules! model {
             pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                //
+                if !FIELD_NAMES.contains(&"id") {
+                    panic!(
+                        "Service: `{}` -> Model: `{}` : `id`- Required field.",
+                        $service, MODEL_NAME
+                    )
+                }
                 // List field names without `id` field
                 let field_names_no_id: Vec<&'static str> = FIELD_NAMES.iter()
                     .map(|field| field.clone()).filter(|field| field != &"id").collect();
