@@ -111,9 +111,10 @@ macro_rules! model {
             // (returns the hash of the identifier)
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let meta: Meta = Self::meta()?;
-                let doc: Document = to_document(self).unwrap_or_else(|err| {
+                let mut doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
+                doc.remove("id").unwrap();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 let result = coll.insert_one(doc, None).await.unwrap_or_else(|err| {
                     panic!("{:?}", err)
