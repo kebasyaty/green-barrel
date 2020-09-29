@@ -115,26 +115,18 @@ macro_rules! model {
                     panic!("{:?}", err)
                 });
                 doc.remove("id").unwrap();
-                let mut id = String::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 if self.id.len() == 0 {
                     let result: results::InsertOneResult = coll.insert_one(doc, None)
                         .await.unwrap_or_else(|err| { panic!("{:?}", err) });
-                    id = result.inserted_id.as_object_id().unwrap().to_hex();
+                    self.id = result.inserted_id.as_object_id().unwrap().to_hex();
                 } else {
-                    let object_id: ObjectId = ObjectId::with_string(&self.id).unwrap_or_else(|err| {
-                        panic!("{:?}", err)
-                    });
+                    let object_id: ObjectId = ObjectId::with_string(&self.id)
+                        .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let query: Document = doc!{"_id": object_id};
-                    let result: results::UpdateResult = coll.update_one(query, doc, None)
-                        .await.unwrap_or_else(|err| { panic!("{:?}", err) });
-                    let x = result.upserted_id;
-                    if x.is_none() {
-                        panic!("???")
-                    }
-                    id = x.unwrap().as_object_id().unwrap().to_hex();
+                    coll.update_one(query, doc, None).await
+                        .unwrap_or_else(|err| { panic!("{:?}", err) });
                 }
-                self.id = id;
                 Ok(self.id.clone())
             }
 
