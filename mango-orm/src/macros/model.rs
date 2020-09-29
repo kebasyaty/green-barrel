@@ -107,8 +107,8 @@ macro_rules! model {
 
             // Database Query API
             // *************************************************************************************
-            // Save to database as a new document
-            // (returns the hash of the identifier)
+            // Save and Update to database as a new document
+            // (returns the hash of the identifier - `String` type)
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let meta: Meta = Self::meta()?;
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
