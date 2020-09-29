@@ -8,7 +8,7 @@ use mango_orm::{
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
     options::UpdateModifications,
-    Client, Collection, Cursor, Database,
+    results, Client, Collection, Cursor, Database,
 };
 use serde::{Deserialize, Serialize};
 use serde_json;

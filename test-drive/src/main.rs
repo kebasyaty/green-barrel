@@ -41,4 +41,5 @@ async fn main() {
         .await
         .unwrap();
     println!("{}", user.save(&client).await.unwrap());
+    println!("{}", user.save(&client).await.unwrap());
 }
