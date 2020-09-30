@@ -31,6 +31,7 @@ model! {
     impl Form for Category {
         // Example:
         // Customizing widgets by model fields
+        // (For `hash` field, Widget is added automatically)
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
             // Title
@@ -64,6 +65,7 @@ model! {
     impl Form for User {
         // Example:
         // Customizing widgets by model fields
+        // (For `hash` field, Widget is added automatically)
         fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
             // Username
