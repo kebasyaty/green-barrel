@@ -8,7 +8,9 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 pub struct Store {
-    pub widgets: HashMap<&'static str, Transport>,
+    pub form_map_attrs: HashMap<String, Transport>,
+    pub form_json_attrs: String,
+    pub form_html: String,
 }
 
 lazy_static! {
