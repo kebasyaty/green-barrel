@@ -12,7 +12,7 @@ pub struct Store {
 }
 
 lazy_static! {
-    static ref CACHE: Mutex<HashMap<&'static str, HashMap<&'static str, Store>>> = {
+    static ref CACHE: Mutex<HashMap<&'static str, HashMap<&'static str, HashMap<&'static str, Store>>>> = {
         let mut _map = HashMap::new();
         Mutex::new(_map)
     };
