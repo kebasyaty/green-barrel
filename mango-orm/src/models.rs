@@ -2,6 +2,17 @@
 //!
 //! `Meta` - Metadata of model (database name, collection name, etc).
 
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use std::sync::Mutex;
+
+lazy_static! {
+    static ref CACHE_MAP: Mutex<HashMap<&'static str, HashMap<&'static str, &'static str>>> = {
+        let mut _cache = HashMap::new();
+        Mutex::new(_cache)
+    };
+}
+
 // MODELS
 // =================================================================================================
 /// Metadata
