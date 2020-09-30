@@ -22,9 +22,9 @@ model! {
     _SERVICE_NAME,
     _DATABASE_NAME,
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Default, Debug)]
     struct Category {
-        id: String, // Required field
+        hash: String, // Required field
         title: String
     }
 
@@ -54,9 +54,9 @@ model! {
     _SERVICE_NAME,
     _DATABASE_NAME,
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Default, Debug)]
     struct User {
-        id: String, // Required field
+        hash: String, // Required field
         username: String,
         email: String
     }

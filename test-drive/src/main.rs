@@ -33,9 +33,9 @@ async fn main() {
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
 
     let mut user = mango_models::User {
-        id: String::new(),
         username: "Rust".to_string(),
         email: "x@x.xx".to_string(),
+        ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await

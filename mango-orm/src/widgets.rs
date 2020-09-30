@@ -9,7 +9,7 @@ use serde::Serialize;
 /// Field types for Widgets
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldType {
-    ID,
+    Hash,
     InputCheckBoxText(String),
     InputCheckBoxI32(i32),
     InputCheckBoxU32(u32),
@@ -58,7 +58,7 @@ impl Default for FieldType {
 impl FieldType {
     pub fn get_input_type(&self) -> &'static str {
         match self {
-            Self::ID => "hidden",
+            Self::Hash => "hidden",
             Self::InputCheckBoxText(_) => "checkbox",
             Self::InputCheckBoxI32(_) => "checkbox",
             Self::InputCheckBoxU32(_) => "checkbox",
@@ -101,7 +101,7 @@ impl FieldType {
 
     pub fn get_raw_data(&self) -> String {
         match self {
-            Self::ID => String::new(),
+            Self::Hash => String::new(),
             Self::InputCheckBoxText(data) => data.to_string(),
             Self::InputCheckBoxI32(data) => data.to_string(),
             Self::InputCheckBoxU32(data) => data.to_string(),
@@ -144,7 +144,7 @@ impl FieldType {
 
     pub fn get_data_type(&self) -> &'static str {
         match self {
-            Self::ID => "String",
+            Self::Hash => "String",
             Self::InputCheckBoxText(_) => "String",
             Self::InputCheckBoxI32(_) => "i32",
             Self::InputCheckBoxU32(_) => "u32",
@@ -349,7 +349,7 @@ mod tests {
     #[test]
     fn test_field_types() {
         // Method get_input_type() -----------------------------------------------------------------
-        assert_eq!(FieldType::ID.get_input_type(), "hidden");
+        assert_eq!(FieldType::Hash.get_input_type(), "hidden");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_input_type(),
             "checkbox"
@@ -428,7 +428,7 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_input_type(), "hidden");
 
         // Method get_raw_data() -------------------------------------------------------------------
-        assert_eq!(FieldType::ID.get_raw_data(), String::new());
+        assert_eq!(FieldType::Hash.get_raw_data(), String::new());
         assert_eq!(
             FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -504,7 +504,7 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_raw_data(), String::new());
 
         // Method get_data_type() ------------------------------------------------------------------
-        assert_eq!(FieldType::ID.get_data_type(), "String");
+        assert_eq!(FieldType::Hash.get_data_type(), "String");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
             "String"

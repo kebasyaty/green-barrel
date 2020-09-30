@@ -54,9 +54,9 @@ macro_rules! model {
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
                 let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
                 map.insert(
-                    "id",
+                    "hash",
                     Widget {
-                        value: FieldType::ID,
+                        value: FieldType::Hash,
                         hidden: true,
                         ..Default::default()
                     }
@@ -115,40 +115,40 @@ macro_rules! model {
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
-                doc.remove("id").unwrap();
+                doc.remove("hash").unwrap();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
-                if self.id.len() == 0 {
+                if self.hash.len() == 0 {
                     let result: results::InsertOneResult = coll.insert_one(doc, None)
                         .await.unwrap_or_else(|err| { panic!("{:?}", err) });
-                    self.id = result.inserted_id.as_object_id().unwrap().to_hex();
+                    self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                 } else {
-                    let object_id: ObjectId = ObjectId::with_string(&self.id)
+                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let query: Document = doc!{"_id": object_id};
                     coll.update_one(query, doc, None).await
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                 }
-                Ok(self.id.clone())
+                Ok(self.hash.clone())
             }
 
             // Migrating Model
             // *************************************************************************************
             // Check model changes and (if required) apply to the database
-            pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
+            pub async fn migrat(keyword: &'static str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 //
-                if !FIELD_NAMES.contains(&"id") {
+                if !FIELD_NAMES.contains(&"hash") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` : `id`- Required field.",
+                        "Service: `{}` -> Model: `{}` : `hash`- Required field.",
                         $service, MODEL_NAME
                     )
                 }
                 // List field names without `id` field
-                let field_names_no_id: Vec<&'static str> = FIELD_NAMES.iter()
-                    .map(|field| field.clone()).filter(|field| field != &"id").collect();
+                let field_names_no_hash: Vec<&'static str> = FIELD_NAMES.iter()
+                    .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
-                if field_names_no_id.len() == 0 {
+                if field_names_no_hash.len() == 0 {
                     panic!("The model structure has no fields.");
                 }
                 // Create a map with field types
@@ -183,9 +183,9 @@ macro_rules! model {
                     default_values.insert(field, (widget.value.get_data_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
-                        // ID ----------------------------------------------------------------------
-                        FieldType::ID => {
-                            let enum_field_type = "ID".to_string();
+                        // Hash --------------------------------------------------------------------
+                        FieldType::Hash => {
+                            let enum_field_type = "Hash".to_string();
                             let data_field_type = "String".to_string();
                             if map_field_types[field] != "String" {
                                 panic!(
@@ -570,10 +570,10 @@ macro_rules! model {
                     };
                     // Check if the set of fields in the collection of the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
-                    if field_names_no_id.len() != mango_orm_fnames.len() {
+                    if field_names_no_hash.len() != mango_orm_fnames.len() {
                         run_documents_modification = true;
                     } else {
-                        for item in field_names_no_id {
+                        for item in field_names_no_hash {
                             if mango_orm_fnames.iter().any(|item2| item2 != &item) {
                                 run_documents_modification = true;
                                 break;
@@ -594,7 +594,7 @@ macro_rules! model {
                             let mut tmp_doc = doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
-                                if field == &"id" {
+                                if field == &"hash" {
                                     continue;
                                 }
                                 // If the field exists, get its value
@@ -653,7 +653,7 @@ macro_rules! model {
                         "database": &meta.database,
                         "collection": &meta.collection,
                         "fields": FIELD_NAMES.iter().map(|item| item.to_string())
-                            .filter(|item| item != "id").collect::<Vec<String>>(),
+                            .filter(|item| item != "hash").collect::<Vec<String>>(),
                         "status": true
                     };
                     // Check if there is model state in the database
