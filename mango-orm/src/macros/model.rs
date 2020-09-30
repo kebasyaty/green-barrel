@@ -33,6 +33,13 @@ macro_rules! model {
                 Ok(&[$(stringify!($fname)),*])
             }
 
+            // // Get a map with field types
+            pub fn field_types() -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+                static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
+                .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
+            }
+
             // Metadata (database name, collection name, etc)
             pub fn meta() -> Result<Meta, Box<dyn Error>> {
                 if $service.len() > 0 && $database.len() > 0 {
