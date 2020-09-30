@@ -2,14 +2,19 @@
 //!
 //! `Meta` - Metadata of model (database name, collection name, etc).
 
+use crate::widgets::Transport;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+pub struct Store {
+    pub widgets: HashMap<&'static str, Transport>,
+}
+
 lazy_static! {
-    static ref CACHE_MAP: Mutex<HashMap<&'static str, HashMap<&'static str, &'static str>>> = {
-        let mut _cache = HashMap::new();
-        Mutex::new(_cache)
+    static ref CACHE: Mutex<HashMap<&'static str, HashMap<&'static str, Store>>> = {
+        let mut _map = HashMap::new();
+        Mutex::new(_map)
     };
 }
 
