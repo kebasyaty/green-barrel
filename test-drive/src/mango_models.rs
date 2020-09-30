@@ -24,7 +24,6 @@ model! {
 
     #[derive(Serialize, Deserialize, Default, Debug)]
     struct Category {
-        hash: String, // Required field
         title: String
     }
 
@@ -56,7 +55,6 @@ model! {
 
     #[derive(Serialize, Deserialize, Default, Debug)]
     struct User {
-        hash: String, // Required field
         username: String,
         email: String
     }

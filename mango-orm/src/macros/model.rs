@@ -14,6 +14,7 @@ macro_rules! model {
 
         $(#[$sattr])*
         pub struct $sname {
+            pub hash: String,
             $(pub $fname : $ftype),*
         }
 
@@ -137,18 +138,8 @@ macro_rules! model {
             pub async fn migrat(keyword: &'static str, client: &Client) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                //
-                if !FIELD_NAMES.contains(&"hash") {
-                    panic!(
-                        "Service: `{}` -> Model: `{}` : `hash`- Required field.",
-                        $service, MODEL_NAME
-                    )
-                }
-                // List field names without `id` field
-                let field_names_no_hash: Vec<&'static str> = FIELD_NAMES.iter()
-                    .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
-                if field_names_no_hash.len() == 0 {
+                if FIELD_NAMES.len() == 0 {
                     panic!("The model structure has no fields.");
                 }
                 // Create a map with field types
@@ -173,7 +164,7 @@ macro_rules! model {
                 // Looping over fields and attributes
                 for (field, widget) in map_widgets {
                     // Checking for the correct field name
-                    if !FIELD_NAMES.contains(&field) {
+                    if !FIELD_NAMES.contains(&field) && field != "hash" {
                         panic!(
                             "Service: `{}` -> Model: `{}` -> widgets() : `{}` - Incorrect field name.",
                             $service, MODEL_NAME, field
@@ -570,11 +561,11 @@ macro_rules! model {
                     };
                     // Check if the set of fields in the collection of the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
-                    if field_names_no_hash.len() != mango_orm_fnames.len() {
+                    if FIELD_NAMES.len() != mango_orm_fnames.len() {
                         run_documents_modification = true;
                     } else {
-                        for item in field_names_no_hash {
-                            if mango_orm_fnames.iter().any(|item2| item2 != &item) {
+                        for item in FIELD_NAMES {
+                            if mango_orm_fnames.iter().any(|item2| item2 != item) {
                                 run_documents_modification = true;
                                 break;
                             }
@@ -594,9 +585,6 @@ macro_rules! model {
                             let mut tmp_doc = doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
-                                if field == &"hash" {
-                                    continue;
-                                }
                                 // If the field exists, get its value
                                 if curr_doc.contains_key(field) {
                                     for item in curr_doc.iter() {
@@ -652,8 +640,7 @@ macro_rules! model {
                     let doc = doc!{
                         "database": &meta.database,
                         "collection": &meta.collection,
-                        "fields": FIELD_NAMES.iter().map(|item| item.to_string())
-                            .filter(|item| item != "hash").collect::<Vec<String>>(),
+                        "fields": FIELD_NAMES,
                         "status": true
                     };
                     // Check if there is model state in the database
