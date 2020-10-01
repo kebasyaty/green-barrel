@@ -56,6 +56,14 @@ macro_rules! model {
                 }
             }
 
+            // Create and get a cache key
+            pub fn key_cache() -> Result<String, Box<dyn Error>> {
+                Ok(format!("{}_{}",
+                    $service.to_lowercase(),
+                    stringify!($sname).to_lowercase()
+                ))
+            }
+
             // Get full map of Widgets (with widget for id field)
             // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
@@ -75,6 +83,9 @@ macro_rules! model {
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+                let key_cache: &str = &Self::key_cache()?;
+                let c = FORM_CACHE.lock().unwrap().get(key_cache).unwrap();
+
                 let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &widgets {
