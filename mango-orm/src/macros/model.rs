@@ -63,9 +63,14 @@ macro_rules! model {
                     $service.to_lowercase(), // Service Name (App Name)
                     stringify!($sname).to_lowercase() // Model Name
                 );
-                let store = FORM_CACHE.lock().unwrap();
-                let cache: Option<&FormCache> = store.get(&key);
-                println!("{:?}", cache);
+                let mut store = FORM_CACHE.lock().unwrap();
+                let mut cache: Option<&FormCache> = store.get(key);
+                if cache.is_none() {
+                    let form_cache: FormCache = Default::default();
+                    store.insert(key, form_cache);
+                    cache = store.get(key);
+                }
+                println!("{:?}", cache.unwrap());
             }
 
             // Get full map of Widgets (with widget for id field)
