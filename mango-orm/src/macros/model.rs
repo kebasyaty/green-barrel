@@ -84,7 +84,7 @@ macro_rules! model {
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let key_cache: &str = &Self::key_cache()?;
-                let c = FORM_CACHE.lock().unwrap().get(key_cache).unwrap();
+                let attrs: &FormCache = FORM_CACHE.lock().unwrap().get(key_cache).unwrap();
 
                 let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
