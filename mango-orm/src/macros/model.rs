@@ -59,8 +59,8 @@ macro_rules! model {
             // Create and get a cache key
             pub fn key_cache() -> Result<String, Box<dyn Error>> {
                 Ok(format!("{}_{}",
-                    $service.to_lowercase(),
-                    stringify!($sname).to_lowercase()
+                    $service.to_lowercase(), // Service Name (App Name)
+                    stringify!($sname).to_lowercase() // Model Name
                 ))
             }
 
