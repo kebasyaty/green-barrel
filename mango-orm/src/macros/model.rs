@@ -56,20 +56,6 @@ macro_rules! model {
                 }
             }
 
-            // Add (if required) default form data to cache
-            pub fn form_cache(){
-                let key: &'static str = &format!("{}_{}",
-                    $service.to_lowercase(), // Service Name (App Name)
-                    stringify!($sname).to_lowercase() // Model Name
-                );
-                let store = FORM_CACHE.lock().unwrap();
-                let cache: Option<&FormCache> = store.get(key);
-                if cache.is_none() {
-                    FORM_CACHE.lock().unwrap().insert(key, FormCache{ .. Default::default()});
-                    let cache: &FormCache = store.get(key).unwrap();
-                }
-            }
-
             // Get full map of Widgets (with widget for id field)
             // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
