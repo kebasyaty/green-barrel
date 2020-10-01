@@ -59,10 +59,10 @@ macro_rules! model {
             // Add (if required) default form data to cache
             // *************************************************************************************
             pub fn form_cache() {
-                let key: &str = &format!("{}_{}",
-                    $service.to_lowercase(), // Service Name (App Name)
-                    stringify!($sname).to_lowercase() // Model Name
-                );
+                let key: &'static str = Box::leak(format!("{}__{}",
+                    $service.to_lowercase(),
+                    stringify!($sname).to_lowercase()
+                ).into_boxed_str());
                 let mut store = FORM_CACHE.lock().unwrap();
                 let mut cache: Option<&FormCache> = store.get(key);
                 if cache.is_none() {
