@@ -56,12 +56,18 @@ macro_rules! model {
                 }
             }
 
-            // Create and get a cache key
-            pub fn key_cache() -> Result<String, Box<dyn Error>> {
-                Ok(format!("{}_{}",
+            // Add (if required) default form data to cache
+            pub fn form_cache(){
+                let key: &'static str = &format!("{}_{}",
                     $service.to_lowercase(), // Service Name (App Name)
                     stringify!($sname).to_lowercase() // Model Name
-                ))
+                );
+                let store = FORM_CACHE.lock().unwrap();
+                let cache: Option<&FormCache> = store.get(key);
+                if cache.is_none() {
+                    FORM_CACHE.lock().unwrap().insert(key, FormCache{ .. Default::default()});
+                    let cache: &FormCache = store.get(key).unwrap();
+                }
             }
 
             // Get full map of Widgets (with widget for id field)
@@ -83,9 +89,6 @@ macro_rules! model {
             // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
-                let key_cache: &str = &Self::key_cache()?;
-                let attrs: &FormCache = FORM_CACHE.lock().unwrap().get(key_cache).unwrap();
-
                 let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                 let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
                 for (field, widget) in &widgets {
