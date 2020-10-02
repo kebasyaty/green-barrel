@@ -144,13 +144,33 @@ macro_rules! model {
             // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn Error>> {
-                Ok(Self::html(
-                    Self::form_map_attrs()?,
-                    &stringify!($sname).to_lowercase(),
-                    action,
-                    if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
-                    if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
-                )?)
+                // ---------------------------------------------------------------------------------
+                let (mut store, key) = Self::form_cache()?;
+                let cache: Option<&FormCache> = store.get(key);
+                if cache.is_some() {
+                    let mut form_cache: FormCache = cache.unwrap().clone();
+                    if form_cache.form_html.len() == 0 {
+                         // Create Html-string
+                         let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
+                         let html_text: String = Self::html(
+                            attrs,
+                            &stringify!($sname).to_lowercase(),
+                            action,
+                            if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
+                            if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
+                        )?;
+                        // Update data
+                        form_cache.form_html = html_text;
+                        // Save data to cache
+                        store.insert(key, form_cache.clone());
+                        // Return result
+                        return Ok(form_cache.form_html);
+                    }
+                    Ok(cache.unwrap().form_html.clone())
+                } else {
+                    panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
+                        stringify!($sname))
+                }
             }
 
             // Database Query API
