@@ -42,6 +42,4 @@ async fn main() {
         .unwrap();
     println!("{}", user.save(&client).await.unwrap());
     println!("{}", user.save(&client).await.unwrap());
-
-    println!("{:?}", mango_models::User::form_cache().unwrap());
 }

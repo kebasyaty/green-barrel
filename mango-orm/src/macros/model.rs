@@ -56,19 +56,21 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Add (if required) default form data to cache
-            pub fn form_cache() -> Result<FormCache, Box<dyn Error>> {
-                let key: &'static str = Box::leak(format!("{}__{}",
+            pub fn form_cache() -> Result<(std::sync::MutexGuard<'static, HashMap<&'static str,
+                mango_orm::models::FormCache>>, &'static str), Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                let key: &'static str = Box::leak(format!("{}_{}",
                     $service.to_lowercase(),
                     stringify!($sname).to_lowercase()
                 ).into_boxed_str());
-                let mut store = FORM_CACHE.lock().unwrap();
+                let mut store: std::sync::MutexGuard<'_, HashMap<&'static str,
+                    mango_orm::models::FormCache>> = FORM_CACHE.lock().unwrap();
                 let mut cache: Option<&FormCache> = store.get(key);
                 if cache.is_none() {
                     let form_cache: FormCache = Default::default();
                     store.insert(key, form_cache);
-                    cache = store.get(key);
                 }
-                Ok(cache.unwrap().clone())
+                Ok((store, key))
             }
             // Get full map of Widgets (with widget for id field)
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
