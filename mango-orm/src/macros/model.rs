@@ -146,11 +146,11 @@ macro_rules! model {
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let (mut store, key) = Self::form_cache()?;
-                let cache: Option<&FormCache> = store.get(key);
                 let model_name = &stringify!($sname).to_lowercase();
                 let method = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
                 let enctype = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
+                let (mut store, key) = Self::form_cache()?;
+                let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     if cache.form_html.len() == 0 {
