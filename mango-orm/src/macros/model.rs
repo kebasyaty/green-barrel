@@ -73,14 +73,16 @@ macro_rules! model {
             // Get full map of Widgets (with widget for id field)
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
                 let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
-                map.insert(
-                    "hash",
-                    Widget {
-                        value: FieldType::Hash,
-                        hidden: true,
-                        ..Default::default()
-                    }
-                );
+                if map.get("hash").is_none() {
+                    map.insert(
+                        "hash",
+                        Widget {
+                            value: FieldType::Hash,
+                            hidden: true,
+                            ..Default::default()
+                        }
+                    );
+                }
                 Ok(map)
             }
             // Get a map of pure attributes of Form for page templates
