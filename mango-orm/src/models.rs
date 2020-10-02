@@ -10,7 +10,7 @@ use std::sync::Mutex;
 // FOR MODELS
 // #################################################################################################
 /// For caching Form (map, json) attributes and Html
-#[derive(Default, Debug)]
+#[derive(Default, Clone, Debug)]
 pub struct FormCache {
     pub form_map_attrs: HashMap<String, Transport>,
     pub form_json_attrs: String,

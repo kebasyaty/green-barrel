@@ -68,7 +68,7 @@ macro_rules! model {
                     store.insert(key, form_cache);
                     cache = store.get(key);
                 }
-                println!("{:?}", cache.unwrap());
+                println!("{:?}", cache.unwrap().form_map_attrs.clone());
             }
             // Get full map of Widgets (with widget for id field)
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {

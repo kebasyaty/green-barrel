@@ -227,7 +227,7 @@ impl SelectDataType {
 
 /// Mediator for transporting widget attributes
 /// ************************************************************************************************
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Default, Clone, Debug)]
 pub struct Transport {
     pub id: String, // "id-name" or auto
     pub label: String,
