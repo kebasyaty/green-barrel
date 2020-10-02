@@ -56,7 +56,7 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Add (if required) default form data to cache
-            pub fn form_cache() {
+            pub fn form_cache() -> Result<FormCache, Box<dyn Error>> {
                 let key: &'static str = Box::leak(format!("{}__{}",
                     $service.to_lowercase(),
                     stringify!($sname).to_lowercase()
@@ -68,7 +68,7 @@ macro_rules! model {
                     store.insert(key, form_cache);
                     cache = store.get(key);
                 }
-                println!("{:?}", cache.unwrap().form_map_attrs.clone());
+                Ok(cache.unwrap().clone())
             }
             // Get full map of Widgets (with widget for id field)
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
