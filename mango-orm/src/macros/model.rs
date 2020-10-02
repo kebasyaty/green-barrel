@@ -148,25 +148,28 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache()?;
                 let cache: Option<&FormCache> = store.get(key);
+                let method = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
+                let enctype = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     if cache.form_html.len() == 0 {
                          // Create Html-string
                          let mut form_cache: FormCache = cache.clone();
                          let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
-                         let html_text: String = Self::html(
+                         let (controles_html: String, other_form_attributes: String) = Self::html(
                             attrs,
                             &stringify!($sname).to_lowercase(),
-                            action,
-                            if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() },
-                            if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" }
+                            method
                         )?;
                         // Update data
-                        form_cache.form_html = html_text;
+                        form_cache.form_html = controles_html;
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(form_cache.form_html);
+                        return Ok(
+                            format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">{}",
+                            model_name, action, method, enctype, form_cache.form_html)
+                        );
                     }
                     Ok(cache.form_html.clone())
                 } else {
