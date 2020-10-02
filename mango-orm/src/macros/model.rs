@@ -55,6 +55,21 @@ macro_rules! model {
 
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
+            // Get full map of Widgets (with widget for id field)
+            pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
+                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
+                if map.get("hash").is_none() {
+                    map.insert(
+                        "hash",
+                        Widget {
+                            value: FieldType::Hash,
+                            hidden: true,
+                            ..Default::default()
+                        }
+                    );
+                }
+                Ok(map)
+            }
             // Add (if required) default form data to cache
             pub fn form_cache() -> Result<(std::sync::MutexGuard<'static, HashMap<&'static str,
                 mango_orm::models::FormCache>>, &'static str), Box<dyn Error>> {
@@ -82,21 +97,6 @@ macro_rules! model {
                     store.insert(key, form_cache);
                 }
                 Ok((store, key))
-            }
-            // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
-                if map.get("hash").is_none() {
-                    map.insert(
-                        "hash",
-                        Widget {
-                            value: FieldType::Hash,
-                            hidden: true,
-                            ..Default::default()
-                        }
-                    );
-                }
-                Ok(map)
             }
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
