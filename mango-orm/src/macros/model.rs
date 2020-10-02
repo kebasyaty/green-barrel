@@ -113,12 +113,12 @@ macro_rules! model {
             // Get Form attributes in Json format for page templates
             pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache()?;
-                let mut cache: Option<&FormCache> = store.get(key);
+                let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
-                    let json_text: String = cache.unwrap().form_json_attrs.clone();
-                    if json_text.len() == 0 {
+                    let mut form_cache: FormCache = cache.unwrap().clone();
+                    if form_cache.form_json_attrs.len() == 0 {
                         // Create Json-string
-                        let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
+                        let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -129,14 +129,11 @@ macro_rules! model {
                             }
                         }
                         // Update data
-                        let mut form_cache: FormCache = cache.unwrap().clone();
                         form_cache.form_json_attrs = format!("{{{}}}", json_text);
                         // Save data to cache
-                        store.insert(key, form_cache);
-                        // Get updated cache
-                        cache = store.get(key);
+                        store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(cache.unwrap().form_json_attrs.clone());
+                        return Ok(form_cache.form_json_attrs);
                     }
                     Ok(cache.unwrap().form_json_attrs.clone())
                 } else {
