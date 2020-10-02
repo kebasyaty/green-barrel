@@ -20,14 +20,10 @@ pub trait Form {
     fn html(
         attrs: HashMap<String, Transport>,
         model_name: &str,
-        action: &str,
         method: String,
-        enctype: &str,
     ) -> Result<String, Box<dyn Error>> {
-        let mut form_html = format!(
-            "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
-            model_name, action, method, enctype
-        );
+        let form_html = "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">";
+        let mut controles_html = String::new();
         for (_, trans) in attrs {
             let id_field = format!("{}--{}", model_name, trans.id);
             let label = format!(
@@ -36,9 +32,9 @@ pub trait Form {
             );
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -51,9 +47,9 @@ pub trait Form {
                     );
                 }
                 "checkbox" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -79,12 +75,12 @@ pub trait Form {
                             trans.other_attrs
                         );
                     }
-                    form_html = format!("{}{}</p>", form_html, tags);
+                    controles_html = format!("{}{}</p>", controles_html, tags);
                 }
                 "date" | "datetime" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -96,9 +92,9 @@ pub trait Form {
                     );
                 }
                 "file" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -109,9 +105,9 @@ pub trait Form {
                     );
                 }
                 "image" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -122,9 +118,9 @@ pub trait Form {
                     );
                 }
                 "number" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -136,9 +132,9 @@ pub trait Form {
                     );
                 }
                 "range" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -150,9 +146,9 @@ pub trait Form {
                     );
                 }
                 "textarea" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.name,
@@ -178,9 +174,9 @@ pub trait Form {
                             item.0
                         );
                     }
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.name,
@@ -191,9 +187,9 @@ pub trait Form {
                     );
                 }
                 "hidden" => {
-                    form_html = format!(
+                    controles_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_html,
+                        controles_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -208,8 +204,9 @@ pub trait Form {
             }
         }
         Ok(format!(
-            "{}<input type=\"submit\" value=\"{}\"></form>",
+            "{}{}<input type=\"submit\" value=\"{}\"></form>",
             form_html,
+            controles_html,
             if method == "get" { "Submit" } else { "Save" }
         ))
     }
