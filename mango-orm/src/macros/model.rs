@@ -168,12 +168,12 @@ macro_rules! model {
                         store.insert(key, form_cache.clone());
                         // Return result
                         return Ok(
-                            format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\"{}",
+                            format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\" {}",
                             model_name, action, method, enctype, form_cache.form_html)
                         );
                     }
                     Ok(
-                        format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\"{}",
+                        format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\" {}",
                         model_name, action, method, enctype, cache.form_html.clone())
                     )
                 } else {
