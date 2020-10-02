@@ -49,7 +49,7 @@ macro_rules! model {
                     })
                 } else {
                     panic!("Model: {} -> Service name (App name) and database name should not be empty.",
-                        stringify!($sname));
+                        stringify!($sname))
                 }
             }
 
@@ -100,12 +100,14 @@ macro_rules! model {
             }
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
-                let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
-                let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                for (field, widget) in &widgets {
-                    clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
+                let (store, key) = Self::form_cache()?;
+                let cache: Option<&FormCache> = store.get(key);
+                if cache.is_some() {
+                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
+                    Ok(clean_attrs)
+                } else {
+                    panic!("???")
                 }
-                Ok(clean_attrs)
             }
             // Get Form attributes in Json format for page templates
             pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
