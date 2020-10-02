@@ -149,9 +149,10 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache()?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
-                    let mut form_cache: FormCache = cache.unwrap().clone();
-                    if form_cache.form_html.len() == 0 {
+                    let cache: &FormCache = cache.unwrap();
+                    if cache.form_html.len() == 0 {
                          // Create Html-string
+                         let mut form_cache: FormCache = cache.clone();
                          let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
                          let html_text: String = Self::html(
                             attrs,
@@ -167,7 +168,7 @@ macro_rules! model {
                         // Return result
                         return Ok(form_cache.form_html);
                     }
-                    Ok(cache.unwrap().form_html.clone())
+                    Ok(cache.form_html.clone())
                 } else {
                     panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
                         stringify!($sname))
