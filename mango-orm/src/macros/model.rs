@@ -67,7 +67,18 @@ macro_rules! model {
                     mango_orm::models::FormCache>> = FORM_CACHE.lock().unwrap();
                 let mut cache: Option<&FormCache> = store.get(key);
                 if cache.is_none() {
-                    let form_cache: FormCache = Default::default();
+                    // Add a map of pure attributes of Form for page templates
+                    let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
+                    let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
+                    for (field, widget) in &widgets {
+                        clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
+                    }
+                    // Add default data
+                    let form_cache = FormCache{
+                        form_map_attrs: clean_attrs,
+                        ..Default::default()
+                    };
+                    // Save default data to cache
                     store.insert(key, form_cache);
                 }
                 Ok((store, key))
