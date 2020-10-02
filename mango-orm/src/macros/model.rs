@@ -106,7 +106,8 @@ macro_rules! model {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
                     Ok(clean_attrs)
                 } else {
-                    panic!("Model: {} -> `form_map_attrs()` did not receive data from cache ", stringify!($sname))
+                    panic!("Model: {} -> `form_map_attrs()` did not receive data from cache ",
+                        stringify!($sname))
                 }
             }
             // Get Form attributes in Json format for page templates
