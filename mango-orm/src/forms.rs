@@ -21,7 +21,7 @@ pub trait Form {
         attrs: HashMap<String, Transport>,
         model_name: &str,
         method: String,
-    ) -> Result<(String, String), Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>> {
         // Other attributes of the `form` tag.
         // Will be automatically added - "id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\""
         // -----------------------------------------------------------------------------------------
@@ -210,13 +210,11 @@ pub trait Form {
                 _ => panic!("Invalid input type."),
             }
         }
-        Ok((
-            format!(
-                "{}<input type=\"submit\" value=\"{}\"></form>",
-                controles_html,
-                if method == "get" { "Submit" } else { "Save" }
-            ),
+        Ok(format!(
+            "{}>{}<input type=\"submit\" value=\"{}\"></form>",
             other_form_attributes,
+            controles_html,
+            if method == "get" { "Submit" } else { "Save" }
         ))
     }
 }
