@@ -19,6 +19,7 @@ pub struct FormCache {
 
 // Global storage
 lazy_static! {
+    // For caching Form (map, json) attributes and Html
     pub static ref FORM_CACHE: Mutex<HashMap<&'static str, FormCache>> = {
         let mut _map = HashMap::new();
         Mutex::new(_map)
