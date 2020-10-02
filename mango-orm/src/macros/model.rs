@@ -27,19 +27,16 @@ macro_rules! model {
             pub fn model_name() -> Result<&'static str, Box<dyn Error>> {
                 Ok(stringify!($sname))
             }
-
             // Get array of field names
             pub fn field_names() -> Result<&'static [&'static str], Box<dyn Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
-
             // // Get a map with field types
             pub fn field_types() -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
             }
-
             // Metadata (database name, collection name, etc)
             pub fn meta() -> Result<Meta, Box<dyn Error>> {
                 if $service.len() > 0 && $database.len() > 0 {
@@ -56,8 +53,9 @@ macro_rules! model {
                 }
             }
 
-            // Add (if required) default form data to cache
+            // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
+            // Add (if required) default form data to cache
             pub fn form_cache() {
                 let key: &'static str = Box::leak(format!("{}__{}",
                     $service.to_lowercase(),
@@ -72,9 +70,7 @@ macro_rules! model {
                 }
                 println!("{:?}", cache.unwrap());
             }
-
             // Get full map of Widgets (with widget for id field)
-            // *************************************************************************************
             pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
                 let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
                 map.insert(
@@ -87,9 +83,6 @@ macro_rules! model {
                 );
                 Ok(map)
             }
-
-            // Form Attributes
-            // *************************************************************************************
             // Get a map of pure attributes of Form for page templates
             pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
@@ -99,7 +92,6 @@ macro_rules! model {
                 }
                 Ok(clean_attrs)
             }
-
             // Get Form attributes in Json format for page templates
             pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
                 let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
@@ -114,9 +106,6 @@ macro_rules! model {
                 }
                 Ok(format!("{{{}}}", json_text))
             }
-
-            // HTML form
-            // *************************************************************************************
             // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn Error>> {
