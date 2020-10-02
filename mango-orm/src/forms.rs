@@ -22,7 +22,7 @@ pub trait Form {
         method: String,
         enctype: &str,
     ) -> Result<String, Box<dyn Error>> {
-        let mut form_text = format!(
+        let mut form_html = format!(
             "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
             model_name, action, method, enctype
         );
@@ -34,9 +34,9 @@ pub trait Form {
             );
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -49,9 +49,9 @@ pub trait Form {
                     );
                 }
                 "checkbox" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -77,12 +77,12 @@ pub trait Form {
                             trans.other_attrs
                         );
                     }
-                    form_text = format!("{}{}</p>", form_text, tags);
+                    form_html = format!("{}{}</p>", form_html, tags);
                 }
                 "date" | "datetime" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -94,9 +94,9 @@ pub trait Form {
                     );
                 }
                 "file" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -107,9 +107,9 @@ pub trait Form {
                     );
                 }
                 "image" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -120,9 +120,9 @@ pub trait Form {
                     );
                 }
                 "number" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -134,9 +134,9 @@ pub trait Form {
                     );
                 }
                 "range" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -148,9 +148,9 @@ pub trait Form {
                     );
                 }
                 "textarea" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.name,
@@ -176,9 +176,9 @@ pub trait Form {
                             item.0
                         );
                     }
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.name,
@@ -189,9 +189,9 @@ pub trait Form {
                     );
                 }
                 "hidden" => {
-                    form_text = format!(
+                    form_html = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        form_text,
+                        form_html,
                         label,
                         id_field,
                         trans.field_type,
@@ -207,7 +207,7 @@ pub trait Form {
         }
         Ok(format!(
             "{}<input type=\"submit\" value=\"{}\"></form>",
-            form_text,
+            form_html,
             if method == "get" { "Submit" } else { "Save" }
         ))
     }
