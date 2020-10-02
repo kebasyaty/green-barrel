@@ -112,17 +112,37 @@ macro_rules! model {
             }
             // Get Form attributes in Json format for page templates
             pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
-                let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
-                let mut json_text = String::new();
-                for (field, trans) in attrs {
-                    let tmp = serde_json::to_string(&trans).unwrap();
-                    if json_text.len() > 0 {
-                        json_text = format!("{},\"{}\":{}", json_text, field, tmp);
-                    } else {
-                        json_text = format!("\"{}\":{}", field, tmp);
+                let (mut store, key) = Self::form_cache()?;
+                let mut cache: Option<&FormCache> = store.get(key);
+                if cache.is_some() {
+                    let json_text: String = cache.unwrap().form_json_attrs.clone();
+                    if json_text.len() == 0 {
+                        // Create Json-string
+                        let attrs: HashMap<String, Transport> = Self::form_map_attrs()?;
+                        let mut json_text = String::new();
+                        for (field, trans) in attrs {
+                            let tmp = serde_json::to_string(&trans).unwrap();
+                            if json_text.len() > 0 {
+                                json_text = format!("{},\"{}\":{}", json_text, field, tmp);
+                            } else {
+                                json_text = format!("\"{}\":{}", field, tmp);
+                            }
+                        }
+                        // Update data
+                        let mut form_cache: FormCache = cache.unwrap().clone();
+                        form_cache.form_json_attrs = format!("{{{}}}", json_text);
+                        // Save data to cache
+                        store.insert(key, form_cache);
+                        // Get updated cache
+                        cache = store.get(key);
+                        // Return result
+                        return Ok(cache.unwrap().form_json_attrs.clone());
                     }
+                    Ok(cache.unwrap().form_json_attrs.clone())
+                } else {
+                    panic!("Model: {} -> `form_json_attrs()` did not receive data from cache ",
+                        stringify!($sname))
                 }
-                Ok(format!("{{{}}}", json_text))
             }
             // Get Html Form of Model for page templates
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
