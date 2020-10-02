@@ -1,6 +1,6 @@
 //! # Forms
 //!
-//! `Form` - Define form settings for models.
+//! `Form` - Define form settings for models (widgets, html).
 
 use crate::widgets::{Transport, Widget};
 use std::collections::HashMap;
