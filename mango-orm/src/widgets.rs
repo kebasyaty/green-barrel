@@ -5,7 +5,7 @@
 use serde::Serialize;
 
 // WIDGETS
-// =================================================================================================
+// #################################################################################################
 /// Field types for Widgets
 #[derive(Debug, Clone, PartialEq)]
 pub enum FieldType {
@@ -339,7 +339,7 @@ impl Widget {
 }
 
 // TESTS
-// =================================================================================================
+// #################################################################################################
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -348,7 +348,8 @@ mod tests {
     // *********************************************************************************************
     #[test]
     fn test_field_types() {
-        // Method get_input_type() -----------------------------------------------------------------
+        // Method get_input_type()
+        // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::Hash.get_input_type(), "hidden");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_input_type(),
@@ -427,7 +428,8 @@ mod tests {
         assert_eq!(FieldType::ManyToMany.get_input_type(), "select");
         assert_eq!(FieldType::OneToOne.get_input_type(), "hidden");
 
-        // Method get_raw_data() -------------------------------------------------------------------
+        // Method get_raw_data()
+        // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::Hash.get_raw_data(), String::new());
         assert_eq!(
             FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
@@ -503,7 +505,8 @@ mod tests {
         assert_eq!(FieldType::ManyToMany.get_raw_data(), String::new());
         assert_eq!(FieldType::OneToOne.get_raw_data(), String::new());
 
-        // Method get_data_type() ------------------------------------------------------------------
+        // Method get_data_type()
+        // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::Hash.get_data_type(), "String");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
@@ -575,7 +578,8 @@ mod tests {
     // *********************************************************************************************
     #[test]
     fn test_get_data_types() {
-        // Method get_raw_data() -------------------------------------------------------------------
+        // Method get_raw_data()
+        // -----------------------------------------------------------------------------------------
         assert_eq!(
             SelectDataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -597,7 +601,8 @@ mod tests {
             (-10_f64).to_string()
         );
 
-        // Method get_data_type() ------------------------------------------------------------------
+        // Method get_data_type()
+        // -----------------------------------------------------------------------------------------
         assert_eq!(
             SelectDataType::Text(String::new()).get_data_type(),
             "String"
@@ -613,7 +618,8 @@ mod tests {
     #[test]
     fn test_transport() {
         let trans: Transport = Default::default();
-        // Fields ----------------------------------------------------------------------------------
+        // Fields
+        // -----------------------------------------------------------------------------------------
         assert_eq!(trans.id, String::new());
         assert_eq!(trans.label, String::new());
         assert_eq!(trans.field_type, String::new());
@@ -628,7 +634,6 @@ mod tests {
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
-        // Methods ---------------------------------------------------------------------------------
     }
 
     // Testing Widget structure
@@ -637,7 +642,8 @@ mod tests {
     fn test_widget() {
         let mut widget: Widget = Default::default();
         widget.select = vec![(String::new(), SelectDataType::Text(String::new()))];
-        // Fields ----------------------------------------------------------------------------------
+        // Fields
+        // -----------------------------------------------------------------------------------------
         assert_eq!(widget.label, String::new());
         assert_eq!(
             widget.value.get_input_type(),
@@ -653,7 +659,8 @@ mod tests {
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_raw_data(), String::new());
-        // Methods ---------------------------------------------------------------------------------
+        // Methods
+        // -----------------------------------------------------------------------------------------
         let mut attrs = widget.clean_attrs("").unwrap();
         attrs.select = vec![(
             String::new(),

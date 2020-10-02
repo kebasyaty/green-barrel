@@ -10,7 +10,8 @@ use mongodb::{
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-// MIGRATION =======================================================================================
+// MIGRATION
+// #################################################################################################
 /// Creation and updating of a technical database for monitoring the state of models
 #[derive(Serialize, Deserialize)]
 pub struct ModelState {
@@ -29,17 +30,17 @@ impl<'a> Monitor<'a> {
     // Refresh models state
     // *********************************************************************************************
     pub async fn refresh(&self) {
-        // Keyword Validation ----------------------------------------------------------------------
+        // Keyword Validation
         let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.keyword) {
             panic!("Keyword - Valid characters: _|a-z|A-Z|0-9 ; Size: 8-16.");
         }
-        // Establish a connection with the technical database of the project -----------------------
+        // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
-        // Create a technical database for the project if it doesn't exist -------------------------
+        // Create a technical database for the project if it doesn't exist
         if !database_names.contains(&mango_orm_keyword) {
             self.client
                 .database(&mango_orm_keyword)
@@ -47,7 +48,7 @@ impl<'a> Monitor<'a> {
                 .await
                 .unwrap();
         } else {
-            // Reset model state information -------------------------------------------------------
+            // Reset model state information
             let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
             let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
             let mut cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
@@ -79,12 +80,12 @@ impl<'a> Monitor<'a> {
     // (full delete of orphaned collections and databases)
     // *********************************************************************************************
     pub async fn napalm(&self) {
-        // Establish a connection with the technical database of the project -----------------------
+        // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
         let collection_name: &'static str = "models";
         let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
         let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
-        // Delete orphaned Collections -------------------------------------------------------------
+        // Delete orphaned Collections
         let cursor: Cursor = mango_orm_collection.find(None, None).await.unwrap();
         let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect().await;
         for result in results {
@@ -92,7 +93,7 @@ impl<'a> Monitor<'a> {
                 Ok(document) => {
                     let model_state: ModelState = bson::de::from_document(document).unwrap();
                     if !model_state.status {
-                        // Delete Collection (left without a model) --------------------------------
+                        // Delete Collection (left without a model)
                         self.client
                             .database(&model_state.database)
                             .collection(&model_state.collection)
@@ -114,7 +115,7 @@ impl<'a> Monitor<'a> {
 }
 
 // TESTS
-// =================================================================================================
+// #################################################################################################
 #[cfg(test)]
 mod tests {
     //
