@@ -30,7 +30,7 @@ async fn main() {
     mango_migration().await;
 
     // println!("{:?}", mango_models::User::form_map_attrs().unwrap());
-    println!("{}", mango_models::User::form_json_attrs().unwrap());
+    // println!("{}", mango_models::User::form_json_attrs().unwrap());
     // println!("{}", mango_models::User::form_html("/", Some("post"), Some("multipart/form-data")).unwrap());
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
 
