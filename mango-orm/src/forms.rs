@@ -228,6 +228,56 @@ pub trait Form {
     }
 }
 
+/// DYNAMIC FORM ARGUMENTS
+/// ################################################################################################
+pub mod dynamic_arguments {
+    /// Method (Get, Post)
+    /// ********************************************************************************************
+    pub enum Method {
+        Get,
+        Post,
+    }
+
+    impl Default for Method {
+        fn default() -> Self {
+            Method::Get
+        }
+    }
+
+    impl Method {
+        pub fn get_data(&self) -> String {
+            match self {
+                Self::Get => "get".to_string(),
+                Self::Post => "post".to_string(),
+            }
+        }
+    }
+
+    /// Enctype
+    /// ********************************************************************************************
+    pub enum Enctype {
+        Application,
+        Multipart,
+        Text,
+    }
+
+    impl Default for Enctype {
+        fn default() -> Self {
+            Enctype::Application
+        }
+    }
+
+    impl Enctype {
+        pub fn get_data(&self) -> String {
+            match self {
+                Self::Application => "application/x-www-form-urlencoded".to_string(),
+                Self::Multipart => "multipart/form-data".to_string(),
+                Self::Text => "text/plain".to_string(),
+            }
+        }
+    }
+}
+
 // TESTS
 // #################################################################################################
 #[cfg(test)]
