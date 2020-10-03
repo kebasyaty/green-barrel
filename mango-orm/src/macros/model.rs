@@ -143,12 +143,23 @@ macro_rules! model {
                 }
             }
             // Get Html Form of Model for page templates
-            pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
+            pub fn form_html(action: &str, method: Option<Method>, enctype: Option<Enctype>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let model_name: &str = &stringify!($sname).to_lowercase();
-                let method: String = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
-                let enctype: &str = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
+                let method: String = if method.is_some() {
+                    match method.unwrap() {
+                        Method::Get => Method::Get.get_data(),
+                        Method::Post => Method::Post.get_data(),
+                    }
+                } else { Method::Get.get_data() };
+                let enctype: String = if enctype.is_some() {
+                    match enctype.unwrap() {
+                        Enctype::Application = Enctype::Application.get_data(),
+                        Enctype::Multipart = Enctype::Multipart.get_data(),
+                        Enctype::Text = Enctype::Text.get_data(),
+                    }
+                } else { Enctype::Application.get_data() };
                 let (mut store, key) = Self::form_cache()?;
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();

@@ -22,7 +22,7 @@ pub trait Form {
         model_name: &str,
         action: &str,
         method: String,
-        enctype: &str,
+        enctype: String,
         build_controls: bool,
     ) -> Result<(String, String, String), Box<dyn Error>> {
         // Tag <form>

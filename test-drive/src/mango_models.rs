@@ -1,6 +1,9 @@
 use futures::stream::StreamExt;
 use mango_orm::{
-    forms::Form,
+    forms::{
+        dynamic_arguments::{Enctype, Method},
+        Form,
+    },
     model,
     models::{FormCache, Meta, FORM_CACHE},
     widgets::{FieldType, Transport, Widget},
