@@ -170,9 +170,9 @@ macro_rules! model {
                     if cache.form_html.len() == 0 {
                          // Clone cache
                          let mut form_cache: FormCache = cache.clone();
-                        // Update data
+                        // Update cache
                         form_cache.form_html = controls.clone();
-                        // Save data to cache
+                        // Save to cache
                         store.insert(key, form_cache.clone());
                         // Return result
                         return Ok(format!("{}{}{}</form>", form, controls, buttons));
