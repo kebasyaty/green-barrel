@@ -106,7 +106,7 @@ macro_rules! model {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
                     Ok(clean_attrs)
                 } else {
-                    panic!("Model: {} -> `form_map_attrs()` did not receive data from cache.",
+                    panic!("Model: {} -> `form_map_attrs()` - Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
@@ -138,7 +138,7 @@ macro_rules! model {
                     }
                     Ok(cache.form_json_attrs.clone())
                 } else {
-                    panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
+                    panic!("Model: {} -> `form_json_attrs()` - Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
@@ -191,7 +191,7 @@ macro_rules! model {
                     }
                     Ok(format!("{}{}{}</form>", form, cache.form_html.clone(), buttons))
                 } else {
-                    panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
+                    panic!("Model: {} -> `form_json_attrs()` - Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
@@ -214,20 +214,25 @@ macro_rules! model {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     let attrs = cache.unwrap().form_map_attrs.clone();
                     for field in FIELD_NAMES {
-                        if field != &"hash" {
-                            let value = doc.get(field);
-                            if value.is_some() {
-                                match value.unwrap().element_type() {
-                                    ElementType::String => "",
+                        if field == &"hash" { continue; }
+                        let value = doc.get(field);
+                        if value.is_some() {
+                            match value.unwrap().element_type() {
+                                ElementType::String => {
+                                    //
+                                },
+                                _ => {
+                                    panic!("Model: {} -> `save()` - Unsupported data type for field `{}`.",
+                                        stringify!($sname), field)
                                 }
-                            } else {
-                                panic!("Model: {} -> `save()` The document is missing the field `{}`.",
-                                    stringify!($sname)), field
                             }
+                        } else {
+                            panic!("Model: {} -> `save()` - The document is missing the field `{}`.",
+                                stringify!($sname), field)
                         }
                     }
                 } else {
-                    panic!("Model: {} -> `save()` did not receive data from cache.",
+                    panic!("Model: {} -> `save()` - Did not receive data from cache.",
                         stringify!($sname))
                 }
                 //
