@@ -1,7 +1,4 @@
-use mango_orm::{
-    forms::dynamic_arguments::{Enctype, Method},
-    migration::Monitor,
-};
+use mango_orm::migration::Monitor;
 use mongodb::Client;
 
 mod mango_models;
@@ -36,15 +33,6 @@ async fn main() {
     // println!("{}", mango_models::User::form_json_attrs().unwrap());
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
     // println!("{}", mango_models::User::form_html("/", Some(Method::Post), Some(Enctype::Multipart)).unwrap());
-
-    println!(
-        "{}",
-        mango_models::User::form_html("/", None, None).unwrap()
-    );
-    println!(
-        "{}",
-        mango_models::User::form_html("/", Some(Method::Post), Some(Enctype::Multipart)).unwrap()
-    );
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
