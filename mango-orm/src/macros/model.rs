@@ -213,6 +213,7 @@ macro_rules! model {
                 if cache.is_some() {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     let attrs = cache.unwrap().form_map_attrs.clone();
+                    // Check field values (maxlength, unique, min, max, etc...)
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
                         let value = doc.get(field);
