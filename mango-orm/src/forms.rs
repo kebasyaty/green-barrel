@@ -23,6 +23,7 @@ pub trait Form {
         action: &str,
         method: String,
         enctype: &str,
+        build_controls: bool,
     ) -> Result<(String, String, String), Box<dyn Error>> {
         // Tag <form>
         // -----------------------------------------------------------------------------------------

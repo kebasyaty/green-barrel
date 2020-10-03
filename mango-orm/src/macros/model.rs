@@ -146,9 +146,10 @@ macro_rules! model {
             pub fn form_html(action: &str, method: Option<&str>, enctype: Option<&str>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let model_name = &stringify!($sname).to_lowercase();
-                let method = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
-                let enctype = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
+                let model_name: &str = &stringify!($sname).to_lowercase();
+                let method: String = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
+                let enctype: &str = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
+                let mut build_controls = false;
                 let (mut store, key) = Self::form_cache()?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
@@ -157,12 +158,14 @@ macro_rules! model {
                          // Create Html-string
                          let mut form_cache: FormCache = cache.clone();
                          let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
+                         build_controls = true;
                          let (form, controls, buttons) = Self::html(
                             attrs,
                             model_name,
                             action,
                             method.clone(),
-                            enctype
+                            enctype,
+                            build_controls
                         )?;
                         // Update data
                         form_cache.form_html = controls;
