@@ -37,7 +37,7 @@ impl<'a> Monitor<'a> {
         }
         // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
-        let collection_name: &'static str = "models";
+        let collection_name: &str = "models";
         let database_names: Vec<String> =
             self.client.list_database_names(None, None).await.unwrap();
         // Create a technical database for the project if it doesn't exist
