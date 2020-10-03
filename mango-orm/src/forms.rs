@@ -217,6 +217,8 @@ pub trait Form {
             }
         }
 
+        // Buttons of Form
+        // -----------------------------------------------------------------------------------------
         let buttons = format!(
             "<input type=\"submit\" value=\"{}\">",
             if method == "get" { "Submit" } else { "Save" }
