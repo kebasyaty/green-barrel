@@ -157,25 +157,21 @@ macro_rules! model {
                          // Create Html-string
                          let mut form_cache: FormCache = cache.clone();
                          let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
-                         let controles_html = Self::html(
+                         let (form, controls, buttons) = Self::html(
                             attrs,
                             model_name,
-                            method.clone()
+                            action,
+                            method.clone(),
+                            enctype
                         )?;
                         // Update data
-                        form_cache.form_html = controles_html;
+                        form_cache.form_html = controls;
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(
-                            format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\" {}",
-                            model_name, action, method, enctype, form_cache.form_html)
-                        );
+                        return Ok();
                     }
-                    Ok(
-                        format!("<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\" {}",
-                        model_name, action, method, enctype, cache.form_html.clone())
-                    )
+                    Ok()
                 } else {
                     panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
                         stringify!($sname))
