@@ -152,14 +152,14 @@ macro_rules! model {
                         Method::Get => Method::Get.get_data(),
                         Method::Post => Method::Post.get_data(),
                     }
-                } else { Method::Get.get_data() };
+                } else { Method::default().get_data() };
                 let enctype: String = if enctype.is_some() {
                     match enctype.unwrap() {
-                        Enctype::Application = Enctype::Application.get_data(),
-                        Enctype::Multipart = Enctype::Multipart.get_data(),
-                        Enctype::Text = Enctype::Text.get_data(),
+                        Enctype::Application => Enctype::Application.get_data(),
+                        Enctype::Multipart => Enctype::Multipart.get_data(),
+                        Enctype::Text => Enctype::Text.get_data(),
                     }
-                } else { Enctype::Application.get_data() };
+                } else { Enctype::default().get_data() };
                 let (mut store, key) = Self::form_cache()?;
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
