@@ -71,7 +71,7 @@ impl<'a> Monitor<'a> {
                             .await
                             .unwrap();
                     }
-                    Err(err) => panic!("{}", err),
+                    Err(err) => panic!("Migration `refresh()` -> {}", err),
                 }
             }
         }
@@ -108,7 +108,7 @@ impl<'a> Monitor<'a> {
                         mango_orm_collection.delete_one(query, None).await.unwrap();
                     }
                 }
-                Err(err) => panic!("{}", err),
+                Err(err) => panic!("Migration `napalm()` -> {}", err),
             }
         }
     }
