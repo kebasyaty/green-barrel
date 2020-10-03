@@ -32,7 +32,7 @@ pub trait Form {
             model_name, action, method, enctype
         );
 
-        // Controles Form
+        // Controls of Form
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         if build_controls {
