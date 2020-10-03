@@ -30,7 +30,7 @@ pub trait Form {
 
         // Controles Form
         // -----------------------------------------------------------------------------------------
-        let mut controles_html = String::new();
+        let mut controls_form = String::new();
         for (_, trans) in attrs {
             let id_field = format!("{}--{}", model_name, trans.id);
             let label = format!(
@@ -39,9 +39,9 @@ pub trait Form {
             );
             match trans.field_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -54,9 +54,9 @@ pub trait Form {
                     );
                 }
                 "checkbox" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -82,12 +82,12 @@ pub trait Form {
                             trans.other_attrs
                         );
                     }
-                    controles_html = format!("{}{}</p>", controles_html, tags);
+                    controls_form = format!("{}{}</p>", controls_form, tags);
                 }
                 "date" | "datetime" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -99,9 +99,9 @@ pub trait Form {
                     );
                 }
                 "file" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -112,9 +112,9 @@ pub trait Form {
                     );
                 }
                 "image" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -125,9 +125,9 @@ pub trait Form {
                     );
                 }
                 "number" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -139,9 +139,9 @@ pub trait Form {
                     );
                 }
                 "range" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -153,9 +153,9 @@ pub trait Form {
                     );
                 }
                 "textarea" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.name,
@@ -181,9 +181,9 @@ pub trait Form {
                             item.0
                         );
                     }
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.name,
@@ -194,9 +194,9 @@ pub trait Form {
                     );
                 }
                 "hidden" => {
-                    controles_html = format!(
+                    controls_form = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controles_html,
+                        controls_form,
                         label,
                         id_field,
                         trans.field_type,
@@ -213,7 +213,7 @@ pub trait Form {
         Ok(format!(
             "{}>{}<input type=\"submit\" value=\"{}\"></form>",
             other_form_attributes,
-            controles_html,
+            controls_form,
             if method == "get" { "Submit" } else { "Save" }
         ))
     }
