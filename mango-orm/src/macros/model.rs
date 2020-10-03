@@ -160,9 +160,9 @@ macro_rules! model {
                         Enctype::Text => Enctype::Text.get_data(),
                     }
                 } else { Enctype::default().get_data() };
-                let (mut store, key) = Self::form_cache()?;
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
+                let (mut store, key) = Self::form_cache()?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
