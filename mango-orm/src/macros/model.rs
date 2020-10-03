@@ -146,6 +146,7 @@ macro_rules! model {
             pub fn form_html(action: &str, method: Option<Method>, enctype: Option<Enctype>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
+                let (mut store, key) = Self::form_cache()?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let method: String = if method.is_some() {
                     match method.unwrap() {
@@ -162,7 +163,6 @@ macro_rules! model {
                 } else { Enctype::default().get_data() };
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
-                let (mut store, key) = Self::form_cache()?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
