@@ -177,7 +177,7 @@ macro_rules! model {
                         // Return result
                         return Ok(format!("{}{}{}</form>", form, controls, buttons));
                     }
-                    Ok(format!("{}{}{}</form>", form, controls, buttons))
+                    Ok(format!("{}{}{}</form>", form, cache.form_html.clone(), buttons))
                 } else {
                     panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
                         stringify!($sname))
