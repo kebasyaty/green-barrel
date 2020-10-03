@@ -9,6 +9,8 @@ use std::sync::Mutex;
 
 // FOR MODELS
 // #################################################################################################
+/// Global storage
+/// ************************************************************************************************
 /// For caching Form (map, json) attributes and Html
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
@@ -17,7 +19,7 @@ pub struct FormCache {
     pub form_html: String,
 }
 
-// Global storage
+// Store
 lazy_static! {
     // For caching Form (map, json) attributes and Html
     pub static ref FORM_CACHE: Mutex<HashMap<&'static str, FormCache>> = {
@@ -27,6 +29,7 @@ lazy_static! {
 }
 
 /// Metadata
+/// ************************************************************************************************
 #[derive(Debug)]
 pub struct Meta {
     pub database: String,
