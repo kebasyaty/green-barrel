@@ -219,7 +219,7 @@ macro_rules! model {
                         if value.is_some() {
                             match value.unwrap().element_type() {
                                 ElementType::String => {
-                                    //
+                                    let data: &str = value.unwrap().as_str().unwrap();
                                 },
                                 _ => {
                                     panic!("Model: {} -> `save()` - Unsupported data type for field `{}`.",
