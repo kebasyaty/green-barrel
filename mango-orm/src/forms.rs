@@ -231,7 +231,8 @@ pub trait Form {
 /// DYNAMIC FORM ARGUMENTS
 /// ################################################################################################
 pub mod dynamic_arguments {
-    /// Method (Get, Post)
+    /// Method
+    /// (HTTP protocol method)
     /// ********************************************************************************************
     pub enum Method {
         Get,
@@ -254,6 +255,7 @@ pub mod dynamic_arguments {
     }
 
     /// Enctype
+    /// (How to encode form data)
     /// ********************************************************************************************
     pub enum Enctype {
         Application,
