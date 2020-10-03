@@ -163,6 +163,7 @@ macro_rules! model {
                 } else { Enctype::default().get_data() };
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
+                //
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
@@ -201,11 +202,35 @@ macro_rules! model {
             // update an existing document.
             // (Returns the hash of the identifier - `String` type)
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
+                let (mut store, key) = Self::form_cache()?;
                 let meta: Meta = Self::meta()?;
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
                 doc.remove("hash").unwrap();
+                //
+                let cache: Option<&FormCache> = store.get(key);
+                if cache.is_some() {
+                    static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                    let attrs = cache.unwrap().form_map_attrs.clone();
+                    for field in FIELD_NAMES {
+                        if field != &"hash" {
+                            let value = doc.get(field);
+                            if value.is_some() {
+                                match value.unwrap().element_type() {
+                                    ElementType::String => "",
+                                }
+                            } else {
+                                panic!("Model: {} -> `save()` The document is missing the field `{}`.",
+                                    stringify!($sname)), field
+                            }
+                        }
+                    }
+                } else {
+                    panic!("Model: {} -> `save()` did not receive data from cache.",
+                        stringify!($sname))
+                }
+                //
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 if self.hash.len() == 0 {
                     let result: results::InsertOneResult = coll.insert_one(doc, None)

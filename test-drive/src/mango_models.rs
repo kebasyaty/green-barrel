@@ -9,7 +9,7 @@ use mango_orm::{
     widgets::{FieldType, Transport, Widget},
 };
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
+    bson::{doc, document::Document, oid::ObjectId, ser::to_document, spec::ElementType, Bson},
     options::UpdateModifications,
     results, Client, Collection, Cursor, Database,
 };
