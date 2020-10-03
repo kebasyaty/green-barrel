@@ -168,13 +168,22 @@ macro_rules! model {
                             build_controls
                         )?;
                         // Update data
-                        form_cache.form_html = controls;
+                        form_cache.form_html = controls.clone();
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
                         return Ok(format!("{}{}{}</form>", form, controls, buttons));
                     }
-                    Ok()
+                    let attrs: HashMap<String, Transport> = HashMap::new();
+                    let (form, controls, buttons) = Self::html(
+                        attrs,
+                        model_name,
+                        action,
+                        method.clone(),
+                        enctype,
+                        build_controls
+                    )?;
+                    Ok(format!("{}{}{}</form>", form, controls, buttons))
                 } else {
                     panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
                         stringify!($sname))
