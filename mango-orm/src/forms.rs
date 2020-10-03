@@ -35,15 +35,16 @@ pub trait Form {
         // Controles Form
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
-        for (_, trans) in attrs {
-            let id_field = format!("{}--{}", model_name, trans.id);
-            let label = format!(
-                "<p><label for=\"{}\">{}:</label><br>",
-                id_field, trans.label
-            );
-            match trans.field_type.as_str() {
-                "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    controls = format!(
+        if build_controls {
+            for (_, trans) in attrs {
+                let id_field = format!("{}--{}", model_name, trans.id);
+                let label = format!(
+                    "<p><label for=\"{}\">{}:</label><br>",
+                    id_field, trans.label
+                );
+                match trans.field_type.as_str() {
+                    "text" | "url" | "tel" | "password" | "email" | "color" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
                         controls,
                         label,
@@ -56,9 +57,9 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
-                }
-                "checkbox" => {
-                    controls = format!(
+                    }
+                    "checkbox" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
                         controls,
                         label,
@@ -70,11 +71,11 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
-                }
-                "radio" => {
-                    let mut tags = String::new();
-                    for item in trans.select {
-                        tags = format!(
+                    }
+                    "radio" => {
+                        let mut tags = String::new();
+                        for item in trans.select {
+                            tags = format!(
                             "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}>",
                             label,
                             id_field,
@@ -85,11 +86,11 @@ pub trait Form {
                             trans.some_classes,
                             trans.other_attrs
                         );
+                        }
+                        controls = format!("{}{}</p>", controls, tags);
                     }
-                    controls = format!("{}{}</p>", controls, tags);
-                }
-                "date" | "datetime" => {
-                    controls = format!(
+                    "date" | "datetime" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         controls,
                         label,
@@ -101,35 +102,35 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
-                }
-                "file" => {
-                    controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "image" => {
-                    controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
-                }
-                "number" => {
-                    controls = format!(
+                    }
+                    "file" => {
+                        controls = format!(
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            if trans.required { "required" } else { "" },
+                            trans.some_classes,
+                            trans.other_attrs
+                        );
+                    }
+                    "image" => {
+                        controls = format!(
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" {} class=\"{}\" {}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            if trans.required { "required" } else { "" },
+                            trans.some_classes,
+                            trans.other_attrs
+                        );
+                    }
+                    "number" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         controls,
                         label,
@@ -141,9 +142,9 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
-                }
-                "range" => {
-                    controls = format!(
+                    }
+                    "range" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         controls,
                         label,
@@ -155,9 +156,9 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
-                }
-                "textarea" => {
-                    controls = format!(
+                    }
+                    "textarea" => {
+                        controls = format!(
                         "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
                         controls,
                         label,
@@ -169,36 +170,36 @@ pub trait Form {
                         trans.other_attrs,
                         trans.value,
                     );
-                }
-                "select" => {
-                    let mut options = String::new();
-                    for item in trans.select {
-                        options = format!(
-                            "{}<option {} value=\"{}\">{}</option>",
+                    }
+                    "select" => {
+                        let mut options = String::new();
+                        for item in trans.select {
+                            options = format!(
+                                "{}<option {} value=\"{}\">{}</option>",
+                                options,
+                                if trans.value == item.1 {
+                                    "selected"
+                                } else {
+                                    ""
+                                },
+                                item.1,
+                                item.0
+                            );
+                        }
+                        controls = format!(
+                            "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.name,
+                            if trans.required { "required" } else { "" },
+                            trans.some_classes,
+                            trans.other_attrs,
                             options,
-                            if trans.value == item.1 {
-                                "selected"
-                            } else {
-                                ""
-                            },
-                            item.1,
-                            item.0
                         );
                     }
-                    controls = format!(
-                        "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.name,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs,
-                        options,
-                    );
-                }
-                "hidden" => {
-                    controls = format!(
+                    "hidden" => {
+                        controls = format!(
                         "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
                         controls,
                         label,
@@ -210,8 +211,9 @@ pub trait Form {
                         trans.some_classes,
                         trans.other_attrs
                     );
+                    }
+                    _ => panic!("Invalid input type."),
                 }
-                _ => panic!("Invalid input type."),
             }
         }
 

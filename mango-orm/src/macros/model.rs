@@ -172,7 +172,7 @@ macro_rules! model {
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok();
+                        return Ok(format!("{}{}{}</form>", form, controls, buttons));
                     }
                     Ok()
                 } else {
