@@ -23,7 +23,7 @@ pub trait Form {
         method: String,
     ) -> Result<String, Box<dyn Error>> {
         // Other attributes of the `form` tag.
-        // Will be automatically added - "id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\""
+        //(Will be automatically added - "id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\"")
         // -----------------------------------------------------------------------------------------
         // Example: format!("name=\"{}\" class=\"{}\", name, class, etc...)
         let other_form_attributes = format!("");
