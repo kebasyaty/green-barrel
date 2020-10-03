@@ -149,32 +149,16 @@ macro_rules! model {
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let method: String = if method.is_some() { method.unwrap().to_lowercase() } else { "get".to_string() };
                 let enctype: &str = if enctype.is_some() { enctype.unwrap() } else { "application/x-www-form-urlencoded" };
-                let mut build_controls = false;
                 let (mut store, key) = Self::form_cache()?;
+                let mut build_controls = false;
+                let mut attrs: HashMap<String, Transport> = HashMap::new();
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     if cache.form_html.len() == 0 {
-                         // Create Html-string
-                         let mut form_cache: FormCache = cache.clone();
-                         let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
-                         build_controls = true;
-                         let (form, controls, buttons) = Self::html(
-                            attrs,
-                            model_name,
-                            action,
-                            method.clone(),
-                            enctype,
-                            build_controls
-                        )?;
-                        // Update data
-                        form_cache.form_html = controls.clone();
-                        // Save data to cache
-                        store.insert(key, form_cache.clone());
-                        // Return result
-                        return Ok(format!("{}{}{}</form>", form, controls, buttons));
+                        build_controls = true;
+                        attrs = cache.form_map_attrs.clone();
                     }
-                    let attrs: HashMap<String, Transport> = HashMap::new();
                     let (form, controls, buttons) = Self::html(
                         attrs,
                         model_name,
@@ -183,6 +167,16 @@ macro_rules! model {
                         enctype,
                         build_controls
                     )?;
+                    if cache.form_html.len() == 0 {
+                         // Clone cache
+                         let mut form_cache: FormCache = cache.clone();
+                        // Update data
+                        form_cache.form_html = controls.clone();
+                        // Save data to cache
+                        store.insert(key, form_cache.clone());
+                        // Return result
+                        return Ok(format!("{}{}{}</form>", form, controls, buttons));
+                    }
                     Ok(format!("{}{}{}</form>", form, controls, buttons))
                 } else {
                     panic!("Model: {} -> `form_json_attrs()` did not receive data from cache.",
