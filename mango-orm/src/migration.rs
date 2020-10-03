@@ -82,7 +82,7 @@ impl<'a> Monitor<'a> {
     pub async fn napalm(&self) {
         // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
-        let collection_name: &'static str = "models";
+        let collection_name: &str = "models";
         let mango_orm_db: Database = self.client.database(&mango_orm_keyword);
         let mango_orm_collection: Collection = mango_orm_db.collection(collection_name);
         // Delete orphaned Collections
