@@ -35,7 +35,7 @@ async fn main() {
     // println!("{:?}", mango_models::User::form_map_attrs().unwrap());
     // println!("{}", mango_models::User::form_json_attrs().unwrap());
     // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
-    //println!("{}", mango_models::User::form_html("/", Some(Method::Post), Some(Enctype::Multipart)).unwrap());
+    // println!("{}", mango_models::User::form_html("/", Some(Method::Post), Some(Enctype::Multipart)).unwrap());
 
     println!(
         "{}",
