@@ -462,22 +462,27 @@ macro_rules! model {
                         FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_) | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
+                            let mut step_min_max_type = String::new();
                             match widget.value {
                                 FieldType::InputNumberI32(_) => {
                                     enum_field_type = "InputNumberI32".to_string();
                                     data_field_type = "i32".to_string();
+                                    step_min_max_type = "I32".to_string();
                                 }
                                 FieldType::InputNumberU32(_) => {
                                     enum_field_type = "InputNumberU32".to_string();
                                     data_field_type = "u32".to_string();
+                                    step_min_max_type = "U32".to_string();
                                 }
                                 FieldType::InputNumberI64(_) => {
                                     enum_field_type = "InputNumberI64".to_string();
                                     data_field_type = "i64".to_string();
+                                    step_min_max_type = "I64".to_string();
                                 }
                                 FieldType::InputNumberF64(_) => {
                                     enum_field_type = "InputNumberF64".to_string();
                                     data_field_type = "f64".to_string();
+                                    step_min_max_type = "F64".to_string();
                                 }
                                 _ => panic!("Invalid field type")
                             }
@@ -498,18 +503,18 @@ macro_rules! model {
                                 )
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `step` = `{}` type.",
-                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `step` = `{}`.",
+                                    $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `min` = `{}` type.",
-                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `min` = `{}`.",
+                                    $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `max` = `{}` type.",
-                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `max` = `{}`.",
+                                    $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             }
                         }
