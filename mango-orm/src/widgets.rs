@@ -372,9 +372,9 @@ impl Widget {
             hint: self.hint.clone(),
             unique: self.unique.clone(),
             hidden: self.hidden.clone(),
-            step: self.step.clone(),
-            min: self.min.clone(),
-            max: self.max.clone(),
+            step: self.step.get_raw_data(),
+            min: self.min.get_raw_data(),
+            max: self.max.get_raw_data(),
             other_attrs: other_attrs,
             some_classes: self.some_classes.clone(),
             select: self
