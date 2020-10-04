@@ -205,6 +205,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache()?;
                 let meta: Meta = Self::meta()?;
+                let is_update: bool = self.hash.len() != 0;
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
@@ -232,7 +233,7 @@ macro_rules! model {
                                             stringify!($sname), field, maxlength)
                                     }
                                     // Checking `unique`
-                                    if map_attrs[&field.to_string()].unique {
+                                    if !is_update && map_attrs[&field.to_string()].unique {
                                         let filter: Document = doc!{ field.to_string() : text };
                                         let count: i64 = coll.count_documents(filter, None).await?;
                                         if count > 0 {
@@ -257,7 +258,7 @@ macro_rules! model {
                 }
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                if self.hash.len() == 0 {
+                if !is_update {
                     let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
                     self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                 } else {
