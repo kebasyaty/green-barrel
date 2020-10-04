@@ -707,9 +707,9 @@ mod tests {
         assert_eq!(trans.hint, String::new());
         assert_eq!(trans.unique, false);
         assert_eq!(trans.hidden, false);
-        assert_eq!(trans.step, "0".to_string());
-        assert_eq!(trans.min, "0".to_string());
-        assert_eq!(trans.max, "0".to_string());
+        assert_eq!(trans.step, String::new());
+        assert_eq!(trans.min, String::new());
+        assert_eq!(trans.max, String::new());
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
@@ -734,9 +734,18 @@ mod tests {
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
-        assert_eq!(widget.step, StepMinMax::default());
-        assert_eq!(widget.min, StepMinMax::default());
-        assert_eq!(widget.max, StepMinMax::default());
+        assert_eq!(
+            widget.step.get_data_type(),
+            StepMinMax::default().get_data_type()
+        );
+        assert_eq!(
+            widget.min.get_data_type(),
+            StepMinMax::default().get_data_type()
+        );
+        assert_eq!(
+            widget.max.get_data_type(),
+            StepMinMax::default().get_data_type()
+        );
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
