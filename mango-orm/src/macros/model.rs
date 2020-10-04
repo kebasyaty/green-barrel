@@ -224,10 +224,15 @@ macro_rules! model {
                             match value.element_type() {
                                 ElementType::String => {
                                     let text: &str = value.as_str().unwrap();
+                                    // Checking `maxlength`
                                     let maxlength: usize = map_attrs[&field.to_string()].maxlength;
                                     if maxlength > 0 && text.encode_utf16().count() > maxlength {
                                         panic!("Model: {} -> Field: {} : `save()` - Exceeds line limit, maxlength = {}.",
                                             stringify!($sname), field, maxlength)
+                                    }
+                                    // Checking `unique`
+                                    if map_attrs[&field.to_string()].unique {
+                                        //
                                     }
                                 },
                                 _ => {
