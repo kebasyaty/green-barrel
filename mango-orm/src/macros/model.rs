@@ -225,8 +225,8 @@ macro_rules! model {
                                     let text: &str = value.as_str().unwrap();
                                     let maxlength = map_attrs[&field.to_string()].maxlength;
                                     if maxlength > 0 && text.encode_utf16().count() > maxlength {
-                                        panic!("Model: {} -> `save()` -  `{}`.",
-                                            stringify!($sname), field)
+                                        panic!("Model: {} -> Field: {} : `save()` - Exceeds line limit, maxlength = {}.",
+                                            stringify!($sname), field, maxlength)
                                     }
                                 },
                                 _ => {
