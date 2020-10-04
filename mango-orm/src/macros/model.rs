@@ -233,7 +233,8 @@ macro_rules! model {
                                     }
                                     // Checking `unique`
                                     if map_attrs[&field.to_string()].unique {
-                                        //
+                                        let filter = doc!{};
+                                        let count = coll.count_documents(filter, None).await?;
                                     }
                                 },
                                 _ => {
@@ -253,15 +254,13 @@ macro_rules! model {
                 // Save to database
                 // ---------------------------------------------------------------------------------
                 if self.hash.len() == 0 {
-                    let result: results::InsertOneResult = coll.insert_one(doc, None)
-                        .await.unwrap_or_else(|err| { panic!("{:?}", err) });
+                    let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
                     self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                 } else {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let query: Document = doc!{"_id": object_id};
-                    coll.update_one(query, doc, None).await
-                        .unwrap_or_else(|err| { panic!("{:?}", err) });
+                    coll.update_one(query, doc, None).await?;
                 }
                 Ok(self.hash.clone())
             }
