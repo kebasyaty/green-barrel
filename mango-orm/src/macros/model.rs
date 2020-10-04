@@ -209,6 +209,7 @@ macro_rules! model {
                     panic!("{:?}", err)
                 });
                 doc.remove("hash").unwrap();
+                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Check field values (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
                 let cache: Option<&FormCache> = store.get(key);
@@ -251,7 +252,6 @@ macro_rules! model {
                 }
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 if self.hash.len() == 0 {
                     let result: results::InsertOneResult = coll.insert_one(doc, None)
                         .await.unwrap_or_else(|err| { panic!("{:?}", err) });
