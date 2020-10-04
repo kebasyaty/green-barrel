@@ -233,8 +233,11 @@ macro_rules! model {
                                     }
                                     // Checking `unique`
                                     if map_attrs[&field.to_string()].unique {
-                                        let filter = doc!{};
+                                        let filter = doc!{ field : "x" };
                                         let count = coll.count_documents(filter, None).await?;
+                                        if count > 0 {
+                                            panic!("???")
+                                        }
                                     }
                                 },
                                 _ => {
@@ -693,7 +696,9 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 // Get a list of current model field names from the technical database `mango_orm_keyword`
                 let filter: Document = doc! {
-                    "database": &meta.database, "collection": &meta.collection};
+                    "database": &meta.database,
+                    "collection": &meta.collection
+                };
                 let model: Option<Document> = client.database(&mango_orm_keyword)
                     .collection("models").find_one(filter, None).await.unwrap();
                 if model.is_some() {
