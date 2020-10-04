@@ -201,7 +201,7 @@ macro_rules! model {
             // *************************************************************************************
             // Save to database as a new document or
             // update an existing document.
-            // (Returns the hash of the identifier - `String` type)
+            // (Returns the hash-line of the identifier)
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache()?;
                 let meta: Meta = Self::meta()?;
@@ -209,12 +209,13 @@ macro_rules! model {
                     panic!("{:?}", err)
                 });
                 doc.remove("hash").unwrap();
-                //
+                // Check field values (maxlength, unique, min, max, etc...)
+                // ---------------------------------------------------------------------------------
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     let map_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
-                    // Check field values (maxlength, unique, min, max, etc...)
+
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
                         let value = doc.get(field);
@@ -243,7 +244,8 @@ macro_rules! model {
                     panic!("Model: {} -> `save()` - Did not receive data from cache.",
                         stringify!($sname))
                 }
-                //
+                // Save to database
+                // ---------------------------------------------------------------------------------
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 if self.hash.len() == 0 {
                     let result: results::InsertOneResult = coll.insert_one(doc, None)
