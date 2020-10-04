@@ -369,22 +369,22 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `maxlength` = only 0 (zero).",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if data_field_type != map_field_types[field] {
@@ -419,12 +419,12 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if map_field_types[field] != "String" {
@@ -447,12 +447,12 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if map_field_types[field] != "String" {
@@ -497,12 +497,12 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -512,17 +512,17 @@ macro_rules! model {
                                 )
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `step` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `step` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `min` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `min` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `max` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `max` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             }
@@ -546,22 +546,22 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `maxlength` = only 0 (zero).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `maxlength` = only 0 (zero).",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `other_attrs` - must not contain the word `checked`.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` - must not be an empty vec![]",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` - must not be an empty vec![]",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -606,12 +606,12 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -621,12 +621,12 @@ macro_rules! model {
                                 )
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `step` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `step` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `min` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `min` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
@@ -671,12 +671,12 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `{}` : `select` - Should not be empty.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -692,12 +692,12 @@ macro_rules! model {
                         FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `ForeignKey` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ForeignKey` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `ForeignKey` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -713,12 +713,12 @@ macro_rules! model {
                         FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `ManyToMany` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `ManyToMany` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `ManyToMany` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -734,12 +734,12 @@ macro_rules! model {
                         FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `OneToOne` : `relation_model` = <CategoryName>::meta().collection.to_string().",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `OneToOne` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType `OneToOne` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
