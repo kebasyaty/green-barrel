@@ -631,7 +631,7 @@ macro_rules! model {
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `max` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> OR `value` = FieldType = `{}` : `max` = `{}`.",
                                     $service, MODEL_NAME, field, enum_field_type, step_min_max_type
                                 )
                             }
