@@ -166,7 +166,7 @@ pub trait Form {
                     }
                     "range" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -179,12 +179,16 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     "textarea" => {
                         controls = format!(
-                            "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\"{}{} {}>{}</textarea></p>",
+                            "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\"{}{}{}>{}</textarea></p>",
                             controls,
                             label,
                             id_field,
@@ -192,7 +196,7 @@ pub trait Form {
                             trans.maxlength,
                             if trans.required { " required " } else { "" },
                             if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                            trans.other_attrs,
+                            if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
                             trans.value,
                         );
                     }
@@ -212,7 +216,7 @@ pub trait Form {
                             );
                         }
                         controls = format!(
-                            "{}{}<select id=\"{}\" name=\"{}\"{}{} {}>{}</select></p>",
+                            "{}{}<select id=\"{}\" name=\"{}\"{}{}{}>{}</select></p>",
                             controls,
                             label,
                             id_field,
@@ -223,13 +227,17 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs,
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            },
                             options,
                         );
                     }
                     "hidden" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -242,7 +250,11 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     _ => panic!("Invalid input type."),
