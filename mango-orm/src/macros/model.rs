@@ -167,7 +167,8 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    if cache.form_html.len() == 0 {
+                    let is_cached: bool = cache.form_html.len() == 0;
+                    if is_cached {
                         build_controls = true;
                         attrs = cache.form_map_attrs.clone();
                     }
@@ -179,7 +180,7 @@ macro_rules! model {
                         enctype,
                         build_controls
                     )?;
-                    if cache.form_html.len() == 0 {
+                    if is_cached {
                          // Clone cache
                          let mut form_cache: FormCache = cache.clone();
                         // Update cache
