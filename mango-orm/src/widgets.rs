@@ -276,9 +276,9 @@ pub struct Transport {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub step: StepMinMax,
-    pub min: StepMinMax,
-    pub max: StepMinMax,
+    pub step: String,
+    pub min: String,
+    pub max: String,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
