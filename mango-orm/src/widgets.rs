@@ -707,6 +707,9 @@ mod tests {
         assert_eq!(trans.hint, String::new());
         assert_eq!(trans.unique, false);
         assert_eq!(trans.hidden, false);
+        assert_eq!(trans.step, String::new());
+        assert_eq!(trans.min, String::new());
+        assert_eq!(trans.max, String::new());
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
