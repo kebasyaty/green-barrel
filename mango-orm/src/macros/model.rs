@@ -243,12 +243,12 @@ macro_rules! model {
                                     }
                                 },
                                 _ => {
-                                    panic!("Model: {} -> `save()` : Unsupported data type for field `{}`.",
+                                    panic!("Model: {} -> Field: {} : Unsupported data type.",
                                         stringify!($sname), field)
                                 }
                             }
                         } else {
-                            panic!("Model: {} -> `save()` : The document is missing the field `{}`.",
+                            panic!("Model: {} -> Field: {} : This field is missing.",
                                 stringify!($sname), field)
                         }
                     }
