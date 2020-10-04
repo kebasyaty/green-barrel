@@ -225,6 +225,9 @@ impl SelectDataType {
     }
 }
 
+/// Datatypes for the `step`,` min` and `max` attributes
+// *************************************************************************************************
+
 /// Mediator for transporting widget attributes
 // *************************************************************************************************
 #[derive(Serialize, Default, Clone, Debug)]
