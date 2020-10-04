@@ -219,9 +219,10 @@ macro_rules! model {
                         if field == &"hash" { continue; }
                         let value = doc.get(field);
                         if value.is_some() {
-                            match value.unwrap().element_type() {
+                            let value = value.unwrap();
+                            match value.element_type() {
                                 ElementType::String => {
-                                    let data: &str = value.unwrap().as_str().unwrap();
+                                    let data: &str = value.as_str().unwrap();
                                 },
                                 _ => {
                                     panic!("Model: {} -> `save()` - Unsupported data type for field `{}`.",
