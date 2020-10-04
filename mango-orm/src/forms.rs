@@ -148,86 +148,102 @@ pub trait Form {
                     }
                     "number" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            trans.value,
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 {
+                                format!(" class=\"{}\" ", trans.some_classes)
+                            } else {
+                                String::new()
+                            },
+                            trans.other_attrs
+                        );
                     }
                     "range" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            trans.value,
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 {
+                                format!(" class=\"{}\" ", trans.some_classes)
+                            } else {
+                                String::new()
+                            },
+                            trans.other_attrs
+                        );
                     }
                     "textarea" => {
                         controls = format!(
-                        "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}>{}</textarea></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.name,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs,
-                        trans.value,
-                    );
+                            "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\"{}{} {}>{}</textarea></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.name,
+                            trans.maxlength,
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
+                            trans.other_attrs,
+                            trans.value,
+                        );
                     }
                     "select" => {
                         let mut options = String::new();
                         for item in trans.select {
                             options = format!(
-                                "{}<option {} value=\"{}\">{}</option>",
+                                "{}<option{}value=\"{}\">{}</option>",
                                 options,
                                 if trans.value == item.1 {
-                                    "selected"
+                                    " selected "
                                 } else {
-                                    ""
+                                    " "
                                 },
                                 item.1,
                                 item.0
                             );
                         }
                         controls = format!(
-                            "{}{}<select id=\"{}\" name=\"{}\" {} class=\"{}\" {}>{}</select></p>",
+                            "{}{}<select id=\"{}\" name=\"{}\"{}{} {}>{}</select></p>",
                             controls,
                             label,
                             id_field,
                             trans.name,
-                            if trans.required { "required" } else { "" },
-                            trans.some_classes,
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 {
+                                format!(" class=\"{}\" ", trans.some_classes)
+                            } else {
+                                String::new()
+                            },
                             trans.other_attrs,
                             options,
                         );
                     }
                     "hidden" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class=\"{}\" {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            trans.value,
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 {
+                                format!(" class=\"{}\" ", trans.some_classes)
+                            } else {
+                                String::new()
+                            },
+                            trans.other_attrs
+                        );
                     }
                     _ => panic!("Invalid input type."),
                 }
