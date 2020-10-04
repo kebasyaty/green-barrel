@@ -187,7 +187,7 @@ impl FieldType {
 }
 
 /// Data types for the `value` attribute
-/// ************************************************************************************************
+// *************************************************************************************************
 #[derive(Debug, Clone)]
 pub enum SelectDataType {
     Text(String),
@@ -226,7 +226,7 @@ impl SelectDataType {
 }
 
 /// Mediator for transporting widget attributes
-/// ************************************************************************************************
+// *************************************************************************************************
 #[derive(Serialize, Default, Clone, Debug)]
 pub struct Transport {
     pub id: String, // "id-name" or auto
@@ -246,7 +246,7 @@ pub struct Transport {
 }
 
 /// Attributes for the widget
-/// ************************************************************************************************
+// *************************************************************************************************
 /// For standard widgets:
 /// <input type="checkbox">
 /// <input type="color">
