@@ -483,18 +483,33 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `relation_model` = only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType = `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `select` = only blank vec![].",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `{}`.",
                                     $service, MODEL_NAME, field, map_field_types[field]
+                                )
+                            }  else if widget.step.get_data_type() != data_field_type {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `step` = `{}` type.",
+                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
+                                )
+                            } else if widget.min.get_data_type() != data_field_type {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `min` = `{}` type.",
+                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
+                                )
+                            } else if widget.max.get_data_type() != data_field_type {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> `value` FieldType `{}` : `max` = `{}` type.",
+                                    $service, MODEL_NAME, field, enum_field_type, data_field_type
                                 )
                             }
                         }
