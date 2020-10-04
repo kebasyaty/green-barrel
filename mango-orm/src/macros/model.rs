@@ -233,8 +233,8 @@ macro_rules! model {
                                     }
                                     // Checking `unique`
                                     if map_attrs[&field.to_string()].unique {
-                                        let filter = doc!{ field.to_string() : text };
-                                        let count = coll.count_documents(filter, None).await?;
+                                        let filter: Document = doc!{ field.to_string() : text };
+                                        let count: i64 = coll.count_documents(filter, None).await?;
                                         if count > 0 {
                                             panic!("Model: {} -> Field: {} : Is not unique.",
                                                 stringify!($sname), field)
