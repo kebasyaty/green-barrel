@@ -186,7 +186,7 @@ impl FieldType {
     }
 }
 
-/// Data types for the `value` attribute
+/// Data types for the `select` attribute
 // *************************************************************************************************
 #[derive(Debug, Clone)]
 pub enum SelectDataType {
@@ -622,10 +622,10 @@ mod tests {
         assert_eq!(FieldType::OneToOne.get_data_type(), "none");
     }
 
-    // Testing Data types
+    // Testing data types for the `select` attribute
     // *********************************************************************************************
     #[test]
-    fn test_get_data_types() {
+    fn test_select_data_types() {
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
         assert_eq!(
@@ -659,6 +659,34 @@ mod tests {
         assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "u32");
         assert_eq!(SelectDataType::I64(-10_i64).get_data_type(), "i64");
         assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
+    }
+
+    // Testing data Types for the `step`,` min` and `max` attributes
+    // *********************************************************************************************
+    #[test]
+    fn test_step_min_max_data_types() {
+        // Method get_raw_data()
+        // -----------------------------------------------------------------------------------------
+        assert_eq!(
+            StepMinMax::I32(-10_i32).get_raw_data(),
+            (-10_i32).to_string()
+        );
+        assert_eq!(StepMinMax::U32(10_u32).get_raw_data(), 10_u32.to_string());
+        assert_eq!(
+            StepMinMax::I64(-10_i64).get_raw_data(),
+            (-10_i64).to_string()
+        );
+        assert_eq!(
+            StepMinMax::F64(-10_f64).get_raw_data(),
+            (-10_f64).to_string()
+        );
+
+        // Method get_data_type()
+        // -----------------------------------------------------------------------------------------
+        assert_eq!(StepMinMax::I32(-10_i32).get_data_type(), "i32");
+        assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "u32");
+        assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
+        assert_eq!(StepMinMax::F64(-10_f64).get_data_type(), "f64");
     }
 
     // Testing Transport structure
