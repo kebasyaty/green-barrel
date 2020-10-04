@@ -196,7 +196,7 @@ pub trait Form {
                     }
                     "range" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -204,6 +204,7 @@ pub trait Form {
                             trans.name,
                             trans.value,
                             if trans.required { " required " } else { "" },
+                            if trans.step != "0" { format!(" step=\"{}\" ", trans.step) } else { String::new() },
                             if trans.some_classes.len() > 0 {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
