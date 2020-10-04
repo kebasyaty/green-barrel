@@ -707,9 +707,9 @@ mod tests {
         assert_eq!(trans.hint, String::new());
         assert_eq!(trans.unique, false);
         assert_eq!(trans.hidden, false);
-        assert_eq!(trans.step, StepMinMax::default());
-        assert_eq!(trans.min, StepMinMax::default());
-        assert_eq!(trans.max, StepMinMax::default());
+        assert_eq!(trans.step, "0".to_string());
+        assert_eq!(trans.min, "0".to_string());
+        assert_eq!(trans.max, "0".to_string());
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
@@ -737,10 +737,14 @@ mod tests {
         assert_eq!(widget.step, String::new());
         assert_eq!(widget.min, String::new());
         assert_eq!(widget.max, String::new());
+        assert_eq!(widget.step, StepMinMax::default());
+        assert_eq!(widget.min, StepMinMax::default());
+        assert_eq!(widget.max, StepMinMax::default());
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_raw_data(), String::new());
+
         // Methods
         // -----------------------------------------------------------------------------------------
         let mut attrs = widget.clean_attrs("").unwrap();
@@ -760,6 +764,9 @@ mod tests {
         assert_eq!(attrs.hint, String::new());
         assert_eq!(attrs.unique, false);
         assert_eq!(attrs.hidden, false);
+        assert_eq!(attrs.step, "0".to_string());
+        assert_eq!(attrs.min, "0".to_string());
+        assert_eq!(attrs.max, "0".to_string());
         assert_eq!(attrs.other_attrs, String::new());
         assert_eq!(attrs.some_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
