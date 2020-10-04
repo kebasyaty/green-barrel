@@ -227,6 +227,39 @@ impl SelectDataType {
 
 /// Datatypes for the `step`,` min` and `max` attributes
 // *************************************************************************************************
+#[derive(Debug, Clone)]
+pub enum StepMinMax {
+    I32(i32),
+    U32(u32),
+    I64(i64),
+    F64(f64),
+}
+
+impl Default for StepMinMax {
+    fn default() -> Self {
+        StepMinMax::I32(0_i32)
+    }
+}
+
+impl StepMinMax {
+    pub fn get_raw_data(&self) -> String {
+        match self {
+            Self::I32(data) => data.to_string(),
+            Self::U32(data) => data.to_string(),
+            Self::I64(data) => data.to_string(),
+            Self::F64(data) => data.to_string(),
+        }
+    }
+
+    pub fn get_data_type(&self) -> &'static str {
+        match self {
+            Self::I32(_) => "i32",
+            Self::U32(_) => "u32",
+            Self::I64(_) => "i64",
+            Self::F64(_) => "f64",
+        }
+    }
+}
 
 /// Mediator for transporting widget attributes
 // *************************************************************************************************
@@ -243,6 +276,9 @@ pub struct Transport {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
+    pub step: StepMinMax,
+    pub min: StepMinMax,
+    pub max: StepMinMax,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
@@ -279,6 +315,9 @@ pub struct Widget {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
+    pub step: StepMinMax,
+    pub min: StepMinMax,
+    pub max: StepMinMax,
     pub other_attrs: String,  // "autofocus step=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, SelectDataType)>,
@@ -296,6 +335,9 @@ impl Default for Widget {
             hint: String::new(),
             unique: false,
             hidden: false,
+            step: StepMinMax::default(),
+            min: StepMinMax::default(),
+            max: StepMinMax::default(),
             other_attrs: String::new(),
             some_classes: String::new(),
             select: vec![],
@@ -330,6 +372,9 @@ impl Widget {
             hint: self.hint.clone(),
             unique: self.unique.clone(),
             hidden: self.hidden.clone(),
+            step: self.step.clone(),
+            min: self.min.clone(),
+            max: self.max.clone(),
             other_attrs: other_attrs,
             some_classes: self.some_classes.clone(),
             select: self
