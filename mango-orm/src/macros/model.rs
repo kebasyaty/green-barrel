@@ -213,7 +213,7 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                    let attrs = cache.unwrap().form_map_attrs.clone();
+                    let map_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
                     // Check field values (maxlength, unique, min, max, etc...)
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
@@ -222,7 +222,12 @@ macro_rules! model {
                             let value = value.unwrap();
                             match value.element_type() {
                                 ElementType::String => {
-                                    let data: &str = value.as_str().unwrap();
+                                    let text: &str = value.as_str().unwrap();
+                                    let maxlength = map_attrs[&field.to_string()].maxlength;
+                                    if maxlength > 0 && text.encode_utf16().count() > maxlength {
+                                        panic!("Model: {} -> `save()` -  `{}`.",
+                                            stringify!($sname), field)
+                                    }
                                 },
                                 _ => {
                                     panic!("Model: {} -> `save()` - Unsupported data type for field `{}`.",

@@ -234,7 +234,7 @@ pub struct Transport {
     pub field_type: String,
     pub name: String,
     pub value: String,
-    pub maxlength: u32,
+    pub maxlength: usize,
     pub required: bool,
     pub checked: bool, // For <input type="checkbox|radio">
     pub hint: String,
@@ -270,7 +270,7 @@ pub struct Widget {
     pub label: String,
     pub relation_model: String,
     pub value: FieldType,
-    pub maxlength: u32,
+    pub maxlength: usize,
     pub required: bool,
     pub checked: bool, // For <input type="checkbox|radio">
     pub hint: String,
@@ -287,7 +287,7 @@ impl Default for Widget {
             label: String::new(),
             relation_model: String::new(),
             value: FieldType::default(),
-            maxlength: 0_u32,
+            maxlength: 0_usize,
             required: true,
             checked: false, // For <input type="checkbox|radio">
             hint: String::new(),
