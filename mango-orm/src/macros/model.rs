@@ -322,7 +322,8 @@ macro_rules! model {
                     default_values.insert(field, (widget.value.get_data_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
-                        // Hash --------------------------------------------------------------------
+                        // Hash
+                        // -------------------------------------------------------------------------
                         FieldType::Hash => {
                             let enum_field_type = "Hash".to_string();
                             let data_field_type = "String".to_string();
@@ -333,11 +334,13 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputCheckBoxText -------------------------------------------------------
+
+                        // InputCheckBoxText
                         // InputCheckBoxI32
                         // InputCheckBoxU32
                         // InputCheckBoxI64
                         // InputCheckBoxF64
+                        // -------------------------------------------------------------------------
                         FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_) | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_) | FieldType::InputCheckBoxF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
@@ -391,7 +394,8 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputColor --------------------------------------------------------------
+
+                        // InputColor
                         // InputDate
                         // InputDateTime
                         // InputEmail
@@ -399,6 +403,7 @@ macro_rules! model {
                         // InputText
                         // InputUrl
                         // TextArea
+                        // -------------------------------------------------------------------------
                         FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) | FieldType::InputText(_) | FieldType::InputUrl(_) | FieldType::TextArea(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
@@ -429,8 +434,10 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputFile ---------------------------------------------------------------
+
+                        // InputFile
                         // InputImage
+                        // -------------------------------------------------------------------------
                         FieldType::InputFile | FieldType::InputImage => {
                             let mut enum_field_type = String::new();
                             match widget.value {
@@ -455,10 +462,12 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputNumberI32 ----------------------------------------------------------
+
+                        // InputNumberI32
                         // InputNumberU32
                         // InputNumberI64
                         // InputNumberF64
+                        // -------------------------------------------------------------------------
                         FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_) | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
@@ -518,11 +527,13 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputRadioText ----------------------------------------------------------
+
+                        // InputRadioText
                         // InputRadioI32
                         // InputRadioU32
                         // InputRadioI64
                         // InputRadioF64
+                        // -------------------------------------------------------------------------
                         FieldType::InputRadioText(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
@@ -560,10 +571,12 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // InputRangeI32 -----------------------------------------------------------
+
+                        // InputRangeI32
                         // InputRangeU32
                         // InputRangeI64
                         // InputRangeF64
+                        // -------------------------------------------------------------------------
                         FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_) | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
@@ -623,11 +636,13 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // SelectText --------------------------------------------------------------
+
+                        // SelectText
                         // SelectI32
                         // SelectU32
                         // SelectI64
                         // SelectF64
+                        // -------------------------------------------------------------------------
                          FieldType::SelectText(_) | FieldType::SelectI32(_) | FieldType::SelectU32(_) | FieldType::SelectI64(_) | FieldType::SelectF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
@@ -671,7 +686,9 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // ForeignKey --------------------------------------------------------------
+
+                        // ForeignKey
+                        // -------------------------------------------------------------------------
                         FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
@@ -690,7 +707,9 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // ManyToMany --------------------------------------------------------------
+
+                        // ManyToMany
+                        // -------------------------------------------------------------------------
                         FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
@@ -709,7 +728,9 @@ macro_rules! model {
                                 )
                             }
                         }
-                        // OneToOne ----------------------------------------------------------------
+
+                        // OneToOne
+                        // -------------------------------------------------------------------------
                         FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
