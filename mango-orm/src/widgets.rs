@@ -7,7 +7,7 @@ use serde::Serialize;
 // WIDGETS
 // #################################################################################################
 /// Field types for Widgets
-#[derive(Debug, Clone, PartialEq)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum FieldType {
     Hash,
     InputCheckBoxText(String),
@@ -188,7 +188,7 @@ impl FieldType {
 
 /// Data types for the `select` attribute
 // *************************************************************************************************
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub enum SelectDataType {
     Text(String),
     I32(i32),
@@ -227,7 +227,7 @@ impl SelectDataType {
 
 /// Datatypes for the `step`,` min` and `max` attributes
 // *************************************************************************************************
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum StepMinMax {
     I32(i32),
     U32(u32),
@@ -734,9 +734,6 @@ mod tests {
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
-        assert_eq!(widget.step, String::new());
-        assert_eq!(widget.min, String::new());
-        assert_eq!(widget.max, String::new());
         assert_eq!(widget.step, StepMinMax::default());
         assert_eq!(widget.min, StepMinMax::default());
         assert_eq!(widget.max, StepMinMax::default());
