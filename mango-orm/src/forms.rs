@@ -46,16 +46,16 @@ pub trait Form {
                 match trans.field_type.as_str() {
                     "text" | "url" | "tel" | "password" | "email" | "color" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" maxlength=\"{}\" {} class=\"{}\" {}></p>",
+                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{} {}></p>",
                         controls,
                         label,
                         id_field,
                         trans.field_type,
                         trans.name,
                         trans.value,
-                        trans.maxlength,
-                        if trans.required { "required" } else { "" },
-                        trans.some_classes,
+                        if trans.maxlength > 0 { format!(" maxlength=\"{}\" ", trans.maxlength) } else { String::new() },
+                        if trans.required { " required " } else { "" },
+                        if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
                         trans.other_attrs
                     );
                     }
