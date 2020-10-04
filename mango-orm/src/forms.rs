@@ -46,38 +46,46 @@ pub trait Form {
                 match trans.field_type.as_str() {
                     "text" | "url" | "tel" | "password" | "email" | "color" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{} {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.maxlength > 0 { format!(" maxlength=\"{}\" ", trans.maxlength) } else { String::new() },
-                        if trans.required { " required " } else { "" },
-                        if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                        trans.other_attrs
-                    );
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            trans.value,
+                            if trans.maxlength > 0 { format!(" maxlength=\"{}\" ", trans.maxlength) } else { String::new() },
+                            if trans.required { " required " } else { "" },
+                            if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
+                            if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()}
+                        );
                     }
                     "checkbox" => {
                         controls = format!(
-                        "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\" {} class={} {}></p>",
-                        controls,
-                        label,
-                        id_field,
-                        trans.field_type,
-                        trans.name,
-                        trans.value,
-                        if trans.checked { "checked" } else { "" },
-                        trans.some_classes,
-                        trans.other_attrs
-                    );
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
+                            controls,
+                            label,
+                            id_field,
+                            trans.field_type,
+                            trans.name,
+                            trans.value,
+                            if trans.checked { " checked " } else { "" },
+                            if trans.some_classes.len() > 0 {
+                                format!(" class=\"{}\" ", trans.some_classes)
+                            } else {
+                                String::new()
+                            },
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
+                        );
                     }
                     "radio" => {
                         let mut tags = String::new();
                         for item in trans.select {
                             tags = format!(
-                                "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}>",
+                                "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>",
                                 label,
                                 id_field,
                                 trans.field_type,
@@ -89,14 +97,18 @@ pub trait Form {
                                 } else {
                                     String::new()
                                 },
-                                trans.other_attrs
+                                if trans.other_attrs.len() > 0 {
+                                    format!(" {}", trans.other_attrs)
+                                } else {
+                                    String::new()
+                                }
                             );
                         }
                         controls = format!("{}{}</p>", controls, tags);
                     }
                     "date" | "datetime" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -109,12 +121,16 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     "file" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -126,12 +142,16 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     "image" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -143,12 +163,16 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     "number" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{} {}></p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}></p>",
                             controls,
                             label,
                             id_field,
@@ -161,7 +185,11 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            trans.other_attrs
+                            if trans.other_attrs.len() > 0 {
+                                format!(" {}", trans.other_attrs)
+                            } else {
+                                String::new()
+                            }
                         );
                     }
                     "range" => {
