@@ -355,7 +355,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputCheckBoxU32(_) => {
                                     enum_field_type = "InputCheckBoxU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::InputCheckBoxI64(_) => {
                                     enum_field_type = "InputCheckBoxI64".to_string();
@@ -480,7 +480,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputNumberU32(_) => {
                                     enum_field_type = "InputNumberU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                     step_min_max_type = "U32".to_string();
                                 }
                                 FieldType::InputNumberI64(_) => {
@@ -589,7 +589,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputRangeU32(_) => {
                                     enum_field_type = "InputRangeU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                     step_min_max_type = "U32".to_string();
                                 }
                                 FieldType::InputRangeI64(_) => {
@@ -657,7 +657,7 @@ macro_rules! model {
                                 }
                                 FieldType::SelectU32(_) => {
                                     enum_field_type = "SelectU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::SelectI64(_) => {
                                     enum_field_type = "SelectI64".to_string();
