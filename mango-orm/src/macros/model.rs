@@ -220,23 +220,25 @@ macro_rules! model {
                 if cache.is_some() {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     let map_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
+                    let map_widget_type: HashMap<String, FieldType> = cache.unwrap().map_widget_type.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
                         let value = doc.get(field);
                         if value.is_some() {
                             let value = value.unwrap();
-                            match value.element_type() {
-                                ElementType::String => {
+                            let field = &field.to_string();
+                            match map_widget_type[field] {
+                                FieldType::InputText(_) => {
                                     let text: &str = value.as_str().unwrap();
                                     // Checking `maxlength`
-                                    let maxlength: usize = map_attrs[&field.to_string()].maxlength;
+                                    let maxlength: usize = map_attrs[field].maxlength;
                                     if maxlength > 0 && text.encode_utf16().count() > maxlength {
                                         panic!("Model: {} -> Field: {} : Exceeds line limit, maxlength = {}.",
                                             stringify!($sname), field, maxlength)
                                     }
                                     // Checking `unique`
-                                    if !is_update && map_attrs[&field.to_string()].unique {
+                                    if !is_update && map_attrs[field].unique {
                                         let filter: Document = doc!{ field.to_string() : text };
                                         let count: i64 = coll.count_documents(filter, None).await?;
                                         if count > 0 {
