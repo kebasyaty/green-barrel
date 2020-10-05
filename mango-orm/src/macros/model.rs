@@ -829,8 +829,7 @@ macro_rules! model {
                                     tmp_doc.insert(field.to_string(), match value.0 {
                                         "String" => Bson::String(value.1.clone()),
                                         "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
-                                        "u32" => Bson::Int64(value.1.parse::<i64>().unwrap()),
-                                        "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
+                                        "u32" | "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
                                         "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
                                         "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
                                         "none" => Bson::Null,
