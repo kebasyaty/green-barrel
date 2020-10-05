@@ -48,7 +48,7 @@ macro_rules! model {
                         )
                     })
                 } else {
-                    panic!("Model: {} - Service name (App name) and database name should not be empty.",
+                    panic!("Model: {} -> Method: field_types() : Service name (App name) and database name should not be empty.",
                         stringify!($sname))
                 }
             }
@@ -109,7 +109,7 @@ macro_rules! model {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
                     Ok(clean_attrs)
                 } else {
-                    panic!("Model: {} -> `form_map_attrs()` : Did not receive data from cache.",
+                    panic!("Model: {} -> Method: form_map_attrs() : Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
@@ -141,7 +141,7 @@ macro_rules! model {
                     }
                     Ok(cache.form_json_attrs.clone())
                 } else {
-                    panic!("Model: {} -> `form_json_attrs()` : Did not receive data from cache.",
+                    panic!("Model: {} -> Method: form_json_attrs() : Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
@@ -195,7 +195,7 @@ macro_rules! model {
                     }
                     Ok(format!("{}{}{}</form>", form, cache.form_html.clone(), buttons))
                 } else {
-                    panic!("Model: {} -> `form_json_attrs()` : Did not receive data from cache.",
+                    panic!("Model: {} -> Method: form_html() : Did not receive data from cache.",
                         stringify!($sname))
                 }
             }
