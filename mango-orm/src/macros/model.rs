@@ -232,16 +232,34 @@ macro_rules! model {
                             //
                             match map_widget_type[field] {
                                 "InputText" => {
-                                    let text: &str = value.as_str().unwrap();
+                                    let data = value.as_str().unwrap();
                                     // Checking `maxlength`
                                     let maxlength: usize = map_attrs[field].maxlength;
-                                    if maxlength > 0 && text.encode_utf16().count() > maxlength {
+                                    if maxlength > 0 && data.encode_utf16().count() > maxlength {
                                         panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
                                             stringify!($sname), field, maxlength)
                                     }
                                     // Checking `unique`
                                     if !is_update && map_attrs[field].unique {
-                                        let filter: Document = doc!{ field.to_string() : text };
+                                        let filter: Document = doc!{ field.to_string() : data };
+                                        let count: i64 = coll.count_documents(filter, None).await?;
+                                        if count > 0 {
+                                            panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
+                                                stringify!($sname), field)
+                                        }
+                                    }
+                                }
+                                "InputEmail" => {
+                                    let data: &str = value.as_str().unwrap();
+                                    // Checking `maxlength`
+                                    let maxlength: usize = map_attrs[field].maxlength;
+                                    if maxlength > 0 && data.encode_utf16().count() > maxlength {
+                                        panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
+                                            stringify!($sname), field, maxlength)
+                                    }
+                                    // Checking `unique`
+                                    if !is_update && map_attrs[field].unique {
+                                        let filter: Document = doc!{ field.to_string() : data };
                                         let count: i64 = coll.count_documents(filter, None).await?;
                                         if count > 0 {
                                             panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
