@@ -85,10 +85,10 @@ macro_rules! model {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                     let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut map_widget_type: HashMap<String, FieldType> = HashMap::new();
+                    let mut map_widget_type: HashMap<String, &str> = HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
-                        map_widget_type.insert(field.to_string(), widget.value.clone());
+                        map_widget_type.insert(field.to_string(), widget.value.get_enum_type());
                     }
                     // Add default data
                     let form_cache = FormCache{
@@ -221,7 +221,7 @@ macro_rules! model {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     let map_attrs: HashMap<String, Transport> = cache.form_map_attrs.clone();
-                    let map_widget_type: HashMap<String, FieldType> = cache.map_widget_type.clone();
+                    let map_widget_type: HashMap<String, &'static str> = cache.map_widget_type.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
@@ -230,7 +230,7 @@ macro_rules! model {
                             let value = value.unwrap();
                             let field = &field.to_string();
                             match map_widget_type[field] {
-                                FieldType::InputText(_) => {
+                                "InputText" => {
                                     let text: &str = value.as_str().unwrap();
                                     // Checking `maxlength`
                                     let maxlength: usize = map_attrs[field].maxlength;

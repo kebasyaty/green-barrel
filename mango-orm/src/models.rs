@@ -2,7 +2,7 @@
 //!
 //! `Meta` - Metadata of model (database name, collection name, etc).
 
-use crate::widgets::{FieldType, Transport};
+use crate::widgets::Transport;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -17,7 +17,7 @@ pub struct FormCache {
     pub form_map_attrs: HashMap<String, Transport>,
     pub form_json_attrs: String,
     pub form_html: String,
-    pub map_widget_type: HashMap<String, FieldType>,
+    pub map_widget_type: HashMap<String, &'static str>,
 }
 
 // Store
