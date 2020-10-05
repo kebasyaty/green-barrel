@@ -184,6 +184,49 @@ impl FieldType {
             Self::OneToOne => "none",
         }
     }
+
+    pub fn get_enum_type(&self) -> &'static str {
+        match self {
+            Self::Hash => "Hash",
+            Self::InputCheckBoxText(_) => "InputCheckBoxText",
+            Self::InputCheckBoxI32(_) => "InputCheckBoxI32",
+            Self::InputCheckBoxU32(_) => "InputCheckBoxU32",
+            Self::InputCheckBoxI64(_) => "InputCheckBoxI64",
+            Self::InputCheckBoxF64(_) => "InputCheckBoxF64",
+            Self::InputColor(_) => "InputColor",
+            Self::InputDate(_) => "InputDate",
+            Self::InputDateTime(_) => "InputDateTime",
+            Self::InputEmail(_) => "InputEmail",
+            Self::InputFile => "InputFile",
+            Self::InputImage => "InputImage",
+            Self::InputNumberI32(_) => "InputNumberI32",
+            Self::InputNumberU32(_) => "InputNumberU32",
+            Self::InputNumberI64(_) => "InputNumberI64",
+            Self::InputNumberF64(_) => "InputNumberF64",
+            Self::InputPassword(_) => "InputPassword",
+            Self::InputRadioText(_) => "InputRadioText",
+            Self::InputRadioI32(_) => "InputRadioI32",
+            Self::InputRadioU32(_) => "InputRadioU32",
+            Self::InputRadioI64(_) => "InputRadioI64",
+            Self::InputRadioF64(_) => "InputRadioF64",
+            Self::InputRangeI32(_) => "InputRangeI32",
+            Self::InputRangeU32(_) => "InputRangeU32",
+            Self::InputRangeI64(_) => "InputRangeI64",
+            Self::InputRangeF64(_) => "InputRangeF64",
+            Self::InputTel(_) => "InputTel",
+            Self::InputText(_) => "InputText",
+            Self::InputUrl(_) => "InputUrl",
+            Self::TextArea(_) => "TextArea",
+            Self::SelectText(_) => "SelectText",
+            Self::SelectI32(_) => "SelectI32",
+            Self::SelectU32(_) => "SelectU32",
+            Self::SelectI64(_) => "SelectI64",
+            Self::SelectF64(_) => "SelectF64",
+            Self::ForeignKey => "ForeignKey",
+            Self::ManyToMany => "ManyToMany",
+            Self::OneToOne => "OneToOne",
+        }
+    }
 }
 
 /// Data types for the `select` attribute
@@ -620,6 +663,131 @@ mod tests {
         assert_eq!(FieldType::ForeignKey.get_data_type(), "none");
         assert_eq!(FieldType::ManyToMany.get_data_type(), "none");
         assert_eq!(FieldType::OneToOne.get_data_type(), "none");
+
+        // Method get_enum_type()
+        // -----------------------------------------------------------------------------------------
+        assert_eq!(FieldType::Hash.get_enum_type(), "Hash");
+        assert_eq!(
+            FieldType::InputCheckBoxText(String::new()).get_enum_type(),
+            "InputCheckBoxText"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxI32(-1_i32).get_enum_type(),
+            "InputCheckBoxI32"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxU32(0_u32).get_enum_type(),
+            "InputCheckBoxU32"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxI64(-1_i64).get_enum_type(),
+            "InputCheckBoxI64"
+        );
+        assert_eq!(
+            FieldType::InputCheckBoxF64(1.3_f64).get_enum_type(),
+            "InputCheckBoxF64"
+        );
+        assert_eq!(
+            FieldType::InputColor(String::new()).get_enum_type(),
+            "InputColor"
+        );
+        assert_eq!(
+            FieldType::InputDate(String::new()).get_enum_type(),
+            "InputDate"
+        );
+        assert_eq!(
+            FieldType::InputDateTime(String::new()).get_enum_type(),
+            "InputDateTime"
+        );
+        assert_eq!(
+            FieldType::InputEmail(String::new()).get_enum_type(),
+            "InputEmail"
+        );
+        assert_eq!(FieldType::InputFile.get_enum_type(), "InputFile");
+        assert_eq!(FieldType::InputImage.get_enum_type(), "InputImage");
+        assert_eq!(
+            FieldType::InputNumberI32(-1_i32).get_enum_type(),
+            "InputNumberI32"
+        );
+        assert_eq!(
+            FieldType::InputNumberU32(0_u32).get_enum_type(),
+            "InputNumberU32"
+        );
+        assert_eq!(
+            FieldType::InputNumberI64(-1_i64).get_enum_type(),
+            "InputNumberI64"
+        );
+        assert_eq!(
+            FieldType::InputNumberF64(-1.3_f64).get_enum_type(),
+            "InputNumberF64"
+        );
+        assert_eq!(
+            FieldType::InputPassword(String::new()).get_enum_type(),
+            "InputPassword"
+        );
+        assert_eq!(
+            FieldType::InputRadioText(String::new()).get_enum_type(),
+            "InputRadioText"
+        );
+        assert_eq!(
+            FieldType::InputRadioI32(-1_i32).get_enum_type(),
+            "InputRadioI32"
+        );
+        assert_eq!(
+            FieldType::InputRadioU32(0_u32).get_enum_type(),
+            "InputRadioU32"
+        );
+        assert_eq!(
+            FieldType::InputRadioI64(-1_i64).get_enum_type(),
+            "InputRadioI64"
+        );
+        assert_eq!(
+            FieldType::InputRadioF64(1.3_f64).get_enum_type(),
+            "InputRadioF64"
+        );
+        assert_eq!(
+            FieldType::InputRangeI32(-1_i32).get_enum_type(),
+            "InputRangeI32"
+        );
+        assert_eq!(
+            FieldType::InputRangeU32(0_u32).get_enum_type(),
+            "InputRangeU32"
+        );
+        assert_eq!(
+            FieldType::InputRangeI64(-1_i64).get_enum_type(),
+            "InputRangeI64"
+        );
+        assert_eq!(
+            FieldType::InputRangeF64(-1.3_f64).get_enum_type(),
+            "InputRangeF64"
+        );
+        assert_eq!(
+            FieldType::InputTel(String::new()).get_enum_type(),
+            "InputTel"
+        );
+        assert_eq!(
+            FieldType::InputText(String::new()).get_enum_type(),
+            "InputText"
+        );
+        assert_eq!(
+            FieldType::InputUrl(String::new()).get_enum_type(),
+            "InputUrl"
+        );
+        assert_eq!(
+            FieldType::TextArea(String::new()).get_enum_type(),
+            "TextArea"
+        );
+        assert_eq!(
+            FieldType::SelectText(String::new()).get_enum_type(),
+            "SelectText"
+        );
+        assert_eq!(FieldType::SelectI32(-1_i32).get_enum_type(), "SelectI32");
+        assert_eq!(FieldType::SelectU32(0_u32).get_enum_type(), "SelectU32");
+        assert_eq!(FieldType::SelectI64(-1_i64).get_enum_type(), "SelectI64");
+        assert_eq!(FieldType::SelectF64(-1.3_f64).get_enum_type(), "SelectF64");
+        assert_eq!(FieldType::ForeignKey.get_enum_type(), "ForeignKey");
+        assert_eq!(FieldType::ManyToMany.get_enum_type(), "ManyToMany");
+        assert_eq!(FieldType::OneToOne.get_enum_type(), "OneToOne");
     }
 
     // Testing data types for the `select` attribute
