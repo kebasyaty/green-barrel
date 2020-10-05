@@ -223,27 +223,28 @@ macro_rules! model {
                         let value = doc.get(field);
                         if value.is_some() {
                             let value = value.unwrap();
+                            let mut data = String::new();
                             match value.element_type() {
                                 ElementType::String => {
-                                    let text: &str = value.as_str().unwrap();
+                                    data = value.as_str().unwrap().to_string();
                                     // Checking `maxlength`
                                     let maxlength: usize = map_attrs[&field.to_string()].maxlength;
-                                    if maxlength > 0 && text.encode_utf16().count() > maxlength {
+                                    if maxlength > 0 && data.encode_utf16().count() > maxlength {
                                         panic!("Model: {} -> Field: {} : Exceeds line limit, maxlength = {}.",
                                             stringify!($sname), field, maxlength)
-                                    }
-                                    // Checking `unique`
-                                    if !is_update && map_attrs[&field.to_string()].unique {
-                                        let filter: Document = doc!{ field.to_string() : text };
-                                        let count: i64 = coll.count_documents(filter, None).await?;
-                                        if count > 0 {
-                                            panic!("Model: {} -> Field: {} : Is not unique.",
-                                                stringify!($sname), field)
-                                        }
                                     }
                                 },
                                 _ => {
                                     panic!("Model: {} -> Field: {} : Unsupported data type.",
+                                        stringify!($sname), field)
+                                }
+                            }
+                            // Checking `unique`
+                            if !is_update && map_attrs[&field.to_string()].unique {
+                                let filter: Document = doc!{ field.to_string() : data };
+                                let count: i64 = coll.count_documents(filter, None).await?;
+                                if count > 0 {
+                                    panic!("Model: {} -> Field: {} : Is not unique.",
                                         stringify!($sname), field)
                                 }
                             }
