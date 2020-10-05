@@ -226,6 +226,7 @@ macro_rules! model {
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
                         let value: Option<&Bson> = doc.get(field);
+                        //
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
                             let field: &String = &field.to_string();
