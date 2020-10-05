@@ -85,14 +85,15 @@ macro_rules! model {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                     let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut map_field_type: HashMap<String, FieldType> = HashMap::new();
+                    let mut map_widget_type: HashMap<String, FieldType> = HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
-                        map_field_type.insert(field.to_string(), widget.value.clone());
+                        map_widget_type.insert(field.to_string(), widget.value.clone());
                     }
                     // Add default data
                     let form_cache = FormCache{
                         form_map_attrs: clean_attrs,
+                        map_widget_type: map_widget_type,
                         ..Default::default()
                     };
                     // Save default data to cache

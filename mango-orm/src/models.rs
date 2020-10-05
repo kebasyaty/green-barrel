@@ -17,7 +17,7 @@ pub struct FormCache {
     pub form_map_attrs: HashMap<String, Transport>,
     pub form_json_attrs: String,
     pub form_html: String,
-    pub map_field_type: HashMap<String, FieldType>,
+    pub map_widget_type: HashMap<String, FieldType>,
 }
 
 // Store
