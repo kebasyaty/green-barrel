@@ -235,7 +235,7 @@ macro_rules! model {
                                     // Checking `maxlength`
                                     let maxlength: usize = map_attrs[field].maxlength;
                                     if maxlength > 0 && text.encode_utf16().count() > maxlength {
-                                        panic!("Model: {} -> Field: {} : Exceeds line limit, maxlength = {}.",
+                                        panic!("Model: {} -> Field: {} -> Method: save() : Exceeds line limit, maxlength = {}.",
                                             stringify!($sname), field, maxlength)
                                     }
                                     // Checking `unique`
@@ -243,23 +243,23 @@ macro_rules! model {
                                         let filter: Document = doc!{ field.to_string() : text };
                                         let count: i64 = coll.count_documents(filter, None).await?;
                                         if count > 0 {
-                                            panic!("Model: {} -> Field: {} : Is not unique.",
+                                            panic!("Model: {} -> Field: {} -> Method: save() : Is not unique.",
                                                 stringify!($sname), field)
                                         }
                                     }
                                 }
                                 _ => {
-                                    panic!("Model: {} -> Field: {} : Unsupported data type.",
+                                    panic!("Model: {} -> Field: {} -> Method: save() : Unsupported data type.",
                                         stringify!($sname), field)
                                 }
                             }
                         } else {
-                            panic!("Model: {} -> Field: {} : This field is missing.",
+                            panic!("Model: {} -> Field: {} -> Method: save() : This field is missing.",
                                 stringify!($sname), field)
                         }
                     }
                 } else {
-                    panic!("Model: {} -> `save()` : Did not receive data from cache.",
+                    panic!("Model: {} -> Method: save() : Did not receive data from cache.",
                         stringify!($sname))
                 }
                 // Save to database
