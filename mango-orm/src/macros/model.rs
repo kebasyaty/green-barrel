@@ -71,15 +71,15 @@ macro_rules! model {
                 Ok(map)
             }
             // Add (if required) default form data to cache
-            pub fn form_cache() -> Result<(std::sync::MutexGuard<'static, HashMap<&'static str,
+            pub async fn form_cache() -> Result<(async_mutex::MutexGuard<'static, HashMap<&'static str,
                 mango_orm::models::FormCache>>, &'static str), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let key: &'static str = Box::leak(format!("{}_{}",
                     $service.to_lowercase(),
                     stringify!($sname).to_lowercase()
                 ).into_boxed_str());
-                let mut store: std::sync::MutexGuard<'_, HashMap<&'static str,
-                    mango_orm::models::FormCache>> = FORM_CACHE.lock().unwrap();
+                let mut store: async_mutex::MutexGuard<'_, HashMap<&'static str,
+                    mango_orm::models::FormCache>> = FORM_CACHE.lock().await;
                 let mut cache: Option<&FormCache> = store.get(key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
@@ -102,8 +102,8 @@ macro_rules! model {
                 Ok((store, key))
             }
             // Get a map of pure attributes of Form for page templates
-            pub fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
-                let (store, key) = Self::form_cache()?;
+            pub async fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+                let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
@@ -114,8 +114,8 @@ macro_rules! model {
                 }
             }
             // Get Form attributes in Json format for page templates
-            pub fn form_json_attrs() -> Result<String, Box<dyn Error>> {
-                let (mut store, key) = Self::form_cache()?;
+            pub async fn form_json_attrs() -> Result<String, Box<dyn Error>> {
+                let (mut store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
@@ -146,10 +146,10 @@ macro_rules! model {
                 }
             }
             // Get Html Form of Model for page templates
-            pub fn form_html(action: &str, method: Option<Method>, enctype: Option<Enctype>) ->
+            pub async fn form_html(action: &str, method: Option<Method>, enctype: Option<Enctype>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let (mut store, key) = Self::form_cache()?;
+                let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let method: String = if method.is_some() {
                     match method.unwrap() {
@@ -226,7 +226,7 @@ macro_rules! model {
             // update an existing document.
             // (Returns the hash-line of the identifier)
             pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
-                let (mut store, key) = Self::form_cache()?;
+                let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let is_update: bool = self.hash.len() != 0;
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {

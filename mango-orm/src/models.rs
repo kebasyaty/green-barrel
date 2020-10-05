@@ -3,9 +3,9 @@
 //! `Meta` - Metadata of model (database name, collection name, etc).
 
 use crate::widgets::Transport;
+use async_mutex::Mutex;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
-use std::sync::Mutex;
 
 // FOR MODELS
 // #################################################################################################
