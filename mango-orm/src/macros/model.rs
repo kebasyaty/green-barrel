@@ -285,7 +285,7 @@ macro_rules! model {
                 //
                 if !FIELD_NAMES.contains(&"hash") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` : `hash`- Required field.",
+                        "Service: `{}` -> Model: `{}` -> Method: `migrat()` : `hash`- Required field.",
                         $service, MODEL_NAME
                     )
                 }
@@ -294,7 +294,8 @@ macro_rules! model {
                     .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
                 if field_names_no_hash.len() == 0 {
-                    panic!("The model structure has no fields.");
+                    panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : The model structure has no fields.",
+                        $service, MODEL_NAME);
                 }
                 // Create a map with field types
                 let map_field_types: HashMap<&'static str, &'static str> =
