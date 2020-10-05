@@ -227,8 +227,8 @@ macro_rules! model {
                         if field == &"hash" { continue; }
                         let value: Option<&Bson> = doc.get(field);
                         if value.is_some() {
-                            let value = value.unwrap();
-                            let field = &field.to_string();
+                            let value: &Bson = value.unwrap();
+                            let field: &String = &field.to_string();
                             //
                             match map_widget_type[field] {
                                 "InputText" => {
