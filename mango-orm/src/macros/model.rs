@@ -229,6 +229,7 @@ macro_rules! model {
                         if value.is_some() {
                             let value = value.unwrap();
                             let field = &field.to_string();
+                            //
                             match map_widget_type[field] {
                                 "InputText" => {
                                     let text: &str = value.as_str().unwrap();
