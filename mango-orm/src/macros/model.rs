@@ -841,7 +841,10 @@ macro_rules! model {
                                         "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
                                         "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
                                         "none" => Bson::Null,
-                                        _ => panic!("Invalid data type."),
+                                        _ => {
+                                            panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : Invalid data type.",
+                                                $service, MODEL_NAME)
+                                        }
                                     });
                                 }
                             }
