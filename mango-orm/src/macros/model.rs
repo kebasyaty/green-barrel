@@ -218,9 +218,10 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
+                    let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                    let map_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
-                    let map_widget_type: HashMap<String, FieldType> = cache.unwrap().map_widget_type.clone();
+                    let map_attrs: HashMap<String, Transport> = cache.form_map_attrs.clone();
+                    let map_widget_type: HashMap<String, FieldType> = cache.map_widget_type.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
