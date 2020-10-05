@@ -202,6 +202,14 @@ macro_rules! model {
 
             // Database Query API
             // *************************************************************************************
+            // Checking `maxlength`
+            fn check_maxlength(maxlength: usize, data: &str, field: &String ) -> Result<(), Box<dyn Error>>  {
+                if maxlength > 0 && data.encode_utf16().count() > maxlength {
+                    panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
+                        stringify!($sname), field, maxlength)
+                }
+                Ok(())
+            }
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
@@ -233,13 +241,9 @@ macro_rules! model {
                             //
                             match map_widget_type[field] {
                                 "InputText" => {
-                                    let data = value.as_str().unwrap();
+                                    let data: &str = value.as_str().unwrap();
                                     // Checking `maxlength`
-                                    let maxlength: usize = map_attrs[field].maxlength;
-                                    if maxlength > 0 && data.encode_utf16().count() > maxlength {
-                                        panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
-                                            stringify!($sname), field, maxlength)
-                                    }
+                                    Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
                                     // Checking `unique`
                                     if !is_update && map_attrs[field].unique {
                                         let filter: Document = doc!{ field.to_string() : data };
@@ -253,11 +257,7 @@ macro_rules! model {
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     // Checking `maxlength`
-                                    let maxlength: usize = map_attrs[field].maxlength;
-                                    if maxlength > 0 && data.encode_utf16().count() > maxlength {
-                                        panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
-                                            stringify!($sname), field, maxlength)
-                                    }
+                                    Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
                                     // Checking `unique`
                                     if !is_update && map_attrs[field].unique {
                                         let filter: Document = doc!{ field.to_string() : data };
