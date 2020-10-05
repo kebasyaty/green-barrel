@@ -534,13 +534,29 @@ macro_rules! model {
                         // InputRadioI64
                         // InputRadioF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputRadioText(_) => {
+                        FieldType::InputRadioText(_) | FieldType::InputRadioI32(_) | FieldType::InputRadioU32(_) | FieldType::InputRadioI64(_) | FieldType::InputRadioF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
                                 FieldType::InputRadioText(_) => {
                                     enum_field_type = "InputRadioText".to_string();
                                     data_field_type = "String".to_string();
+                                }
+                                FieldType::InputRadioI32(_) => {
+                                    enum_field_type = "InputRadioI32".to_string();
+                                    data_field_type = "i32".to_string();
+                                }
+                                FieldType::InputRadioU32(_) => {
+                                    enum_field_type = "InputRadioU32".to_string();
+                                    data_field_type = "i64".to_string();
+                                }
+                                FieldType::InputRadioI64(_) => {
+                                    enum_field_type = "InputRadioI64".to_string();
+                                    data_field_type = "i64".to_string();
+                                }
+                                FieldType::InputRadioF64(_) => {
+                                    enum_field_type = "InputRadioF64".to_string();
+                                    data_field_type = "f64".to_string();
                                 }
                                 _ => panic!("Invalid field type")
                             }
