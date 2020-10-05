@@ -210,6 +210,18 @@ macro_rules! model {
                 }
                 Ok(())
             }
+            // Checking `unique`
+            async fn check_unique(is_update: bool, is_unique: bool, field: &String, data: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
+                if !is_update && is_unique {
+                    let filter: Document = doc!{ field.to_string() : data };
+                    let count: i64 = coll.count_documents(filter, None).await?;
+                    if count > 0 {
+                        panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
+                            stringify!($sname), field)
+                    }
+                }
+                Ok(())
+            }
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
@@ -245,28 +257,14 @@ macro_rules! model {
                                     // Checking `maxlength`
                                     Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
                                     // Checking `unique`
-                                    if !is_update && map_attrs[field].unique {
-                                        let filter: Document = doc!{ field.to_string() : data };
-                                        let count: i64 = coll.count_documents(filter, None).await?;
-                                        if count > 0 {
-                                            panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
-                                                stringify!($sname), field)
-                                        }
-                                    }
+                                    Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     // Checking `maxlength`
                                     Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
                                     // Checking `unique`
-                                    if !is_update && map_attrs[field].unique {
-                                        let filter: Document = doc!{ field.to_string() : data };
-                                        let count: i64 = coll.count_documents(filter, None).await?;
-                                        if count > 0 {
-                                            panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
-                                                stringify!($sname), field)
-                                        }
-                                    }
+                                    Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
                                 }
                                 _ => {
                                     panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
