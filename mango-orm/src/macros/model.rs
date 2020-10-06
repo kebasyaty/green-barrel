@@ -119,7 +119,7 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    if cache.form_json.len() == 0 {
+                    if cache.attrs_json.len() == 0 {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
                         let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
@@ -133,13 +133,13 @@ macro_rules! model {
                             }
                         }
                         // Update data
-                        form_cache.form_json = format!("{{{}}}", json_text);
+                        form_cache.attrs_json = format!("{{{}}}", json_text);
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(form_cache.form_json);
+                        return Ok(form_cache.attrs_json);
                     }
-                    Ok(cache.form_json.clone())
+                    Ok(cache.attrs_json.clone())
                 } else {
                     panic!("Model: `{}` -> Method: `form_json()` : Did not receive data from cache.",
                         stringify!($sname))

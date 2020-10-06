@@ -15,7 +15,7 @@ use std::collections::HashMap;
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
     pub attrs_map: HashMap<String, Transport>,
-    pub form_json: String,
+    pub attrs_json: String,
     pub form_html: String,
     pub widget_map: HashMap<String, &'static str>,
 }
