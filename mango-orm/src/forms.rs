@@ -369,6 +369,17 @@ pub struct PostProcess {
     pub attrs_map: HashMap<String, Transport>,
 }
 
+impl PostProcess {
+    pub fn to_hash(&self) -> Result<String, Box<dyn Error>> {
+        Ok(self
+            .attrs_map
+            .get(&"hash".to_string())
+            .unwrap()
+            .value
+            .clone())
+    }
+}
+
 // TESTS
 // #################################################################################################
 #[cfg(test)]
