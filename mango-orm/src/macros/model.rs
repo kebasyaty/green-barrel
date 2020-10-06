@@ -203,19 +203,22 @@ macro_rules! model {
             // Database Query API
             // *************************************************************************************
             // Checking `maxlength`
-            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), String>  {
+            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
                 if maxlength > 0 && data.encode_utf16().count() > maxlength {
                     return Err(format!("Exceeds line limit, maxlength = {}.", maxlength));
                 }
                 Ok(())
             }
             // Checking `unique`
-            async fn check_unique(is_update: bool, is_unique: bool, field: &String, data: &str, coll: &Collection) -> Result<(), &'static str> {
+            async fn check_unique(
+                is_update: bool, is_unique: bool, field: &String, data: &str,
+                coll: &Collection) -> Result<(), Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
                     let filter: Document = doc!{ field.to_string() : data };
                     let count: i64 = coll.count_documents(filter, None).await.unwrap();
                     if count > 0 {
-                        return Err("Is not unique.");
+                        return Err(Box::new("Is not unique."));
                     }
                 }
                 Ok(())
@@ -226,6 +229,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client) -> Result<PostProcess, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
+                let flag_err = false;
                 let is_update: bool = self.hash.len() != 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
@@ -289,14 +293,16 @@ macro_rules! model {
                 }
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                if !is_update {
-                    let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
-                    self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
-                } else {
-                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
-                        .unwrap_or_else(|err| { panic!("{:?}", err) });
-                    let query: Document = doc!{"_id": object_id};
-                    coll.update_one(query, doc, None).await?;
+                if !flag_err {
+                    if !is_update {
+                        let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
+                        self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
+                    } else {
+                        let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                            .unwrap_or_else(|err| { panic!("{:?}", err) });
+                        let query: Document = doc!{"_id": object_id};
+                        coll.update_one(query, doc, None).await?;
+                    }
                 }
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 Ok(PostProcess { attrs_map })
