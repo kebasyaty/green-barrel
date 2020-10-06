@@ -257,26 +257,30 @@ macro_rules! model {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let tmp = attrs_map.get(field).unwrap().error.clone();
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                     Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let tmp = attrs_map.get(field).unwrap().error.clone();
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let tmp = attrs_map.get(field).unwrap().error.clone();
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                     Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let tmp = attrs_map.get(field).unwrap().error.clone();
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                 }
                                 _ => {
