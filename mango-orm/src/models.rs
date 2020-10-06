@@ -9,7 +9,7 @@ use std::collections::HashMap;
 
 // FOR MODELS
 // #################################################################################################
-/// Global storage
+// Global storage
 // *************************************************************************************************
 /// For caching Form (map, json) attributes and Html
 #[derive(Default, Clone, Debug)]
