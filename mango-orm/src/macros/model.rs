@@ -280,18 +280,18 @@ macro_rules! model {
                                     });
                                 }
                                 _ => {
-                                    panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
-                                        stringify!($sname), field)
+                                    Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
+                                        stringify!($sname), field))?
                                 }
                             }
                         } else {
-                            panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing.",
-                                stringify!($sname), field)
+                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing.",
+                                stringify!($sname), field))?
                         }
                     }
                 } else {
-                    panic!("Model: `{}` -> Method: `save()` : Did not receive data from cache.",
-                        stringify!($sname))
+                    Err(format!("Model: `{}` -> Method: `save()` : Did not receive data from cache.",
+                        stringify!($sname)))?
                 }
                 // Save to database
                 // ---------------------------------------------------------------------------------
