@@ -203,19 +203,19 @@ macro_rules! model {
             // Database Query API
             // *************************************************************************************
             // Checking `maxlength`
-            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
+            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), String>  {
                 if maxlength > 0 && data.encode_utf16().count() > maxlength {
-                    panic!("Exceeds line limit, maxlength = {}.", maxlength)
+                    return Err(format!("Exceeds line limit, maxlength = {}.", maxlength));
                 }
                 Ok(())
             }
             // Checking `unique`
-            async fn check_unique(is_update: bool, is_unique: bool, field: &String, data: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
+            async fn check_unique(is_update: bool, is_unique: bool, field: &String, data: &str, coll: &Collection) -> Result<(), &'static str> {
                 if !is_update && is_unique {
                     let filter: Document = doc!{ field.to_string() : data };
-                    let count: i64 = coll.count_documents(filter, None).await?;
+                    let count: i64 = coll.count_documents(filter, None).await.unwrap();
                     if count > 0 {
-                        panic!("Is not unique.")
+                        return Err("Is not unique.");
                     }
                 }
                 Ok(())
