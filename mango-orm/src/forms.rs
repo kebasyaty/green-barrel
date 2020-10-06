@@ -364,6 +364,7 @@ pub mod dynamic_arguments {
 // #################################################################################################
 // The return type for the `save()` method
 // (for post-processing)
+#[derive(Debug)]
 pub struct PostProcess {
     pub attrs_map: HashMap<String, Transport>,
 }

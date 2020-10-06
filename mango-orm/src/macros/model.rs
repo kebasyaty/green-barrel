@@ -225,7 +225,7 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client) -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+            pub async fn save(& mut self, client: &Client) -> Result<PostProcess, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let is_update: bool = self.hash.len() != 0;
@@ -289,7 +289,7 @@ macro_rules! model {
                     coll.update_one(query, doc, None).await?;
                 }
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
-                Ok(attrs_map)
+                Ok(PostProcess { attrs_map })
             }
 
             // Migrating Model
