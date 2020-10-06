@@ -92,8 +92,8 @@ macro_rules! model {
                     }
                     // Add default data
                     let form_cache = FormCache{
-                        form_map_attrs: clean_attrs,
-                        map_widget_type: map_widget_type,
+                        form_map: clean_attrs,
+                        widget_type: map_widget_type,
                         ..Default::default()
                     };
                     // Save default data to cache
@@ -102,11 +102,11 @@ macro_rules! model {
                 Ok((store, key))
             }
             // Get a map of pure attributes of Form for page templates
-            pub async fn form_map_attrs() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+            pub async fn form_map() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
-                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map_attrs.clone();
+                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().form_map.clone();
                     Ok(clean_attrs)
                 } else {
                     panic!("Model: `{}` -> Method: `form_map_attrs()` : Did not receive data from cache.",
@@ -114,15 +114,15 @@ macro_rules! model {
                 }
             }
             // Get Form attributes in Json format for page templates
-            pub async fn form_json_attrs() -> Result<String, Box<dyn Error>> {
+            pub async fn form_json() -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    if cache.form_json_attrs.len() == 0 {
+                    if cache.form_json.len() == 0 {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
-                        let attrs: HashMap<String, Transport> = form_cache.form_map_attrs.clone();
+                        let attrs: HashMap<String, Transport> = form_cache.form_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -133,13 +133,13 @@ macro_rules! model {
                             }
                         }
                         // Update data
-                        form_cache.form_json_attrs = format!("{{{}}}", json_text);
+                        form_cache.form_json = format!("{{{}}}", json_text);
                         // Save data to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(form_cache.form_json_attrs);
+                        return Ok(form_cache.form_json);
                     }
-                    Ok(cache.form_json_attrs.clone())
+                    Ok(cache.form_json.clone())
                 } else {
                     panic!("Model: `{}` -> Method: `form_json_attrs()` : Did not receive data from cache.",
                         stringify!($sname))
@@ -173,7 +173,7 @@ macro_rules! model {
                     let is_cached: bool = cache.form_html.len() == 0;
                     if is_cached {
                         build_controls = true;
-                        attrs = cache.form_map_attrs.clone();
+                        attrs = cache.form_map.clone();
                     }
                     let (form, controls, buttons) = Self::html(
                         attrs,
@@ -240,8 +240,8 @@ macro_rules! model {
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                    let map_attrs: HashMap<String, Transport> = cache.form_map_attrs.clone();
-                    let map_widget_type: HashMap<String, &'static str> = cache.map_widget_type.clone();
+                    let map_attrs: HashMap<String, Transport> = cache.form_map.clone();
+                    let map_widget_type: HashMap<String, &'static str> = cache.widget_type.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
