@@ -14,10 +14,10 @@ use std::collections::HashMap;
 /// For caching Form (map, json) attributes and Html
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
-    pub form_map: HashMap<String, Transport>,
+    pub map_attrs: HashMap<String, Transport>,
     pub form_json: String,
     pub form_html: String,
-    pub widget_type: HashMap<String, &'static str>,
+    pub map_widget: HashMap<String, &'static str>,
 }
 
 // Store
