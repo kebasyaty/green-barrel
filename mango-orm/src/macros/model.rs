@@ -48,8 +48,8 @@ macro_rules! model {
                         )
                     })
                 } else {
-                    panic!("Model: `{}` -> Method: `field_types()` : Service name (App name) and database name should not be empty.",
-                        stringify!($sname))
+                    Err(format!("Model: `{}` -> Method: `field_types()` : Service name (App name) and database name should not be empty.",
+                        stringify!($sname)))?
                 }
             }
 
@@ -109,8 +109,8 @@ macro_rules! model {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
-                    panic!("Model: `{}` -> Method: `form_map()` : Did not receive data from cache.",
-                        stringify!($sname))
+                    Err(format!("Model: `{}` -> Method: `form_map()` : Did not receive data from cache.",
+                        stringify!($sname)))?
                 }
             }
             // Get Form attributes in Json format for page templates
@@ -141,8 +141,8 @@ macro_rules! model {
                     }
                     Ok(cache.attrs_json.clone())
                 } else {
-                    panic!("Model: `{}` -> Method: `form_json()` : Did not receive data from cache.",
-                        stringify!($sname))
+                    Err(format!("Model: `{}` -> Method: `form_json()` : Did not receive data from cache.",
+                        stringify!($sname)))?
                 }
             }
             // Get Html Form of Model for page templates
@@ -195,8 +195,8 @@ macro_rules! model {
                     }
                     Ok(format!("{}{}{}</form>", form, cache.form_html.clone(), buttons))
                 } else {
-                    panic!("Model: `{}` -> Method: `form_html()` : Did not receive data from cache.",
-                        stringify!($sname))
+                    Err(format!("Model: `{}` -> Method: `form_html()` : Did not receive data from cache.",
+                        stringify!($sname)))?
                 }
             }
 
@@ -232,9 +232,7 @@ macro_rules! model {
                 let mut flag_err = false;
                 let is_update: bool = self.hash.len() != 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
-                let mut doc: Document = to_document(self).unwrap_or_else(|err| {
-                    panic!("{:?}", err)
-                });
+                let mut doc: Document = to_document(self)?;
                 doc.remove("hash").unwrap();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Check field values (maxlength, unique, min, max, etc...)
