@@ -225,10 +225,11 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client) -> Result<String, Box<dyn Error>> {
+            pub async fn save(& mut self, client: &Client) -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let is_update: bool = self.hash.len() != 0;
+                let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
                     panic!("{:?}", err)
                 });
@@ -240,7 +241,7 @@ macro_rules! model {
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                    let map_attrs: HashMap<String, Transport> = cache.attrs_map.clone();
+                    attrs_map = cache.attrs_map.clone();
                     let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
@@ -254,13 +255,13 @@ macro_rules! model {
                             match widget_map[field] {
                                 "InputText" => {
                                     let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
-                                    Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
+                                    Self::check_maxlength(attrs_map[field].maxlength, data, field )?;
+                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await?;
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
-                                    Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
+                                    Self::check_maxlength(attrs_map[field].maxlength, data, field )?;
+                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await?;
                                 }
                                 _ => {
                                     panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
@@ -287,7 +288,8 @@ macro_rules! model {
                     let query: Document = doc!{"_id": object_id};
                     coll.update_one(query, doc, None).await?;
                 }
-                Ok(self.hash.clone())
+                attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
+                Ok(attrs_map)
             }
 
             // Migrating Model
