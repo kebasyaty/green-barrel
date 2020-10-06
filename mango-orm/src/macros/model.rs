@@ -85,15 +85,15 @@ macro_rules! model {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                     let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut map_widget: HashMap<String, &str> = HashMap::new();
+                    let mut widget_map: HashMap<String, &str> = HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
-                        map_widget.insert(field.to_string(), widget.value.get_enum_type());
+                        widget_map.insert(field.to_string(), widget.value.get_enum_type());
                     }
                     // Add default data
                     let form_cache = FormCache{
-                        map_attrs: clean_attrs,
-                        map_widget: map_widget,
+                        attrs_map: clean_attrs,
+                        widget_map: widget_map,
                         ..Default::default()
                     };
                     // Save default data to cache
@@ -106,7 +106,7 @@ macro_rules! model {
                 let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
-                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().map_attrs.clone();
+                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
                     panic!("Model: `{}` -> Method: `form_map()` : Did not receive data from cache.",
@@ -122,7 +122,7 @@ macro_rules! model {
                     if cache.form_json.len() == 0 {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
-                        let attrs: HashMap<String, Transport> = form_cache.map_attrs.clone();
+                        let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -173,7 +173,7 @@ macro_rules! model {
                     let is_cached: bool = cache.form_html.len() == 0;
                     if is_cached {
                         build_controls = true;
-                        attrs = cache.map_attrs.clone();
+                        attrs = cache.attrs_map.clone();
                     }
                     let (form, controls, buttons) = Self::html(
                         attrs,
@@ -240,8 +240,8 @@ macro_rules! model {
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                    let map_attrs: HashMap<String, Transport> = cache.map_attrs.clone();
-                    let map_widget: HashMap<String, &'static str> = cache.map_widget.clone();
+                    let map_attrs: HashMap<String, Transport> = cache.attrs_map.clone();
+                    let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
@@ -251,7 +251,7 @@ macro_rules! model {
                             let value: &Bson = value.unwrap();
                             let field: &String = &field.to_string();
                             //
-                            match map_widget[field] {
+                            match widget_map[field] {
                                 "InputText" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
