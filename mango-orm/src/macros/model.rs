@@ -229,7 +229,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client) -> Result<PostProcess, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
-                let flag_err = false;
+                let mut flag_err = false;
                 let is_update: bool = self.hash.len() != 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let mut doc: Document = to_document(self).unwrap_or_else(|err| {
@@ -258,10 +258,12 @@ macro_rules! model {
                                 "InputText" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
+                                        flag_err = true;
                                         let tmp = attrs_map.get(field).unwrap().error.clone();
                                         attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
                                     });
                                     Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                        flag_err = true;
                                         let tmp = attrs_map.get(field).unwrap().error.clone();
                                         attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
                                     });
@@ -269,10 +271,12 @@ macro_rules! model {
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
+                                        flag_err = true;
                                         let tmp = attrs_map.get(field).unwrap().error.clone();
                                         attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
                                     });
                                     Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                        flag_err = true;
                                         let tmp = attrs_map.get(field).unwrap().error.clone();
                                         attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
                                     });
