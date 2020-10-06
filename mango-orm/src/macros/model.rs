@@ -255,14 +255,23 @@ macro_rules! model {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
                                         let tmp = attrs_map.get(field).unwrap().error.clone();
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err)
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
                                     });
-                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await?;
+                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                        let tmp = attrs_map.get(field).unwrap().error.clone();
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                    });
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(attrs_map[field].maxlength, data)?;
-                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await?;
+                                    Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
+                                        let tmp = attrs_map.get(field).unwrap().error.clone();
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                    });
+                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                        let tmp = attrs_map.get(field).unwrap().error.clone();
+                                        attrs_map.get_mut(field).unwrap().error = format!("{}<br>{}", tmp, err);
+                                    });
                                 }
                                 _ => {
                                     panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
