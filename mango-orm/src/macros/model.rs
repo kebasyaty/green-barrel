@@ -205,8 +205,8 @@ macro_rules! model {
             // Checking `maxlength`
             fn check_maxlength(maxlength: usize, data: &str, field: &String ) -> Result<(), Box<dyn Error>>  {
                 if maxlength > 0 && data.encode_utf16().count() > maxlength {
-                    panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Exceeds line limit, maxlength = {}.",
-                        stringify!($sname), field, maxlength)
+                    panic!("Field: {} - Exceeds line limit, maxlength = {}.",
+                        field, maxlength)
                 }
                 Ok(())
             }
@@ -216,8 +216,8 @@ macro_rules! model {
                     let filter: Document = doc!{ field.to_string() : data };
                     let count: i64 = coll.count_documents(filter, None).await?;
                     if count > 0 {
-                        panic!("Model: `{}` -> Field: `{}` -> Method: `save()` : Is not unique.",
-                            stringify!($sname), field)
+                        panic!("Field: {} - Is not unique.",
+                            field)
                     }
                 }
                 Ok(())
