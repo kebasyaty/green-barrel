@@ -254,16 +254,12 @@ macro_rules! model {
                             match map_widget_type[field] {
                                 "InputText" => {
                                     let data: &str = value.as_str().unwrap();
-                                    // Checking `maxlength`
                                     Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
-                                    // Checking `unique`
                                     Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
-                                    // Checking `maxlength`
                                     Self::check_maxlength(map_attrs[field].maxlength, data, field )?;
-                                    // Checking `unique`
                                     Self::check_unique(is_update, map_attrs[field].unique, field, data, &coll).await?;
                                 }
                                 _ => {
