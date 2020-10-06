@@ -218,7 +218,7 @@ macro_rules! model {
                     let filter: Document = doc!{ field.to_string() : data };
                     let count: i64 = coll.count_documents(filter, None).await?;
                     if count > 0 {
-                        Err("Is not unique.")?;
+                        Err("Is not unique.")?
                     }
                 }
                 Ok(())
