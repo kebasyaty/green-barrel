@@ -8,7 +8,7 @@ use std::error::Error;
 
 // FORMS
 // #################################################################################################
-/// Define form settings for models.
+// Define form settings for models.
 // *************************************************************************************************
 pub trait Form {
     // Customizing widgets by model fields
@@ -308,11 +308,11 @@ pub trait Form {
     }
 }
 
-/// DYNAMIC FORM ARGUMENTS
-/// ################################################################################################
+// DYNAMIC FORM ARGUMENTS
+// ################################################################################################
 pub mod dynamic_arguments {
-    /// Method
-    /// (HTTP protocol method)
+    // Method
+    // (HTTP protocol method)
     // *********************************************************************************************
     pub enum Method {
         Get,
@@ -334,8 +334,8 @@ pub mod dynamic_arguments {
         }
     }
 
-    /// Enctype
-    /// (How to encode form data)
+    // Enctype
+    // (How to encode form data)
     // *********************************************************************************************
     pub enum Enctype {
         Application,
