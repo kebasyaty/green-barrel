@@ -370,7 +370,7 @@ pub struct PostProcess {
 }
 
 impl PostProcess {
-    pub fn to_hash(&self) -> Result<String, String> {
+    pub fn to_hash(&self) -> Result<String, Box<dyn Error>> {
         let mut errors = String::new();
         for (_, trans) in self.attrs_map.clone() {
             if trans.error.len() > 0 {
@@ -385,7 +385,7 @@ impl PostProcess {
                 .value
                 .clone())
         } else {
-            return Err(format!("{}", errors));
+            Err(errors)?
         }
     }
 }
