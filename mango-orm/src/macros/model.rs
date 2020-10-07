@@ -223,6 +223,14 @@ macro_rules! model {
                 }
                 Ok(())
             }
+            // Accumulation of errors
+            fn accumula_err(attrs_map: &HashMap<String, Transport>, field: &String, err: &String) ->
+                Result<String, Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
+                Ok(format!("{}{}", tmp, err))
+            }
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
@@ -258,9 +266,8 @@ macro_rules! model {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
+                                        attrs_map.get_mut(field).unwrap().error =
+                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
                                     Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
