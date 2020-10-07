@@ -305,7 +305,9 @@ macro_rules! model {
                         coll.update_one(query, doc, None).await?;
                     }
                 }
+                //
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
+                //
                 Ok(
                     match output_format {
                         OutputFormat::Hash => OutputData::Hash(String::new()),
