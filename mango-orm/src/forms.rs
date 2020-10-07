@@ -3,6 +3,7 @@
 //! `Form` - Define form settings for models (widgets, html).
 
 use crate::widgets::{Transport, Widget};
+use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 
@@ -397,6 +398,20 @@ impl PostProcess {
     // Get attribute map
     pub fn to_map(&self) -> Result<HashMap<String, Transport>, Box<dyn Error>> {
         Ok(self.attrs_map.clone())
+    }
+    // Get json-line
+    pub fn to_json(&self) -> Result<String, Box<dyn Error>> {
+        let attrs: HashMap<String, Transport> = self.attrs_map.clone();
+        let mut json_text = String::new();
+        for (field, trans) in attrs {
+            let tmp = serde_json::to_string(&trans).unwrap();
+            if json_text.len() > 0 {
+                json_text = format!("{},\"{}\":{}", json_text, field, tmp);
+            } else {
+                json_text = format!("\"{}\":{}", field, tmp);
+            }
+        }
+        Ok(format!("{{{}}}", json_text))
     }
 }
 
