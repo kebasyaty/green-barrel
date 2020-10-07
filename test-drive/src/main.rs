@@ -42,9 +42,6 @@ async fn main() {
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
-    println!("{:?}", user.save(&client).await.unwrap().to_hash().unwrap());
-    println!(
-        "\n{:?}",
-        user.save(&client).await.unwrap().to_hash().unwrap()
-    );
+    println!("{}", user.save(&client).await.unwrap().to_json().unwrap());
+    println!("\n{}", user.save(&client).await.unwrap().to_json().unwrap());
 }
