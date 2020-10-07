@@ -413,6 +413,10 @@ impl PostProcess {
         }
         Ok(format!("{{{}}}", json_text))
     }
+    // Get html-line
+    pub fn to_html(&self) -> Result<String, Box<dyn Error>> {
+        Ok(String::new())
+    }
 }
 
 // TESTS
