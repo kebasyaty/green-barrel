@@ -43,19 +43,11 @@ async fn main() {
         .await
         .unwrap();
     println!(
-        "{}",
-        user.save(&client, OutputFormat::Hash)
-            .await
-            .unwrap()
-            .to_json()
-            .unwrap()
+        "{:?}",
+        user.save(&client, OutputFormat::Hash).await.unwrap()
     );
     println!(
-        "\n{}",
-        user.save(&client, OutputFormat::Hash)
-            .await
-            .unwrap()
-            .to_json()
-            .unwrap()
+        "{:?}",
+        user.save(&client, OutputFormat::Hash).await.unwrap()
     );
 }

@@ -2,7 +2,7 @@ use futures::stream::StreamExt;
 use mango_orm::{
     forms::{
         dynamic_arguments::{Enctype, Method},
-        Form, OutputFormat, PostProcess,
+        Form, OutputData, OutputFormat,
     },
     model,
     models::{FormCache, Meta, FORM_CACHE},
