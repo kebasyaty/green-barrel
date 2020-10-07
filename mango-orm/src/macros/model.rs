@@ -203,23 +203,21 @@ macro_rules! model {
             // Database Query API
             // *************************************************************************************
             // Checking `maxlength`
-            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
-                if maxlength > 0 && data.encode_utf16().count() > maxlength {
+            fn check_maxlength(maxlength: &usize, data: &str ) -> Result<(), Box<dyn Error>>  {
+                if maxlength > &0_usize && data.encode_utf16().count() > *maxlength {
                     Err(format!("Exceeds line limit, maxlength = {}.", maxlength))?
                 }
                 Ok(())
             }
             // Checking `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field: &String, data: &str,
+                is_update: &bool, is_unique: &bool, field: &String, data: &str,
                 coll: &Collection) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                if !is_update && is_unique {
+                if !is_update && *is_unique {
                     let filter: Document = doc!{ field.to_string() : data };
                     let count: i64 = coll.count_documents(filter, None).await?;
-                    if count > 0 {
-                        Err("Is not unique.")?
-                    }
+                    if count > 0_i64 { Err("Is not unique.")? }
                 }
                 Ok(())
             }
@@ -251,18 +249,20 @@ macro_rules! model {
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
                             let field: &String = &field.to_string();
-                            //
-                            match widget_map[field] {
+                            let field_type: &str = widget_map.get(field).unwrap();
+                            match field_type {
                                 "InputText" => {
                                     let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
+                                    Self::check_maxlength(&attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
+                                        // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
                                         tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
-                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                    Self::check_unique(&is_update, &attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
+                                        // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
                                         tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
@@ -270,14 +270,16 @@ macro_rules! model {
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(attrs_map[field].maxlength, data).unwrap_or_else(|err| {
+                                    Self::check_maxlength(&attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
+                                        // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
                                         tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
-                                    Self::check_unique(is_update, attrs_map[field].unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                    Self::check_unique(&is_update, &attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
+                                        // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
                                         tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
