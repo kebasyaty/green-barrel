@@ -264,6 +264,7 @@ macro_rules! model {
                             match field_type {
                                 "InputText" | "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
+                                    attrs_map.get_mut(field).unwrap().value = data.to_string();
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
