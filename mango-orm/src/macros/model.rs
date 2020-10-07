@@ -271,24 +271,21 @@ macro_rules! model {
                                     });
                                     Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
+                                        attrs_map.get_mut(field).unwrap().error =
+                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
                                 }
                                 "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
+                                        attrs_map.get_mut(field).unwrap().error =
+                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
                                     Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
-                                        let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
-                                        attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
+                                        attrs_map.get_mut(field).unwrap().error =
+                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
                                 }
                                 _ => {
