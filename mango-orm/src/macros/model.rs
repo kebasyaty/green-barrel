@@ -257,14 +257,14 @@ macro_rules! model {
                                         flag_err = true;
                                         // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                     Self::check_unique(&is_update, &attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
                                         // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                 }
@@ -274,14 +274,14 @@ macro_rules! model {
                                         flag_err = true;
                                         // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                     Self::check_unique(&is_update, &attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         flag_err = true;
                                         // Accumulation of errors
                                         let mut tmp = attrs_map.get(field).unwrap().error.clone();
-                                        tmp = if tmp.len() > 0 { format!("{}<br>", tmp) } else { String::new() };
+                                        tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                                         attrs_map.get_mut(field).unwrap().error = format!("{}{}", tmp, err);
                                     });
                                 }
