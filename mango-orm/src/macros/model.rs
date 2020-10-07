@@ -234,7 +234,7 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client) -> Result<PostProcess, Box<dyn Error>> {
+            pub async fn save(& mut self, client: &Client, t: OutputFormat) -> Result<PostProcess, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let mut flag_err = false;
