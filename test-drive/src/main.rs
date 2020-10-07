@@ -36,15 +36,15 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "x17@x.xx".to_string(),
+        email: "x2@x.xx".to_string(),
         ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
-    println!("{:?}", user.save(&client).await.unwrap().to_map().unwrap());
+    println!("{:?}", user.save(&client).await.unwrap().to_hash().unwrap());
     println!(
         "\n{:?}",
-        user.save(&client).await.unwrap().to_map().unwrap()
+        user.save(&client).await.unwrap().to_hash().unwrap()
     );
 }
