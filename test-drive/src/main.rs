@@ -43,5 +43,8 @@ async fn main() {
         .await
         .unwrap();
     println!("{:?}", user.save(&client).await.unwrap().to_map().unwrap());
-    println!("{:?}", user.save(&client).await.unwrap().to_map().unwrap());
+    println!(
+        "\n{:?}",
+        user.save(&client).await.unwrap().to_map().unwrap()
+    );
 }
