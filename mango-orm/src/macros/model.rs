@@ -262,20 +262,7 @@ macro_rules! model {
                             let field_type: &str = widget_map.get(field).unwrap();
                             //
                             match field_type {
-                                "InputText" => {
-                                    let data: &str = value.as_str().unwrap();
-                                    Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
-                                        flag_err = true;
-                                        attrs_map.get_mut(field).unwrap().error =
-                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
-                                    });
-                                    Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
-                                        flag_err = true;
-                                        attrs_map.get_mut(field).unwrap().error =
-                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
-                                    });
-                                }
-                                "InputEmail" => {
+                                "InputText" | "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         flag_err = true;
