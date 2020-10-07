@@ -372,9 +372,14 @@ pub struct PostProcess {
 impl PostProcess {
     pub fn to_hash(&self) -> Result<String, Box<dyn Error>> {
         let mut errors = String::new();
-        for (_, trans) in self.attrs_map.clone() {
-            if trans.error.len() > 0 {
-                errors = format!("{} ; {}", errors, trans.error);
+        for (field, trans) in self.attrs_map.clone() {
+            let tmp = if errors.len() > 0_usize {
+                format!("{} ; ", errors)
+            } else {
+                String::new()
+            };
+            if trans.error.len() > 0_usize {
+                errors = format!("{}Field: `{}` - {}", tmp, field, trans.error);
             }
         }
         if errors.len() == 0 {
