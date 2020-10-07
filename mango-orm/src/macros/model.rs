@@ -308,14 +308,13 @@ macro_rules! model {
                 //
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 //
-                Ok(
-                    match output_format {
-                        OutputFormat::Hash => OutputData::Hash(String::new()),
-                        OutputFormat::Map => OutputData::Map(attrs_map),
-                        OutputFormat::Json => OutputData::Json(String::new()),
-                        OutputFormat::Html => OutputData::Html(String::new()),
-                    }
-                )
+                let result = match output_format {
+                    OutputFormat::Hash => OutputData::Hash(String::new()),
+                    OutputFormat::Map => OutputData::Map(attrs_map),
+                    OutputFormat::Json => OutputData::Json(String::new()),
+                    OutputFormat::Html => OutputData::Html(String::new()),
+                };
+                Ok(result)
             }
 
             // Migrating Model
