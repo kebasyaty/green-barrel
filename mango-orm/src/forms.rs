@@ -370,6 +370,7 @@ pub struct PostProcess {
 }
 
 impl PostProcess {
+    // Get hash-line
     pub fn to_hash(&self) -> Result<String, Box<dyn Error>> {
         let mut errors = String::new();
         for (field, trans) in self.attrs_map.clone() {
@@ -392,6 +393,10 @@ impl PostProcess {
         } else {
             Err(errors)?
         }
+    }
+    // Get attribute map
+    pub fn to_map(&self) -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+        Ok(self.attrs_map.clone())
     }
 }
 
