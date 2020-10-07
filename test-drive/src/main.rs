@@ -1,4 +1,4 @@
-use mango_orm::{forms::OutputFormat, migration::Monitor};
+use mango_orm::{forms::OutputType, migration::Monitor};
 use mongodb::Client;
 
 mod mango_models;
@@ -42,12 +42,6 @@ async fn main() {
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
         .unwrap();
-    println!(
-        "{:?}",
-        user.save(&client, OutputFormat::Hash).await.unwrap()
-    );
-    println!(
-        "{:?}",
-        user.save(&client, OutputFormat::Hash).await.unwrap()
-    );
+    println!("{:?}", user.save(&client, OutputType::Hash).await.unwrap());
+    println!("{:?}", user.save(&client, OutputType::Hash).await.unwrap());
 }

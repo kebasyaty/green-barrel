@@ -362,8 +362,8 @@ pub mod dynamic_arguments {
 
 // POST-PROCESSING
 // #################################################################################################
-// Output formats
-pub enum OutputFormat {
+// Output type
+pub enum OutputType {
     Hash,
     Map,
     Json,

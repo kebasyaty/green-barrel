@@ -234,7 +234,7 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client, output_format: OutputFormat) ->
+            pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache().await?;
@@ -309,10 +309,10 @@ macro_rules! model {
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 //
                 let result = match output_format {
-                    OutputFormat::Hash => OutputData::Hash(String::new()),
-                    OutputFormat::Map => OutputData::Map(attrs_map),
-                    OutputFormat::Json => OutputData::Json(String::new()),
-                    OutputFormat::Html => OutputData::Html(String::new()),
+                    OutputType::Hash => OutputData::Hash(String::new()),
+                    OutputType::Map => OutputData::Map(attrs_map),
+                    OutputType::Json => OutputData::Json(String::new()),
+                    OutputType::Html => OutputData::Html(String::new()),
                 };
                 Ok(result)
             }
