@@ -363,6 +363,14 @@ pub mod dynamic_arguments {
 
 // POST-PROCESSING
 // #################################################################################################
+// Output formats
+pub enum OutputFormat {
+    Hash,
+    Map,
+    Json,
+    Html,
+}
+
 // The return type for the `save()` method
 // (for post-processing)
 #[derive(Debug)]
