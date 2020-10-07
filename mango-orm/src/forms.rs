@@ -374,7 +374,7 @@ impl PostProcess {
         let mut errors = String::new();
         for (_, trans) in self.attrs_map.clone() {
             if trans.error.len() > 0 {
-                errors = format!("{}{}", errors, trans.error);
+                errors = format!("{} ; {}", errors, trans.error);
             }
         }
         if errors.len() == 0 {
