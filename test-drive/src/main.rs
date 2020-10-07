@@ -36,7 +36,7 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "x2@x.xx".to_string(),
+        email: "x3@x.xx".to_string(),
         ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
