@@ -383,7 +383,14 @@ impl OutputData {
     pub fn hash(&self) -> String {
         match self {
             Self::Hash(data) => data.to_string(),
-            _ => panic!("???"),
+            _ => panic!("Invalid output type."),
+        }
+    }
+
+    pub fn map(&self) -> HashMap<String, Transport> {
+        match self {
+            Self::Map(data) => data.clone(),
+            _ => panic!("Invalid output type."),
         }
     }
 }

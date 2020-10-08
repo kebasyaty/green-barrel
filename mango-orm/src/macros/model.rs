@@ -336,7 +336,7 @@ macro_rules! model {
                         let hash: String = Self::to_hash(&attrs_map)?;
                         OutputData::Hash(hash)
                     }
-                    OutputType::Map => OutputData::Map(attrs_map.clone()),
+                    OutputType::Map => OutputData::Map(attrs_map),
                     OutputType::Json => OutputData::Json(String::new()),
                     OutputType::Html => OutputData::Html(String::new()),
                 };
