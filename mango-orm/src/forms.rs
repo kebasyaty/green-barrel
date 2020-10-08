@@ -51,8 +51,8 @@ pub trait Form {
                             if trans.required { " required " } else { "" },
                             if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
                             if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "checkbox" => {
@@ -75,8 +75,8 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "radio" => {
@@ -100,8 +100,8 @@ pub trait Form {
                                 } else {
                                     String::new()
                                 },
-                                if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                                if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                                if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                                if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                             );
                         }
                         controls = format!("{}{}</p>", controls, tags);
@@ -126,8 +126,8 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "file" => {
@@ -150,12 +150,12 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 {
-                                format!("<small class=\"hint\">{}</small>", trans.hint)
+                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
                             if trans.error.len() > 0 {
-                                format!("<small class=\"error\">{}</small>", trans.error)
+                                format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
                             }
@@ -181,12 +181,12 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 {
-                                format!("<small class=\"hint\">{}</small>", trans.hint)
+                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
                             if trans.error.len() > 0 {
-                                format!("<small class=\"error\">{}</small>", trans.error)
+                                format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
                             }
@@ -216,8 +216,8 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "range" => {
@@ -243,8 +243,8 @@ pub trait Form {
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "textarea" => {
@@ -259,8 +259,8 @@ pub trait Form {
                             if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
                             if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
                             trans.value,
-                            if trans.hint.len() > 0 { format!("<small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "select" => {
@@ -297,12 +297,12 @@ pub trait Form {
                             },
                             options,
                             if trans.hint.len() > 0 {
-                                format!("<small class=\"hint\">{}</small>", trans.hint)
+                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
                             if trans.error.len() > 0 {
-                                format!("<small class=\"error\">{}</small>", trans.error)
+                                format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
                             }
