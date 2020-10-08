@@ -349,15 +349,19 @@ macro_rules! model {
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 //
                 let result: OutputData = match output_format {
+                    // Get hash-line
                     OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
                         OutputData::Hash(data)
                     }
+                    // Get Attribute Map
                     OutputType::Map => OutputData::Map(attrs_map),
+                    // Get json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
                         OutputData::Json(data)
                     }
+                    // Get Html-line
                     OutputType::Html => OutputData::Html(String::new()),
                 };
                 Ok(result)
