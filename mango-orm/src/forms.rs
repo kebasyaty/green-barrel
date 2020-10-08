@@ -379,6 +379,15 @@ pub enum OutputData {
     Html(String),
 }
 
+impl OutputData {
+    pub fn hash(&self) -> String {
+        match self {
+            Self::Hash(data) => data.to_string(),
+            _ => panic!("???"),
+        }
+    }
+}
+
 // TESTS
 // #################################################################################################
 #[cfg(test)]
