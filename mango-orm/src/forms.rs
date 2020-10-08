@@ -21,18 +21,8 @@ pub trait Form {
     fn html(
         attrs: HashMap<String, Transport>,
         model_name: &str,
-        action: &str,
-        method: String,
-        enctype: String,
         build_controls: bool,
-    ) -> Result<(String, String, String), Box<dyn Error>> {
-        // Tag <form>
-        // -----------------------------------------------------------------------------------------
-        let form = format!(
-            "<form id\"{}-form\" action=\"{}\" method=\"{}\" enctype=\"{}\">",
-            model_name, action, method, enctype
-        );
-
+    ) -> Result<String, Box<dyn Error>> {
         // Controls of Form
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
@@ -296,71 +286,15 @@ pub trait Form {
                 }
             }
         }
-
-        // Buttons of Form
+        // Add buttons
         // -----------------------------------------------------------------------------------------
-        let buttons = format!(
-            "<input type=\"submit\" value=\"{}\">",
-            if method == "get" { "Submit" } else { "Save" }
-        );
-
-        Ok((form, controls, buttons))
+        controls = format!("{}<input type=\"submit\" value=\"Save\">", controls);
+        //
+        Ok(controls)
     }
 }
 
-// DYNAMIC FORM ARGUMENTS
-// #################################################################################################
-pub mod dynamic_arguments {
-    // Method
-    // (HTTP protocol method)
-    // *********************************************************************************************
-    pub enum Method {
-        Get,
-        Post,
-    }
-
-    impl Default for Method {
-        fn default() -> Self {
-            Method::Get
-        }
-    }
-
-    impl Method {
-        pub fn get_data(&self) -> String {
-            match self {
-                Self::Get => "get".to_string(),
-                Self::Post => "post".to_string(),
-            }
-        }
-    }
-
-    // Enctype
-    // (How to encode form data)
-    // *********************************************************************************************
-    pub enum Enctype {
-        Application,
-        Multipart,
-        Text,
-    }
-
-    impl Default for Enctype {
-        fn default() -> Self {
-            Enctype::Application
-        }
-    }
-
-    impl Enctype {
-        pub fn get_data(&self) -> String {
-            match self {
-                Self::Application => "application/x-www-form-urlencoded".to_string(),
-                Self::Multipart => "multipart/form-data".to_string(),
-                Self::Text => "text/plain".to_string(),
-            }
-        }
-    }
-}
-
-// POST-PROCESSING
+// OUTPUT TYPES FOR THE `SAVE()` METHOD
 // #################################################################################################
 // Output type
 pub enum OutputType {
