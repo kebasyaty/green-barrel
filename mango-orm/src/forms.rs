@@ -28,8 +28,8 @@ pub trait Form {
         let mut controls = String::new();
         if build_controls {
             for (_, trans) in attrs {
-                let id_field = format!("{}--{}", model_name, trans.id);
-                let label = if trans.field_type != "hidden" {
+                let id_field: String = format!("{}--{}", model_name, trans.id);
+                let label: String = if trans.field_type != "hidden" {
                     format!(
                         "<p><label for=\"{}\">{}:</label><br>",
                         id_field, trans.label
