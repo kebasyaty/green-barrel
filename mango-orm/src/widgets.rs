@@ -374,7 +374,7 @@ impl Default for Widget {
             relation_model: String::new(),
             value: FieldType::default(),
             maxlength: 0_usize,
-            required: true,
+            required: false,
             checked: false, // For <input type="checkbox|radio">
             hint: String::new(),
             unique: false,
@@ -901,7 +901,7 @@ mod tests {
         );
         assert_eq!(widget.relation_model, String::new());
         assert_eq!(widget.maxlength, 0);
-        assert_eq!(widget.required, true);
+        assert_eq!(widget.required, false);
         assert_eq!(widget.hint, String::new());
         assert_eq!(widget.unique, false);
         assert_eq!(widget.hidden, false);
@@ -936,7 +936,7 @@ mod tests {
         assert_eq!(attrs.name, String::new());
         assert_eq!(attrs.value, String::new());
         assert_eq!(attrs.maxlength, 0);
-        assert_eq!(attrs.required, true);
+        assert_eq!(attrs.required, false);
         assert_eq!(attrs.checked, false);
         assert_eq!(attrs.hint, String::new());
         assert_eq!(attrs.unique, false);
