@@ -256,10 +256,15 @@ macro_rules! model {
                 Ok(format!("{{{}}}", json_text))
             }
             // Get Html-line
-            pub fn to_html(attrs_map: &HashMap<String, Transport>) ->
+            pub fn to_html(attrs_map: HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                Ok(String::new())
+                let controls = Self::html(
+                    attrs_map,
+                    &stringify!($sname).to_lowercase(),
+                    true
+                )?;
+                Ok(controls)
             }
             // Save to database as a new document or
             // update an existing document.
@@ -353,7 +358,7 @@ macro_rules! model {
                     }
                     // Get Html-line
                     OutputType::Html => {
-                        let data: String = Self::to_html(&attrs_map)?;
+                        let data: String = Self::to_html(attrs_map)?;
                         OutputData::Html(data)
                     }
                 };

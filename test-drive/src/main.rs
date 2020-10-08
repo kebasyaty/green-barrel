@@ -29,10 +29,10 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    // println!("{:?}", mango_models::User::form_map_attrs().unwrap());
-    // println!("{}", mango_models::User::form_json_attrs().unwrap());
-    // println!("{}", mango_models::User::form_html("/", None, None).unwrap());
-    // println!("{}", mango_models::User::form_html("/", Some(Method::Post), Some(Enctype::Multipart)).unwrap());
+    // println!("{:?}", mango_models::User::form_map().unwrap());
+    // println!("{}", mango_models::User::form_json().unwrap());
+    // println!("{}", mango_models::User::form_html().unwrap());
+    // println!("{}", mango_models::User::form_html().unwrap());
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
@@ -43,9 +43,9 @@ async fn main() {
         .await
         .unwrap();
 
-    let data = user.save(&client, OutputType::Json).await.unwrap();
-    println!("{}", data.json());
+    let data = user.save(&client, OutputType::Html).await.unwrap();
+    println!("{}", data.html());
 
-    let data = user.save(&client, OutputType::Json).await.unwrap();
-    println!("\n{}", data.json());
+    let data = user.save(&client, OutputType::Html).await.unwrap();
+    println!("\n{}", data.html());
 }
