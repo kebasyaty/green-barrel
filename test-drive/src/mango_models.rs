@@ -40,6 +40,7 @@ model! {
                     label: "Category Name".to_string(),
                     value: FieldType::InputText(String::new()),
                     maxlength: 40,
+                    required: true,
                     hint: "Please enter Category name.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Category Name"),
                     ..Default::default()
@@ -73,6 +74,7 @@ model! {
                     label: "Your Name".to_string(),
                     value: FieldType::InputText("Rust".to_string()),
                     maxlength: 40,
+                    required: true,
                     hint: "Please enter your real name.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Your Name"),
                     ..Default::default()
@@ -85,6 +87,7 @@ model! {
                     label: "Your Email".to_string(),
                     value: FieldType::InputEmail(String::new()),
                     maxlength: 78,
+                    required: true,
                     hint: "Enter your work email.".to_string(),
                     unique: true,
                     other_attrs: format!("placeholder=\"{}\"", "Your Email"),
