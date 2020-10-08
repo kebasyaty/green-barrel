@@ -231,7 +231,7 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
-            // Get hash-line
+            // Get Hash-line
             pub fn to_hash(attrs_map: &HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
@@ -256,7 +256,7 @@ macro_rules! model {
                     Err(errors)?
                 }
             }
-            // Get json-line
+            // Get Json-line
             pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
@@ -270,6 +270,12 @@ macro_rules! model {
                     }
                 }
                 Ok(format!("{{{}}}", json_text))
+            }
+            // Get Html-line
+            pub fn to_html(attrs_map: &HashMap<String, Transport>) ->
+                Result<String, Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                Ok(String::new())
             }
             // Save to database as a new document or
             // update an existing document.
@@ -349,14 +355,14 @@ macro_rules! model {
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 //
                 let result: OutputData = match output_format {
-                    // Get hash-line
+                    // Get Hash-line
                     OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
                         OutputData::Hash(data)
                     }
                     // Get Attribute Map
                     OutputType::Map => OutputData::Map(attrs_map),
-                    // Get json-line
+                    // Get Json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
                         OutputData::Json(data)
