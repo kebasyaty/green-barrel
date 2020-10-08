@@ -260,7 +260,6 @@ macro_rules! model {
             pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                // let attrs: HashMap<String, Transport> = attrs_map.clone();
                 let mut json_text = String::new();
                 for (field, trans) in attrs_map {
                     let tmp = serde_json::to_string(&trans).unwrap();
@@ -351,11 +350,14 @@ macro_rules! model {
                 //
                 let result: OutputData = match output_format {
                     OutputType::Hash => {
-                        let hash: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash(hash)
+                        let data: String = Self::to_hash(&attrs_map)?;
+                        OutputData::Hash(data)
                     }
                     OutputType::Map => OutputData::Map(attrs_map),
-                    OutputType::Json => OutputData::Json(String::new()),
+                    OutputType::Json => {
+                        let data: String = Self::to_json(&attrs_map)?;
+                        OutputData::Json(data)
+                    }
                     OutputType::Html => OutputData::Html(String::new()),
                 };
                 Ok(result)
