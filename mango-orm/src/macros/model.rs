@@ -232,9 +232,11 @@ macro_rules! model {
                 Ok(format!("{}{}", tmp, err))
             }
             // Get hash-line
-            pub fn to_hash(attrs_map: &HashMap<String, Transport>) -> Result<String, Box<dyn Error>> {
+            pub fn to_hash(attrs_map: &HashMap<String, Transport>) ->
+                Result<String, Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
-                for (field, trans) in attrs_map.clone() {
+                for (field, trans) in attrs_map {
                     let tmp = if errors.len() > 0_usize {
                         format!("{} ; ", errors)
                     } else {
@@ -253,6 +255,22 @@ macro_rules! model {
                 } else {
                     Err(errors)?
                 }
+            }
+            // Get json-line
+            pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
+                Result<String, Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                // let attrs: HashMap<String, Transport> = attrs_map.clone();
+                let mut json_text = String::new();
+                for (field, trans) in attrs_map {
+                    let tmp = serde_json::to_string(&trans).unwrap();
+                    if json_text.len() > 0 {
+                        json_text = format!("{},\"{}\":{}", json_text, field, tmp);
+                    } else {
+                        json_text = format!("\"{}\":{}", field, tmp);
+                    }
+                }
+                Ok(format!("{{{}}}", json_text))
             }
             // Save to database as a new document or
             // update an existing document.
