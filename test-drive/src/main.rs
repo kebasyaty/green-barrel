@@ -29,9 +29,9 @@ async fn main() {
     // Run migration
     mango_migration().await;
 
-    // println!("{:?}", mango_models::User::form_map().unwrap());
-    // println!("{}", mango_models::User::form_json().unwrap());
-    // println!("{}", mango_models::User::form_html().unwrap());
+    println!("{:?}", mango_models::User::form_map().await.unwrap());
+    println!("{}", mango_models::User::form_json().await.unwrap());
+    println!("{}", mango_models::User::form_html().await.unwrap());
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
