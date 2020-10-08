@@ -380,17 +380,25 @@ pub enum OutputData {
 }
 
 impl OutputData {
+    // Get Hash-line
     pub fn hash(&self) -> &str {
         match self {
             Self::Hash(data) => data,
             _ => panic!("`hash()` - Doesn't match the output type."),
         }
     }
-
+    // Get Attribute Map
     pub fn map(&self) -> HashMap<String, Transport> {
         match self {
             Self::Map(data) => data.clone(),
             _ => panic!("`map()` - Doesn't match the output type."),
+        }
+    }
+    // Get Json-line
+    pub fn json(&self) -> &str {
+        match self {
+            Self::Json(data) => data,
+            _ => panic!("`json()` - Doesn't match the output type."),
         }
     }
 }

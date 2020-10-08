@@ -43,9 +43,9 @@ async fn main() {
         .await
         .unwrap();
 
-    let data = user.save(&client, OutputType::Map).await.unwrap();
-    println!("{:?}", data.map());
+    let data = user.save(&client, OutputType::Json).await.unwrap();
+    println!("{:?}", data.json());
 
-    let data = user.save(&client, OutputType::Map).await.unwrap();
-    println!("\n{:?}", data.map());
+    let data = user.save(&client, OutputType::Json).await.unwrap();
+    println!("\n{:?}", data.json());
 }
