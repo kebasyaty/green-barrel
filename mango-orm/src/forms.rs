@@ -29,10 +29,14 @@ pub trait Form {
         if build_controls {
             for (_, trans) in attrs {
                 let id_field = format!("{}--{}", model_name, trans.id);
-                let label = format!(
-                    "<p><label for=\"{}\">{}:</label><br>",
-                    id_field, trans.label
-                );
+                let label = if trans.field_type != "hidden" {
+                    format!(
+                        "<p><label for=\"{}\">{}:</label><br>",
+                        id_field, trans.label
+                    )
+                } else {
+                    String::new()
+                };
                 match trans.field_type.as_str() {
                     "text" | "url" | "tel" | "password" | "email" | "color" => {
                         controls = format!(
