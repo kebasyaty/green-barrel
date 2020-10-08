@@ -32,7 +32,6 @@ async fn main() {
     // println!("{:?}", mango_models::User::form_map().unwrap());
     // println!("{}", mango_models::User::form_json().unwrap());
     // println!("{}", mango_models::User::form_html().unwrap());
-    // println!("{}", mango_models::User::form_html().unwrap());
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
