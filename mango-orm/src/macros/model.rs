@@ -231,6 +231,29 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
+            // Get hash-line
+            pub fn to_hash(attrs_map: &HashMap<String, Transport>) -> Result<String, Box<dyn Error>> {
+                let mut errors = String::new();
+                for (field, trans) in attrs_map.clone() {
+                    let tmp = if errors.len() > 0_usize {
+                        format!("{} ; ", errors)
+                    } else {
+                        String::new()
+                    };
+                    if trans.error.len() > 0_usize {
+                        errors = format!("{}Field: `{}` - {}", tmp, field, trans.error);
+                    }
+                }
+                if errors.len() == 0 {
+                    Ok(attrs_map
+                        .get(&"hash".to_string())
+                        .unwrap()
+                        .value
+                        .clone())
+                } else {
+                    Err(errors)?
+                }
+            }
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
@@ -308,9 +331,12 @@ macro_rules! model {
                 //
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
                 //
-                let result = match output_format {
-                    OutputType::Hash => OutputData::Hash(String::new()),
-                    OutputType::Map => OutputData::Map(attrs_map),
+                let result: OutputData = match output_format {
+                    OutputType::Hash => {
+                        let hash: String = Self::to_hash(&attrs_map)?;
+                        OutputData::Hash(hash)
+                    }
+                    OutputType::Map => OutputData::Map(attrs_map.clone()),
                     OutputType::Json => OutputData::Json(String::new()),
                     OutputType::Html => OutputData::Html(String::new()),
                 };
