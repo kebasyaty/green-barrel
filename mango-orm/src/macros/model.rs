@@ -368,7 +368,10 @@ macro_rules! model {
                         OutputData::Json(data)
                     }
                     // Get Html-line
-                    OutputType::Html => OutputData::Html(String::new()),
+                    OutputType::Html => {
+                        let data: String = Self::to_html(&attrs_map)?;
+                        OutputData::Html(data)
+                    }
                 };
                 Ok(result)
             }
