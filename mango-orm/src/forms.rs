@@ -401,6 +401,13 @@ impl OutputData {
             _ => panic!("`json()` - Doesn't match the output type."),
         }
     }
+    // Get Html-line
+    pub fn html(&self) -> &str {
+        match self {
+            Self::Html(data) => data,
+            _ => panic!("`html()` - Doesn't match the output type."),
+        }
+    }
 }
 
 // TESTS
