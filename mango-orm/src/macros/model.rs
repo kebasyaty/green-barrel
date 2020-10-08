@@ -274,7 +274,7 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
-                let mut flag_err = false;
+                let mut stop_err = false;
                 let is_update: bool = self.hash.len() != 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let mut doc: Document = to_document(self)?;
@@ -303,12 +303,12 @@ macro_rules! model {
                                     let data: &str = value.as_str().unwrap();
                                     attrs_map.get_mut(field).unwrap().value = data.to_string();
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
-                                        flag_err = true;
+                                        stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
                                             Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
                                     Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
-                                        flag_err = true;
+                                        stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
                                             Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
@@ -329,7 +329,7 @@ macro_rules! model {
                 }
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                if !flag_err {
+                if !stop_err {
                     if !is_update {
                         let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
