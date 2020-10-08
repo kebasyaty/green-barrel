@@ -146,24 +146,11 @@ macro_rules! model {
                 }
             }
             // Get Html Form of Model for page templates
-            pub async fn form_html(action: &str, method: Option<Method>, enctype: Option<Enctype>) ->
+            pub async fn form_html() ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
-                let method: String = if method.is_some() {
-                    match method.unwrap() {
-                        Method::Get => Method::Get.get_data(),
-                        Method::Post => Method::Post.get_data(),
-                    }
-                } else { Method::default().get_data() };
-                let enctype: String = if enctype.is_some() {
-                    match enctype.unwrap() {
-                        Enctype::Application => Enctype::Application.get_data(),
-                        Enctype::Multipart => Enctype::Multipart.get_data(),
-                        Enctype::Text => Enctype::Text.get_data(),
-                    }
-                } else { Enctype::default().get_data() };
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
                 //
@@ -175,12 +162,9 @@ macro_rules! model {
                         build_controls = true;
                         attrs = cache.attrs_map.clone();
                     }
-                    let (form, controls, buttons) = Self::html(
+                    let controls = Self::html(
                         attrs,
                         model_name,
-                        action,
-                        method.clone(),
-                        enctype,
                         build_controls
                     )?;
                     if is_cached {
@@ -191,9 +175,9 @@ macro_rules! model {
                         // Save to cache
                         store.insert(key, form_cache.clone());
                         // Return result
-                        return Ok(format!("{}{}{}</form>", form, controls, buttons));
+                        return Ok(controls);
                     }
-                    Ok(format!("{}{}{}</form>", form, cache.form_html.clone(), buttons))
+                    Ok(cache.form_html.clone())
                 } else {
                     Err(format!("Model: `{}` -> Method: `form_html()` : Did not receive data from cache.",
                         stringify!($sname)))?
