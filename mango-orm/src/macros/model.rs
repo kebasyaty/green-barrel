@@ -562,8 +562,8 @@ macro_rules! model {
                                 )
                             }  else if widget.min.get_data_type() != widget.max.get_data_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> For `value` = FieldType `{}` : `select` = only blank vec![].",
-                                    $service, MODEL_NAME, field, enum_field_type
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` and `max` fields must have the same data types.",
+                                    $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
