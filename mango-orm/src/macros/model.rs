@@ -278,6 +278,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
+                static MODEL_NAME: &'static str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let mut stop_err = false;
@@ -286,6 +287,7 @@ macro_rules! model {
                 let mut doc: Document = to_document(self)?;
                 doc.remove("hash").unwrap();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+
                 // Check field values (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
                 let cache: Option<&FormCache> = store.get(key);
@@ -321,18 +323,19 @@ macro_rules! model {
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
-                                        stringify!($sname), field))?
+                                        MODEL_NAME, field))?
                                 }
                             }
                         } else {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing.",
-                                stringify!($sname), field))?
+                                MODEL_NAME, field))?
                         }
                     }
                 } else {
                     Err(format!("Model: `{}` -> Method: `save()` : Did not receive data from cache.",
-                        stringify!($sname)))?
+                        MODEL_NAME))?
                 }
+
                 // Save to database
                 // ---------------------------------------------------------------------------------
                 if !stop_err {
@@ -346,9 +349,11 @@ macro_rules! model {
                         coll.update_one(query, doc, None).await?;
                     }
                 }
+
                 // Add hash-line
                 // ---------------------------------------------------------------------------------
                 attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
+
                 // Post processing
                 // ---------------------------------------------------------------------------------
                 let result: OutputData = match output_format {
