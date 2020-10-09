@@ -318,6 +318,7 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
                                     // Checking range (`min` <> `max`)
+                                    // (Hint: The `validate_length()` method did not provide the desired result)
                                     {
                                         let min: f64 = attrs.min.parse().unwrap();
                                         let max: f64 = attrs.max.parse().unwrap();
