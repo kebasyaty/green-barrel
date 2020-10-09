@@ -303,7 +303,7 @@ macro_rules! model {
                             let value: &Bson = value.unwrap();
                             let field: &String = &field.to_string();
                             let field_type: &str = widget_map.get(field).unwrap();
-                            //
+                            // Field validation
                             match field_type {
                                 "InputText" | "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
