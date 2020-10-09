@@ -42,9 +42,9 @@ async fn main() {
         .await
         .unwrap();
 
-    let data = user.save(&client, OutputType::Html).await.unwrap();
-    println!("\n{}", data.html());
+    let data = user.save(&client, OutputType::Hash).await.unwrap();
+    println!("\n{}", data.hash());
 
-    let data = user.save(&client, OutputType::Html).await.unwrap();
-    println!("\n{}", data.html());
+    let data = user.save(&client, OutputType::Hash).await.unwrap();
+    println!("\n{}", data.hash());
 }
