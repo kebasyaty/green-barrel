@@ -74,9 +74,9 @@ model! {
                 Widget {
                     label: "Your Name".to_string(),
                     value: FieldType::InputText("Rust".to_string()),
-                    maxlength: 4,
-                    min: StepMinMax::I32(2),
-                    max: StepMinMax::I32(3),
+                    maxlength: 40,
+                    min: StepMinMax::I32(3),
+                    max: StepMinMax::I32(40),
                     required: true,
                     hint: "Please enter your real name.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Your Name"),
