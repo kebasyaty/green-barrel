@@ -3,7 +3,7 @@ use mango_orm::{
     forms::{Form, OutputData, OutputType},
     model,
     models::{FormCache, Meta, FORM_CACHE},
-    widgets::{FieldType, Transport, Widget},
+    widgets::{FieldType, StepMinMax, Transport, Widget},
 };
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
@@ -74,7 +74,9 @@ model! {
                 Widget {
                     label: "Your Name".to_string(),
                     value: FieldType::InputText("Rust".to_string()),
-                    maxlength: 40,
+                    maxlength: 4,
+                    min: StepMinMax::I32(2),
+                    max: StepMinMax::I32(3),
                     required: true,
                     hint: "Please enter your real name.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Your Name"),

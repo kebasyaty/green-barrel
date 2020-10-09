@@ -325,7 +325,7 @@ macro_rules! model {
                                         if (min > 0_f64 || max > 0_f64) &&
                                             !validate_range(Validator::Range{min: Some(min), max: Some(max)}, length) {
                                             stop_err = true;
-                                            let msg = format!("Length: {} - Is out of range (min = {} <> max = {}).", length, min, max);
+                                            let msg = format!("Length {}, is out of range (min = {} <> max = {}).", length, min, max);
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
                                     }
