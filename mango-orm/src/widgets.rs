@@ -848,6 +848,14 @@ mod tests {
         assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "i64");
         assert_eq!(SelectDataType::I64(-10_i64).get_data_type(), "i64");
         assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
+
+        // Method get_enum_type()
+        // -----------------------------------------------------------------------------------------
+        assert_eq!(SelectDataType::Text(String::new()).get_enum_type(), "Text");
+        assert_eq!(SelectDataType::I32(-10_i32).get_enum_type(), "I32");
+        assert_eq!(SelectDataType::U32(10_u32).get_enum_type(), "U32");
+        assert_eq!(SelectDataType::I64(-10_i64).get_enum_type(), "I64");
+        assert_eq!(SelectDataType::F64(-10_f64).get_enum_type(), "F64");
     }
 
     // Testing data Types for the `step`,` min` and `max` attributes
@@ -876,6 +884,13 @@ mod tests {
         assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "i64");
         assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
         assert_eq!(StepMinMax::F64(-10_f64).get_data_type(), "f64");
+
+        // Method get_enum_type()
+        // -----------------------------------------------------------------------------------------
+        assert_eq!(StepMinMax::I32(-10_i32).get_enum_type(), "I32");
+        assert_eq!(StepMinMax::U32(10_u32).get_enum_type(), "U32");
+        assert_eq!(StepMinMax::I64(-10_i64).get_enum_type(), "I64");
+        assert_eq!(StepMinMax::F64(-10_f64).get_enum_type(), "F64");
     }
 
     // Testing Transport structure
