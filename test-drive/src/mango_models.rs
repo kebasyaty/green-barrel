@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
-use validator::{validate_email, validate_length, Validator};
+use validator::{validate_email, validate_range, Validator};
 
 const _SERVICE_NAME: &'static str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 const _DATABASE_NAME: &'static str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
@@ -75,8 +75,8 @@ model! {
                     label: "Your Name".to_string(),
                     value: FieldType::InputText("Rust".to_string()),
                     maxlength: 40,
-                    min: StepMinMax::I32(3),
-                    max: StepMinMax::I32(40),
+                    min: StepMinMax::I32(2),
+                    max: StepMinMax::I32(3),
                     required: true,
                     hint: "Please enter your real name.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Your Name"),
