@@ -322,7 +322,7 @@ pub struct Transport {
     pub step: String,
     pub min: String,
     pub max: String,
-    pub other_attrs: String,  // "autofocus step=\"число\" ..."
+    pub other_attrs: String,  // "autofocus size=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
     pub error: String,
@@ -362,7 +362,7 @@ pub struct Widget {
     pub step: StepMinMax,
     pub min: StepMinMax,
     pub max: StepMinMax,
-    pub other_attrs: String,  // "autofocus step=\"число\" ..."
+    pub other_attrs: String,  // "autofocus size=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, SelectDataType)>,
 }
