@@ -310,17 +310,21 @@ macro_rules! model {
                                 "InputText" | "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
                                     attrs_map.get_mut(field).unwrap().value = data.to_string();
+                                    // Checking `maxlength`
                                     Self::check_maxlength(attrs_map.get(field).unwrap().maxlength, data).unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
                                             Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
+                                    // Checking `unique
                                     Self::check_unique(is_update, attrs_map.get(field).unwrap().unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
                                             Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
+
                                     // Personal validation
+                                    // -------------------------------------------------------------
                                     match field_type {
                                         "InputEmail" => {
                                             if !validate_email(data) {
