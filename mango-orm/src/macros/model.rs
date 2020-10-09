@@ -320,6 +320,17 @@ macro_rules! model {
                                         attrs_map.get_mut(field).unwrap().error =
                                             Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
                                     });
+                                    // Personal validation
+                                    match field_type {
+                                        "InputEmail" => {
+                                            if !validate_email(data) {
+                                                stop_err = true;
+                                                attrs_map.get_mut(field).unwrap().error =
+                                                    Self::accumula_err(&attrs_map, field, &"Invalid email.".to_string()).unwrap();
+                                            }
+                                        }
+                                        _ => {}
+                                    }
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
