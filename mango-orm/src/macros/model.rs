@@ -515,9 +515,9 @@ macro_rules! model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> For `value` = FieldType `{}` : `maxlength` = only 0 (zero).",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
-                            }  else if widget.step.get_enum_type() != widget.min.get_enum_type() || widget.step.get_enum_type() != widget.max.get_enum_type() {
+                            }  else if widget.min.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `step`, `min` and `max` fields must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` and `max` fields must have the same types.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.other_attrs.contains("checked") {
