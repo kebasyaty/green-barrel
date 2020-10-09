@@ -184,7 +184,7 @@ macro_rules! model {
                 }
             }
 
-            // Database Query API
+            // Validation of database queries
             // *************************************************************************************
             // Checking `maxlength`
             fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
@@ -215,6 +215,9 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
+
+            // Post processing database queries
+            // *************************************************************************************
             // Get Hash-line
             pub fn to_hash(attrs_map: &HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
@@ -266,6 +269,9 @@ macro_rules! model {
                 )?;
                 Ok(controls)
             }
+
+            // Database Query API
+            // *************************************************************************************
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
