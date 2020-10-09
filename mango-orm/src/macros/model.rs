@@ -308,7 +308,7 @@ macro_rules! model {
                                     if attrs.maxlength > 0_usize && !validate_length(Validator::Length{equal: attrs.maxlength}, data) {
                                         stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
-                                            Self::accumula_err(&attrs_map, field, &format!("Exceeds limit maxlength = {}.", attrs.maxlength).unwrap();
+                                            Self::accumula_err(&attrs_map, field, &format!("Exceeds limit maxlength = {}.", attrs.maxlength)).unwrap();
                                     }
                                     // Checking `unique
                                     Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
