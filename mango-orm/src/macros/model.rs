@@ -320,7 +320,7 @@ macro_rules! model {
                                     // Checking `unique
                                     Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
-                                        attrs_map.get_mut(field).unwrap().error =
+                                        attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
@@ -330,7 +330,7 @@ macro_rules! model {
                                         "InputEmail" => {
                                             if !validate_email(data) {
                                                 stop_err = true;
-                                                attrs_map.get_mut(field).unwrap().error =
+                                                attrs.error =
                                                     Self::accumula_err(&attrs, &"Invalid email.".to_string()).unwrap();
                                             }
                                         }
