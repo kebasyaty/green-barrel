@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
-use validator::{validate_email, validate_range, Validator};
+use validator::{validate_email, validate_length, Validator};
 
 const _SERVICE_NAME: &'static str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 const _DATABASE_NAME: &'static str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...

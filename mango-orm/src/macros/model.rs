@@ -319,13 +319,13 @@ macro_rules! model {
                                     });
                                     // Checking range (`min` <> `max`)
                                     {
-                                        let min: f64 = attrs.min.parse().unwrap();
-                                        let max: f64 = attrs.max.parse().unwrap();
-                                        let length: f64 = data.encode_utf16().count() as f64;
-                                        if (min > 0_f64 || max > 0_f64) &&
-                                            !validate_range(Validator::Range{min: Some(min), max: Some(max)}, length) {
+                                        let min: u64 = attrs.min.parse().unwrap();
+                                        let max: u64 = attrs.max.parse().unwrap();
+                                        let equal: u64 = data.encode_utf16().count() as u64;
+                                        if (min > 0_u64 || max > 0_u64) &&
+                                            !validate_length(Validator::Length{min: Some(min), max: Some(max), equal: Some(equal)}, data) {
                                             stop_err = true;
-                                            let msg = format!("Length {}, is out of range (min = {} <> max = {}).", length, min, max);
+                                            let msg = format!("Length {}, is out of range (min = {} <> max = {}).", equal, min, max);
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
                                     }
