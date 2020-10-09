@@ -334,7 +334,7 @@ macro_rules! model {
                                                     Self::accumula_err(&attrs, &"Invalid email.".to_string()).unwrap();
                                             }
                                         }
-                                        _ => unreachable!(),
+                                        _ => {},
                                     }
                                 }
                                 _ => {
