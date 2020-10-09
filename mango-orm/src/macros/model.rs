@@ -317,6 +317,15 @@ macro_rules! model {
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
+                                    // Checking range (`min` <> `max`)
+                                    let min: f64 = attrs.min.parse().unwrap();
+                                    let max: f64 = attrs.max.parse().unwrap();
+                                    let length: f64 = data.encode_utf16().count() as f64;
+                                    if (min > 0_f64 || max > 0_f64) && !validate_range(Validator::Range{min: Some(min), max: Some(max)}, length) {
+                                        stop_err = true;
+                                        let msg = format!("Length: {} - Is out of range (min = {} <> max = {}).", length, min, max);
+                                        attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                    }
                                     // Checking `unique
                                     Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
@@ -330,8 +339,8 @@ macro_rules! model {
                                         "InputEmail" => {
                                             if !validate_email(data) {
                                                 stop_err = true;
-                                                attrs.error =
-                                                    Self::accumula_err(&attrs, &"Invalid email.".to_string()).unwrap();
+                                                let msg = &"Invalid email.".to_string();
+                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
                                         _ => {},
