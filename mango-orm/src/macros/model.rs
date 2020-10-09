@@ -189,7 +189,7 @@ macro_rules! model {
             // Checking `maxlength`
             fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
                 if maxlength > 0 && data.encode_utf16().count() > maxlength {
-                    Err(format!("Exceeds line limit, maxlength = {}.", maxlength))?
+                    Err(format!("Exceeds limit, maxlength = {}.", maxlength))?
                 }
                 Ok(())
             }
@@ -240,7 +240,7 @@ macro_rules! model {
                         .value
                         .clone())
                 } else {
-                    Err(errors)?
+                    Err(errors.replace("<br>", " | "))?
                 }
             }
             // Get Json-line
