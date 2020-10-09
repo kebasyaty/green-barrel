@@ -186,6 +186,13 @@ macro_rules! model {
 
             // Validation of database queries
             // *************************************************************************************
+            // Checking `maxlength`
+            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
+                if maxlength > 0 && data.encode_utf16().count() > maxlength {
+                    Err(format!("Exceeds line limit, maxlength = {}.", maxlength))?
+                }
+                Ok(())
+            }
             // Checking `unique`
             async fn check_unique(
                 is_update: bool, is_unique: bool, field: &String, data: &str,
@@ -201,10 +208,10 @@ macro_rules! model {
                 Ok(())
             }
             // Accumulation of errors
-            fn accumula_err(attrs_map: &HashMap<String, Transport>, field: &String, err: &String) ->
+            fn accumula_err(attrs: &Transport, err: &String) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let mut tmp = attrs_map.get(field).unwrap().error.clone();
+                let mut tmp = attrs.error.clone();
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
@@ -302,19 +309,19 @@ macro_rules! model {
                             match field_type {
                                 "InputText" | "InputEmail" => {
                                     let data: &str = value.as_str().unwrap();
-                                    attrs_map.get_mut(field).unwrap().value = data.to_string();
-                                    let attrs: &Transport = attrs_map.get(field).unwrap();
+                                    let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+                                    attrs.value = data.to_string();
                                     // Checking `maxlength`, `min length`, `max length`
-                                    if attrs.maxlength > 0_usize && !validate_length(Validator::Length{equal: attrs.maxlength}, data) {
+                                    Self::check_maxlength(attrs.maxlength, data).unwrap_or_else(|err| {
                                         stop_err = true;
-                                        attrs_map.get_mut(field).unwrap().error =
-                                            Self::accumula_err(&attrs_map, field, &format!("Exceeds limit maxlength = {}.", attrs.maxlength)).unwrap();
-                                    }
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
                                     // Checking `unique
                                     Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs_map.get_mut(field).unwrap().error =
-                                            Self::accumula_err(&attrs_map, field, &err.to_string()).unwrap();
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
                                     // Personal validation
@@ -324,7 +331,7 @@ macro_rules! model {
                                             if !validate_email(data) {
                                                 stop_err = true;
                                                 attrs_map.get_mut(field).unwrap().error =
-                                                    Self::accumula_err(&attrs_map, field, &"Invalid email.".to_string()).unwrap();
+                                                    Self::accumula_err(&attrs, &"Invalid email.".to_string()).unwrap();
                                             }
                                         }
                                         _ => unreachable!(),
