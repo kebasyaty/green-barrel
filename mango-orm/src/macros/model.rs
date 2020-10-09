@@ -329,7 +329,7 @@ macro_rules! model {
                                                     Self::accumula_err(&attrs_map, field, &"Invalid email.".to_string()).unwrap();
                                             }
                                         }
-                                        _ => {}
+                                        _ => unreachable!(),
                                     }
                                 }
                                 _ => {
