@@ -348,7 +348,7 @@ macro_rules! model {
                                             }
                                         }
                                         "InputColor" => {
-                                            let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
+                                            let re = Regex::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$").unwrap();
                                             if !re.is_match(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid Color code.".to_string();
