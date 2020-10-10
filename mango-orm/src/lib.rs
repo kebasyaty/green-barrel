@@ -48,15 +48,18 @@ mod tests {
                 .case_insensitive(true)
                 .build()
                 .unwrap();
+        assert!(re.is_match("#f2f2f2"));
         assert!(re.is_match("#F2F2F2"));
         assert!(re.is_match("#fff"));
         assert!(re.is_match("rgb(255,0,24)"));
         assert!(re.is_match("rgb(255, 0, 24)"));
         assert!(re.is_match("rgba(255, 0, 24, .5)"));
         assert!(re.is_match("rgba(#fff, .5)"));
+        assert!(re.is_match("rgba(#FFF, .5)"));
         assert!(re.is_match("hsl(120, 100%, 50%)"));
         assert!(re.is_match("hsla(170, 23%, 25%, 0.2 )"));
         assert!(re.is_match("0x00ffff"));
+        assert!(re.is_match("0x00FFFF"));
         assert!(!re.is_match("#f2ewq"));
         assert!(re.is_match("blue"));
         assert!(re.is_match("red"));
