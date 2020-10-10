@@ -39,6 +39,8 @@ pub enum FieldType {
     InputText(String),
     InputUrl(String),
     InputIP(String),
+    InputIPv4(String),
+    InputIPv6(String),
     TextArea(String),
     SelectText(String),
     SelectI32(i32),
@@ -89,6 +91,8 @@ impl FieldType {
             Self::InputText(_) => "text",
             Self::InputUrl(_) => "url",
             Self::InputIP(_) => "text",
+            Self::InputIPv4(_) => "text",
+            Self::InputIPv6(_) => "text",
             Self::TextArea(_) => "textarea",
             Self::SelectText(_) => "select",
             Self::SelectI32(_) => "select",
@@ -133,6 +137,8 @@ impl FieldType {
             Self::InputText(data) => data.to_string(),
             Self::InputUrl(data) => data.to_string(),
             Self::InputIP(data) => data.to_string(),
+            Self::InputIPv4(data) => data.to_string(),
+            Self::InputIPv6(data) => data.to_string(),
             Self::TextArea(data) => data.to_string(),
             Self::SelectText(data) => data.to_string(),
             Self::SelectI32(data) => data.to_string(),
@@ -177,6 +183,8 @@ impl FieldType {
             Self::InputText(_) => "String",
             Self::InputUrl(_) => "String",
             Self::InputIP(_) => "String",
+            Self::InputIPv4(_) => "String",
+            Self::InputIPv6(_) => "String",
             Self::TextArea(_) => "String",
             Self::SelectText(_) => "String",
             Self::SelectI32(_) => "i32",
@@ -221,6 +229,8 @@ impl FieldType {
             Self::InputText(_) => "InputText",
             Self::InputUrl(_) => "InputUrl",
             Self::InputIP(_) => "InputIP",
+            Self::InputIPv4(_) => "InputIPv4",
+            Self::InputIPv6(_) => "InputIPv6",
             Self::TextArea(_) => "TextArea",
             Self::SelectText(_) => "SelectText",
             Self::SelectI32(_) => "SelectI32",
@@ -530,6 +540,8 @@ mod tests {
         assert_eq!(FieldType::InputText(String::new()).get_input_type(), "text");
         assert_eq!(FieldType::InputUrl(String::new()).get_input_type(), "url");
         assert_eq!(FieldType::InputIP(String::new()).get_input_type(), "text");
+        assert_eq!(FieldType::InputIPv4(String::new()).get_input_type(), "text");
+        assert_eq!(FieldType::InputIPv6(String::new()).get_input_type(), "text");
         assert_eq!(
             FieldType::TextArea(String::new()).get_input_type(),
             "textarea"
@@ -683,6 +695,14 @@ mod tests {
         );
         assert_eq!(FieldType::InputUrl(String::new()).get_data_type(), "String");
         assert_eq!(FieldType::InputIP(String::new()).get_data_type(), "String");
+        assert_eq!(
+            FieldType::InputIPv4(String::new()).get_data_type(),
+            "String"
+        );
+        assert_eq!(
+            FieldType::InputIPv6(String::new()).get_data_type(),
+            "String"
+        );
         assert_eq!(FieldType::TextArea(String::new()).get_data_type(), "String");
         assert_eq!(
             FieldType::SelectText(String::new()).get_data_type(),
@@ -806,6 +826,14 @@ mod tests {
             "InputUrl"
         );
         assert_eq!(FieldType::InputIP(String::new()).get_enum_type(), "InputIP");
+        assert_eq!(
+            FieldType::InputIPv4(String::new()).get_enum_type(),
+            "InputIPv4"
+        );
+        assert_eq!(
+            FieldType::InputIPv6(String::new()).get_enum_type(),
+            "InputIPv6"
+        );
         assert_eq!(
             FieldType::TextArea(String::new()).get_enum_type(),
             "TextArea"
