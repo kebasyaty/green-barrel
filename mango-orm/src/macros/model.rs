@@ -307,7 +307,7 @@ macro_rules! model {
                             let field_type: &str = widget_map.get(field).unwrap();
                             // Field validation
                             match field_type {
-                                "InputText" | "InputEmail" => {
+                                "InputText" | "InputEmail" | "InputUrl" => {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     attrs.value = data.to_string();
@@ -343,7 +343,14 @@ macro_rules! model {
                                         "InputEmail" => {
                                             if !validate_email(data) {
                                                 stop_err = true;
-                                                let msg = &"Invalid email.".to_string();
+                                                let msg = &"Invalid Email.".to_string();
+                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                            }
+                                        }
+                                        "InputUrl" => {
+                                            if !validate_url(data) {
+                                                stop_err = true;
+                                                let msg = &"Invalid Url.".to_string();
                                                 attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
