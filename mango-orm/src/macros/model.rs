@@ -958,7 +958,7 @@ macro_rules! model {
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` attribute must not be greater than `max`.",
                                         $service, MODEL_NAME, field
                                     )
-                                } else if (max - min) % step != 0 {
+                                } else if step > 0_i32 && (max - min) % step != 0 {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The value of the `step` attribute does not match the condition (max - min) % step == 0.",
                                         $service, MODEL_NAME, field
@@ -976,7 +976,7 @@ macro_rules! model {
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` attribute must not be greater than `max`.",
                                         $service, MODEL_NAME, field
                                     )
-                                } else if (max - min) % step != 0 {
+                                } else if step > 0_i64 && (max - min) % step != 0 {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The value of the `step` attribute does not match the condition (max - min) % step == 0.",
                                         $service, MODEL_NAME, field
@@ -994,7 +994,7 @@ macro_rules! model {
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` attribute must not be greater than `max`.",
                                         $service, MODEL_NAME, field
                                     )
-                                } else if (max - min) % step != 0_f64 {
+                                } else if step > 0_f64 && (max - min) % step != 0_f64 {
                                     panic!(
                                         "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The value of the `step` attribute does not match the condition (max - min) % step == 0.",
                                         $service, MODEL_NAME, field
