@@ -215,6 +215,48 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
+            // Personal validation for some fields
+            fn personal_validation(field_type: &str, data: &str) ->
+                Result<(), Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                match field_type {
+                    "InputEmail" => {
+                        if !validate_email(data) {
+                            Err("Invalid email address.")?
+                        }
+                    }
+                    "InputColor" => {
+                        let re = RegexBuilder::new(
+                            r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
+                            .case_insensitive(true).build()?;
+                        if !re.is_match(data) {
+                            Err("Invalid Color code.")?
+                        }
+                    }
+                    "InputUrl" => {
+                        if !validate_url(data) {
+                            Err("Invalid Url.")?
+                        }
+                    }
+                    "InputIP" => {
+                        if !validate_ip(data) {
+                            Err("Invalid IP address.")?
+                        }
+                    }
+                    "InputIPv4" => {
+                        if !validate_ip_v4(data) {
+                            Err("Invalid IPv4 address.")?
+                        }
+                    }
+                    "InputIPv6" => {
+                        if !validate_ip_v6(data) {
+                            Err("Invalid IPv6 address.")?
+                        }
+                    }
+                    _ => return Ok(()),
+                }
+                Ok(())
+            }
 
             // Post processing database queries
             // *************************************************************************************
@@ -341,54 +383,6 @@ macro_rules! model {
 
                                     // Personal validation
                                     // -------------------------------------------------------------
-                                    match field_type {
-                                        "InputEmail" => {
-                                            if !validate_email(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid email address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        "InputColor" => {
-                                            let re = RegexBuilder::new(
-                                                r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
-                                                .case_insensitive(true).build()?;
-                                            if !re.is_match(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid Color code.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        "InputUrl" => {
-                                            if !validate_url(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid Url.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        "InputIP" => {
-                                            if !validate_ip(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid IP address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        "InputIPv4" => {
-                                            if !validate_ip_v4(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid IPv4 address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        "InputIPv6" => {
-                                            if !validate_ip_v6(data) {
-                                                stop_err = true;
-                                                let msg = &"Invalid IPv6 address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
-                                            }
-                                        }
-                                        _ => {},
-                                    }
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
