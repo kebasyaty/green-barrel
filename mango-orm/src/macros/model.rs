@@ -952,12 +952,25 @@ macro_rules! model {
                             let step: i32 =  widget.step.get_raw_data().parse().unwrap();
                             let min: i32 =  widget.min.get_raw_data().parse().unwrap();
                             let max: i32 =  widget.max.get_raw_data().parse().unwrap();
+                            if step > 0 || min > 0 || max > 0 {
+                                if min > max {
+                                    panic!(
+                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` attribute must not be greater than `max`.",
+                                        $service, MODEL_NAME, field
+                                    )
+                                } else if (max - min) % step != 0 {
+                                    panic!(
+                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The value of the `step` attribute does not match the condition (max - min) % step == 0.",
+                                        $service, MODEL_NAME, field
+                                    )
+                                }
+                            }
                         }
                         "U32" | "I64" => {}
                         "F64" => {}
                         _ => {
                             panic!(
-                                "Service: `{}` -> Model: `{}` -> Field: `{}` : Non-existent field type..",
+                                "Service: `{}` -> Model: `{}` -> Field: `{}` : Non-existent field type.",
                                 $service, MODEL_NAME, field
                             )
                         }
