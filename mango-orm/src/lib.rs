@@ -16,6 +16,7 @@ mod tests {
         options::{ClientOptions, StreamAddress},
         Client,
     };
+    use regex::RegexBuilder;
 
     // Testing of Client
     // *********************************************************************************************
@@ -36,5 +37,30 @@ mod tests {
         }
 
         Ok(())
+    }
+
+    // Regular expressions
+    // *********************************************************************************************
+    #[test]
+    fn regex_color_code() {
+        let re =
+            RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
+                .case_insensitive(true)
+                .build()
+                .unwrap();
+        assert!(re.is_match("#F2F2F2"));
+        assert!(re.is_match("#fff"));
+        assert!(re.is_match("rgb(255,0,24)"));
+        assert!(re.is_match("rgb(255, 0, 24)"));
+        assert!(re.is_match("rgba(255, 0, 24, .5)"));
+        assert!(re.is_match("rgba(#fff, .5)"));
+        assert!(re.is_match("hsl(120, 100%, 50%)"));
+        assert!(re.is_match("hsla(170, 23%, 25%, 0.2 )"));
+        assert!(re.is_match("0x00ffff"));
+        assert!(!re.is_match("#f2ewq"));
+        assert!(re.is_match("blue"));
+        assert!(re.is_match("red"));
+        assert!(re.is_match("coral"));
+        assert!(re.is_match("brown"));
     }
 }
