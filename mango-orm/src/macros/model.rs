@@ -552,9 +552,10 @@ macro_rules! model {
                         // InputPassword
                         // InputText
                         // InputUrl
+                        // InputIP
                         // TextArea
                         // -------------------------------------------------------------------------
-                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) | FieldType::InputText(_) | FieldType::InputUrl(_) | FieldType::TextArea(_) => {
+                        FieldType::InputColor(_) | FieldType::InputDate(_) | FieldType::InputDateTime(_) | FieldType::InputEmail(_) | FieldType::InputPassword(_) | FieldType::InputText(_) | FieldType::InputUrl(_) | FieldType::InputIP(_) | FieldType::TextArea(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
                                 FieldType::InputColor(_) => { enum_field_type = "InputColor".to_string(); }
