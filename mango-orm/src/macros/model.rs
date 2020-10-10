@@ -307,7 +307,7 @@ macro_rules! model {
                             let field_type: &str = widget_map.get(field).unwrap();
                             // Field validation
                             match field_type {
-                                "InputText" | "InputEmail" | "TextArea" | "InputUrl" | "InputIP" => {
+                                "InputText" | "InputEmail" | "TextArea" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     attrs.value = data.to_string();
