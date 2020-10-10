@@ -343,7 +343,7 @@ macro_rules! model {
                                         "InputEmail" => {
                                             if !validate_email(data) {
                                                 stop_err = true;
-                                                let msg = &"Invalid Email.".to_string();
+                                                let msg = &"Invalid email address.".to_string();
                                                 attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
@@ -357,7 +357,7 @@ macro_rules! model {
                                         "InputIP" => {
                                             if !validate_ip(data) {
                                                 stop_err = true;
-                                                let msg = &"Invalid Url.".to_string();
+                                                let msg = &"Invalid IP address.".to_string();
                                                 attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
