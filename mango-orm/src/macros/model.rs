@@ -344,43 +344,44 @@ macro_rules! model {
                                             if !validate_email(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid email address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         "InputColor" => {
-                                            let re = Regex::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$").unwrap();
+                                            let re = RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
+                                                .case_insensitive(true).build()?;
                                             if !re.is_match(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid Color code.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         "InputUrl" => {
                                             if !validate_url(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid Url.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         "InputIP" => {
                                             if !validate_ip(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid IP address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         "InputIPv4" => {
                                             if !validate_ip_v4(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid IPv4 address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         "InputIPv6" => {
                                             if !validate_ip_v6(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid IPv6 address.".to_string();
-                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                                attrs.error = Self::accumula_err(&attrs, &msg)?;
                                             }
                                         }
                                         _ => {},
