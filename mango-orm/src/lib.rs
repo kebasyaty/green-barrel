@@ -61,9 +61,5 @@ mod tests {
         assert!(re.is_match("0x00ffff"));
         assert!(re.is_match("0x00FFFF"));
         assert!(!re.is_match("#f2ewq"));
-        assert!(re.is_match("blue"));
-        assert!(re.is_match("red"));
-        assert!(re.is_match("coral"));
-        assert!(re.is_match("brown"));
     }
 }
