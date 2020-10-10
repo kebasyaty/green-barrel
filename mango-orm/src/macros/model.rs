@@ -946,6 +946,22 @@ macro_rules! model {
                         _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
                         $service, MODEL_NAME, field),
                     }
+                    // Checking the values of the fields `step`,` min` and `max`
+                    match widget.step.get_enum_type() {
+                        "I32" => {
+                            let step: i32 =  widget.step.get_raw_data().parse().unwrap();
+                            let min: i32 =  widget.min.get_raw_data().parse().unwrap();
+                            let max: i32 =  widget.max.get_raw_data().parse().unwrap();
+                        }
+                        "U32" | "I64" => {}
+                        "F64" => {}
+                        _ => {
+                            panic!(
+                                "Service: `{}` -> Model: `{}` -> Field: `{}` : Non-existent field type..",
+                                $service, MODEL_NAME, field
+                            )
+                        }
+                    }
                 }
 
                 // Check the field changes in the Model and (if required)
