@@ -361,6 +361,20 @@ macro_rules! model {
                                                 attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
+                                        "InputIPv4" => {
+                                            if !validate_ip_v4(data) {
+                                                stop_err = true;
+                                                let msg = &"Invalid IPv4 address.".to_string();
+                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                            }
+                                        }
+                                        "InputIPv6" => {
+                                            if !validate_ip_v6(data) {
+                                                stop_err = true;
+                                                let msg = &"Invalid IPv6 address.".to_string();
+                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                            }
+                                        }
                                         _ => {},
                                     }
                                 }
