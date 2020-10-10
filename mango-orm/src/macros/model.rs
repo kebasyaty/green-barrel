@@ -383,6 +383,11 @@ macro_rules! model {
 
                                     // Personal validation
                                     // -------------------------------------------------------------
+                                    Self::personal_validation(field_type, data).unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
