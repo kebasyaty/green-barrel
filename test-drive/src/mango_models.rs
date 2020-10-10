@@ -10,6 +10,7 @@ use mongodb::{
     options::UpdateModifications,
     results, Client, Collection, Cursor, Database,
 };
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;

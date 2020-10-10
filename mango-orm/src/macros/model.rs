@@ -307,7 +307,7 @@ macro_rules! model {
                             let field_type: &str = widget_map.get(field).unwrap();
                             // Field validation
                             match field_type {
-                                "InputText" | "InputEmail" | "TextArea" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
+                                "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     attrs.value = data.to_string();
@@ -344,6 +344,14 @@ macro_rules! model {
                                             if !validate_email(data) {
                                                 stop_err = true;
                                                 let msg = &"Invalid email address.".to_string();
+                                                attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                            }
+                                        }
+                                        "InputColor" => {
+                                            let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
+                                            if !re.is_match(data) {
+                                                stop_err = true;
+                                                let msg = &"Invalid Color code.".to_string();
                                                 attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                             }
                                         }
