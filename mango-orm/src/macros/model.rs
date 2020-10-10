@@ -348,7 +348,8 @@ macro_rules! model {
                                             }
                                         }
                                         "InputColor" => {
-                                            let re = RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
+                                            let re = RegexBuilder::new(
+                                                r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
                                                 .case_insensitive(true).build()?;
                                             if !re.is_match(data) {
                                                 stop_err = true;
