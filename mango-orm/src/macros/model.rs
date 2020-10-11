@@ -369,6 +369,7 @@ macro_rules! model {
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+                                    // Add data from the field to the final document and in attribute map.
                                     if is_update {
                                         let value_curr: Option<&Bson> = doc_curr.get(field);
                                         if value_curr.is_some() {
