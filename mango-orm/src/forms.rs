@@ -3,6 +3,7 @@
 //! `Form` - Define form settings for models (widgets, html).
 
 use crate::widgets::{Transport, Widget};
+use mongodb::bson::document::Document;
 use std::collections::HashMap;
 use std::error::Error;
 
@@ -355,10 +356,10 @@ pub enum OutputType {
 // Output data
 #[derive(Debug)]
 pub enum OutputData {
-    Hash((String, bool)),
-    Map((HashMap<String, Transport>, bool)),
-    Json((String, bool)),
-    Html((String, bool)),
+    Hash((String, bool, Document)),
+    Map((HashMap<String, Transport>, bool, Document)),
+    Json((String, bool, Document)),
+    Html((String, bool, Document)),
 }
 
 impl OutputData {
@@ -388,6 +389,15 @@ impl OutputData {
         match self {
             Self::Html(data) => &data.0,
             _ => panic!("`html()` - Doesn't match the output type."),
+        }
+    }
+    // Get Boolean
+    pub fn bool(&self) -> bool {
+        match self {
+            Self::Hash(data) => data.1,
+            Self::Map(data) => data.1,
+            Self::Json(data) => data.1,
+            Self::Html(data) => data.1,
         }
     }
 }
