@@ -480,6 +480,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
+                let result: OutputData = self.is_valid(client, output_format).await?;
                 let meta: Meta = Self::meta()?;
                 let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
