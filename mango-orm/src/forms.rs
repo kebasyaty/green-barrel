@@ -400,6 +400,15 @@ impl OutputData {
             Self::Html(data) => data.1,
         }
     }
+    // Get Document
+    pub fn doc(&self) -> Document {
+        match self {
+            Self::Hash(data) => data.2.clone(),
+            Self::Map(data) => data.2.clone(),
+            Self::Json(data) => data.2.clone(),
+            Self::Html(data) => data.2.clone(),
+        }
+    }
 }
 
 // TESTS
