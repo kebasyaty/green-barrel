@@ -258,7 +258,7 @@ macro_rules! model {
                 Ok(())
             }
             // Validation of Form
-            pub async fn is_valid(& mut self, client: &Client, output_format: OutputType) ->
+            pub async fn is_valid(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &'static str = stringify!($sname);
