@@ -257,6 +257,10 @@ macro_rules! model {
                 }
                 Ok(())
             }
+            // Model and Form validation
+            pub fn is_valid(& mut self, client: &Client) -> Result<bool, Box<dyn Error>> {
+                Ok(true)
+            }
 
             // Post processing database queries
             // *************************************************************************************
