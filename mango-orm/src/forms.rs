@@ -355,38 +355,38 @@ pub enum OutputType {
 // Output data
 #[derive(Debug)]
 pub enum OutputData {
-    Hash(String),
-    Map(HashMap<String, Transport>),
-    Json(String),
-    Html(String),
+    Hash((String, bool)),
+    Map((HashMap<String, Transport>, bool)),
+    Json((String, bool)),
+    Html((String, bool)),
 }
 
 impl OutputData {
     // Get Hash-line
     pub fn hash(&self) -> &str {
         match self {
-            Self::Hash(data) => data,
+            Self::Hash(data) => &data.0,
             _ => panic!("`hash()` - Doesn't match the output type."),
         }
     }
     // Get Attribute Map
     pub fn map(&self) -> HashMap<String, Transport> {
         match self {
-            Self::Map(data) => data.clone(),
+            Self::Map(data) => data.0.clone(),
             _ => panic!("`map()` - Doesn't match the output type."),
         }
     }
     // Get Json-line
     pub fn json(&self) -> &str {
         match self {
-            Self::Json(data) => data,
+            Self::Json(data) => &data.0,
             _ => panic!("`json()` - Doesn't match the output type."),
         }
     }
     // Get Html-line
     pub fn html(&self) -> &str {
         match self {
-            Self::Html(data) => data,
+            Self::Html(data) => &data.0,
             _ => panic!("`html()` - Doesn't match the output type."),
         }
     }
