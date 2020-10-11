@@ -481,7 +481,7 @@ macro_rules! model {
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let meta: Meta = Self::meta()?;
-                let mut stop_err = true;
+                let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
