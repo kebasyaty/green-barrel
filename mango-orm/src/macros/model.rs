@@ -373,9 +373,11 @@ macro_rules! model {
                                     if is_update {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
+                                            let value_update: &Bson = value_update.unwrap();
+                                            let field_data_update: &str = value_update.as_str().unwrap();
                                             if attrs.required && field_data.len() > 0 {
-                                                attrs.value = field_data.to_string();
-                                                doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                                attrs.value = field_data_update.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
                                             }
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
