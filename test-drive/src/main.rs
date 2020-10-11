@@ -35,7 +35,7 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "test5@test.test".to_string(),
+        email: "test6@test.test".to_string(),
         ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
@@ -44,7 +44,9 @@ async fn main() {
 
     let data = user.save(&client, OutputType::Hash).await.unwrap();
     println!("\n{}", data.hash());
+    println!("{}", data.bool());
 
     let data = user.save(&client, OutputType::Hash).await.unwrap();
     println!("\n{}", data.hash());
+    println!("{}", data.bool());
 }
