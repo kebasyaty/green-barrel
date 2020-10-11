@@ -480,11 +480,10 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
+                let mut stop_err = false;
                 let result: OutputData = self.is_valid(client, output_format).await?;
                 let meta: Meta = Self::meta()?;
-                let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
-                let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
