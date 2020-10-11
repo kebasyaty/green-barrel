@@ -389,10 +389,6 @@ macro_rules! model {
                         MODEL_NAME))?
                 }
 
-                // Add hash-line
-                // ---------------------------------------------------------------------------------
-                attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
-
                 // Post processing
                 // ---------------------------------------------------------------------------------
                 let result: OutputData = match output_format {
@@ -481,24 +477,51 @@ macro_rules! model {
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut stop_err = false;
-                let result: OutputData = self.is_valid(client, output_format).await?;
+                let verified_data: OutputData = self.is_valid(client, OutputType::Map).await?;
+                let mut attrs_map: HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::meta()?;
                 let is_update: bool = self.hash.len() > 0;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                if result.bool() {
+                if verified_data.bool() {
                     if !is_update {
-                        let result: results::InsertOneResult = coll.insert_one(result.doc(), None).await?;
+                        let result: results::InsertOneResult = coll.insert_one(verified_data.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
                         let query: Document = doc!{"_id": object_id};
-                        coll.update_one(query, result.doc(), None).await?;
+                        coll.update_one(query, verified_data.doc(), None).await?;
                     }
                 }
+
+                // Add hash-line
+                // ---------------------------------------------------------------------------------
+                attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
+
+                // Post processing
+                // ---------------------------------------------------------------------------------
+                let result: OutputData = match output_format {
+                    // Get Hash-line
+                    OutputType::Hash => {
+                        let data: String = Self::to_hash(&attrs_map)?;
+                        OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
+                    }
+                    // Get Attribute Map
+                    OutputType::Map => OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc())),
+                    // Get Json-line
+                    OutputType::Json => {
+                        let data: String = Self::to_json(&attrs_map)?;
+                        OutputData::Json((data, verified_data.bool(), verified_data.doc()))
+                    }
+                    // Get Html-line
+                    OutputType::Html => {
+                        let data: String = Self::to_html(attrs_map)?;
+                        OutputData::Html((data, verified_data.bool(), verified_data.doc()))
+                    }
+                };
 
                 Ok(result)
             }
