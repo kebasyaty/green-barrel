@@ -327,16 +327,18 @@ macro_rules! model {
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
-                // Object for pre result
-                let mut doc_tmp: Document = if !is_update {
-                    to_document(self).unwrap()
-                } else {
+                // Get data from model
+                let mut doc_tmp: Document = to_document(self).unwrap();
+                // Get data for model from database (if available)
+                let mut doc_curr: Document = if is_update {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let filter: Document = doc!{"_id": object_id};
                     coll.find_one(filter, None).await?.unwrap()
+                } else {
+                    doc! {}
                 };
-                // Object for the final result
+                // Document for the final result
                 let mut doc_res: Document = doc! {};
 
                 // Check field values (maxlength, unique, min, max, etc...)
