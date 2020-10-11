@@ -369,8 +369,21 @@ macro_rules! model {
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
-                                    attrs.value = data.to_string();
-                                    doc_res.insert(field.to_string(), Bson::String(data.to_string()));
+                                    if is_update {
+                                        let value_curr: Option<&Bson> = doc_curr.get(field);
+                                        if value_curr.is_some() {
+                                            if attrs.required && data.len() > 0 {
+                                                attrs.value = data.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(data.to_string()));
+                                            }
+                                        } else {
+                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
+                                            MODEL_NAME, field))?
+                                        }
+                                    } else {
+                                        attrs.value = data.to_string();
+                                        doc_res.insert(field.to_string(), Bson::String(data.to_string()));
+                                    }
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, data).unwrap_or_else(|err| {
                                         stop_err = true;
