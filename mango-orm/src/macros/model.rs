@@ -374,6 +374,7 @@ macro_rules! model {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
+                                        continue;
                                     }
                                     // Add data from the field to the final document and in attribute map.
                                     if is_update {
