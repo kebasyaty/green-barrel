@@ -330,7 +330,7 @@ macro_rules! model {
                 // Get data from model
                 let mut doc_tmp: Document = to_document(self).unwrap();
                 // Get data for model from database (if available)
-                let mut doc_curr: Document = if is_update {
+                let mut doc_update: Document = if is_update {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let filter: Document = doc!{"_id": object_id};
@@ -371,8 +371,8 @@ macro_rules! model {
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     // Add data from the field to the final document and in attribute map.
                                     if is_update {
-                                        let value_curr: Option<&Bson> = doc_curr.get(field);
-                                        if value_curr.is_some() {
+                                        let value_update: Option<&Bson> = doc_update.get(field);
+                                        if value_update.is_some() {
                                             if attrs.required && data.len() > 0 {
                                                 attrs.value = data.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(data.to_string()));
