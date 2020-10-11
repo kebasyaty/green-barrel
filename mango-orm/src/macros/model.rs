@@ -488,15 +488,15 @@ macro_rules! model {
 
                 // Save to database
                 // ---------------------------------------------------------------------------------
-                if !stop_err {
+                if result.bool() {
                     if !is_update {
-                        let result: results::InsertOneResult = coll.insert_one(doc_res, None).await?;
+                        let result: results::InsertOneResult = coll.insert_one(result.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
                         let query: Document = doc!{"_id": object_id};
-                        coll.update_one(query, doc_res, None).await?;
+                        coll.update_one(query, result.doc(), None).await?;
                     }
                 }
 
