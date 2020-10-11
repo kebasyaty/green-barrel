@@ -328,7 +328,14 @@ macro_rules! model {
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Object for pre result
-                let mut doc_tmp: Document = to_document(self).unwrap();
+                let mut doc_tmp: Document = if !is_update {
+                    to_document(self).unwrap()
+                } else {
+                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                        .unwrap_or_else(|err| { panic!("{:?}", err) });
+                    let filter: Document = doc!{"_id": object_id};
+                    coll.find_one(filter, None).await?.unwrap()
+                };
                 // Object for the final result
                 let mut doc_res: Document = doc! {};
 
