@@ -381,13 +381,10 @@ macro_rules! model {
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
                                             let field_data_update: &str = value_update.as_str().unwrap();
-                                            if attrs.required && field_data.len() == 0 {
-                                                stop_err = true;
-                                                attrs.error =
-                                                    Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
+                                            if field_data.len() > 0 {
                                                 attrs.value = field_data.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
-                                            } else {
+                                            } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
                                             }
