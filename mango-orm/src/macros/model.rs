@@ -399,19 +399,19 @@ macro_rules! model {
                     // Get Hash-line
                     OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash(data)
+                        OutputData::Hash((data, !stop_err, doc_res))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map(attrs_map),
+                    OutputType::Map => OutputData::Map((attrs_map, !stop_err, doc_res)),
                     // Get Json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json(data)
+                        OutputData::Json((data, !stop_err, doc_res))
                     }
                     // Get Html-line
                     OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html(data)
+                        OutputData::Html((data, !stop_err, doc_res))
                     }
                 };
 
