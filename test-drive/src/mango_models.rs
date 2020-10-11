@@ -6,7 +6,7 @@ use mango_orm::{
     widgets::{FieldType, StepMinMax, Transport, Widget},
 };
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, ser::to_bson, Bson},
+    bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
     options::UpdateModifications,
     results, Client, Collection, Cursor, Database,
 };

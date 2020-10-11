@@ -327,9 +327,9 @@ macro_rules! model {
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 // Object for pre result
-                let mut bson_temp: Bson = to_bson(self).unwrap();
+                let mut doc_tmp: Document = to_document(self).unwrap();
                 // Object for the final result
-                let mut doc_save: Document = doc! {};
+                let mut doc_res: Document = doc! {};
                 //
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
@@ -344,7 +344,7 @@ macro_rules! model {
                     // Loop over fields
                     for field in FIELD_NAMES {
                         if field == &"hash" { continue; }
-                        let value: Option<&Bson> = doc.get(field);
+                        let value: Option<&Bson> = doc_tmp.get(field);
                         //
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
@@ -411,13 +411,13 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 if !stop_err {
                     if !is_update {
-                        let result: results::InsertOneResult = coll.insert_one(doc, None).await?;
+                        let result: results::InsertOneResult = coll.insert_one(doc_res, None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{:?}", err) });
                         let query: Document = doc!{"_id": object_id};
-                        coll.update_one(query, doc, None).await?;
+                        coll.update_one(query, doc_res, None).await?;
                     }
                 }
 
