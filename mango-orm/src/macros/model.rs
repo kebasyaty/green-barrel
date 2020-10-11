@@ -375,7 +375,13 @@ macro_rules! model {
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
                                             let field_data_update: &str = value_update.as_str().unwrap();
-                                            if attrs.required && field_data.len() > 0 {
+                                            if attrs.required && field_data.len() == 0 {
+                                                stop_err = true;
+                                                attrs.error =
+                                                    Self::accumula_err(&attrs, &"???".to_owned()).unwrap();
+                                                attrs.value = field_data.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                            } else {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
                                             }
@@ -444,7 +450,7 @@ macro_rules! model {
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
-                            .unwrap_or_else(|err| { panic!("{:?}", err) });
+                            .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
                         let query: Document = doc!{"_id": object_id};
                         coll.update_one(query, doc_res, None).await?;
                     }
