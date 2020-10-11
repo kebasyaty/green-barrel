@@ -476,7 +476,6 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let mut stop_err = false;
                 let verified_data: OutputData = self.is_valid(client, OutputType::Map).await?;
                 let mut attrs_map: HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::meta()?;
