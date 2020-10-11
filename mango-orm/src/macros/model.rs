@@ -324,12 +324,13 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let mut stop_err = false;
-                let is_update: bool = self.hash.len() != 0;
+                let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 // Object for pre result
                 let mut bson_temp: Bson = to_bson(self).unwrap();
                 // Object for the final result
                 let mut doc_save: Document = doc! {};
+                //
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Check field values (maxlength, unique, min, max, etc...)
