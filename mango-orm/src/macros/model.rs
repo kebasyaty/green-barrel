@@ -389,7 +389,7 @@ macro_rules! model {
                                             } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
-                                                // continue;
+                                                continue;
                                             }
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
