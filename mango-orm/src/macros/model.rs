@@ -360,6 +360,7 @@ macro_rules! model {
                                     let data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     attrs.value = data.to_string();
+                                    doc_res.insert(field.to_string(), Bson::String(data.to_string());
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, data).unwrap_or_else(|err| {
                                         stop_err = true;
