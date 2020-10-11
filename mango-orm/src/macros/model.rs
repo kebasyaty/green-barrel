@@ -326,12 +326,11 @@ macro_rules! model {
                 let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
+                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Object for pre result
                 let mut doc_tmp: Document = to_document(self).unwrap();
                 // Object for the final result
                 let mut doc_res: Document = doc! {};
-                //
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Check field values (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
