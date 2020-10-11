@@ -367,26 +367,26 @@ macro_rules! model {
                                 // Validation of text type fields
                                 // -----------------------------------------------------------------
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
-                                    let data: &str = value.as_str().unwrap();
+                                    let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     // Add data from the field to the final document and in attribute map.
                                     if is_update {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
-                                            if attrs.required && data.len() > 0 {
-                                                attrs.value = data.to_string();
-                                                doc_res.insert(field.to_string(), Bson::String(data.to_string()));
+                                            if attrs.required && field_data.len() > 0 {
+                                                attrs.value = field_data.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
                                             }
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
                                             MODEL_NAME, field))?
                                         }
                                     } else {
-                                        attrs.value = data.to_string();
-                                        doc_res.insert(field.to_string(), Bson::String(data.to_string()));
+                                        attrs.value = field_data.to_string();
+                                        doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
-                                    Self::check_maxlength(attrs.maxlength, data).unwrap_or_else(|err| {
+                                    Self::check_maxlength(attrs.maxlength, field_data).unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
@@ -396,7 +396,7 @@ macro_rules! model {
                                     {
                                         let min: f64 = attrs.min.parse().unwrap();
                                         let max: f64 = attrs.max.parse().unwrap();
-                                        let len: f64 = data.encode_utf16().count() as f64;
+                                        let len: f64 = field_data.encode_utf16().count() as f64;
                                         if (min > 0_f64 || max > 0_f64) &&
                                             !validate_range(Validator::Range{min: Some(min), max: Some(max)}, len) {
                                             stop_err = true;
@@ -405,7 +405,7 @@ macro_rules! model {
                                         }
                                     }
                                     // Validation of `unique`
-                                    Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
+                                    Self::check_unique(is_update, attrs.unique, field, field_data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
@@ -413,7 +413,7 @@ macro_rules! model {
 
                                     // Additional validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
-                                    Self::additional_validation(field_type, data).unwrap_or_else(|err| {
+                                    Self::additional_validation(field_type, field_data).unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
