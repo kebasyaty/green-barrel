@@ -614,9 +614,9 @@ macro_rules! model {
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> For `value` = FieldType `{}` : `relation_model` = only blank string.",
                                     $service, MODEL_NAME, field, enum_field_type
                                 )
-                            }  else if widget.step.get_enum_type() != widget.min.get_enum_type() || widget.step.get_enum_type() != widget.max.get_enum_type() {
+                            }  else if widget.step.get_enum_type() != "U32" || widget.min.get_enum_type() != "U32" ||  widget.max.get_enum_type() != "U32" {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `step`, `min` and `max` fields must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The fields `step`, `min` and `max` must be of types `StepMinMax::U32`.",
                                     $service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
