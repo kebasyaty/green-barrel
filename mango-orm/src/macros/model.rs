@@ -215,7 +215,7 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
-            // Personal validation for some fields
+            // Personal validation for some fields (email, password, url, ip, etc...)
             fn personal_validation(field_type: &str, data: &str) ->
                 Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
@@ -381,7 +381,7 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Personal validation
+                                    // Personal validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
                                     Self::personal_validation(field_type, data).unwrap_or_else(|err| {
                                         stop_err = true;
