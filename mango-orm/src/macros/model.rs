@@ -369,6 +369,12 @@ macro_rules! model {
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+                                    // Validation for a required field
+                                    if attrs.required && field_data.len() == 0 {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
+                                    }
                                     // Add data from the field to the final document and in attribute map.
                                     if is_update {
                                         let value_update: Option<&Bson> = doc_update.get(field);
@@ -378,7 +384,7 @@ macro_rules! model {
                                             if attrs.required && field_data.len() == 0 {
                                                 stop_err = true;
                                                 attrs.error =
-                                                    Self::accumula_err(&attrs, &"???".to_owned()).unwrap();
+                                                    Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
                                                 attrs.value = field_data.to_string();
                                                 doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
                                             } else {
