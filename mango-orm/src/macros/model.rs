@@ -343,7 +343,9 @@ macro_rules! model {
                     let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
                     // Loop over fields
                     for field in FIELD_NAMES {
-                        if field == &"hash" { continue; }
+                        if field == &"hash" || field.contains("_confirm") || field.contains("_nosave") {
+                            continue;
+                        }
                         let value: Option<&Bson> = doc_tmp.get(field);
                         //
                         if value.is_some() {
