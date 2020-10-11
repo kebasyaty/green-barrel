@@ -349,7 +349,7 @@ macro_rules! model {
                             let field_type: &str = widget_map.get(field).unwrap();
                             // Field validation
                             match field_type {
-                                // Text type fields
+                                // Validation of text type fields
                                 // -----------------------------------------------------------------
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
                                     let data: &str = value.as_str().unwrap();
