@@ -305,7 +305,7 @@ pub enum StepMinMax {
 
 impl Default for StepMinMax {
     fn default() -> Self {
-        StepMinMax::I32(0_i32)
+        StepMinMax::U32(0_u32)
     }
 }
 
@@ -477,6 +477,7 @@ mod tests {
     fn test_field_types() {
         // Method get_input_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(FieldType::default().get_input_type(), "text");
         assert_eq!(FieldType::Hash.get_input_type(), "hidden");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_input_type(),
@@ -560,6 +561,7 @@ mod tests {
 
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(FieldType::default().get_raw_data(), String::new());
         assert_eq!(FieldType::Hash.get_raw_data(), String::new());
         assert_eq!(
             FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
@@ -641,6 +643,7 @@ mod tests {
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(FieldType::default().get_data_type(), "String");
         assert_eq!(FieldType::Hash.get_data_type(), "String");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
@@ -718,6 +721,7 @@ mod tests {
 
         // Method get_enum_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(FieldType::default().get_enum_type(), "InputText");
         assert_eq!(FieldType::Hash.get_enum_type(), "Hash");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_enum_type(),
@@ -857,6 +861,7 @@ mod tests {
     fn test_select_data_types() {
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(SelectDataType::default().get_raw_data(), String::new());
         assert_eq!(
             SelectDataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -880,6 +885,7 @@ mod tests {
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(SelectDataType::default().get_data_type(), "String");
         assert_eq!(
             SelectDataType::Text(String::new()).get_data_type(),
             "String"
@@ -891,6 +897,7 @@ mod tests {
 
         // Method get_enum_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(SelectDataType::default().get_enum_type(), "Text");
         assert_eq!(SelectDataType::Text(String::new()).get_enum_type(), "Text");
         assert_eq!(SelectDataType::I32(-10_i32).get_enum_type(), "I32");
         assert_eq!(SelectDataType::U32(10_u32).get_enum_type(), "U32");
@@ -904,6 +911,7 @@ mod tests {
     fn test_step_min_max_data_types() {
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(StepMinMax::default().get_raw_data(), 0_u32.to_string());
         assert_eq!(
             StepMinMax::I32(-10_i32).get_raw_data(),
             (-10_i32).to_string()
@@ -920,6 +928,7 @@ mod tests {
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(StepMinMax::default().get_data_type(), "i64");
         assert_eq!(StepMinMax::I32(-10_i32).get_data_type(), "i32");
         assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "i64");
         assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
@@ -927,6 +936,7 @@ mod tests {
 
         // Method get_enum_type()
         // -----------------------------------------------------------------------------------------
+        assert_eq!(StepMinMax::default().get_enum_type(), "U32");
         assert_eq!(StepMinMax::I32(-10_i32).get_enum_type(), "I32");
         assert_eq!(StepMinMax::U32(10_u32).get_enum_type(), "U32");
         assert_eq!(StepMinMax::I64(-10_i64).get_enum_type(), "I64");
