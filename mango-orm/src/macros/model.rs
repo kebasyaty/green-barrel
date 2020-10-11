@@ -215,8 +215,8 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
-            // Personal validation for some fields (email, password, url, ip, etc...)
-            fn personal_validation(field_type: &str, data: &str) ->
+            // Additional validation for some fields (email, password, url, ip, etc...)
+            fn additional_validation(field_type: &str, data: &str) ->
                 Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 match field_type {
@@ -361,7 +361,7 @@ macro_rules! model {
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
-                                    // Checking range (`min` <> `max`)
+                                    // Validation of range (`min` <> `max`)
                                     // (Hint: The `validate_length()` method did not provide the desired result)
                                     {
                                         let min: f64 = attrs.min.parse().unwrap();
@@ -374,16 +374,16 @@ macro_rules! model {
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
                                     }
-                                    // Checking `unique
+                                    // Validation of `unique`
                                     Self::check_unique(is_update, attrs.unique, field, data, &coll).await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Personal validation (email, password, url, ip, etc...)
+                                    // Additional validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
-                                    Self::personal_validation(field_type, data).unwrap_or_else(|err| {
+                                    Self::additional_validation(field_type, data).unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
