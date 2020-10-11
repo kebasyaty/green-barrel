@@ -186,14 +186,14 @@ macro_rules! model {
 
             // Validation of database queries
             // *************************************************************************************
-            // Checking `maxlength`
+            // Validation of `maxlength`
             fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
                 if maxlength > 0 && data.encode_utf16().count() > maxlength {
                     Err(format!("Exceeds limit, maxlength={}.", maxlength))?
                 }
                 Ok(())
             }
-            // Checking `unique`
+            // Validation of `unique`
             async fn check_unique(
                 is_update: bool, is_unique: bool, field: &String, data: &str,
                 coll: &Collection) -> Result<(), Box<dyn Error>> {
@@ -257,9 +257,164 @@ macro_rules! model {
                 }
                 Ok(())
             }
-            // Model and Form validation
-            pub fn is_valid(& mut self, client: &Client) -> Result<bool, Box<dyn Error>> {
-                Ok(true)
+            // Validation of Form
+            pub async fn is_valid(& mut self, client: &Client, output_format: OutputType) ->
+                Result<OutputData, Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                static MODEL_NAME: &'static str = stringify!($sname);
+                let (mut store, key) = Self::form_cache().await?;
+                let meta: Meta = Self::meta()?;
+                let mut stop_err = false;
+                let is_update: bool = self.hash.len() > 0;
+                let mut attrs_map: HashMap<String, Transport> = HashMap::new();
+                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+                // Get data from model
+                let mut doc_tmp: Document = to_document(self).unwrap();
+                // Get data for model from database (if available)
+                let mut doc_update: Document = if is_update {
+                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                        .unwrap_or_else(|err| { panic!("{:?}", err) });
+                    let filter: Document = doc!{"_id": object_id};
+                    coll.find_one(filter, None).await?.unwrap()
+                } else {
+                    doc! {}
+                };
+                // Document for the final result
+                let mut doc_res: Document = doc! {};
+
+                // Check field values (maxlength, unique, min, max, etc...)
+                // ---------------------------------------------------------------------------------
+                let cache: Option<&FormCache> = store.get(key);
+                if cache.is_some() {
+                    let cache: &FormCache = cache.unwrap();
+                    static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
+                    attrs_map = cache.attrs_map.clone();
+                    let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
+                    // Loop over fields
+                    for field in FIELD_NAMES {
+                        // Filter out specific fields
+                        if field == &"hash" || field.contains("_confirm") || field.contains("_nosave") {
+                            continue;
+                        }
+                        // Get field value for validation
+                        let value: Option<&Bson> = doc_tmp.get(field);
+                        //
+                        if value.is_some() {
+                            let value: &Bson = value.unwrap();
+                            let field: &String = &field.to_string();
+                            let field_type: &str = widget_map.get(field).unwrap();
+                            // Field validation
+                            match field_type {
+                                // Validation of text type fields
+                                // -----------------------------------------------------------------
+                                "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
+                                    let field_data: &str = value.as_str().unwrap();
+                                    let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+                                    // Validation for a required field
+                                    if attrs.required && field_data.len() == 0 {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
+                                        attrs.value = field_data.to_string();
+                                        continue;
+                                    }
+                                    // Add data from the field to the final document and in attribute map.
+                                    if is_update {
+                                        let value_update: Option<&Bson> = doc_update.get(field);
+                                        if value_update.is_some() {
+                                            let value_update: &Bson = value_update.unwrap();
+                                            let field_data_update: &str = value_update.as_str().unwrap();
+                                            if field_data.len() > 0 {
+                                                attrs.value = field_data.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                            } else if !attrs.required {
+                                                attrs.value = field_data_update.to_string();
+                                                doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
+                                                continue;
+                                            }
+                                        } else {
+                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
+                                            MODEL_NAME, field))?
+                                        }
+                                    } else {
+                                        attrs.value = field_data.to_string();
+                                        doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                    }
+                                    // Checking `maxlength`, `min length`, `max length`
+                                    Self::check_maxlength(attrs.maxlength, field_data).unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
+                                    // Validation of range (`min` <> `max`)
+                                    // (Hint: The `validate_length()` method did not provide the desired result)
+                                    {
+                                        let min: f64 = attrs.min.parse().unwrap();
+                                        let max: f64 = attrs.max.parse().unwrap();
+                                        let len: f64 = field_data.encode_utf16().count() as f64;
+                                        if (min > 0_f64 || max > 0_f64) &&
+                                            !validate_range(Validator::Range{min: Some(min), max: Some(max)}, len) {
+                                            stop_err = true;
+                                            let msg = format!("Length {}, is out of range (min={} <> max={}).", len, min, max);
+                                            attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                        }
+                                    }
+                                    // Validation of `unique`
+                                    Self::check_unique(is_update, attrs.unique, field, field_data, &coll).await.unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
+
+                                    // Additional validation (email, password, url, ip, etc...)
+                                    // -------------------------------------------------------------
+                                    Self::additional_validation(field_type, field_data).unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
+                                }
+                                _ => {
+                                    Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
+                                        MODEL_NAME, field))?
+                                }
+                            }
+                        } else {
+                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing.",
+                                MODEL_NAME, field))?
+                        }
+                    }
+                } else {
+                    Err(format!("Model: `{}` -> Method: `save()` : Did not receive data from cache.",
+                        MODEL_NAME))?
+                }
+
+                // Add hash-line
+                // ---------------------------------------------------------------------------------
+                attrs_map.get_mut(&"hash".to_string()).unwrap().value = self.hash.clone();
+
+                // Post processing
+                // ---------------------------------------------------------------------------------
+                let result: OutputData = match output_format {
+                    // Get Hash-line
+                    OutputType::Hash => {
+                        let data: String = Self::to_hash(&attrs_map)?;
+                        OutputData::Hash(data)
+                    }
+                    // Get Attribute Map
+                    OutputType::Map => OutputData::Map(attrs_map),
+                    // Get Json-line
+                    OutputType::Json => {
+                        let data: String = Self::to_json(&attrs_map)?;
+                        OutputData::Json(data)
+                    }
+                    // Get Html-line
+                    OutputType::Html => {
+                        let data: String = Self::to_html(attrs_map)?;
+                        OutputData::Html(data)
+                    }
+                };
+                Ok(result)
             }
 
             // Post processing database queries
