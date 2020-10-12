@@ -22,10 +22,12 @@ pub trait Form {
         vec![]
     }
 
-    // Custom validation for model fields
+    // Custom validation of model fields
+    // (Don't forget to check for ignored fields -> `ignore_fields()`)
     // *********************************************************************************************
-    fn custom_check() {
-        //
+    fn custom_check() -> HashMap<&'static str, &'static str> {
+        let error_map = HashMap::new();
+        error_map
     }
 
     // Customizing HTML form  (If necessary) for page templates
