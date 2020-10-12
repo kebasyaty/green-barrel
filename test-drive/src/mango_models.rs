@@ -87,7 +87,7 @@ model! {
             if self.password_confirm.len() == 0 {
                 error_map.insert("password_confirm", "Required field.");
             } else if self.password != self.password_confirm {
-                error_map.insert("password", "???");
+                error_map.insert("password_confirm", "Password confirmation does not match.");
             }
             Ok(error_map)
         }
