@@ -263,6 +263,14 @@ macro_rules! model {
                             Err("Invalid IPv6 address.")?
                         }
                     }
+                    "InputPassword" => {
+                        let re = RegexBuilder::new(
+                            r"^.$")
+                            .case_insensitive(true).build()?;
+                        if !re.is_match(data) {
+                            Err("Invalid Color code.")?
+                        }
+                    }
                     _ => return Ok(()),
                 }
                 Ok(())
@@ -328,7 +336,7 @@ macro_rules! model {
                             match field_type {
                                 // Validation of text type fields
                                 // -----------------------------------------------------------------
-                                "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" => {
+                                "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "InputPassword" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     // Validation for a required field
