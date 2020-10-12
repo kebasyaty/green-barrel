@@ -90,7 +90,6 @@ mod tests {
         assert!(!re.is_match(&"?".repeat(8)));
         assert!(!re.is_match(&"/".repeat(8)));
         assert!(!re.is_match(&"  ".repeat(8)));
-        assert!(!re.is_match(&"zeDKs_9LtfrB7Xm2"));
         assert!(re.is_match(&"zeDKs9LtfrB7Xm2"));
         assert!(re.is_match(&"@#$%^&+="));
         assert!(re.is_match(&"0123456789"));
