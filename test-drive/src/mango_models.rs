@@ -65,14 +65,14 @@ model! {
         username: String,
         email: String,
         password: String,
-        confirm_password: String
+        password_confirm: String
     }
 
     impl Form for User {
         // Example:
         // List of field names that will not be saved to the database
         fn ignore_fields() -> Vec<&'static str> {
-            vec!["confirm_password"]
+            vec!["password_confirm"]
         }
 
         // Example:
@@ -110,6 +110,35 @@ model! {
                     ..Default::default()
                 },
             );
+
+            // Password
+            map.insert(
+                "password",
+                Widget {
+                    label: "Your password".to_string(),
+                    value: FieldType::InputPassword(String::new()),
+                    maxlength: 16,
+                    required: true,
+                    hint: "Enter your password.".to_string(),
+                    other_attrs: format!("placeholder=\"{}\"", "Your password"),
+                    ..Default::default()
+                },
+            );
+
+            // Confirm password
+            map.insert(
+                "password_confirm",
+                Widget {
+                    label: "Confirm password".to_string(),
+                    value: FieldType::InputPassword(String::new()),
+                    maxlength: 16,
+                    required: true,
+                    hint: "Confirm your password.".to_string(),
+                    other_attrs: format!("placeholder=\"{}\"", "Confirm password"),
+                    ..Default::default()
+                },
+            );
+
             Ok(map)
         }
     }
