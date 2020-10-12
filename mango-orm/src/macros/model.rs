@@ -258,7 +258,7 @@ macro_rules! model {
                 Ok(())
             }
             // Validation of Form
-            pub async fn is_valid(&self, client: &Client, output_format: OutputType) ->
+            pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &'static str = stringify!($sname);
@@ -476,7 +476,7 @@ macro_rules! model {
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let verified_data: OutputData = self.is_valid(client, OutputType::Map).await?;
+                let verified_data: OutputData = self.check(client, OutputType::Map).await?;
                 let mut attrs_map: HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::meta()?;
                 let is_update: bool = self.hash.len() > 0;
