@@ -268,7 +268,7 @@ macro_rules! model {
                             r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
                             .case_insensitive(true).build()?;
                         if !re.is_match(data) {
-                            Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + =<br> \
+                            Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
                                  Minimum size 8 characters")?
                         }
                     }
