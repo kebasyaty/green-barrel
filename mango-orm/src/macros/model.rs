@@ -283,7 +283,7 @@ macro_rules! model {
                 // Document for the final result
                 let mut doc_res: Document = doc! {};
 
-                // Check field values (maxlength, unique, min, max, etc...)
+                // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
                 let cache: Option<&FormCache> = store.get(key);
                 if cache.is_some() {
