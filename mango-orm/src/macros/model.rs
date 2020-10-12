@@ -408,7 +408,7 @@ macro_rules! model {
 
                                     // Generate password hash and add to result document
                                     // -------------------------------------------------------------
-                                    if field_type == "InputPassword" {
+                                    if !stop_err && field_type == "InputPassword" {
                                         const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                                                 abcdefghijklmnopqrstuvwxyz\
                                                                 0123456789@#$%^&+=*!~)(";
