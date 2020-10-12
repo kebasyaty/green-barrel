@@ -302,6 +302,10 @@ macro_rules! model {
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     attrs_map = cache.attrs_map.clone();
                     let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
+                    // Apply custom check
+                    {
+                        let error_map: HashMap<&'static str, &'static str> = self.custom_check()?;
+                    }
                     // Loop over fields
                     for field in FIELD_NAMES {
                         // Filter out specific fields
