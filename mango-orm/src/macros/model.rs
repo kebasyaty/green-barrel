@@ -337,7 +337,9 @@ macro_rules! model {
                             match field_type {
                                 // Validation of text type fields
                                 // -----------------------------------------------------------------
-                                "InputText" | "InputEmail" | "TextArea" | "InputColor" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "InputPassword" => {
+                                "InputText" | "InputEmail" | "TextArea" | "InputColor" |
+                                    "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
+                                    "InputPassword" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     // Validation for a required field
@@ -403,6 +405,14 @@ macro_rules! model {
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
+
+                                    // Generate password hash
+                                    if field_type == "InputPassword" {
+                                        let salt = b"randomsalt";
+                                        let config = Config::default();
+                                        let hash = argon2::hash_encoded(field_data.as_bytes(), salt, &config)?;
+                                        doc_res.insert(field.to_string(), Bson::String(hash));
+                                    }
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",

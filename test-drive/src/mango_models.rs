@@ -1,3 +1,4 @@
+use argon2::{self, Config};
 use futures::stream::StreamExt;
 use mango_orm::{
     forms::{Form, OutputData, OutputType},
