@@ -411,7 +411,7 @@ macro_rules! model {
                                         const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                                                 abcdefghijklmnopqrstuvwxyz\
                                                                 0123456789@#$%^&+=*!~)(";
-                                        const SALT_LEN: usize = 32;
+                                        const SALT_LEN: usize = 12;
                                         let mut rng = rand::thread_rng();
                                         let password: &[u8] = field_data.as_bytes();
                                         let salt: String = (0..SALT_LEN)
