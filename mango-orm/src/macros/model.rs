@@ -408,9 +408,10 @@ macro_rules! model {
 
                                     // Generate password hash
                                     if field_type == "InputPassword" {
-                                        let salt = b"randomsalt";
+                                        let password: &[u8] = field_data.as_bytes();
+                                        let salt: &[u8] = field_data.as_bytes();
                                         let config = Config::default();
-                                        let hash = argon2::hash_encoded(field_data.as_bytes(), salt, &config)?;
+                                        let hash: String = argon2::hash_encoded(password, salt, &config)?;
                                         doc_res.insert(field.to_string(), Bson::String(hash));
                                     }
                                 }
