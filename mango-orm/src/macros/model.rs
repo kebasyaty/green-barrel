@@ -409,7 +409,7 @@ macro_rules! model {
                                     // Generate password hash and add to result document
                                     if field_type == "InputPassword" {
                                         let password: &[u8] = field_data.as_bytes();
-                                        let salt: &[u8] = field_data.as_bytes();
+                                        let salt: &[u8] = password.clone();
                                         let config = Config::default();
                                         let hash: String = argon2::hash_encoded(password, salt, &config)?;
                                         doc_res.insert(field.to_string(), Bson::String(hash));
