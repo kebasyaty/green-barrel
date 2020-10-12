@@ -305,6 +305,11 @@ macro_rules! model {
                     // Apply custom check
                     {
                         let error_map: HashMap<&'static str, &'static str> = self.custom_check()?;
+                        if !error_map.is_empty() { stop_err = true; }
+                        for (field_name, err_msg) in error_map {
+                            let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
+                            attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
+                        }
                     }
                     // Loop over fields
                     for field in FIELD_NAMES {
