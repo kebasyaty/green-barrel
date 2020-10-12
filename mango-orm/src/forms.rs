@@ -22,6 +22,12 @@ pub trait Form {
         vec![]
     }
 
+    // custom check
+    // *********************************************************************************************
+    fn custom_check() {
+        //
+    }
+
     // Customizing HTML form  (If necessary) for page templates
     // *********************************************************************************************
     // Call the method as Struct::form_html()
