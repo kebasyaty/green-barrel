@@ -265,7 +265,7 @@ macro_rules! model {
                     }
                     "InputPassword" => {
                         let re = RegexBuilder::new(
-                            r"^[a-z0-9@#$%^&+=]{8,}$")
+                            r"^[a-z0-9@#$%^&+=]{8,32}$")
                             .case_insensitive(true).build()?;
                         if !re.is_match(data) {
                             Err(".")?
