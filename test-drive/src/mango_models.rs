@@ -11,6 +11,7 @@ use mongodb::{
     options::UpdateModifications,
     results, Client, Collection, Cursor, Database,
 };
+use rand::Rng;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json;
