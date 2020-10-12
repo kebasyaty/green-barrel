@@ -93,5 +93,8 @@ mod tests {
         assert!(!re.is_match(&"zeDKs_9LtfrB7Xm2"));
         assert!(re.is_match(&"zeDKs9LtfrB7Xm2"));
         assert!(re.is_match(&"@#$%^&+="));
+        assert!(re.is_match(&"0123456789"));
+        assert!(re.is_match(&"abcdefghijklmnopqrstuvwxyz"));
+        assert!(re.is_match(&"ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
     }
 }
