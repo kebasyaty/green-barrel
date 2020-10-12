@@ -22,7 +22,7 @@ pub trait Form {
         vec![]
     }
 
-    // custom check
+    // Custom validation for model fields
     // *********************************************************************************************
     fn custom_check() {
         //
