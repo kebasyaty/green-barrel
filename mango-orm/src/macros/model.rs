@@ -278,7 +278,7 @@ macro_rules! model {
                 let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
-                let ignore_fields: Vec<&'static str> = Self::ignore_fields();
+                let ignore_fields: Vec<&'static str> = Self::ignore_fields()?;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get data from model
                 let mut doc_tmp: Document = to_document(self).unwrap();

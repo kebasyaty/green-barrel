@@ -18,16 +18,18 @@ pub trait Form {
 
     // List of field names that will not be saved to the database
     // *********************************************************************************************
-    fn ignore_fields() -> Vec<&'static str> {
-        vec![]
+    fn ignore_fields() -> Result<Vec<&'static str>, Box<dyn Error>> {
+        let field_list = vec![];
+        Ok(field_list)
     }
 
     // Custom validation of model fields
     // (Don't forget to check for ignored fields -> `ignore_fields()`)
     // *********************************************************************************************
-    fn custom_check() -> HashMap<&'static str, &'static str> {
+    fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+        // .insert(field_name, error_message)
         let error_map = HashMap::new();
-        error_map
+        Ok(error_map)
     }
 
     // Customizing HTML form  (If necessary) for page templates

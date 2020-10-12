@@ -51,6 +51,7 @@ model! {
                     ..Default::default()
                 },
             );
+
             Ok(map)
         }
     }
@@ -71,8 +72,24 @@ model! {
     impl Form for User {
         // Example:
         // List of field names that will not be saved to the database
-        fn ignore_fields() -> Vec<&'static str> {
-            vec!["password_confirm"]
+        fn ignore_fields() -> Result<Vec<&'static str>, Box<dyn Error>> {
+            let field_list = vec!["password_confirm"];
+            Ok(field_list)
+        }
+
+        // Example:
+        // Custom validation of model fields
+        // (Don't forget to check for ignored fields -> `ignore_fields()`)
+        fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+            // .insert(field_name, error_message)
+            let mut error_map = HashMap::new();
+
+            if self.password_confirm.len() == 0 {
+                error_map.insert("password_confirm", "Required field.");
+            } else if self.password != self.password_confirm {
+                error_map.insert("password", "???");
+            }
+            Ok(error_map)
         }
 
         // Example:
@@ -95,7 +112,6 @@ model! {
                     ..Default::default()
                 },
             );
-
             // Email
             map.insert(
                 "email",
@@ -110,7 +126,6 @@ model! {
                     ..Default::default()
                 },
             );
-
             // Password
             map.insert(
                 "password",
