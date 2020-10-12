@@ -27,7 +27,7 @@ pub trait Form {
     // (Don't forget to check for ignored fields -> `ignore_fields()`)
     // *********************************************************************************************
     fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
-        // .insert(field_name, error_message)
+        // .insert("field_name", "Error message")
         let error_map = HashMap::new();
         Ok(error_map)
     }

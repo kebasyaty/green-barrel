@@ -81,7 +81,7 @@ model! {
         // Custom validation of model fields
         // (Don't forget to check for ignored fields -> `ignore_fields()`)
         fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
-            // .insert(field_name, error_message)
+            // .insert("field_name", "Error message")
             let mut error_map = HashMap::new();
 
             if self.password_confirm.len() == 0 {
