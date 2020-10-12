@@ -406,7 +406,7 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Generate password hash
+                                    // Generate password hash and add to result document
                                     if field_type == "InputPassword" {
                                         let password: &[u8] = field_data.as_bytes();
                                         let salt: &[u8] = field_data.as_bytes();
