@@ -27,16 +27,19 @@ macro_rules! model {
             pub fn model_name() -> Result<&'static str, Box<dyn Error>> {
                 Ok(stringify!($sname))
             }
+
             // Get array of field names
             pub fn field_names() -> Result<&'static [&'static str], Box<dyn Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
+
             // // Get a map with field types
             pub fn field_types() -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
             }
+
             // Metadata (database name, collection name, etc)
             pub fn meta() -> Result<Meta, Box<dyn Error>> {
                 if $service.len() > 0 && $database.len() > 0 {
@@ -70,6 +73,7 @@ macro_rules! model {
                 }
                 Ok(map)
             }
+
             // Add (if required) default form data to cache
             pub async fn form_cache() -> Result<(async_mutex::MutexGuard<'static, HashMap<&'static str,
                 mango_orm::models::FormCache>>, &'static str), Box<dyn Error>> {
@@ -101,6 +105,7 @@ macro_rules! model {
                 }
                 Ok((store, key))
             }
+
             // Get a map of pure attributes of Form for page templates
             pub async fn form_map() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let (store, key) = Self::form_cache().await?;
@@ -113,6 +118,7 @@ macro_rules! model {
                         stringify!($sname)))?
                 }
             }
+
             // Get Form attributes in Json format for page templates
             pub async fn form_json() -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
@@ -145,6 +151,7 @@ macro_rules! model {
                         stringify!($sname)))?
                 }
             }
+
             // Get Html Form of Model for page templates
             pub async fn form_html() ->
                 Result<String, Box<dyn Error>> {
@@ -193,6 +200,7 @@ macro_rules! model {
                 }
                 Ok(())
             }
+
             // Validation of `unique`
             async fn check_unique(
                 is_update: bool, is_unique: bool, field: &String, data: &str,
@@ -207,6 +215,7 @@ macro_rules! model {
                 }
                 Ok(())
             }
+
             // Accumulation of errors
             fn accumula_err(attrs: &Transport, err: &String) ->
                 Result<String, Box<dyn Error>> {
@@ -215,6 +224,7 @@ macro_rules! model {
                 tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
+
             // Additional validation for some fields (email, password, url, ip, etc...)
             fn additional_validation(field_type: &str, data: &str) ->
                 Result<(), Box<dyn Error>> {
@@ -257,6 +267,7 @@ macro_rules! model {
                 }
                 Ok(())
             }
+
             // Validation of Form
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
@@ -442,6 +453,7 @@ macro_rules! model {
                     Err(errors.replace("<br>", " | "))?
                 }
             }
+
             // Get Json-line
             pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
@@ -457,6 +469,7 @@ macro_rules! model {
                 }
                 Ok(format!("{{{}}}", json_text))
             }
+
             // Get Html-line
             pub fn to_html(attrs_map: HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
