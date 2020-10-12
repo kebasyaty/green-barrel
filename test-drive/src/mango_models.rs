@@ -139,7 +139,6 @@ model! {
                     ..Default::default()
                 },
             );
-
             // Confirm password
             map.insert(
                 "password_confirm",
