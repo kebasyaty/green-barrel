@@ -267,6 +267,7 @@ macro_rules! model {
                 let mut stop_err = false;
                 let is_update: bool = self.hash.len() > 0;
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
+                let ignore_fields: Vec<&'static str> = Self::ignore_fields();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get data from model
                 let mut doc_tmp: Document = to_document(self).unwrap();
@@ -293,7 +294,7 @@ macro_rules! model {
                     // Loop over fields
                     for field in FIELD_NAMES {
                         // Filter out specific fields
-                        if field == &"hash" || field.contains("_confirm") || field.contains("_nosave") {
+                        if field == &"hash" || ignore_fields.contains(field) {
                             continue;
                         }
                         // Get field value for validation
