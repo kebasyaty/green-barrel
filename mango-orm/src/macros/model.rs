@@ -529,7 +529,7 @@ macro_rules! model {
             // Migrating Model
             // *************************************************************************************
             // Check model changes and (if required) apply to the database
-            pub async fn migrat<'a>(keyword: &'a str, client: &Client) {
+            pub async fn migrat<'a>(client: &Client, keyword: &'a str) {
                 static MODEL_NAME: &'static str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 //
