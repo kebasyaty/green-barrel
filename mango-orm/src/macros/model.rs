@@ -265,10 +265,10 @@ macro_rules! model {
                     }
                     "InputPassword" => {
                         let re = RegexBuilder::new(
-                            r"^.$")
+                            r"^[a-z0-9@#$%^&+=]{8,}$")
                             .case_insensitive(true).build()?;
                         if !re.is_match(data) {
-                            Err("Invalid Color code.")?
+                            Err(".")?
                         }
                     }
                     _ => return Ok(()),
