@@ -62,4 +62,13 @@ mod tests {
         assert!(re.is_match("0x00FFFF"));
         assert!(!re.is_match("#f2ewq"));
     }
+
+    #[test]
+    fn regex_password() {
+        let re = RegexBuilder::new(r"^[a-z0-9@#$%^&+=]{8,}$")
+            .case_insensitive(true)
+            .build()
+            .unwrap();
+        assert!(!re.is_match("1234567"));
+    }
 }
