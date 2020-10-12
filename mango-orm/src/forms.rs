@@ -16,6 +16,12 @@ pub trait Form {
     // *********************************************************************************************
     fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>>;
 
+    // List of field names that will not be saved to the database
+    // *********************************************************************************************
+    fn ignore_fields() -> Vec<&'static str> {
+        vec![]
+    }
+
     // Customizing HTML form  (If necessary) for page templates
     // *********************************************************************************************
     // Call the method as Struct::form_html()
