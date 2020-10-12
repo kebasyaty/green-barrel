@@ -63,10 +63,18 @@ model! {
     struct User {
         hash: String, // Required field
         username: String,
-        email: String
+        email: String,
+        password: String,
+        confirm_password: String
     }
 
     impl Form for User {
+        // Example:
+        // List of field names that will not be saved to the database
+        fn ignore_fields() -> Vec<&'static str> {
+            vec!["confirm_password"]
+        }
+
         // Example:
         // Customizing widgets by model fields
         // (For `hash` field, Widget is added automatically)
@@ -87,6 +95,7 @@ model! {
                     ..Default::default()
                 },
             );
+
             // Email
             map.insert(
                 "email",
