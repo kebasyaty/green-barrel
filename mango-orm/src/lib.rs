@@ -70,5 +70,25 @@ mod tests {
             .build()
             .unwrap();
         assert!(!re.is_match("1234567"));
+        assert!(!re.is_match(&"!".repeat(8)));
+        assert!(!re.is_match(&"~".repeat(8)));
+        assert!(!re.is_match(&"`".repeat(8)));
+        assert!(!re.is_match(&"№".repeat(8)));
+        assert!(!re.is_match(&" ".repeat(8)));
+        assert!(!re.is_match(&"*".repeat(8)));
+        assert!(!re.is_match(&"(".repeat(8)));
+        assert!(!re.is_match(&")".repeat(8)));
+        assert!(!re.is_match(&"-".repeat(8)));
+        assert!(!re.is_match(&"_".repeat(8)));
+        assert!(!re.is_match(&":".repeat(8)));
+        assert!(!re.is_match(&"'".repeat(8)));
+        assert!(!re.is_match(&"\"".repeat(8)));
+        assert!(!re.is_match(&",".repeat(8)));
+        assert!(!re.is_match(&".".repeat(8)));
+        assert!(!re.is_match(&"<".repeat(8)));
+        assert!(!re.is_match(&">".repeat(8)));
+        assert!(!re.is_match(&"?".repeat(8)));
+        assert!(!re.is_match(&"/".repeat(8)));
+        assert!(!re.is_match(&"  ".repeat(8)));
     }
 }
