@@ -265,7 +265,7 @@ macro_rules! model {
                     }
                     "InputPassword" => {
                         let re = RegexBuilder::new(
-                            r"^[a-z0-9@#$%^&+=]{8,}$")
+                            r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
                             .case_insensitive(true).build()?;
                         if !re.is_match(data) {
                             Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + =<br> \
@@ -409,7 +409,7 @@ macro_rules! model {
                                     // Generate password hash and add to result document
                                     if field_type == "InputPassword" {
                                         let password: &[u8] = field_data.as_bytes();
-                                        let salt: &[u8] = password.clone();
+                                        let salt: &[u8] = b"12345";
                                         let config = Config::default();
                                         let hash: String = argon2::hash_encoded(password, salt, &config)?;
                                         doc_res.insert(field.to_string(), Bson::String(hash));

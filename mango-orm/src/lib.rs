@@ -65,19 +65,14 @@ mod tests {
 
     #[test]
     fn regex_password() {
-        let re = RegexBuilder::new(r"^[a-z0-9@#$%^&+=]{8,}$")
+        let re = RegexBuilder::new(r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
             .case_insensitive(true)
             .build()
             .unwrap();
         assert!(!re.is_match("1234567"));
-        assert!(!re.is_match(&"!".repeat(8)));
-        assert!(!re.is_match(&"~".repeat(8)));
         assert!(!re.is_match(&"`".repeat(8)));
         assert!(!re.is_match(&"№".repeat(8)));
         assert!(!re.is_match(&" ".repeat(8)));
-        assert!(!re.is_match(&"*".repeat(8)));
-        assert!(!re.is_match(&"(".repeat(8)));
-        assert!(!re.is_match(&")".repeat(8)));
         assert!(!re.is_match(&"-".repeat(8)));
         assert!(!re.is_match(&"_".repeat(8)));
         assert!(!re.is_match(&":".repeat(8)));
@@ -91,7 +86,7 @@ mod tests {
         assert!(!re.is_match(&"/".repeat(8)));
         assert!(!re.is_match(&"  ".repeat(8)));
         assert!(re.is_match(&"zeDKs9LtfrB7Xm2"));
-        assert!(re.is_match(&"@#$%^&+="));
+        assert!(re.is_match(&"@#$%^&+=*!~)("));
         assert!(re.is_match(&"0123456789"));
         assert!(re.is_match(&"abcdefghijklmnopqrstuvwxyz"));
         assert!(re.is_match(&"ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
