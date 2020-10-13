@@ -428,9 +428,11 @@ macro_rules! model {
 
                                     // Generate password hash and add to result document
                                     // -------------------------------------------------------------
-                                    if !stop_err && field_type == "InputPassword" {
-                                        let hash: String = Self::create_password_hash(field_data)?;
-                                        doc_res.insert(field.to_string(), Bson::String(hash));
+                                    if !stop_err {
+                                        if field_type == "InputPassword" {
+                                            let hash: String = Self::create_password_hash(field_data)?;
+                                            doc_res.insert(field.to_string(), Bson::String(hash));
+                                        }
                                     }
                                 }
                                 _ => {
