@@ -619,7 +619,7 @@ macro_rules! model {
             // *************************************************************************************
             // Check model changes and (if required) apply to the database
             pub async fn migrat<'a>(client: &Client, keyword: &'a str) {
-                static MODEL_NAME: &'static str = stringify!($sname);
+                static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 //
                 if !FIELD_NAMES.contains(&"hash") {
@@ -630,7 +630,7 @@ macro_rules! model {
                     )
                 }
                 // List field names without `id` field
-                let field_names_no_hash: Vec<&'static str> = FIELD_NAMES.iter()
+                let field_names_no_hash: Vec<&str> = FIELD_NAMES.iter()
                     .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
                 if field_names_no_hash.len() == 0 {
@@ -639,7 +639,7 @@ macro_rules! model {
                         $service, MODEL_NAME);
                 }
                 // Create a map with field types
-                let map_field_types: HashMap<&'static str, &'static str> =
+                let map_field_types: HashMap<&str, &str> =
                     FIELD_NAMES.iter().map(|item| item.to_owned())
                     .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
@@ -647,13 +647,13 @@ macro_rules! model {
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let map_widgets: HashMap<&'static str, Widget> = Self::widgets_full_map().unwrap();
+                let map_widgets: HashMap<&str, Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
                 // Map of default values and value types from `value` attribute -
                 // (String, String) -> index 0 = type ; index 1 = value
-                let mut default_values: HashMap<&'static str, (&'static str, String)> = HashMap::new();
+                let mut default_values: HashMap<&str, (&str, String)> = HashMap::new();
 
                 // Checking Widgets
                 // ---------------------------------------------------------------------------------
