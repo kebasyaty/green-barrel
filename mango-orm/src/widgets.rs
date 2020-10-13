@@ -159,7 +159,7 @@ impl FieldType {
             Self::Hash => "String",
             Self::InputCheckBoxText(_) => "String",
             Self::InputCheckBoxI32(_) => "i32",
-            Self::InputCheckBoxU32(_) => "i64",
+            Self::InputCheckBoxU32(_) => "u32",
             Self::InputCheckBoxI64(_) => "i64",
             Self::InputCheckBoxF64(_) => "f64",
             Self::InputColor(_) => "String",
@@ -170,17 +170,17 @@ impl FieldType {
             Self::InputFile => "none",
             Self::InputImage => "none",
             Self::InputNumberI32(_) => "i32",
-            Self::InputNumberU32(_) => "i64",
+            Self::InputNumberU32(_) => "u32",
             Self::InputNumberI64(_) => "i64",
             Self::InputNumberF64(_) => "f64",
             Self::InputPassword(_) => "String",
             Self::InputRadioText(_) => "String",
             Self::InputRadioI32(_) => "i32",
-            Self::InputRadioU32(_) => "i64",
+            Self::InputRadioU32(_) => "u32",
             Self::InputRadioI64(_) => "i64",
             Self::InputRadioF64(_) => "f64",
             Self::InputRangeI32(_) => "i32",
-            Self::InputRangeU32(_) => "i64",
+            Self::InputRangeU32(_) => "u32",
             Self::InputRangeI64(_) => "i64",
             Self::InputRangeF64(_) => "f64",
             Self::InputTel(_) => "String",
@@ -192,7 +192,7 @@ impl FieldType {
             Self::TextArea(_) => "String",
             Self::SelectText(_) => "String",
             Self::SelectI32(_) => "i32",
-            Self::SelectU32(_) => "i64",
+            Self::SelectU32(_) => "u32",
             Self::SelectI64(_) => "i64",
             Self::SelectF64(_) => "f64",
             Self::ForeignKey => "none",
@@ -281,7 +281,7 @@ impl SelectDataType {
         match self {
             Self::Text(_) => "String",
             Self::I32(_) => "i32",
-            Self::U32(_) => "i64",
+            Self::U32(_) => "u32",
             Self::I64(_) => "i64",
             Self::F64(_) => "f64",
         }
@@ -327,7 +327,7 @@ impl StepMinMax {
     pub fn get_data_type<'a>(&self) -> &'a str {
         match self {
             Self::I32(_) => "i32",
-            Self::U32(_) => "i64",
+            Self::U32(_) => "u32",
             Self::I64(_) => "i64",
             Self::F64(_) => "f64",
         }
@@ -663,7 +663,7 @@ mod tests {
             "String"
         );
         assert_eq!(FieldType::InputCheckBoxI32(-1_i32).get_data_type(), "i32");
-        assert_eq!(FieldType::InputCheckBoxU32(0_u32).get_data_type(), "i64");
+        assert_eq!(FieldType::InputCheckBoxU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputCheckBoxI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::InputCheckBoxF64(1.3_f64).get_data_type(), "f64");
         assert_eq!(
@@ -686,7 +686,7 @@ mod tests {
         assert_eq!(FieldType::InputFile.get_data_type(), "none");
         assert_eq!(FieldType::InputImage.get_data_type(), "none");
         assert_eq!(FieldType::InputNumberI32(-1_i32).get_data_type(), "i32");
-        assert_eq!(FieldType::InputNumberU32(0_u32).get_data_type(), "i64");
+        assert_eq!(FieldType::InputNumberU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputNumberI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::InputNumberF64(-1.3_f64).get_data_type(), "f64");
         assert_eq!(
@@ -698,11 +698,11 @@ mod tests {
             "String"
         );
         assert_eq!(FieldType::InputRadioI32(-1_i32).get_data_type(), "i32");
-        assert_eq!(FieldType::InputRadioU32(0_u32).get_data_type(), "i64");
+        assert_eq!(FieldType::InputRadioU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputRadioI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::InputRadioF64(1.3_f64).get_data_type(), "f64");
         assert_eq!(FieldType::InputRangeI32(-1_i32).get_data_type(), "i32");
-        assert_eq!(FieldType::InputRangeU32(0_u32).get_data_type(), "i64");
+        assert_eq!(FieldType::InputRangeU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::InputRangeI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::InputRangeF64(-1.3_f64).get_data_type(), "f64");
         assert_eq!(FieldType::InputTel(String::new()).get_data_type(), "String");
@@ -726,7 +726,7 @@ mod tests {
             "String"
         );
         assert_eq!(FieldType::SelectI32(-1_i32).get_data_type(), "i32");
-        assert_eq!(FieldType::SelectU32(0_u32).get_data_type(), "i64");
+        assert_eq!(FieldType::SelectU32(0_u32).get_data_type(), "u32");
         assert_eq!(FieldType::SelectI64(-1_i64).get_data_type(), "i64");
         assert_eq!(FieldType::SelectF64(-1.3_f64).get_data_type(), "f64");
         assert_eq!(FieldType::ForeignKey.get_data_type(), "none");
@@ -909,7 +909,7 @@ mod tests {
             "String"
         );
         assert_eq!(SelectDataType::I32(-10_i32).get_data_type(), "i32");
-        assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "i64");
+        assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "u32");
         assert_eq!(SelectDataType::I64(-10_i64).get_data_type(), "i64");
         assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
 
@@ -948,7 +948,7 @@ mod tests {
         // -----------------------------------------------------------------------------------------
         assert_eq!(StepMinMax::default().get_data_type(), "i64");
         assert_eq!(StepMinMax::I32(-10_i32).get_data_type(), "i32");
-        assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "i64");
+        assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "u32");
         assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
         assert_eq!(StepMinMax::F64(-10_f64).get_data_type(), "f64");
 
