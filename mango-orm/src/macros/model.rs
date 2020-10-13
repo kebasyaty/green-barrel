@@ -343,17 +343,17 @@ macro_rules! model {
                         }
                     }
                     // Loop over fields
-                    for field in FIELD_NAMES {
+                    for field_name in FIELD_NAMES {
                         // Filter out specific fields
-                        if field == &"hash" {
+                        if field_name == &"hash" {
                             continue;
                         }
                         // Get field value for validation
-                        let value: Option<&Bson> = doc_tmp.get(field);
+                        let value: Option<&Bson> = doc_tmp.get(field_name);
                         //
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
-                            let field: &String = &field.to_string();
+                            let field: &String = &field_name.to_string();
                             let field_type: &str = widget_map.get(field).unwrap();
                             // Field validation
                             match field_type {
@@ -381,11 +381,11 @@ macro_rules! model {
                                             let field_data_update: &str =
                                                 value_update.as_str().unwrap();
                                             if field_data.len() > 0 {
-                                                //if !ignore_fields.contains(field) || field_type == "InputPassword" {
+                                                if !ignore_fields.contains(field_name) && field_type != "InputPassword" {
                                                     attrs.value = field_data.to_string();
                                                     doc_res.insert(field.to_string(),
                                                         Bson::String(field_data.to_string()));
-                                                //}
+                                                }
                                             } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(),
@@ -459,13 +459,13 @@ macro_rules! model {
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                                 `save()` : Unsupported data type.",
-                                        MODEL_NAME, field))?
+                                        MODEL_NAME, field_name))?
                                 }
                             }
                         } else {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : \
                                         This field is missing.",
-                                MODEL_NAME, field))?
+                                MODEL_NAME, field_name))?
                         }
                     }
                 } else {
