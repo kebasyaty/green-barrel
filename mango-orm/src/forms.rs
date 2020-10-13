@@ -75,7 +75,7 @@ pub trait Form {
                     }
                     "checkbox" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -94,6 +94,7 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
@@ -101,7 +102,7 @@ pub trait Form {
                         let mut tags = String::new();
                         for item in trans.select {
                             tags = format!(
-                                "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}",
+                                "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}{}",
                                 label,
                                 id_field,
                                 trans.field_type,
@@ -119,6 +120,7 @@ pub trait Form {
                                     String::new()
                                 },
                                 if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                                if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                                 if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                             );
                         }
@@ -126,7 +128,7 @@ pub trait Form {
                     }
                     "date" | "datetime" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -145,12 +147,13 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "file" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -169,6 +172,11 @@ pub trait Form {
                             },
                             if trans.hint.len() > 0 {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            } else {
+                                String::new()
+                            },
+                            if trans.warning.len() > 0 {
+                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
@@ -181,7 +189,7 @@ pub trait Form {
                     }
                     "image" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\"{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -200,6 +208,11 @@ pub trait Form {
                             },
                             if trans.hint.len() > 0 {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            } else {
+                                String::new()
+                            },
+                            if trans.warning.len() > 0 {
+                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
@@ -213,7 +226,7 @@ pub trait Form {
                     "number" => {
                         controls =
                             format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -235,12 +248,13 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "range" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -262,12 +276,13 @@ pub trait Form {
                                 String::new()
                             },
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "textarea" => {
                         controls = format!(
-                            "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\"{}{}{}>{}</textarea>{}{}</p>",
+                            "{}{}<textarea id=\"{}\" name=\"{}\" maxlength=\"{}\"{}{}{}>{}</textarea>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -278,6 +293,7 @@ pub trait Form {
                             if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
                             trans.value,
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
@@ -297,7 +313,7 @@ pub trait Form {
                             );
                         }
                         controls = format!(
-                            "{}{}<select id=\"{}\" name=\"{}\"{}{}{}>{}</select>{}{}</p>",
+                            "{}{}<select id=\"{}\" name=\"{}\"{}{}{}>{}</select>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -316,6 +332,11 @@ pub trait Form {
                             options,
                             if trans.hint.len() > 0 {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            } else {
+                                String::new()
+                            },
+                            if trans.warning.len() > 0 {
+                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
