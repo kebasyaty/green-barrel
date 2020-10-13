@@ -364,6 +364,7 @@ pub struct Transport {
     pub other_attrs: String,  // "autofocus size=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
+    pub warning: String,
     pub error: String,
 }
 
@@ -465,6 +466,7 @@ impl Widget {
                 .iter()
                 .map(|item| (item.0.clone(), item.1.get_raw_data()))
                 .collect::<Vec<(String, String)>>(),
+            warning: String::new(),
             error: String::new(),
         })
     }
@@ -985,6 +987,7 @@ mod tests {
         assert_eq!(trans.other_attrs, String::new());
         assert_eq!(trans.some_classes, String::new());
         assert_eq!(trans.select, vec![]);
+        assert_eq!(trans.warning, String::new());
         assert_eq!(trans.error, String::new());
     }
 
@@ -1050,6 +1053,7 @@ mod tests {
         assert_eq!(attrs.some_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
         assert_eq!(attrs.select[0].1, String::new());
+        assert_eq!(attrs.warning, String::new());
         assert_eq!(attrs.error, String::new());
     }
 }
