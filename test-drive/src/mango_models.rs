@@ -22,8 +22,8 @@ use validator::{
     Validator,
 };
 
-const _SERVICE_NAME: &'static str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
-const _DATABASE_NAME: &'static str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
+const _SERVICE_NAME: &str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
+const _DATABASE_NAME: &str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 
 model! {
     _SERVICE_NAME,
@@ -38,7 +38,7 @@ model! {
         // Example:
         // Customizing widgets by model fields
         // (For `hash` field, Widget is added automatically)
-        fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
+        fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
             // Title
             map.insert(
@@ -74,7 +74,7 @@ model! {
     impl Form for User {
         // Example:
         // List of field names that will not be saved to the database
-        fn ignore_fields() -> Result<Vec<&'static str>, Box<dyn Error>> {
+        fn ignore_fields<'a>() -> Result<Vec<&'a str>, Box<dyn Error>> {
             let field_list = vec!["password_confirm"];
             Ok(field_list)
         }
@@ -82,7 +82,7 @@ model! {
         // Example:
         // Custom validation of model fields
         // (Don't forget to check for ignored fields -> `ignore_fields()`)
-        fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+        fn custom_check<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
             // .insert("field_name", "Error message")
             let mut error_map = HashMap::new();
 
@@ -97,7 +97,7 @@ model! {
         // Example:
         // Customizing widgets by model fields
         // (For `hash` field, Widget is added automatically)
-        fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
+        fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
             let mut map = HashMap::new();
             // Username
             map.insert(

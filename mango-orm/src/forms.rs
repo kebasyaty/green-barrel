@@ -14,11 +14,11 @@ use std::error::Error;
 pub trait Form {
     // Customizing widgets by model fields
     // *********************************************************************************************
-    fn widgets() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>>;
+    fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>>;
 
     // List of field names that will not be saved to the database
     // *********************************************************************************************
-    fn ignore_fields() -> Result<Vec<&'static str>, Box<dyn Error>> {
+    fn ignore_fields<'a>() -> Result<Vec<&'a str>, Box<dyn Error>> {
         let field_list = vec![];
         Ok(field_list)
     }
@@ -26,7 +26,7 @@ pub trait Form {
     // Custom validation of model fields
     // (Don't forget to check for ignored fields -> `ignore_fields()`)
     // *********************************************************************************************
-    fn custom_check(&self) -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+    fn custom_check<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // .insert("field_name", "Error message")
         let error_map = HashMap::new();
         Ok(error_map)
