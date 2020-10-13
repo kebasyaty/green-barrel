@@ -381,16 +381,20 @@ macro_rules! model {
                                             let field_data_update: &str =
                                                 value_update.as_str().unwrap();
                                             if field_data.len() > 0 {
-                                                if !ignore_fields.contains(field_name) && field_type != "InputPassword" {
+                                                if !ignore_fields.contains(field_name) &&
+                                                    field_type != "InputPassword" {
                                                     attrs.value = field_data.to_string();
                                                     doc_res.insert(field.to_string(),
                                                         Bson::String(field_data.to_string()));
                                                 }
                                             } else if !attrs.required {
-                                                attrs.value = field_data_update.to_string();
-                                                doc_res.insert(field.to_string(),
-                                                    Bson::String(field_data_update.to_string()));
-                                                continue;
+                                                if !ignore_fields.contains(field_name) &&
+                                                    field_type != "InputPassword" {
+                                                    attrs.value = field_data_update.to_string();
+                                                    doc_res.insert(field.to_string(),
+                                                        Bson::String(field_data_update.to_string()));
+                                                    continue;
+                                                }
                                             }
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
@@ -399,9 +403,12 @@ macro_rules! model {
                                             MODEL_NAME, field))?
                                         }
                                     } else {
-                                        attrs.value = field_data.to_string();
-                                        doc_res.insert(field.to_string(),
-                                            Bson::String(field_data.to_string()));
+                                        if !ignore_fields.contains(field_name) &&
+                                            field_type != "InputPassword" {
+                                            attrs.value = field_data.to_string();
+                                            doc_res.insert(field.to_string(),
+                                                Bson::String(field_data.to_string()));
+                                        }
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, field_data)
