@@ -426,10 +426,11 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Generate password hash and add to result document
+                                    // Additional actions
                                     // -------------------------------------------------------------
                                     if !stop_err {
-                                        if field_type == "InputPassword" {
+                                        if field_data.len() > 0 && field_type == "InputPassword" {
+                                            // Generate password hash and add to result document
                                             let hash: String = Self::create_password_hash(field_data)?;
                                             doc_res.insert(field.to_string(), Bson::String(hash));
                                         }
