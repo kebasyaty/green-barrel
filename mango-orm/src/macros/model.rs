@@ -24,17 +24,17 @@ macro_rules! model {
             // Info Model
             // *************************************************************************************
             // Get model name
-            pub fn model_name() -> Result<&'static str, Box<dyn Error>> {
+            pub fn model_name<'a>() -> Result<&'a str, Box<dyn Error>> {
                 Ok(stringify!($sname))
             }
 
             // Get array of field names
-            pub fn field_names() -> Result<&'static [&'static str], Box<dyn Error>> {
+            pub fn field_names<'a>() -> Result<&'a [&'a str], Box<dyn Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
 
             // // Get a map with field types
-            pub fn field_types() -> Result<HashMap<&'static str, &'static str>, Box<dyn Error>> {
+            pub fn field_types<'a>() -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
@@ -61,7 +61,7 @@ macro_rules! model {
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
             pub fn widgets_full_map<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
+                let mut map: HashMap<&str, Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
                         "hash",
@@ -303,7 +303,7 @@ macro_rules! model {
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                static MODEL_NAME: &'static str = stringify!($sname);
+                static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::meta()?;
                 let mut stop_err = false;
@@ -335,7 +335,7 @@ macro_rules! model {
                     let widget_map: HashMap<String, String> = cache.widget_map.clone();
                     // Apply custom check
                     {
-                        let error_map: HashMap<&'static str, &'static str> = self.custom_check()?;
+                        let error_map: HashMap<&str, &str> = self.custom_check()?;
                         if !error_map.is_empty() { stop_err = true; }
                         for (field_name, err_msg) in error_map {
                             let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
