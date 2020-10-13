@@ -361,7 +361,7 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" |
                                     "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                                    "InputPassword" | "InputDate" => {
+                                    "InputPassword" | "InputDateTime" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
                                     // Validation for a required field
@@ -449,7 +449,7 @@ macro_rules! model {
                                                     doc_res.insert(field.to_string(), Bson::String(hash));
                                                 }
                                             }
-                                            "InputDate" => {
+                                            "InputDateTime" => {
                                                 attrs.value = field_data.to_string();
                                                 let dt: DateTime<Utc> = "";
                                                 doc_res.insert(field.to_string(),
