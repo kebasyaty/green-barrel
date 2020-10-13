@@ -385,8 +385,7 @@ macro_rules! model {
                                                 if !ignore_fields.contains(field_name) &&
                                                     field_type != "InputPassword" {
                                                     attrs.value = field_data_update.to_string();
-                                                    doc_res.insert(field.to_string(),
-                                                        Bson::String(field_data_update.to_string()));
+                                                    doc_res.insert(field.to_string(), value_update);
                                                     continue;
                                                 }
                                             }
