@@ -57,7 +57,7 @@ pub trait Form {
                 match trans.field_type.as_str() {
                     "text" | "url" | "tel" | "password" | "email" | "color" => {
                         controls = format!(
-                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}>{}{}</p>",
+                            "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
@@ -69,6 +69,7 @@ pub trait Form {
                             if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
                             if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
                             if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
                             if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
