@@ -948,7 +948,7 @@ mod tests {
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(StepMinMax::default().get_data_type(), "i64");
+        assert_eq!(StepMinMax::default().get_data_type(), "u32");
         assert_eq!(StepMinMax::I32(-10_i32).get_data_type(), "i32");
         assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "u32");
         assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
