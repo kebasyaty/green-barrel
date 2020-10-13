@@ -437,7 +437,7 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Add result
+                                    // Insert result
                                     // -------------------------------------------------------------
                                     if !stop_err && !ignore_fields.contains(field_name) {
                                         if !is_update && field_data.len() > 0 &&
