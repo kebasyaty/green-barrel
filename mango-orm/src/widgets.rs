@@ -23,6 +23,7 @@ pub enum FieldType {
     InputColor(String),
     InputDate(String),
     InputDateTime(String),
+    InputTimeStamp(u32),
     InputEmail(String),
     InputFile,
     InputImage,
@@ -70,6 +71,7 @@ impl FieldType {
             Self::InputColor(_) => "color",
             Self::InputDate(_) => "date",
             Self::InputDateTime(_) => "datetime",
+            Self::InputTimeStamp(_) => "datetime",
             Self::InputEmail(_) => "email",
             Self::InputFile => "file",
             Self::InputImage => "image",
@@ -116,6 +118,7 @@ impl FieldType {
             Self::InputColor(data) => data.to_string(),
             Self::InputDate(data) => data.to_string(),
             Self::InputDateTime(data) => data.to_string(),
+            Self::InputTimeStamp(data) => data.to_string(),
             Self::InputEmail(data) => data.to_string(),
             Self::InputFile => String::new(),
             Self::InputImage => String::new(),
@@ -162,6 +165,7 @@ impl FieldType {
             Self::InputColor(_) => "String",
             Self::InputDate(_) => "String",
             Self::InputDateTime(_) => "String",
+            Self::InputTimeStamp(_) => "i64",
             Self::InputEmail(_) => "String",
             Self::InputFile => "none",
             Self::InputImage => "none",
@@ -208,6 +212,7 @@ impl FieldType {
             Self::InputColor(_) => "InputColor",
             Self::InputDate(_) => "InputDate",
             Self::InputDateTime(_) => "InputDateTime",
+            Self::InputTimeStamp(_) => "InputTimeStamp",
             Self::InputEmail(_) => "InputEmail",
             Self::InputFile => "InputFile",
             Self::InputImage => "InputImage",
@@ -509,6 +514,10 @@ mod tests {
             "datetime"
         );
         assert_eq!(
+            FieldType::InputTimeStamp(0_u32).get_input_type(),
+            "datetime"
+        );
+        assert_eq!(
             FieldType::InputEmail(String::new()).get_input_type(),
             "email"
         );
@@ -582,6 +591,10 @@ mod tests {
         assert_eq!(
             FieldType::InputDateTime(String::new()).get_raw_data(),
             String::new()
+        );
+        assert_eq!(
+            FieldType::InputTimeStamp(0_u32).get_raw_data(),
+            "0".to_string()
         );
         assert_eq!(
             FieldType::InputEmail(String::new()).get_raw_data(),
@@ -665,6 +678,7 @@ mod tests {
             FieldType::InputDateTime(String::new()).get_data_type(),
             "String"
         );
+        assert_eq!(FieldType::InputTimeStamp(0_u32).get_data_type(), "i64");
         assert_eq!(
             FieldType::InputEmail(String::new()).get_data_type(),
             "String"
@@ -754,6 +768,10 @@ mod tests {
         assert_eq!(
             FieldType::InputDateTime(String::new()).get_enum_type(),
             "InputDateTime"
+        );
+        assert_eq!(
+            FieldType::InputTimeStamp(0_u32).get_enum_type(),
+            "InputTimeStamp"
         );
         assert_eq!(
             FieldType::InputEmail(String::new()).get_enum_type(),
