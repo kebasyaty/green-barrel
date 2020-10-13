@@ -373,7 +373,8 @@ macro_rules! model {
                                         attrs.value = field_data.to_string();
                                         continue;
                                     }
-                                    // Add data from the field to the final document and in attribute map.
+                                    // If the field is not required and there is no data in it,
+                                    // take data from the database
                                     if is_update {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
