@@ -343,7 +343,7 @@ macro_rules! model {
                     // Loop over fields
                     for field in FIELD_NAMES {
                         // Filter out specific fields
-                        if field == &"hash" || ignore_fields.contains(field) {
+                        if field == &"hash" {
                             continue;
                         }
                         // Get field value for validation
@@ -380,8 +380,11 @@ macro_rules! model {
                                                 value_update.as_str().unwrap();
                                             if field_data.len() > 0 {
                                                 attrs.value = field_data.to_string();
-                                                doc_res.insert(field.to_string(),
-                                                    Bson::String(field_data.to_string()));
+                                                if !ignore_fields.contains(field) ||
+                                                    field_type == "InputPassword" {
+                                                    doc_res.insert(field.to_string(),
+                                                        Bson::String(field_data.to_string()));
+                                                }
                                             } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(),
@@ -443,7 +446,8 @@ macro_rules! model {
                                     // Additional actions
                                     // -------------------------------------------------------------
                                     if !stop_err {
-                                        if field_data.len() > 0 && field_type == "InputPassword" {
+                                        if !is_update && field_data.len() > 0 &&
+                                            field_type == "InputPassword" {
                                             // Generate password hash and add to result document
                                             let hash: String =
                                                 Self::create_password_hash(field_data)?;
