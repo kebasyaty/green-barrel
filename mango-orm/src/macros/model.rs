@@ -380,14 +380,7 @@ macro_rules! model {
                                             let value_update: &Bson = value_update.unwrap();
                                             let field_data_update: &str =
                                                 value_update.as_str().unwrap();
-                                            if field_data.len() > 0 {
-                                                if !ignore_fields.contains(field_name) &&
-                                                    field_type != "InputPassword" {
-                                                    attrs.value = field_data.to_string();
-                                                    doc_res.insert(field.to_string(),
-                                                        Bson::String(field_data.to_string()));
-                                                }
-                                            } else if !attrs.required {
+                                            if field_data.len() > 0 && !attrs.required {
                                                 if !ignore_fields.contains(field_name) &&
                                                     field_type != "InputPassword" {
                                                     attrs.value = field_data_update.to_string();
@@ -401,13 +394,6 @@ macro_rules! model {
                                                         `save()` : This field is missing \
                                                         from the database.",
                                             MODEL_NAME, field))?
-                                        }
-                                    } else {
-                                        if !ignore_fields.contains(field_name) &&
-                                            field_type != "InputPassword" {
-                                            attrs.value = field_data.to_string();
-                                            doc_res.insert(field.to_string(),
-                                                Bson::String(field_data.to_string()));
                                         }
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
@@ -451,15 +437,20 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Additional actions
+                                    // Add result
                                     // -------------------------------------------------------------
-                                    if !stop_err {
+                                    if !stop_err && !ignore_fields.contains(field_name) {
                                         if !is_update && field_data.len() > 0 &&
                                             field_type == "InputPassword" {
                                             // Generate password hash and add to result document
                                             let hash: String =
                                                 Self::create_password_hash(field_data)?;
                                             doc_res.insert(field.to_string(), Bson::String(hash));
+                                        }  else {
+                                            // Add result from other fields
+                                            attrs.value = field_data.to_string();
+                                            doc_res.insert(field.to_string(),
+                                                Bson::String(field_data.to_string()));
                                         }
                                     }
                                 }
