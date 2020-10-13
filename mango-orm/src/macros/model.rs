@@ -440,18 +440,24 @@ macro_rules! model {
                                     // Insert result
                                     // -------------------------------------------------------------
                                     if !stop_err && !ignore_fields.contains(field_name) {
-                                        if  field_type == "InputPassword" {
-                                            if !is_update && field_data.len() > 0 {
-                                                // Generate password hash and add to result document
-                                                let hash: String =
-                                                    Self::create_password_hash(field_data)?;
-                                                doc_res.insert(field.to_string(), Bson::String(hash));
+                                        match field_type {
+                                            "InputPassword" => {
+                                                if !is_update && field_data.len() > 0 {
+                                                    // Generate password hash and add to result document
+                                                    let hash: String =
+                                                        Self::create_password_hash(field_data)?;
+                                                    doc_res.insert(field.to_string(), Bson::String(hash));
+                                                }
                                             }
-                                        }  else {
-                                            // Add result from other fields
-                                            attrs.value = field_data.to_string();
-                                            doc_res.insert(field.to_string(),
-                                                Bson::String(field_data.to_string()));
+                                            "InputDate" => {
+                                                //
+                                            }
+                                            _ => {
+                                                // Add result from other fields
+                                                attrs.value = field_data.to_string();
+                                                doc_res.insert(field.to_string(),
+                                                    Bson::String(field_data.to_string()));
+                                            }
                                         }
                                     }
                                 }
