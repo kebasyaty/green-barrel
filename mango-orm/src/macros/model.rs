@@ -450,7 +450,7 @@ macro_rules! model {
                                                 }
                                             }
                                             "InputDate" => {
-                                                //
+                                                attrs.value = field_data.to_string();
                                             }
                                             _ => {
                                                 // Add result from other fields
