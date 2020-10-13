@@ -366,7 +366,8 @@ macro_rules! model {
                                     if attrs.required && field_data.len() == 0 {
                                         stop_err = true;
                                         attrs.error =
-                                            Self::accumula_err(&attrs, &"Required field.".to_owned()).unwrap();
+                                            Self::accumula_err(&attrs,
+                                                &"Required field.".to_owned()).unwrap();
                                         attrs.value = field_data.to_string();
                                         continue;
                                     }
@@ -375,44 +376,56 @@ macro_rules! model {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
-                                            let field_data_update: &str = value_update.as_str().unwrap();
+                                            let field_data_update: &str =
+                                                value_update.as_str().unwrap();
                                             if field_data.len() > 0 {
                                                 attrs.value = field_data.to_string();
-                                                doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                                doc_res.insert(field.to_string(),
+                                                    Bson::String(field_data.to_string()));
                                             } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
-                                                doc_res.insert(field.to_string(), Bson::String(field_data_update.to_string()));
+                                                doc_res.insert(field.to_string(),
+                                                    Bson::String(field_data_update.to_string()));
                                                 continue;
                                             }
                                         } else {
-                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing from the database.",
+                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                        `save()` : This field is missing \
+                                                        from the database.",
                                             MODEL_NAME, field))?
                                         }
                                     } else {
                                         attrs.value = field_data.to_string();
-                                        doc_res.insert(field.to_string(), Bson::String(field_data.to_string()));
+                                        doc_res.insert(field.to_string(),
+                                            Bson::String(field_data.to_string()));
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
-                                    Self::check_maxlength(attrs.maxlength, field_data).unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
+                                    Self::check_maxlength(attrs.maxlength, field_data)
+                                        .unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
                                     // Validation of range (`min` <> `max`)
-                                    // (Hint: The `validate_length()` method did not provide the desired result)
+                                    // ( Hint: The `validate_length()` method did not
+                                    // provide the desired result )
                                     {
                                         let min: f64 = attrs.min.parse().unwrap();
                                         let max: f64 = attrs.max.parse().unwrap();
                                         let len: f64 = field_data.encode_utf16().count() as f64;
                                         if (min > 0_f64 || max > 0_f64) &&
-                                            !validate_range(Validator::Range{min: Some(min), max: Some(max)}, len) {
+                                            !validate_range(Validator::Range{min: Some(min),
+                                                            max: Some(max)}, len) {
                                             stop_err = true;
-                                            let msg = format!("Length {}, is out of range (min={} <> max={}).", len, min, max);
+                                            let msg = format!(
+                                                "Length {}, is out of range (min={} <> max={}).",
+                                                len, min, max);
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
                                     }
                                     // Validation of `unique`
-                                    Self::check_unique(is_update, attrs.unique, field, field_data, &coll).await.unwrap_or_else(|err| {
+                                    Self::check_unique(is_update, attrs.unique, field, field_data, &coll)
+                                        .await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
@@ -420,7 +433,8 @@ macro_rules! model {
 
                                     // Additional validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
-                                    Self::additional_validation(field_type, field_data).unwrap_or_else(|err| {
+                                    Self::additional_validation(field_type, field_data)
+                                        .unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
@@ -431,23 +445,27 @@ macro_rules! model {
                                     if !stop_err {
                                         if field_data.len() > 0 && field_type == "InputPassword" {
                                             // Generate password hash and add to result document
-                                            let hash: String = Self::create_password_hash(field_data)?;
+                                            let hash: String =
+                                                Self::create_password_hash(field_data)?;
                                             doc_res.insert(field.to_string(), Bson::String(hash));
                                         }
                                     }
                                 }
                                 _ => {
-                                    Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : Unsupported data type.",
+                                    Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                `save()` : Unsupported data type.",
                                         MODEL_NAME, field))?
                                 }
                             }
                         } else {
-                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : This field is missing.",
+                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : \
+                                        This field is missing.",
                                 MODEL_NAME, field))?
                         }
                     }
                 } else {
-                    Err(format!("Model: `{}` -> Method: `save()` : Did not receive data from cache.",
+                    Err(format!("Model: `{}` -> Method: `save()` : \
+                                Did not receive data from cache.",
                         MODEL_NAME))?
                 }
 
@@ -550,7 +568,8 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 if verified_data.bool() {
                     if !is_update {
-                        let result: results::InsertOneResult = coll.insert_one(verified_data.doc(), None).await?;
+                        let result: results::InsertOneResult =
+                            coll.insert_one(verified_data.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
@@ -573,7 +592,9 @@ macro_rules! model {
                         OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc())),
+                    OutputType::Map => {
+                        OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc()))
+                    }
                     // Get Json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
@@ -598,7 +619,8 @@ macro_rules! model {
                 //
                 if !FIELD_NAMES.contains(&"hash") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` -> Method: `migrat()` : `hash`- Required field.",
+                        "Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
+                        `hash`- Required field.",
                         $service, MODEL_NAME
                     )
                 }
@@ -607,7 +629,8 @@ macro_rules! model {
                     .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
                 if field_names_no_hash.len() == 0 {
-                    panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : The model structure has no fields.",
+                    panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
+                            The model structure has no fields.",
                         $service, MODEL_NAME);
                 }
                 // Create a map with field types
@@ -1260,7 +1283,8 @@ macro_rules! model {
                                         "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
                                         "none" => Bson::Null,
                                         _ => {
-                                            panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : Invalid data type.",
+                                            panic!("Service: `{}` -> Model: `{}` -> Method: \
+                                                    `migrat()` : Invalid data type.",
                                                 $service, MODEL_NAME)
                                         }
                                     });
