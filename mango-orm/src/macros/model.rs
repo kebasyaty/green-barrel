@@ -451,6 +451,9 @@ macro_rules! model {
                                             }
                                             "InputDate" => {
                                                 attrs.value = field_data.to_string();
+                                                let dt: DateTime<Utc> = "";
+                                                doc_res.insert(field.to_string(),
+                                                    Bson::DateTime(dt));
                                             }
                                             _ => {
                                                 // Add result from other fields
