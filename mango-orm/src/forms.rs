@@ -12,10 +12,6 @@ use std::error::Error;
 // Define form settings for models.
 // *************************************************************************************************
 pub trait Form {
-    // Customizing widgets by model fields
-    // *********************************************************************************************
-    fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>>;
-
     // List of field names that will not be saved to the database
     // *********************************************************************************************
     fn ignore_fields<'a>() -> Result<Vec<&'a str>, Box<dyn Error>> {
@@ -31,6 +27,10 @@ pub trait Form {
         let error_map = HashMap::new();
         Ok(error_map)
     }
+
+    // Customizing widgets by model fields
+    // *********************************************************************************************
+    fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>>;
 
     // Customizing HTML form  (If necessary) for page templates
     // *********************************************************************************************
