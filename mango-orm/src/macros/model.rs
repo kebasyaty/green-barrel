@@ -451,7 +451,10 @@ macro_rules! model {
                                             }
                                             "InputDateTime" => {
                                                 attrs.value = field_data.to_string();
-                                                let dt: DateTime<Utc> = "";
+                                                let dt: DateTime<Utc> =
+                                                    DateTime::<Utc>::from_utc(
+                                                        NaiveDateTime::parse_from_str(
+                                                            field_data, "%Y-%m-%d %H:%M:%S")?, Utc);
                                                 doc_res.insert(field.to_string(),
                                                     Bson::DateTime(dt));
                                             }
