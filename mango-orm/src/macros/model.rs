@@ -277,6 +277,26 @@ macro_rules! model {
                 Ok(())
             }
 
+            // Generate password hash and add to result document
+            pub fn create_password_hash(field_data: &str) -> Result<String, Box<dyn Error>> {
+                    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                                            abcdefghijklmnopqrstuvwxyz\
+                                            0123456789@#$%^&+=*!~)(";
+                    const SALT_LEN: usize = 12;
+                    let mut rng = rand::thread_rng();
+                    let password: &[u8] = field_data.as_bytes();
+                    let salt: String = (0..SALT_LEN)
+                        .map(|_| {
+                            let idx = rng.gen_range(0, CHARSET.len());
+                            CHARSET[idx] as char
+                        })
+                        .collect();
+                    let salt: &[u8] = salt.as_bytes();
+                    let config = Config::default();
+                    let hash: String = argon2::hash_encoded(password, salt, &config)?;
+                    Ok(hash)
+            }
+
             // Validation of Form
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
@@ -409,21 +429,7 @@ macro_rules! model {
                                     // Generate password hash and add to result document
                                     // -------------------------------------------------------------
                                     if !stop_err && field_type == "InputPassword" {
-                                        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                                                                abcdefghijklmnopqrstuvwxyz\
-                                                                0123456789@#$%^&+=*!~)(";
-                                        const SALT_LEN: usize = 12;
-                                        let mut rng = rand::thread_rng();
-                                        let password: &[u8] = field_data.as_bytes();
-                                        let salt: String = (0..SALT_LEN)
-                                            .map(|_| {
-                                                let idx = rng.gen_range(0, CHARSET.len());
-                                                CHARSET[idx] as char
-                                            })
-                                            .collect();
-                                        let salt: &[u8] = salt.as_bytes();
-                                        let config = Config::default();
-                                        let hash: String = argon2::hash_encoded(password, salt, &config)?;
+                                        let hash: String = Self::create_password_hash(field_data)?;
                                         doc_res.insert(field.to_string(), Bson::String(hash));
                                     }
                                 }
