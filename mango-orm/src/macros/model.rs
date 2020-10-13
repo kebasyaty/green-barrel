@@ -803,6 +803,37 @@ macro_rules! model {
                             }
                         }
 
+                        // InputTimeStamp
+                        // -------------------------------------------------------------------------
+                        FieldType::InputTimeStamp(_) => {
+                            let mut enum_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputDateTime(_) => { enum_field_type = "InputTimeStamp".to_string(); }
+                                _ => panic!("Invalid field type")
+                            }
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> For `value` = FieldType `{}` : `relation_model` = only blank string.",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            }  else if widget.min.get_enum_type() != "U32" ||  widget.max.get_enum_type() != "U32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The fields `min` and `max` must be of types `StepMinMax::U32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets -> For `value` = FieldType `{}` : `select` = only blank vec![].",
+                                    $service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if map_field_types[field] != "u32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : Field type is not equal to `u32`.",
+                                    $service, MODEL_NAME, field
+                                )
+                            }
+                        }
+
                         // InputFile
                         // InputImage
                         // -------------------------------------------------------------------------
