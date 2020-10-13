@@ -17,13 +17,13 @@ pub struct FormCache {
     pub attrs_map: HashMap<String, Transport>,
     pub attrs_json: String,
     pub form_html: String,
-    pub widget_map: HashMap<String, &'static str>,
+    pub widget_map: HashMap<String, String>,
 }
 
 // Store
 lazy_static! {
     // FORM_CACHE - For caching Form (map, json) attributes and Html
-    pub static ref FORM_CACHE: Mutex<HashMap<&'static str, FormCache>> = {
+    pub static ref FORM_CACHE: Mutex<HashMap<String, FormCache>> = {
         let mut _map = HashMap::new();
         Mutex::new(_map)
     };

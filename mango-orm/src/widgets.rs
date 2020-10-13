@@ -59,7 +59,7 @@ impl Default for FieldType {
 }
 
 impl FieldType {
-    pub fn get_input_type(&self) -> &'static str {
+    pub fn get_input_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "hidden",
             Self::InputCheckBoxText(_) => "checkbox",
@@ -151,7 +151,7 @@ impl FieldType {
         }
     }
 
-    pub fn get_data_type(&self) -> &'static str {
+    pub fn get_data_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "String",
             Self::InputCheckBoxText(_) => "String",
@@ -197,7 +197,7 @@ impl FieldType {
         }
     }
 
-    pub fn get_enum_type(&self) -> &'static str {
+    pub fn get_enum_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "Hash",
             Self::InputCheckBoxText(_) => "InputCheckBoxText",
@@ -272,7 +272,7 @@ impl SelectDataType {
         }
     }
 
-    pub fn get_data_type(&self) -> &'static str {
+    pub fn get_data_type<'a>(&self) -> &'a str {
         match self {
             Self::Text(_) => "String",
             Self::I32(_) => "i32",
@@ -282,7 +282,7 @@ impl SelectDataType {
         }
     }
 
-    pub fn get_enum_type(&self) -> &'static str {
+    pub fn get_enum_type<'a>(&self) -> &'a str {
         match self {
             Self::Text(_) => "Text",
             Self::I32(_) => "I32",
@@ -319,7 +319,7 @@ impl StepMinMax {
         }
     }
 
-    pub fn get_data_type(&self) -> &'static str {
+    pub fn get_data_type<'a>(&self) -> &'a str {
         match self {
             Self::I32(_) => "i32",
             Self::U32(_) => "i64",
@@ -328,7 +328,7 @@ impl StepMinMax {
         }
     }
 
-    pub fn get_enum_type(&self) -> &'static str {
+    pub fn get_enum_type<'a>(&self) -> &'a str {
         match self {
             Self::I32(_) => "I32",
             Self::U32(_) => "U32",

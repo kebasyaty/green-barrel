@@ -51,7 +51,8 @@ macro_rules! model {
                         )
                     })
                 } else {
-                    Err(format!("Model: `{}` -> Method: `field_types()` : Service name (App name) and database name should not be empty.",
+                    Err(format!("Model: `{}` -> Method: `field_types()` : \
+                                Service name (App name) and database name should not be empty.",
                         stringify!($sname)))?
                 }
             }
@@ -59,7 +60,7 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map() -> Result<HashMap<&'static str, Widget>, Box<dyn Error>> {
+            pub fn widgets_full_map<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
                 let mut map: HashMap<&'static str, Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
@@ -75,24 +76,24 @@ macro_rules! model {
             }
 
             // Add (if required) default form data to cache
-            pub async fn form_cache() -> Result<(async_mutex::MutexGuard<'static, HashMap<&'static str,
-                mango_orm::models::FormCache>>, &'static str), Box<dyn Error>> {
+            pub async fn form_cache() -> Result<(async_mutex::MutexGuard<'static, HashMap<String,
+                mango_orm::models::FormCache>>, String), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let key: &'static str = Box::leak(format!("{}_{}",
+                let key = format!("{}_{}",
                     $service.to_lowercase(),
                     stringify!($sname).to_lowercase()
-                ).into_boxed_str());
-                let mut store: async_mutex::MutexGuard<'_, HashMap<&'static str,
+                );
+                let mut store: async_mutex::MutexGuard<'_, HashMap<String,
                     mango_orm::models::FormCache>> = FORM_CACHE.lock().await;
-                let mut cache: Option<&FormCache> = store.get(key);
+                let mut cache: Option<&FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
                     let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut widget_map: HashMap<String, &str> = HashMap::new();
+                    let mut widget_map: HashMap<String, String> = HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
-                        widget_map.insert(field.to_string(), widget.value.get_enum_type());
+                        widget_map.insert(field.to_string(), widget.value.get_enum_type().to_string());
                     }
                     // Add default data
                     let form_cache = FormCache{
@@ -101,15 +102,16 @@ macro_rules! model {
                         ..Default::default()
                     };
                     // Save default data to cache
-                    store.insert(key, form_cache);
+                    store.insert(key.clone(), form_cache);
                 }
+
                 Ok((store, key))
             }
 
             // Get a map of pure attributes of Form for page templates
             pub async fn form_map() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
                 let (store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(key);
+                let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
@@ -122,7 +124,7 @@ macro_rules! model {
             // Get Form attributes in Json format for page templates
             pub async fn form_json() -> Result<String, Box<dyn Error>> {
                 let (mut store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(key);
+                let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     if cache.attrs_json.len() == 0 {
@@ -161,7 +163,7 @@ macro_rules! model {
                 let mut build_controls = false;
                 let mut attrs: HashMap<String, Transport> = HashMap::new();
                 //
-                let cache: Option<&FormCache> = store.get(key);
+                let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     let is_cached: bool = cache.form_html.len() == 0;
@@ -325,12 +327,12 @@ macro_rules! model {
 
                 // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
-                let cache: Option<&FormCache> = store.get(key);
+                let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     attrs_map = cache.attrs_map.clone();
-                    let widget_map: HashMap<String, &'static str> = cache.widget_map.clone();
+                    let widget_map: HashMap<String, String> = cache.widget_map.clone();
                     // Apply custom check
                     {
                         let error_map: HashMap<&'static str, &'static str> = self.custom_check()?;
@@ -379,12 +381,11 @@ macro_rules! model {
                                             let field_data_update: &str =
                                                 value_update.as_str().unwrap();
                                             if field_data.len() > 0 {
-                                                attrs.value = field_data.to_string();
-                                                if !ignore_fields.contains(field) ||
-                                                    field_type == "InputPassword" {
+                                                //if !ignore_fields.contains(field) || field_type == "InputPassword" {
+                                                    attrs.value = field_data.to_string();
                                                     doc_res.insert(field.to_string(),
                                                         Bson::String(field_data.to_string()));
-                                                }
+                                                //}
                                             } else if !attrs.required {
                                                 attrs.value = field_data_update.to_string();
                                                 doc_res.insert(field.to_string(),
