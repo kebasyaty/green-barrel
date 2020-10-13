@@ -375,19 +375,18 @@ macro_rules! model {
                                     }
                                     // If the field is not required and there is no data in it,
                                     // take data from the database
-                                    if is_update {
+                                    if is_update && !ignore_fields.contains(field_name) {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
                                             let field_data_update: &str =
                                                 value_update.as_str().unwrap();
                                             if field_data.len() > 0 && !attrs.required {
-                                                if !ignore_fields.contains(field_name) &&
-                                                    field_type != "InputPassword" {
+                                                if field_type == "InputPassword" {
                                                     attrs.value = field_data_update.to_string();
-                                                    doc_res.insert(field.to_string(), value_update);
-                                                    continue;
                                                 }
+                                                doc_res.insert(field.to_string(), value_update);
+                                                continue;
                                             }
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
@@ -450,13 +449,15 @@ macro_rules! model {
                                                 }
                                             }
                                             "InputDateTime" => {
-                                                attrs.value = field_data.to_string();
-                                                let dt: DateTime<Utc> =
-                                                    DateTime::<Utc>::from_utc(
-                                                        NaiveDateTime::parse_from_str(
-                                                            field_data, "%Y-%m-%d %H:%M:%S")?, Utc);
-                                                doc_res.insert(field.to_string(),
-                                                    Bson::DateTime(dt));
+                                                if field_data.len() > 0 {
+                                                    attrs.value = field_data.to_string();
+                                                    let dt: DateTime<Utc> =
+                                                        DateTime::<Utc>::from_utc(
+                                                            NaiveDateTime::parse_from_str(
+                                                                field_data, "%Y-%m-%d %H:%M:%S")?, Utc);
+                                                    doc_res.insert(field.to_string(),
+                                                        Bson::DateTime(dt));
+                                                }
                                             }
                                             _ => {
                                                 // Add result from other fields
