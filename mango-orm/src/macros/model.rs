@@ -293,28 +293,35 @@ macro_rules! model {
             // If the field is not required and there is no data in it,
             // take data from the database
             fn update_field_from_db(doc_update: &Document, field: &str,
-                field_type: &str, attrs: &mut Transport, model_name: &str,
+                field_type: &str, attrs: &mut Transport,
                 doc_res: &mut Document) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let value_from_db: Option<&Bson> = doc_update.get(field);
 
                 if value_from_db.is_some() {
                     let value_from_db: &Bson = value_from_db.unwrap();
-                    let field_data_from_db: Option<&str> = value_from_db.as_str();
-                    attrs.value = String::new();
 
-                    if field_data_from_db.is_some() {
-                        doc_res.insert(field.to_string(), value_from_db);
-                    } else {
-                        Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                    `check()` : During the field update, \
-                                    the value `None` was returned from \
-                                    the database.",
-                            Self::model_name()?, field))?
+                    match field_type {
+                        "InputText" | "InputEmail" | "TextArea" | "InputColor" |
+                        "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
+                        "InputPassword" => {
+                            attrs.value = String::new();
+                            doc_res.insert(field.to_string(), value_from_db.as_str());
+                        }
+                        "InputDateTime" => {
+                            attrs.value = String::new();
+                            let dt = value_from_db.as_datetime();
+                            doc_res.insert(field.to_string(), dt);
+                        }
+                        _ => {
+                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                        `update_field_from_db()` : Unsupported data type.",
+                                Self::model_name()?, field.to_string()))?
+                        }
                     }
                 } else {
                     Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                `check()` : This field is missing \
+                                `update_field_from_db()` : This field is missing \
                                 from the database.",
                         Self::model_name()?, field))?
                 }
@@ -402,7 +409,7 @@ macro_rules! model {
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
                                         Self::update_field_from_db(&doc_update, field,
-                                            field_type, attrs, MODEL_NAME, &mut doc_res)?;
+                                            field_type, attrs, &mut doc_res)?;
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, field_data)
