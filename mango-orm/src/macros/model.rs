@@ -377,6 +377,8 @@ macro_rules! model {
 
                                             if field_type != "InputPassword" {
                                                 attrs.value = field_data_update.to_string();
+                                            } else {
+                                                attrs.value = String::new();
                                             }
                                             doc_res.insert(field.to_string(), value_update);
                                             continue;
