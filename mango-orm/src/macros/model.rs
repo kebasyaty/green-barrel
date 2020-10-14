@@ -453,7 +453,7 @@ macro_rules! model {
                                                 }
                                             }
                                             _ => {
-                                                // Add result from other fields
+                                                // Insert result from other fields
                                                 attrs.value = field_data.to_string();
                                                 doc_res.insert(field.to_string(),
                                                     Bson::String(field_data.to_string()));
