@@ -50,9 +50,9 @@ async fn main() {
     println!("\n{}", data.hash());
     println!("{}", data.bool());
 
-    user.password = String::new();
-    user.password_confirm = String::new();
-    user.datetime = String::new();
+    //user.password = String::new();
+    //user.password_confirm = String::new();
+    //user.datetime = String::new();
     let data = user.save(&client, OutputType::Hash).await.unwrap();
     println!("\n{}", data.hash());
     println!("{}", data.bool());
