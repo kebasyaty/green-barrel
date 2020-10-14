@@ -290,44 +290,6 @@ macro_rules! model {
                     Ok(hash)
             }
 
-            // If the field is not required and there is no data in it,
-            // take data from the database
-            fn update_field_from_db(doc_from_db: &Document, field: &str,
-                field_type: &str, attrs: &mut Transport,
-                doc_res: &mut Document) -> Result<(), Box<dyn Error>> {
-                // ---------------------------------------------------------------------------------
-                let value_from_db: Option<&Bson> = doc_from_db.get(field);
-
-                if value_from_db.is_some() {
-                    let value_from_db: &Bson = value_from_db.unwrap();
-
-                    match field_type {
-                        "InputText" | "InputEmail" | "TextArea" | "InputColor" |
-                        "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                        "InputPassword" => {
-                            attrs.value = String::new();
-                            doc_res.insert(field.to_string(), value_from_db);
-                        }
-                        "InputDateTime" => {
-                            attrs.value = String::new();
-                            doc_res.insert(field.to_string(), value_from_db);
-                        }
-                        _ => {
-                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                        `update_field_from_db()` : Unsupported data type.",
-                                Self::model_name()?, field.to_string()))?
-                        }
-                    }
-                } else {
-                    Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                `update_field_from_db()` : This field is missing \
-                                from the database.",
-                        Self::model_name()?, field))?
-                }
-                //
-                Ok(())
-            }
-
             // Validation of Form
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
@@ -407,8 +369,17 @@ macro_rules! model {
                                     if is_update && !ignore_fields.contains(field_name) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
-                                        Self::update_field_from_db(&doc_from_db, field,
-                                            field_type, attrs, &mut doc_res)?;
+                                        let value_from_db: Option<&Bson> = doc_from_db.get(field);
+
+                                        if value_from_db.is_some() {
+                                            doc_res.insert(field.to_string(),
+                                                value_from_db.unwrap());
+                                        } else {
+                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                        `check()` : \
+                                                        This field is missing from the database.",
+                                                MODEL_NAME, field))?
+                                        }
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, field_data)
