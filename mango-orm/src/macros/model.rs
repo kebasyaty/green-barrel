@@ -366,9 +366,9 @@ macro_rules! model {
                                     }
                                     // If the field is not required and there is no data in it,
                                     // take data from the database
-                                    if is_update && (!attrs.required && field_data.len() == 0 &&
+                                    if is_update && ((!attrs.required && field_data.len() == 0 &&
                                         !ignore_fields.contains(field_name)) ||
-                                        field_type == "InputPassword" {
+                                        field_type == "InputPassword") {
                                         let value_update: Option<&Bson> = doc_update.get(field);
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
