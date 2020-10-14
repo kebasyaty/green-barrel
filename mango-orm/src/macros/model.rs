@@ -303,11 +303,7 @@ macro_rules! model {
                     let field_data_from_db: Option<&str> = value_from_db.as_str();
 
                     if field_data_from_db.is_some() {
-                        if field_type != "InputPassword" {
-                            attrs.value = field_data_from_db.unwrap().to_string();
-                        } else {
-                            attrs.value = String::new();
-                        }
+                        attrs.value = String::new();
                         doc_res.insert(field.to_string(), value_from_db);
                     } else {
                         Err(format!("Model: `{}` -> Field: `{}` -> Method: \
