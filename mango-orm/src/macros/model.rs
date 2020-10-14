@@ -386,7 +386,7 @@ macro_rules! model {
                                                 doc_res.insert(field.to_string(), value_update);
                                             } else {
                                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                            `save()` : During the field update, \
+                                                            `check()` : During the field update, \
                                                             the value `None` was returned from \
                                                             the database.",
                                                     MODEL_NAME, field))?
@@ -394,7 +394,7 @@ macro_rules! model {
                                             continue;
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                        `save()` : This field is missing \
+                                                        `check()` : This field is missing \
                                                         from the database.",
                                                 MODEL_NAME, field))?
                                         }
@@ -475,18 +475,18 @@ macro_rules! model {
                                 }
                                 _ => {
                                     Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                `save()` : Unsupported data type.",
+                                                `check()` : Unsupported data type.",
                                         MODEL_NAME, field_name))?
                                 }
                             }
                         } else {
-                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `save()` : \
+                            Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
                                         This field is missing.",
                                 MODEL_NAME, field_name))?
                         }
                     }
                 } else {
-                    Err(format!("Model: `{}` -> Method: `save()` : \
+                    Err(format!("Model: `{}` -> Method: `check()` : \
                                 Did not receive data from cache.",
                         MODEL_NAME))?
                 }
