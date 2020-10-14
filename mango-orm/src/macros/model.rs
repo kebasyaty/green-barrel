@@ -8,14 +8,14 @@
 #[macro_export]
 macro_rules! model {
         (struct $sname:ident { $($fname:ident : $ftype:ty),* }
-        $(#[$iattr:meta])* $($impls:item)+) => {
+        $(#[$attrs:meta])* $($impls:item)+) => {
 
         #[derive(Serialize, Deserialize, Default, Clone, Debug)]
         pub struct $sname {
             $(pub $fname : $ftype),*
         }
 
-        $(#[$iattr])*
+        $(#[$attrs])*
         $($impls)+
 
         impl $sname {

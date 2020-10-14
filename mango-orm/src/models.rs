@@ -26,6 +26,7 @@ pub struct Meta<'a> {
 // *************************************************************************************************
 pub trait Model {
     // Metadata (database name, collection name, etc)
+    // *********************************************************************************************
     fn meta<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
         Ok(Meta {
             ..Default::default()
