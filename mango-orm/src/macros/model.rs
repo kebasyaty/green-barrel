@@ -290,6 +290,44 @@ macro_rules! model {
                     Ok(hash)
             }
 
+            // If the field is not required and there is no data in it,
+            // take data from the database
+            fn update_field_from_db(doc_update: &Document, field: &str,
+                field_type: &str, attrs: &mut Transport, model_name: &str,
+                doc_res: &mut Document) -> Result<(), Box<dyn Error>> {
+                // ---------------------------------------------------------------------------------
+                let value_from_db: Option<&Bson> = doc_update.get(field);
+
+                if value_from_db.is_some() {
+                    let value_from_db: &Bson = value_from_db.unwrap();
+                    let field_data_from_db: Option<&str> =
+                        value_from_db.as_str();
+
+                    if field_data_from_db.is_some() {
+                        if field_type != "InputPassword" {
+                            attrs.value = field_data_from_db
+                                .unwrap().to_string();
+                        } else {
+                            attrs.value = String::new();
+                        }
+                        doc_res.insert(field.to_string(), value_from_db);
+                    } else {
+                        Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                    `check()` : During the field update, \
+                                    the value `None` was returned from \
+                                    the database.",
+                            Self::model_name()?, field))?
+                    }
+                } else {
+                    Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                `check()` : This field is missing \
+                                from the database.",
+                        Self::model_name()?, field))?
+                }
+                //
+                Ok(())
+            }
+
             // Validation of Form
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn Error>> {
@@ -369,35 +407,8 @@ macro_rules! model {
                                     if is_update && !ignore_fields.contains(field_name) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
-                                        let value_from_db: Option<&Bson> = doc_update.get(field);
-
-                                        if value_from_db.is_some() {
-                                            let value_from_db: &Bson = value_from_db.unwrap();
-                                            let field_data_from_db: Option<&str> =
-                                                value_from_db.as_str();
-
-                                            if field_data_from_db.is_some() {
-                                                if field_type != "InputPassword" {
-                                                    attrs.value = field_data_from_db
-                                                        .unwrap().to_string();
-                                                } else {
-                                                    attrs.value = String::new();
-                                                }
-                                                doc_res.insert(field.to_string(), value_from_db);
-                                            } else {
-                                                Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                            `check()` : During the field update, \
-                                                            the value `None` was returned from \
-                                                            the database.",
-                                                    MODEL_NAME, field))?
-                                            }
-                                            continue;
-                                        } else {
-                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                        `check()` : This field is missing \
-                                                        from the database.",
-                                                MODEL_NAME, field))?
-                                        }
+                                        Self::update_field_from_db(&doc_update, field,
+                                            field_type, attrs, MODEL_NAME, &mut doc_res)?;
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
                                     Self::check_maxlength(attrs.maxlength, field_data)
