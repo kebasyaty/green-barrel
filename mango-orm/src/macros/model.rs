@@ -40,10 +40,10 @@ macro_rules! model {
 
             // Metadata (database name, collection name, etc)
             pub fn metadata<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
-                let meta: Meta = Self::meta()?;
+                let mut meta: Meta = Self::meta()?;
                 meta.service = meta.service.to_lowercase();
                 meta.database = meta.database.to_lowercase();
-                meta.collection: format!("{}__{}",
+                meta.collection = format!("{}__{}",
                     meta.service, stringify!($sname).to_lowercase()
                 );
                 Ok(meta)
