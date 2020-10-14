@@ -396,11 +396,11 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
-                                    // Validation of range (`min` <> `max`)
-                                    // ( Hint: The `validate_length()` method did not
-                                    // provide the desired result )
-                                    // -------------------------------------------------------------
-                                    {
+                                    if field_data.len() > 0 {
+                                        // Validation of range (`min` <> `max`)
+                                        // ( Hint: The `validate_length()` method did not
+                                        // provide the desired result )
+                                        // ---------------------------------------------------------
                                         let min: f64 = attrs.min.parse().unwrap();
                                         let max: f64 = attrs.max.parse().unwrap();
                                         let len: f64 = field_data.encode_utf16().count() as f64;
@@ -413,11 +413,9 @@ macro_rules! model {
                                                 len, min, max);
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
-                                    }
 
-                                    // Validation of `unique`
-                                    // -------------------------------------------------------------
-                                    if field_data.len() > 0 {
+                                        // Validation of `unique`
+                                        // ---------------------------------------------------------
                                         Self::check_unique(is_update, attrs.unique, field,
                                             field_data, &coll)
                                             .await.unwrap_or_else(|err| {
@@ -426,11 +424,9 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                    }
 
-                                    // Additional validation (email, password, url, ip, etc...)
-                                    // -------------------------------------------------------------
-                                    if field_data.len() > 0 {
+                                        // Additional validation (email, password, url, ip, etc...)
+                                        // ---------------------------------------------------------
                                         Self::additional_validation(field_type, field_data)
                                             .unwrap_or_else(|err| {
                                             stop_err = true;
