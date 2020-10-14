@@ -374,6 +374,7 @@ macro_rules! model {
                                         if value_from_db.is_some() {
                                             doc_res.insert(field.to_string(),
                                                 value_from_db.unwrap());
+                                            continue;
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                                         `check()` : \
