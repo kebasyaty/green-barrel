@@ -627,9 +627,11 @@ macro_rules! model {
                 let meta: Meta = Self::metadata().unwrap();
                 // Validation of required fields in `Meta`
                 if meta.service.len() == 0 || meta.database.len() == 0 {
-                    panic!("Model: `{}` -> Method: `field_types()` : \
-                            Service name (App name) and database name should not be empty.",
-                        stringify!($sname))
+                    panic!(
+                        "Service: `{}` -> Model: `{}` -> Method: `meta()` : \
+                        The `service` and` database` fields must not be empty.",
+                        meta.service, MODEL_NAME
+                    )
                 }
                 // Checking for a required field `hash`
                 if !FIELD_NAMES.contains(&"hash") {
