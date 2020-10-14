@@ -39,7 +39,7 @@ async fn main() {
         email: "test12@test.test".to_string(),
         password: "12345678".to_string(),
         password_confirm: "12345678".to_string(),
-        datetime: "2017-06-01T08:30:00".to_string(),
+        datetime: "2017-06-01T08:30".to_string(),
         ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
