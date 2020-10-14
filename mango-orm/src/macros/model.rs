@@ -301,9 +301,9 @@ macro_rules! model {
                 if value_from_db.is_some() {
                     let value_from_db: &Bson = value_from_db.unwrap();
                     let field_data_from_db: Option<&str> = value_from_db.as_str();
+                    attrs.value = String::new();
 
                     if field_data_from_db.is_some() {
-                        attrs.value = String::new();
                         doc_res.insert(field.to_string(), value_from_db);
                     } else {
                         Err(format!("Model: `{}` -> Field: `{}` -> Method: \
