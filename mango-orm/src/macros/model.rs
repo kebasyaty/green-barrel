@@ -68,13 +68,14 @@ macro_rules! model {
             }
 
             // Add (if required) default form data to cache
-            pub async fn form_cache() -> Result<(async_mutex::MutexGuard<'static, HashMap<String,
-                mango_orm::models::FormCache>>, String), Box<dyn Error>> {
+            pub async fn form_cache() -> Result<(
+                async_mutex::MutexGuard<'static, HashMap<String,
+                FormCache>>, String), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let meta: Meta = Self::metadata()?;
                 let key = meta.collection.clone();
                 let mut store: async_mutex::MutexGuard<'_, HashMap<String,
-                    mango_orm::models::FormCache>> = FORM_CACHE.lock().await;
+                    FormCache>> = FORM_CACHE.lock().await;
                 let mut cache: Option<&FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
