@@ -369,21 +369,21 @@ macro_rules! model {
                                     if is_update && !ignore_fields.contains(field_name) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
-                                        let value_update: Option<&Bson> = doc_update.get(field);
+                                        let value_from_db: Option<&Bson> = doc_update.get(field);
 
-                                        if value_update.is_some() {
-                                            let value_update: &Bson = value_update.unwrap();
-                                            let field_data_update: Option<&str> =
-                                                value_update.as_str();
+                                        if value_from_db.is_some() {
+                                            let value_from_db: &Bson = value_from_db.unwrap();
+                                            let field_data_from_db: Option<&str> =
+                                                value_from_db.as_str();
 
-                                            if field_data_update.is_some() {
+                                            if field_data_from_db.is_some() {
                                                 if field_type != "InputPassword" {
-                                                    attrs.value = field_data_update
+                                                    attrs.value = field_data_from_db
                                                         .unwrap().to_string();
                                                 } else {
                                                     attrs.value = String::new();
                                                 }
-                                                doc_res.insert(field.to_string(), value_update);
+                                                doc_res.insert(field.to_string(), value_from_db);
                                             } else {
                                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                                             `check()` : During the field update, \
