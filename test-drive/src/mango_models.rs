@@ -75,7 +75,8 @@ model! {
         username: String,
         email: String,
         password: String,
-        password_confirm: String
+        password_confirm: String,
+        datetime: String
     }
 
     impl Model for User {
@@ -85,6 +86,7 @@ model! {
             Ok(Meta {
                 service: _SERVICE_NAME.to_string(),
                 database: _DATABASE_NAME.to_string(),
+                // List of field names that will not be saved to the database
                 ignore_fields: vec!["password_confirm"],
                 ..Default::default()
             })
@@ -162,6 +164,18 @@ model! {
                     required: true,
                     hint: "Confirm your password.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Confirm password"),
+                    ..Default::default()
+                },
+            );
+            // Date and Time
+            map.insert(
+                "datetime",
+                Widget {
+                    label: "Date and Time".to_string(),
+                    value: FieldType::InputDateTime(String::new()),
+                    required: true,
+                    hint: "Enter date and time.".to_string(),
+                    other_attrs: format!("placeholder=\"{}\"", "Enter date and time"),
                     ..Default::default()
                 },
             );
