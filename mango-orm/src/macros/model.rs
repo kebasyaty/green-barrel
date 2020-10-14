@@ -218,8 +218,8 @@ macro_rules! model {
                 Ok(format!("{}{}", tmp, err))
             }
 
-            // Additional validation for some fields (email, password, url, ip, etc...)
-            fn additional_validation(field_type: &str, data: &str) ->
+            // Validation in regular expression (email, password, etc...)
+            fn regex_validation(field_type: &str, data: &str) ->
                 Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 match field_type {
@@ -396,6 +396,7 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
 
+                                    // -------------------------------------------------------------
                                     if field_data.len() > 0 {
                                         // Validation of range (`min` <> `max`)
                                         // ( Hint: The `validate_length()` method did not
@@ -425,9 +426,9 @@ macro_rules! model {
                                                     .unwrap();
                                         });
 
-                                        // Additional validation (email, password, url, ip, etc...)
+                                        // Validation in regular expression (email, password, etc...)
                                         // ---------------------------------------------------------
-                                        Self::additional_validation(field_type, field_data)
+                                        Self::regex_validation(field_type, field_data)
                                             .unwrap_or_else(|err| {
                                             stop_err = true;
                                             attrs.error =
