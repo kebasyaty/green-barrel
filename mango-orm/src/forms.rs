@@ -9,25 +9,9 @@ use std::error::Error;
 
 // FORM
 // #################################################################################################
-// Define form settings for models.
+// Form settings
 // *************************************************************************************************
 pub trait Form {
-    // List of field names that will not be saved to the database
-    // *********************************************************************************************
-    fn ignore_fields<'a>() -> Result<Vec<&'a str>, Box<dyn Error>> {
-        let field_list = vec![];
-        Ok(field_list)
-    }
-
-    // Custom validation of model fields
-    // (Don't forget to check for ignored fields -> `ignore_fields()`)
-    // *********************************************************************************************
-    fn custom_check<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
-        // .insert("field_name", "Error message")
-        let error_map = HashMap::new();
-        Ok(error_map)
-    }
-
     // Customizing widgets by model fields
     // *********************************************************************************************
     fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>>;

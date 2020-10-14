@@ -4,7 +4,7 @@ use futures::stream::StreamExt;
 use mango_orm::{
     forms::{Form, OutputData, OutputType},
     model,
-    models::{FormCache, Meta, FORM_CACHE},
+    models::{FormCache, Meta, Model, FORM_CACHE},
     widgets::{FieldType, StepMinMax, Transport, Widget},
 };
 use mongodb::{
@@ -27,12 +27,21 @@ const _SERVICE_NAME: &str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT
 const _DATABASE_NAME: &str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 
 model! {
-    _SERVICE_NAME,
-    _DATABASE_NAME,
-
     struct Category {
         hash: String, // Required field
         title: String
+    }
+
+    impl Model for Category {
+        // Example:
+        // Metadata (database name, collection name, etc)
+        fn meta<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
+            Ok(Meta {
+                service: _SERVICE_NAME.to_string(),
+                database: _DATABASE_NAME.to_string(),
+                ..Default::default()
+            })
+        }
     }
 
     impl Form for Category {
@@ -61,9 +70,6 @@ model! {
 }
 
 model! {
-    _SERVICE_NAME,
-    _DATABASE_NAME,
-
     struct User {
         hash: String, // Required field
         username: String,
@@ -72,12 +78,16 @@ model! {
         password_confirm: String
     }
 
-    impl Form for User {
+    impl Model for User {
         // Example:
-        // List of field names that will not be saved to the database
-        fn ignore_fields<'a>() -> Result<Vec<&'a str>, Box<dyn Error>> {
-            let field_list = vec!["password_confirm"];
-            Ok(field_list)
+        // Metadata (database name, collection name, etc)
+        fn meta<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
+            Ok(Meta {
+                service: _SERVICE_NAME.to_string(),
+                database: _DATABASE_NAME.to_string(),
+                ignore_fields: vec!["password_confirm"],
+                ..Default::default()
+            })
         }
 
         // Example:
@@ -92,7 +102,9 @@ model! {
             }
             Ok(error_map)
         }
+    }
 
+    impl Form for User {
         // Example:
         // Customizing widgets by model fields
         // (For `hash` field, Widget is added automatically)
