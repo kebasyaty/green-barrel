@@ -370,23 +370,33 @@ macro_rules! model {
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
                                         let value_update: Option<&Bson> = doc_update.get(field);
+
                                         if value_update.is_some() {
                                             let value_update: &Bson = value_update.unwrap();
-                                            let field_data_update: &str =
-                                                value_update.as_str().unwrap();
+                                            let field_data_update: Option<&str> =
+                                                value_update.as_str();
 
-                                            if field_type != "InputPassword" {
-                                                attrs.value = field_data_update.to_string();
+                                            if field_data_update.is_some() {
+                                                if field_type != "InputPassword" {
+                                                    attrs.value = field_data_update
+                                                        .unwrap().to_string();
+                                                } else {
+                                                    attrs.value = String::new();
+                                                }
+                                                doc_res.insert(field.to_string(), value_update);
                                             } else {
-                                                attrs.value = String::new();
+                                                Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                            `save()` : During the field update, \
+                                                            the value `None` was returned from \
+                                                            the database.",
+                                                    MODEL_NAME, field))?
                                             }
-                                            doc_res.insert(field.to_string(), value_update);
                                             continue;
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                                         `save()` : This field is missing \
                                                         from the database.",
-                                            MODEL_NAME, field))?
+                                                MODEL_NAME, field))?
                                         }
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
