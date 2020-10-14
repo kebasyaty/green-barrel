@@ -641,7 +641,7 @@ macro_rules! model {
                         meta.service, MODEL_NAME
                     )
                 }
-                // List field names without `id` field
+                // List field names without `hash` field
                 let field_names_no_hash: Vec<&str> = FIELD_NAMES.iter()
                     .map(|field| field.clone()).filter(|field| field != &"hash").collect();
                 // Checking for the presence of fields
