@@ -7,12 +7,12 @@
 /// Macro for converting Structure to Model
 #[macro_export]
 macro_rules! model {
-        (struct $sname:ident { $($fname:ident : $ftype:ty),* }
-        $(#[$attrs:meta])* $($impls:item)+) => {
+        ( struct $sname:ident { $($fname:ident : $ftype:ty),+ }
+            $(#[$attrs:meta])* $($impls:item)+ ) => {
 
         #[derive(Serialize, Deserialize, Default, Clone, Debug)]
         pub struct $sname {
-            $(pub $fname : $ftype),*
+            $(pub $fname : $ftype),+
         }
 
         $(#[$attrs])*
