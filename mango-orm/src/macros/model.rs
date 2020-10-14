@@ -355,7 +355,9 @@ macro_rules! model {
                                     "InputPassword" | "InputDateTime" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+
                                     // Validation for a required field
+                                    // -------------------------------------------------------------
                                     if attrs.required && field_data.len() == 0 {
                                         stop_err = true;
                                         attrs.error =
@@ -364,8 +366,10 @@ macro_rules! model {
                                         attrs.value = field_data.to_string();
                                         continue;
                                     }
+
                                     // If the field is not required and there is no data in it,
                                     // take data from the database
+                                    // -------------------------------------------------------------
                                     if is_update && !ignore_fields.contains(field_name) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
@@ -382,16 +386,20 @@ macro_rules! model {
                                                 MODEL_NAME, field))?
                                         }
                                     }
+
                                     // Checking `maxlength`, `min length`, `max length`
+                                    // -------------------------------------------------------------
                                     Self::check_maxlength(attrs.maxlength, field_data)
                                         .unwrap_or_else(|err| {
                                             stop_err = true;
                                             attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                     });
+
                                     // Validation of range (`min` <> `max`)
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
+                                    // -------------------------------------------------------------
                                     {
                                         let min: f64 = attrs.min.parse().unwrap();
                                         let max: f64 = attrs.max.parse().unwrap();
@@ -406,7 +414,9 @@ macro_rules! model {
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
                                     }
+
                                     // Validation of `unique`
+                                    // -------------------------------------------------------------
                                     if field_data.len() > 0 {
                                         Self::check_unique(is_update, attrs.unique, field,
                                             field_data, &coll)
@@ -420,12 +430,15 @@ macro_rules! model {
 
                                     // Additional validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
-                                    Self::additional_validation(field_type, field_data)
-                                        .unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
-                                    });
+                                    if field_data.len() > 0 {
+                                        Self::additional_validation(field_type, field_data)
+                                            .unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                                Self::accumula_err(&attrs, &err.to_string())
+                                                    .unwrap();
+                                        });
+                                    }
 
                                     // Insert result
                                     // -------------------------------------------------------------
@@ -436,7 +449,8 @@ macro_rules! model {
                                                     // Generate password hash and add to result document
                                                     let hash: String =
                                                         Self::create_password_hash(field_data)?;
-                                                    doc_res.insert(field.to_string(), Bson::String(hash));
+                                                    doc_res.insert(field.to_string(),
+                                                        Bson::String(hash));
                                                 }
                                             }
                                             "InputDateTime" => {
