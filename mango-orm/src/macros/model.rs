@@ -625,7 +625,7 @@ macro_rules! model {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 let meta: Meta = Self::metadata().unwrap();
-                // Checking for required fields in `Meta`
+                // Validation of required fields in `Meta`
                 if meta.service.len() == 0 || meta.database.len() == 0 {
                     panic!("Model: `{}` -> Method: `field_types()` : \
                             Service name (App name) and database name should not be empty.",
