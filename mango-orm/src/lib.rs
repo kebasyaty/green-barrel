@@ -6,6 +6,7 @@ pub mod forms;
 pub mod macros;
 pub mod migration;
 pub mod models;
+pub mod store;
 pub mod widgets;
 
 // TESTS
