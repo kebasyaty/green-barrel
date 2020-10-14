@@ -292,11 +292,11 @@ macro_rules! model {
 
             // If the field is not required and there is no data in it,
             // take data from the database
-            fn update_field_from_db(doc_update: &Document, field: &str,
+            fn update_field_from_db(doc_from_db: &Document, field: &str,
                 field_type: &str, attrs: &mut Transport,
                 doc_res: &mut Document) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
-                let value_from_db: Option<&Bson> = doc_update.get(field);
+                let value_from_db: Option<&Bson> = doc_from_db.get(field);
 
                 if value_from_db.is_some() {
                     let value_from_db: &Bson = value_from_db.unwrap();
@@ -306,12 +306,11 @@ macro_rules! model {
                         "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
                         "InputPassword" => {
                             attrs.value = String::new();
-                            doc_res.insert(field.to_string(), value_from_db.as_str());
+                            doc_res.insert(field.to_string(), value_from_db);
                         }
                         "InputDateTime" => {
                             attrs.value = String::new();
-                            let dt = value_from_db.as_datetime();
-                            doc_res.insert(field.to_string(), dt);
+                            doc_res.insert(field.to_string(), value_from_db);
                         }
                         _ => {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
@@ -344,7 +343,7 @@ macro_rules! model {
                 // Get data from model
                 let mut doc_tmp: Document = to_document(self).unwrap();
                 // Get data for model from database (if available)
-                let mut doc_update: Document = if is_update {
+                let mut doc_from_db: Document = if is_update {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
                     let filter: Document = doc!{"_id": object_id};
@@ -408,7 +407,7 @@ macro_rules! model {
                                     if is_update && !ignore_fields.contains(field_name) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
-                                        Self::update_field_from_db(&doc_update, field,
+                                        Self::update_field_from_db(&doc_from_db, field,
                                             field_type, attrs, &mut doc_res)?;
                                     }
                                     // Checking `maxlength`, `min length`, `max length`
