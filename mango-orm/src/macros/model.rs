@@ -407,12 +407,16 @@ macro_rules! model {
                                         }
                                     }
                                     // Validation of `unique`
-                                    Self::check_unique(is_update, attrs.unique, field, field_data, &coll)
-                                        .await.unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
-                                    });
+                                    if field_data.len() > 0 {
+                                        Self::check_unique(is_update, attrs.unique, field,
+                                            field_data, &coll)
+                                            .await.unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                                Self::accumula_err(&attrs, &err.to_string())
+                                                    .unwrap();
+                                        });
+                                    }
 
                                     // Additional validation (email, password, url, ip, etc...)
                                     // -------------------------------------------------------------
