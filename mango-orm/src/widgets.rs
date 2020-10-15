@@ -837,7 +837,7 @@ mod tests {
     fn test_select_data_types() {
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(DataType::default().get_raw_data(), 0_u32);
+        assert_eq!(DataType::default().get_raw_data(), "0");
         assert_eq!(
             DataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -849,7 +849,7 @@ mod tests {
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(DataType::default().get_data_type(), "String");
+        assert_eq!(DataType::default().get_data_type(), "u32");
         assert_eq!(DataType::Text(String::new()).get_data_type(), "String");
         assert_eq!(DataType::I32(-10_i32).get_data_type(), "i32");
         assert_eq!(DataType::U32(10_u32).get_data_type(), "u32");
@@ -858,7 +858,7 @@ mod tests {
 
         // Method get_enum_type()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(DataType::default().get_enum_type(), "Text");
+        assert_eq!(DataType::default().get_enum_type(), "U32");
         assert_eq!(DataType::Text(String::new()).get_enum_type(), "Text");
         assert_eq!(DataType::I32(-10_i32).get_enum_type(), "I32");
         assert_eq!(DataType::U32(10_u32).get_enum_type(), "U32");
