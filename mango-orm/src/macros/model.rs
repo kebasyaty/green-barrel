@@ -370,7 +370,7 @@ macro_rules! model {
                         // Field validation
                         match field_type {
                             // Validation of text type fields
-                            // -----------------------------------------------------------------
+                            // ---------------------------------------------------------------------
                             "InputText" | "InputEmail" | "TextArea" | "InputColor" |
                                 "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
                                 "InputPassword" | "InputDateTime" | "InputDate" |
@@ -380,7 +380,7 @@ macro_rules! model {
                                     attrs_map.get_mut(&field_name.to_string()).unwrap();
 
                                 // Validation for a required field
-                                // -------------------------------------------------------------
+                                // -----------------------------------------------------------------
                                 if attrs.required && field_data.len() == 0 {
                                     stop_err = true;
                                     attrs.error =
@@ -392,7 +392,7 @@ macro_rules! model {
 
                                 // If the field is not required and there is no data in it,
                                 // take data from the database
-                                // -------------------------------------------------------------
+                                // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name) &&
                                     ((!attrs.required && field_data.len() == 0) ||
                                     field_type == "InputPassword") {
@@ -412,7 +412,7 @@ macro_rules! model {
                                 }
 
                                 // Checking `maxlength`, `min length`, `max length`
-                                // -------------------------------------------------------------
+                                // -----------------------------------------------------------------
                                 Self::check_maxlength(attrs.maxlength, field_data)
                                     .unwrap_or_else(|err| {
                                         stop_err = true;
@@ -420,12 +420,12 @@ macro_rules! model {
                                         Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                 });
 
-                                // -------------------------------------------------------------
+                                // -----------------------------------------------------------------
                                 if field_data.len() > 0 {
                                     // Validation of range (`min` <> `max`)
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
-                                    // ---------------------------------------------------------
+                                    // -------------------------------------------------------------
                                     let min: f64 = attrs.min.parse().unwrap();
                                     let max: f64 = attrs.max.parse().unwrap();
                                     let len: f64 = field_data.encode_utf16().count() as f64;
@@ -440,7 +440,7 @@ macro_rules! model {
                                     }
 
                                     // Validation of `unique`
-                                    // ---------------------------------------------------------
+                                    // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
                                         &field_name.to_string(), field_data, &coll)
                                         .await.unwrap_or_else(|err| {
@@ -451,7 +451,7 @@ macro_rules! model {
                                     });
 
                                     // Validation in regular expression (email, password, etc...)
-                                    // ---------------------------------------------------------
+                                    // -------------------------------------------------------------
                                     Self::regex_validation(field_type, field_data)
                                         .unwrap_or_else(|err| {
                                         stop_err = true;
@@ -462,7 +462,7 @@ macro_rules! model {
                                 }
 
                                 // Insert result
-                                // -------------------------------------------------------------
+                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     match field_type {
                                         "InputPassword" => {
