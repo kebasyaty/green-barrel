@@ -273,6 +273,14 @@ macro_rules! model {
                             Err("Incorrect date and time format.<br>Example: 0000-01-01T00:00:00")?
                         }
                     }
+                    "InputDate" => {
+                        let re = RegexBuilder::new(
+                            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
+                        ).build()?;
+                        if !re.is_match(data) {
+                            Err("Incorrect date format.<br>Example: 0000-01-01")?
+                        }
+                    }
                     _ => return Ok(()),
                 }
                 Ok(())
@@ -471,6 +479,22 @@ macro_rules! model {
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(dt));
+                                                }
+                                            }
+                                            "InputDate" => {
+                                                if field_data.len() > 0 {
+                                                    // Example: "0000-01-01"
+                                                    let value = format!("{}T00:00:00",
+                                                        field_data.to_string());
+                                                    attrs.value = value.clone();
+                                                    let date: DateTime<Utc> =
+                                                        DateTime::<Utc>::from_utc(
+                                                            NaiveDateTime::parse_from_str(
+                                                                &value.to_string(),
+                                                                "%Y-%m-%dT%H:%M:%S")?,
+                                                        Utc);
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::DateTime(date));
                                                 }
                                             }
                                             _ => {
