@@ -454,12 +454,12 @@ macro_rules! model {
                                             }
                                             "InputDateTime" => {
                                                 if field_data.len() > 0 {
-                                                    // Example: "2017-06-01T08:30:00Z"
+                                                    // Example: "2017-06-01T08:30:00"
                                                     attrs.value = field_data.to_string();
                                                     let dt: DateTime<Utc> =
                                                         DateTime::<Utc>::from_utc(
                                                             NaiveDateTime::parse_from_str(
-                                                                field_data, "%Y-%m-%dT%H:%M:%SZ")?,
+                                                                field_data, "%Y-%m-%dT%H:%M:%S")?,
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(dt));

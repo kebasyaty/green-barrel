@@ -95,6 +95,9 @@ mod tests {
 
     #[test]
     fn regex_validate_datetime() {
-        //
+        let re = RegexBuilder::new(
+            r"^\d\d\d\d-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(00|[0-9]|1[0-9]|2[0-3]):([0-9]|[0-5][0-9]):([0-9]|[0-5][0-9])$"
+        ).build().unwrap();
+        assert!(!re.is_match("2015-1-11T13:57:24"));
     }
 }
