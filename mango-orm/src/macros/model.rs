@@ -366,10 +366,12 @@ macro_rules! model {
                                         This field is missing.",
                                 MODEL_NAME, field_name))?
                         }
-
+                        //
                         let value: &Bson = value.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
+                        let attrs: &mut Transport =
+                                attrs_map.get_mut(&field_name.to_string()).unwrap();
                         // Field validation
                         match field_type {
                             // Validation of text type fields
@@ -378,8 +380,6 @@ macro_rules! model {
                                 "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
                                 "InputPassword" | "InputDateTime" | "InputDate" => {
                                 let field_data: &str = value.as_str().unwrap();
-                                let attrs: &mut Transport =
-                                    attrs_map.get_mut(&field_name.to_string()).unwrap();
 
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
@@ -513,6 +513,9 @@ macro_rules! model {
                                         }
                                     }
                                 }
+                            }
+                            "InputTimeStamp" => {
+                                let field_data: Timestamp = value.as_timestamp().unwrap();
                             }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
