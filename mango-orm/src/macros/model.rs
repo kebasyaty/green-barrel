@@ -357,166 +357,166 @@ macro_rules! model {
                         }
                         // Get field value for validation
                         let value: Option<&Bson> = doc_tmp.get(field_name);
-                        //
-                        if value.is_some() {
-                            let value: &Bson = value.unwrap();
-                            let field_type: &str =
-                                widget_map.get(&field_name.to_string()).unwrap();
-                            // Field validation
-                            match field_type {
-                                // Validation of text type fields
-                                // -----------------------------------------------------------------
-                                "InputText" | "InputEmail" | "TextArea" | "InputColor" |
-                                    "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                                    "InputPassword" | "InputDateTime" | "InputDate" |
-                                    "InputTimeStamp" => {
-                                    let field_data: &str = value.as_str().unwrap();
-                                    let attrs: &mut Transport =
-                                        attrs_map.get_mut(&field_name.to_string()).unwrap();
-
-                                    // Validation for a required field
-                                    // -------------------------------------------------------------
-                                    if attrs.required && field_data.len() == 0 {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs,
-                                                &"Required field.".to_owned()).unwrap();
-                                        attrs.value = field_data.to_string();
-                                        continue;
-                                    }
-
-                                    // If the field is not required and there is no data in it,
-                                    // take data from the database
-                                    // -------------------------------------------------------------
-                                    if is_update && !ignore_fields.contains(field_name) &&
-                                        ((!attrs.required && field_data.len() == 0) ||
-                                        field_type == "InputPassword") {
-                                        let value_from_db: Option<&Bson> =
-                                            doc_from_db.get(&field_name);
-
-                                        if value_from_db.is_some() {
-                                            doc_res.insert(field_name.to_string(),
-                                                value_from_db.unwrap());
-                                            continue;
-                                        } else {
-                                            Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                        `check()` : \
-                                                        This field is missing from the database.",
-                                                MODEL_NAME, &field_name))?
-                                        }
-                                    }
-
-                                    // Checking `maxlength`, `min length`, `max length`
-                                    // -------------------------------------------------------------
-                                    Self::check_maxlength(attrs.maxlength, field_data)
-                                        .unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
-                                    });
-
-                                    // -------------------------------------------------------------
-                                    if field_data.len() > 0 {
-                                        // Validation of range (`min` <> `max`)
-                                        // ( Hint: The `validate_length()` method did not
-                                        // provide the desired result )
-                                        // ---------------------------------------------------------
-                                        let min: f64 = attrs.min.parse().unwrap();
-                                        let max: f64 = attrs.max.parse().unwrap();
-                                        let len: f64 = field_data.encode_utf16().count() as f64;
-                                        if (min > 0_f64 || max > 0_f64) &&
-                                            !validate_range(Validator::Range{min: Some(min),
-                                                            max: Some(max)}, len) {
-                                            stop_err = true;
-                                            let msg = format!(
-                                                "Length {} is out of range (min={} <> max={}).",
-                                                len, min, max);
-                                            attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
-                                        }
-
-                                        // Validation of `unique`
-                                        // ---------------------------------------------------------
-                                        Self::check_unique(is_update, attrs.unique,
-                                            &field_name.to_string(), field_data, &coll)
-                                            .await.unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                                Self::accumula_err(&attrs, &err.to_string())
-                                                    .unwrap();
-                                        });
-
-                                        // Validation in regular expression (email, password, etc...)
-                                        // ---------------------------------------------------------
-                                        Self::regex_validation(field_type, field_data)
-                                            .unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                                Self::accumula_err(&attrs, &err.to_string())
-                                                    .unwrap();
-                                        });
-                                    }
-
-                                    // Insert result
-                                    // -------------------------------------------------------------
-                                    if !stop_err && !ignore_fields.contains(field_name) {
-                                        match field_type {
-                                            "InputPassword" => {
-                                                if field_data.len() > 0 {
-                                                    // Generate password hash and add to result document
-                                                    let hash: String =
-                                                        Self::create_password_hash(field_data)?;
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::String(hash));
-                                                }
-                                            }
-                                            "InputDateTime" => {
-                                                if field_data.len() > 0 {
-                                                    // Example: "0000-01-01T00:00:00"
-                                                    attrs.value = field_data.to_string();
-                                                    let dt: DateTime<Utc> =
-                                                        DateTime::<Utc>::from_utc(
-                                                            NaiveDateTime::parse_from_str(
-                                                                field_data, "%Y-%m-%dT%H:%M:%S")?,
-                                                        Utc);
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::DateTime(dt));
-                                                }
-                                            }
-                                            "InputDate" => {
-                                                if field_data.len() > 0 {
-                                                    // Example: "0000-01-01"
-                                                    let value = format!("{}T00:00:00",
-                                                        field_data.to_string());
-                                                    attrs.value = value.clone();
-                                                    let date: DateTime<Utc> =
-                                                        DateTime::<Utc>::from_utc(
-                                                            NaiveDateTime::parse_from_str(
-                                                                &value.to_string(),
-                                                                "%Y-%m-%dT%H:%M:%S")?,
-                                                        Utc);
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::DateTime(date));
-                                                }
-                                            }
-                                            _ => {
-                                                // Insert result from other fields
-                                                attrs.value = field_data.to_string();
-                                                doc_res.insert(field_name.to_string(),
-                                                    Bson::String(field_data.to_string()));
-                                            }
-                                        }
-                                    }
-                                }
-                                _ => {
-                                    Err(format!("Model: `{}` -> Field: `{}` -> Method: \
-                                                `check()` : Unsupported data type.",
-                                        MODEL_NAME, field_name))?
-                                }
-                            }
-                        } else {
+                        // Check field value
+                        if value.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
                                         This field is missing.",
                                 MODEL_NAME, field_name))?
+                        }
+
+                        let value: &Bson = value.unwrap();
+                        let field_type: &str =
+                            widget_map.get(&field_name.to_string()).unwrap();
+                        // Field validation
+                        match field_type {
+                            // Validation of text type fields
+                            // -----------------------------------------------------------------
+                            "InputText" | "InputEmail" | "TextArea" | "InputColor" |
+                                "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
+                                "InputPassword" | "InputDateTime" | "InputDate" |
+                                "InputTimeStamp" => {
+                                let field_data: &str = value.as_str().unwrap();
+                                let attrs: &mut Transport =
+                                    attrs_map.get_mut(&field_name.to_string()).unwrap();
+
+                                // Validation for a required field
+                                // -------------------------------------------------------------
+                                if attrs.required && field_data.len() == 0 {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs,
+                                            &"Required field.".to_owned()).unwrap();
+                                    attrs.value = field_data.to_string();
+                                    continue;
+                                }
+
+                                // If the field is not required and there is no data in it,
+                                // take data from the database
+                                // -------------------------------------------------------------
+                                if is_update && !ignore_fields.contains(field_name) &&
+                                    ((!attrs.required && field_data.len() == 0) ||
+                                    field_type == "InputPassword") {
+                                    let value_from_db: Option<&Bson> =
+                                        doc_from_db.get(&field_name);
+
+                                    if value_from_db.is_some() {
+                                        doc_res.insert(field_name.to_string(),
+                                            value_from_db.unwrap());
+                                        continue;
+                                    } else {
+                                        Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                    `check()` : \
+                                                    This field is missing from the database.",
+                                            MODEL_NAME, &field_name))?
+                                    }
+                                }
+
+                                // Checking `maxlength`, `min length`, `max length`
+                                // -------------------------------------------------------------
+                                Self::check_maxlength(attrs.maxlength, field_data)
+                                    .unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                });
+
+                                // -------------------------------------------------------------
+                                if field_data.len() > 0 {
+                                    // Validation of range (`min` <> `max`)
+                                    // ( Hint: The `validate_length()` method did not
+                                    // provide the desired result )
+                                    // ---------------------------------------------------------
+                                    let min: f64 = attrs.min.parse().unwrap();
+                                    let max: f64 = attrs.max.parse().unwrap();
+                                    let len: f64 = field_data.encode_utf16().count() as f64;
+                                    if (min > 0_f64 || max > 0_f64) &&
+                                        !validate_range(Validator::Range{min: Some(min),
+                                                        max: Some(max)}, len) {
+                                        stop_err = true;
+                                        let msg = format!(
+                                            "Length {} is out of range (min={} <> max={}).",
+                                            len, min, max);
+                                        attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                    }
+
+                                    // Validation of `unique`
+                                    // ---------------------------------------------------------
+                                    Self::check_unique(is_update, attrs.unique,
+                                        &field_name.to_string(), field_data, &coll)
+                                        .await.unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string())
+                                                .unwrap();
+                                    });
+
+                                    // Validation in regular expression (email, password, etc...)
+                                    // ---------------------------------------------------------
+                                    Self::regex_validation(field_type, field_data)
+                                        .unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string())
+                                                .unwrap();
+                                    });
+                                }
+
+                                // Insert result
+                                // -------------------------------------------------------------
+                                if !stop_err && !ignore_fields.contains(field_name) {
+                                    match field_type {
+                                        "InputPassword" => {
+                                            if field_data.len() > 0 {
+                                                // Generate password hash and add to result document
+                                                let hash: String =
+                                                    Self::create_password_hash(field_data)?;
+                                                doc_res.insert(field_name.to_string(),
+                                                    Bson::String(hash));
+                                            }
+                                        }
+                                        "InputDateTime" => {
+                                            if field_data.len() > 0 {
+                                                // Example: "0000-01-01T00:00:00"
+                                                attrs.value = field_data.to_string();
+                                                let dt: DateTime<Utc> =
+                                                    DateTime::<Utc>::from_utc(
+                                                        NaiveDateTime::parse_from_str(
+                                                            field_data, "%Y-%m-%dT%H:%M:%S")?,
+                                                    Utc);
+                                                doc_res.insert(field_name.to_string(),
+                                                    Bson::DateTime(dt));
+                                            }
+                                        }
+                                        "InputDate" => {
+                                            if field_data.len() > 0 {
+                                                // Example: "0000-01-01"
+                                                let value = format!("{}T00:00:00",
+                                                    field_data.to_string());
+                                                attrs.value = value.clone();
+                                                let date: DateTime<Utc> =
+                                                    DateTime::<Utc>::from_utc(
+                                                        NaiveDateTime::parse_from_str(
+                                                            &value.to_string(),
+                                                            "%Y-%m-%dT%H:%M:%S")?,
+                                                    Utc);
+                                                doc_res.insert(field_name.to_string(),
+                                                    Bson::DateTime(date));
+                                            }
+                                        }
+                                        _ => {
+                                            // Insert result from other fields
+                                            attrs.value = field_data.to_string();
+                                            doc_res.insert(field_name.to_string(),
+                                                Bson::String(field_data.to_string()));
+                                        }
+                                    }
+                                }
+                            }
+                            _ => {
+                                Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                            `check()` : Unsupported data type.",
+                                    MODEL_NAME, field_name))?
+                            }
                         }
                     }
                 } else {
