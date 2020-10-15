@@ -351,7 +351,7 @@ macro_rules! model {
                     }
                     // Loop over fields
                     for field_name in FIELD_NAMES {
-                        // Filter out specific fields
+                        // Don't check the `hash` field
                         if field_name == &"hash" {
                             continue;
                         }
