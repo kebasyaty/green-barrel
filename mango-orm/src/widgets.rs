@@ -22,7 +22,7 @@ pub enum FieldType {
     InputRadioF64(f64),
     InputColor(String),
     InputDate(String),
-    InputDateTime(String), // Example: "000-00-00T00:00:00"
+    InputDateTime(String), // Example: "0000-00-00T00:00:00"
     InputTimeStamp(u32),
     InputEmail(String),
     InputFile,
