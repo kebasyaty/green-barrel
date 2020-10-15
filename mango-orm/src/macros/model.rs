@@ -458,7 +458,7 @@ macro_rules! model {
                                                     let dt: DateTime<Utc> =
                                                         DateTime::<Utc>::from_utc(
                                                             NaiveDateTime::parse_from_str(
-                                                                field_data, "%Y-%m-%d %H:%M:%S")?,
+                                                                field_data, "%Y-%m-%dT%H:%M:%SZ")?,
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(dt));
