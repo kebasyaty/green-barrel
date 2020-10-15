@@ -349,7 +349,7 @@ macro_rules! model {
                             attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
                         }
                     }
-                    // Loop over fields
+                    // Loop over fields for validation
                     for field_name in FIELD_NAMES {
                         // Don't check the `hash` field
                         if field_name == &"hash" {
