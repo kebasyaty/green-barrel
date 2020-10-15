@@ -672,6 +672,7 @@ macro_rules! model {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 let meta: Meta = Self::metadata().unwrap();
+                let ignore_fields: Vec<&str> = meta.ignore_fields;
                 // Validation of required fields in `Meta`
                 if meta.service.len() == 0 || meta.database.len() == 0 {
                     panic!(
@@ -688,11 +689,12 @@ macro_rules! model {
                         meta.service, MODEL_NAME
                     )
                 }
-                // List field names without `hash` field
-                let field_names_no_hash: Vec<&str> = FIELD_NAMES.iter()
-                    .map(|field| field.clone()).filter(|field| field != &"hash").collect();
+                // List field names without `hash` and other auxiliary fields
+                let field_names_without_auxiliary: Vec<&str> = FIELD_NAMES.iter()
+                    .map(|field| field.clone())
+                    .filter(|field| field != &"hash" && !ignore_fields.contains(field)).collect();
                 // Checking for the presence of fields
-                if field_names_no_hash.len() == 0 {
+                if field_names_without_auxiliary.len() == 0 {
                     panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
                             The model structure has no fields.",
                         meta.service, MODEL_NAME);
@@ -1350,10 +1352,10 @@ macro_rules! model {
                     };
                     // Check if the set of fields in the collection of the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
-                    if field_names_no_hash.len() != mango_orm_fnames.len() {
+                    if field_names_without_auxiliary.len() != mango_orm_fnames.len() {
                         run_documents_modification = true;
                     } else {
-                        for item in field_names_no_hash {
+                        for item in field_names_without_auxiliary {
                             if mango_orm_fnames.iter().any(|item2| item2 != &item) {
                                 run_documents_modification = true;
                                 break;
