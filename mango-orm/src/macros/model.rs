@@ -515,7 +515,8 @@ macro_rules! model {
                                 }
                             }
                             "InputTimeStamp" => {
-                                let field_data: Timestamp = value.as_timestamp().unwrap();
+                                let field_data: u32 = value.as_i64().unwrap() as u32;
+                                attrs.value = field_data.to_string();
                             }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
