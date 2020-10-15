@@ -98,6 +98,13 @@ mod tests {
         let re = RegexBuilder::new(
             r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
         ).build().unwrap();
+        assert!(!re.is_match("0000-00-00T00:00:00"));
+        assert!(!re.is_match("0000-13-01T00:00:00"));
+        assert!(!re.is_match("0000-01-32T00:00:00"));
+        assert!(!re.is_match("0000-01-01T24:00:00"));
+        assert!(!re.is_match("0000-01-01T00:60:00"));
+        assert!(!re.is_match("0000-01-01T00:00:60"));
+        assert!(re.is_match("0000-12-31T00:00:00"));
         assert!(re.is_match("0000-01-01T00:00:00"));
         assert!(re.is_match("2020-10-15T11:17:49"));
     }
