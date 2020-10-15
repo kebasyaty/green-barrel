@@ -249,10 +249,11 @@ impl FieldType {
     }
 }
 
-/// Data types for the `select` attribute
+// Data types for the `select` attribute
 // *************************************************************************************************
+/// Data types for the `select` attribute
 #[derive(Clone, Debug)]
-pub enum SelectDataType {
+pub enum DataType {
     Text(String),
     I32(i32),
     U32(u32),
@@ -260,13 +261,13 @@ pub enum SelectDataType {
     F64(f64),
 }
 
-impl Default for SelectDataType {
+impl Default for DataType {
     fn default() -> Self {
-        SelectDataType::Text(String::new())
+        DataType::U32(0_u32)
     }
 }
 
-impl SelectDataType {
+impl DataType {
     pub fn get_raw_data(&self) -> String {
         match self {
             Self::Text(data) => data.to_owned(),
@@ -298,52 +299,7 @@ impl SelectDataType {
     }
 }
 
-/// Datatypes for the `step`,` min` and `max` attributes
-// *************************************************************************************************
-#[derive(PartialEq, Clone, Debug)]
-pub enum StepMinMax {
-    I32(i32),
-    U32(u32),
-    I64(i64),
-    F64(f64),
-}
-
-impl Default for StepMinMax {
-    fn default() -> Self {
-        StepMinMax::U32(0_u32)
-    }
-}
-
-impl StepMinMax {
-    pub fn get_raw_data(&self) -> String {
-        match self {
-            Self::I32(data) => data.to_string(),
-            Self::U32(data) => data.to_string(),
-            Self::I64(data) => data.to_string(),
-            Self::F64(data) => data.to_string(),
-        }
-    }
-
-    pub fn get_data_type<'a>(&self) -> &'a str {
-        match self {
-            Self::I32(_) => "i32",
-            Self::U32(_) => "u32",
-            Self::I64(_) => "i64",
-            Self::F64(_) => "f64",
-        }
-    }
-
-    pub fn get_enum_type<'a>(&self) -> &'a str {
-        match self {
-            Self::I32(_) => "I32",
-            Self::U32(_) => "U32",
-            Self::I64(_) => "I64",
-            Self::F64(_) => "F64",
-        }
-    }
-}
-
-/// Mediator for transporting widget attributes
+// Mediator for transporting widget attributes
 // *************************************************************************************************
 #[derive(Serialize, Default, Clone, Debug)]
 pub struct Transport {
@@ -399,12 +355,12 @@ pub struct Widget {
     pub hint: String,
     pub unique: bool,
     pub hidden: bool,
-    pub step: StepMinMax,
-    pub min: StepMinMax,
-    pub max: StepMinMax,
+    pub step: DataType,
+    pub min: DataType,
+    pub max: DataType,
     pub other_attrs: String,  // "autofocus size=\"число\" ..."
     pub some_classes: String, // "class-name class-name ..."
-    pub select: Vec<(String, SelectDataType)>,
+    pub select: Vec<(String, DataType)>,
 }
 
 impl Default for Widget {
@@ -419,9 +375,9 @@ impl Default for Widget {
             hint: String::new(),
             unique: false,
             hidden: false,
-            step: StepMinMax::default(),
-            min: StepMinMax::default(),
-            max: StepMinMax::default(),
+            step: DataType::default(),
+            min: DataType::default(),
+            max: DataType::default(),
             other_attrs: String::new(),
             some_classes: String::new(),
             select: vec![],
@@ -881,86 +837,33 @@ mod tests {
     fn test_select_data_types() {
         // Method get_raw_data()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(SelectDataType::default().get_raw_data(), String::new());
+        assert_eq!(DataType::default().get_raw_data(), 0_u32);
         assert_eq!(
-            SelectDataType::Text("Some text".to_string()).get_raw_data(),
+            DataType::Text("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
         );
-        assert_eq!(
-            SelectDataType::I32(-10_i32).get_raw_data(),
-            (-10_i32).to_string()
-        );
-        assert_eq!(
-            SelectDataType::U32(10_u32).get_raw_data(),
-            10_u32.to_string()
-        );
-        assert_eq!(
-            SelectDataType::I64(-10_i64).get_raw_data(),
-            (-10_i64).to_string()
-        );
-        assert_eq!(
-            SelectDataType::F64(-10_f64).get_raw_data(),
-            (-10_f64).to_string()
-        );
+        assert_eq!(DataType::I32(-10_i32).get_raw_data(), (-10_i32).to_string());
+        assert_eq!(DataType::U32(10_u32).get_raw_data(), 10_u32.to_string());
+        assert_eq!(DataType::I64(-10_i64).get_raw_data(), (-10_i64).to_string());
+        assert_eq!(DataType::F64(-10_f64).get_raw_data(), (-10_f64).to_string());
 
         // Method get_data_type()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(SelectDataType::default().get_data_type(), "String");
-        assert_eq!(
-            SelectDataType::Text(String::new()).get_data_type(),
-            "String"
-        );
-        assert_eq!(SelectDataType::I32(-10_i32).get_data_type(), "i32");
-        assert_eq!(SelectDataType::U32(10_u32).get_data_type(), "u32");
-        assert_eq!(SelectDataType::I64(-10_i64).get_data_type(), "i64");
-        assert_eq!(SelectDataType::F64(-10_f64).get_data_type(), "f64");
+        assert_eq!(DataType::default().get_data_type(), "String");
+        assert_eq!(DataType::Text(String::new()).get_data_type(), "String");
+        assert_eq!(DataType::I32(-10_i32).get_data_type(), "i32");
+        assert_eq!(DataType::U32(10_u32).get_data_type(), "u32");
+        assert_eq!(DataType::I64(-10_i64).get_data_type(), "i64");
+        assert_eq!(DataType::F64(-10_f64).get_data_type(), "f64");
 
         // Method get_enum_type()
         // -----------------------------------------------------------------------------------------
-        assert_eq!(SelectDataType::default().get_enum_type(), "Text");
-        assert_eq!(SelectDataType::Text(String::new()).get_enum_type(), "Text");
-        assert_eq!(SelectDataType::I32(-10_i32).get_enum_type(), "I32");
-        assert_eq!(SelectDataType::U32(10_u32).get_enum_type(), "U32");
-        assert_eq!(SelectDataType::I64(-10_i64).get_enum_type(), "I64");
-        assert_eq!(SelectDataType::F64(-10_f64).get_enum_type(), "F64");
-    }
-
-    // Testing data Types for the `step`,` min` and `max` attributes
-    // *********************************************************************************************
-    #[test]
-    fn test_step_min_max_data_types() {
-        // Method get_raw_data()
-        // -----------------------------------------------------------------------------------------
-        assert_eq!(StepMinMax::default().get_raw_data(), 0_u32.to_string());
-        assert_eq!(
-            StepMinMax::I32(-10_i32).get_raw_data(),
-            (-10_i32).to_string()
-        );
-        assert_eq!(StepMinMax::U32(10_u32).get_raw_data(), 10_u32.to_string());
-        assert_eq!(
-            StepMinMax::I64(-10_i64).get_raw_data(),
-            (-10_i64).to_string()
-        );
-        assert_eq!(
-            StepMinMax::F64(-10_f64).get_raw_data(),
-            (-10_f64).to_string()
-        );
-
-        // Method get_data_type()
-        // -----------------------------------------------------------------------------------------
-        assert_eq!(StepMinMax::default().get_data_type(), "u32");
-        assert_eq!(StepMinMax::I32(-10_i32).get_data_type(), "i32");
-        assert_eq!(StepMinMax::U32(10_u32).get_data_type(), "u32");
-        assert_eq!(StepMinMax::I64(-10_i64).get_data_type(), "i64");
-        assert_eq!(StepMinMax::F64(-10_f64).get_data_type(), "f64");
-
-        // Method get_enum_type()
-        // -----------------------------------------------------------------------------------------
-        assert_eq!(StepMinMax::default().get_enum_type(), "U32");
-        assert_eq!(StepMinMax::I32(-10_i32).get_enum_type(), "I32");
-        assert_eq!(StepMinMax::U32(10_u32).get_enum_type(), "U32");
-        assert_eq!(StepMinMax::I64(-10_i64).get_enum_type(), "I64");
-        assert_eq!(StepMinMax::F64(-10_f64).get_enum_type(), "F64");
+        assert_eq!(DataType::default().get_enum_type(), "Text");
+        assert_eq!(DataType::Text(String::new()).get_enum_type(), "Text");
+        assert_eq!(DataType::I32(-10_i32).get_enum_type(), "I32");
+        assert_eq!(DataType::U32(10_u32).get_enum_type(), "U32");
+        assert_eq!(DataType::I64(-10_i64).get_enum_type(), "I64");
+        assert_eq!(DataType::F64(-10_f64).get_enum_type(), "F64");
     }
 
     // Testing Transport structure
@@ -996,7 +899,7 @@ mod tests {
     #[test]
     fn test_widget() {
         let mut widget: Widget = Default::default();
-        widget.select = vec![(String::new(), SelectDataType::Text(String::new()))];
+        widget.select = vec![(String::new(), DataType::Text(String::new()))];
         // Fields
         // -----------------------------------------------------------------------------------------
         assert_eq!(widget.label, String::new());
@@ -1012,15 +915,15 @@ mod tests {
         assert_eq!(widget.hidden, false);
         assert_eq!(
             widget.step.get_data_type(),
-            StepMinMax::default().get_data_type()
+            DataType::default().get_data_type()
         );
         assert_eq!(
             widget.min.get_data_type(),
-            StepMinMax::default().get_data_type()
+            DataType::default().get_data_type()
         );
         assert_eq!(
             widget.max.get_data_type(),
-            StepMinMax::default().get_data_type()
+            DataType::default().get_data_type()
         );
         assert_eq!(widget.other_attrs, String::new());
         assert_eq!(widget.some_classes, String::new());
@@ -1030,10 +933,7 @@ mod tests {
         // Methods
         // -----------------------------------------------------------------------------------------
         let mut attrs = widget.clean_attrs("").unwrap();
-        attrs.select = vec![(
-            String::new(),
-            SelectDataType::Text(String::new()).get_raw_data(),
-        )];
+        attrs.select = vec![(String::new(), DataType::Text(String::new()).get_raw_data())];
 
         assert_eq!(attrs.id, String::new());
         assert_eq!(attrs.label, String::new());
