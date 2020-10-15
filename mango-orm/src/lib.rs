@@ -104,6 +104,18 @@ mod tests {
         assert!(!re.is_match("0000-01-01T24:00:00"));
         assert!(!re.is_match("0000-01-01T00:60:00"));
         assert!(!re.is_match("0000-01-01T00:00:60"));
+        assert!(!re.is_match("000-01-01T00:00:00"));
+        assert!(!re.is_match("0000-1-01T00:00:00"));
+        assert!(!re.is_match("0000-01-1T00:00:00"));
+        assert!(!re.is_match("0000-01-01T0:00:00"));
+        assert!(!re.is_match("0000-01-01T00:0:00"));
+        assert!(!re.is_match("0000-01-01T00:00:0"));
+        assert!(!re.is_match("00000-01-01T00:00:00"));
+        assert!(!re.is_match("0000-010-01T00:00:00"));
+        assert!(!re.is_match("0000-01-010T00:00:00"));
+        assert!(!re.is_match("0000-01-01T000:00:00"));
+        assert!(!re.is_match("0000-01-01T00:000:00"));
+        assert!(!re.is_match("0000-01-01T00:00:000"));
         assert!(re.is_match("0000-01-01T00:00:00"));
         assert!(re.is_match("9999-12-31T23:59:59"));
         assert!(re.is_match("2020-10-15T11:17:49"));

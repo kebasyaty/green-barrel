@@ -265,6 +265,14 @@ macro_rules! model {
                                  Minimum size 8 characters")?
                         }
                     }
+                    "InputDateTime" => {
+                        let re = RegexBuilder::new(
+                            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
+                        ).build()?;
+                        if !re.is_match(data) {
+                            Err("Example: 0000-01-01T00:00:00")?
+                        }
+                    }
                     _ => return Ok(()),
                 }
                 Ok(())
