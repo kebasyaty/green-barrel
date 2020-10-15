@@ -1437,8 +1437,9 @@ macro_rules! model {
                     let doc = doc!{
                         "database": &meta.database,
                         "collection": &meta.collection,
-                        "fields": FIELD_NAMES.iter().map(|item| item.to_string())
-                            .filter(|item| item != "hash").collect::<Vec<String>>(),
+                        "fields": FIELD_NAMES.iter().map(|field| field.to_string())
+                            .filter(|field| field != "hash" && !ignore_fields.contains(&field.as_str()))
+                            .collect::<Vec<String>>(),
                         "status": true
                     };
                     // Check if there is model state in the database
