@@ -872,7 +872,9 @@ macro_rules! model {
                         FieldType::InputTimeStamp(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputDateTime(_) => { enum_field_type = "InputTimeStamp".to_string(); }
+                                FieldType::InputTimeStamp(_) => {
+                                    enum_field_type = "InputTimeStamp".to_string();
+                                }
                                 _ => panic!("Invalid field type")
                             }
                             if widget.relation_model != String::new() {
