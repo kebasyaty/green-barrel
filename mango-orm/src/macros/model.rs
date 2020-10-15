@@ -107,7 +107,8 @@ macro_rules! model {
                     let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
-                    Err(format!("Model: `{}` -> Method: `form_map()` : Did not receive data from cache.",
+                    Err(format!("Model: `{}` -> Method: `form_map()` : \
+                                Did not receive data from cache.",
                         stringify!($sname)))?
                 }
             }
@@ -140,7 +141,8 @@ macro_rules! model {
                     }
                     Ok(cache.attrs_json.clone())
                 } else {
-                    Err(format!("Model: `{}` -> Method: `form_json()` : Did not receive data from cache.",
+                    Err(format!("Model: `{}` -> Method: `form_json()` : \
+                                Did not receive data from cache.",
                         stringify!($sname)))?
                 }
             }
@@ -179,7 +181,8 @@ macro_rules! model {
                     }
                     Ok(cache.form_html.clone())
                 } else {
-                    Err(format!("Model: `{}` -> Method: `form_html()` : Did not receive data from cache.",
+                    Err(format!("Model: `{}` -> Method: `form_html()` : \
+                                Did not receive data from cache.",
                         stringify!($sname)))?
                 }
             }
