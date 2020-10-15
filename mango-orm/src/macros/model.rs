@@ -373,8 +373,7 @@ macro_rules! model {
                             // ---------------------------------------------------------------------
                             "InputText" | "InputEmail" | "TextArea" | "InputColor" |
                                 "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                                "InputPassword" | "InputDateTime" | "InputDate" |
-                                "InputTimeStamp" => {
+                                "InputPassword" | "InputDateTime" | "InputDate" => {
                                 let field_data: &str = value.as_str().unwrap();
                                 let attrs: &mut Transport =
                                     attrs_map.get_mut(&field_name.to_string()).unwrap();
