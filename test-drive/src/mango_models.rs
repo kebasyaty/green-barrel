@@ -149,7 +149,7 @@ model! {
                     label: "Your password".to_string(),
                     value: FieldType::InputPassword(String::new()),
                     maxlength: 32,
-                    required: false,
+                    required: true,
                     hint: "Enter your password.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Your password"),
                     ..Default::default()
@@ -162,7 +162,7 @@ model! {
                     label: "Confirm password".to_string(),
                     value: FieldType::InputPassword(String::new()),
                     maxlength: 32,
-                    required: false,
+                    required: true,
                     hint: "Confirm your password.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Confirm password"),
                     ..Default::default()
@@ -174,7 +174,7 @@ model! {
                 Widget {
                     label: "Date and Time".to_string(),
                     value: FieldType::InputDateTime(String::new()),
-                    required: false,
+                    required: true,
                     hint: "Enter date and time.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date and time"),
                     ..Default::default()
