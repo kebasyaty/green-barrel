@@ -515,8 +515,11 @@ macro_rules! model {
                                 }
                             }
                             "InputTimeStamp" => {
-                                let field_data: u32 = value.as_i64().unwrap() as u32;
+                                let timestamp: Timestamp = value.as_timestamp().unwrap();
+                                let field_data: u32 = timestamp.time;
                                 attrs.value = field_data.to_string();
+                                doc_res.insert(field_name.to_string(),
+                                    Bson::Timestamp(timestamp));
                             }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
