@@ -115,7 +115,6 @@ mod tests {
         assert!(!re.is_match("0000-01-010T00:00:00"));
         assert!(!re.is_match("0000-01-01T000:00:00"));
         assert!(!re.is_match("0000-01-01T00:000:00"));
-        assert!(!re.is_match("0000-01-01T00:00:00"));
         assert!(!re.is_match("0000/01/01T00:00:00"));
         assert!(!re.is_match("0000-01-01 00:00:00"));
         assert!(!re.is_match("01010000"));
