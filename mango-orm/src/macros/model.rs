@@ -1376,7 +1376,7 @@ macro_rules! model {
                             let mut tmp_doc = doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
-                                if field == &"hash" {
+                                if field == &"hash" || ignore_fields.contains(field) {
                                     continue;
                                 }
                                 // If the field exists, get its value
