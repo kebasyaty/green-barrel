@@ -43,7 +43,7 @@ mod tests {
     // Regular expressions
     // *********************************************************************************************
     #[test]
-    fn regex_color_code() {
+    fn regex_validate_color_code() {
         let re =
             RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
                 .case_insensitive(true)
@@ -65,7 +65,7 @@ mod tests {
     }
 
     #[test]
-    fn regex_password() {
+    fn regex_validate_password() {
         let re = RegexBuilder::new(r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
             .case_insensitive(true)
             .build()
@@ -91,5 +91,10 @@ mod tests {
         assert!(re.is_match(&"0123456789"));
         assert!(re.is_match(&"abcdefghijklmnopqrstuvwxyz"));
         assert!(re.is_match(&"ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+    }
+
+    #[test]
+    fn regex_validate_datetime() {
+        //
     }
 }
