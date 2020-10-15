@@ -345,7 +345,8 @@ macro_rules! model {
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
                             // let field_name: String = field_name.to_string();
-                            let field_type: &str = widget_map.get(&field_name.to_string()).unwrap();
+                            let field_type: &str =
+                                widget_map.get(&field_name.to_string()).unwrap();
                             // Field validation
                             match field_type {
                                 // Validation of text type fields
