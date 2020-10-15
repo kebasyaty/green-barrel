@@ -187,7 +187,7 @@ model! {
                 Widget {
                     label: "Date".to_string(),
                     value: FieldType::InputDate(String::new()),
-                    required: false,
+                    required: true,
                     hint: "Enter date.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date"),
                     ..Default::default()

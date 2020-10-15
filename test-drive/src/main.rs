@@ -36,7 +36,7 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "test_5_@test.test".to_string(),
+        email: "test_1_@test.test".to_string(),
         password: "12345678".to_string(),
         password_confirm: "12345678".to_string(),
         datetime: "2020-10-15T11:17:49".to_string(),
@@ -51,7 +51,6 @@ async fn main() {
     println!("\n{}", data.hash());
     println!("{}", data.bool());
 
-    user.date = String::new();
     let data = user.save(&client, OutputType::Hash).await.unwrap();
     println!("\n{}", data.hash());
     println!("{}", data.bool());
