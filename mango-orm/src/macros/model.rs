@@ -444,7 +444,7 @@ macro_rules! model {
                                     if !stop_err && !ignore_fields.contains(field_name) {
                                         match field_type {
                                             "InputPassword" => {
-                                                if !is_update && field_data.len() > 0 {
+                                                if field_data.len() > 0 {
                                                     // Generate password hash and add to result document
                                                     let hash: String =
                                                         Self::create_password_hash(field_data)?;
