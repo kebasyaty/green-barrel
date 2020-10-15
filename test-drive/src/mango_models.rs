@@ -78,7 +78,8 @@ model! {
         password: String,
         password_confirm: String,
         datetime: String,
-        date: String
+        date: String,
+        imestamp: u32
     }
 
     impl Model for User {
@@ -193,6 +194,18 @@ model! {
                     ..Default::default()
                 },
             );
+            // Timestamp
+            map.insert(
+            "timestamp",
+            Widget {
+                label: "Timestamp".to_string(),
+                value: FieldType::InputTimeStamp(0),
+                required: true,
+                hint: "Enter timestamp.".to_string(),
+                other_attrs: format!("placeholder=\"{}\"", "Enter timestamp"),
+                ..Default::default()
+            },
+        );
             //
             Ok(map)
         }
