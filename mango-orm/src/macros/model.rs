@@ -344,8 +344,8 @@ macro_rules! model {
                         //
                         if value.is_some() {
                             let value: &Bson = value.unwrap();
-                            let field: &String = &field_name.to_string();
-                            let field_type: &str = widget_map.get(field).unwrap();
+                            let field_name: String = field_name.to_string();
+                            let field_type: &str = widget_map.get(&field_name).unwrap();
                             // Field validation
                             match field_type {
                                 // Validation of text type fields
@@ -354,7 +354,8 @@ macro_rules! model {
                                     "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
                                     "InputPassword" | "InputDateTime" => {
                                     let field_data: &str = value.as_str().unwrap();
-                                    let attrs: &mut Transport = attrs_map.get_mut(field).unwrap();
+                                    let attrs: &mut Transport =
+                                        attrs_map.get_mut(&field_name).unwrap();
 
                                     // Validation for a required field
                                     // -------------------------------------------------------------
@@ -370,20 +371,21 @@ macro_rules! model {
                                     // If the field is not required and there is no data in it,
                                     // take data from the database
                                     // -------------------------------------------------------------
-                                    if is_update && !ignore_fields.contains(field_name) &&
+                                    if is_update && !ignore_fields.contains(&field_name.as_str()) &&
                                         ((!attrs.required && field_data.len() == 0) ||
                                         field_type == "InputPassword") {
-                                        let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                        let value_from_db: Option<&Bson> =
+                                            doc_from_db.get(&field_name);
 
                                         if value_from_db.is_some() {
-                                            doc_res.insert(field.to_string(),
+                                            doc_res.insert(&field_name,
                                                 value_from_db.unwrap());
                                             continue;
                                         } else {
                                             Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                                         `check()` : \
                                                         This field is missing from the database.",
-                                                MODEL_NAME, field))?
+                                                MODEL_NAME, &field_name))?
                                         }
                                     }
 
@@ -417,7 +419,7 @@ macro_rules! model {
 
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
-                                        Self::check_unique(is_update, attrs.unique, field,
+                                        Self::check_unique(is_update, attrs.unique, &field_name,
                                             field_data, &coll)
                                             .await.unwrap_or_else(|err| {
                                             stop_err = true;
@@ -439,14 +441,14 @@ macro_rules! model {
 
                                     // Insert result
                                     // -------------------------------------------------------------
-                                    if !stop_err && !ignore_fields.contains(field_name) {
+                                    if !stop_err && !ignore_fields.contains(&field_name.as_str()) {
                                         match field_type {
                                             "InputPassword" => {
                                                 if !is_update && field_data.len() > 0 {
                                                     // Generate password hash and add to result document
                                                     let hash: String =
                                                         Self::create_password_hash(field_data)?;
-                                                    doc_res.insert(field.to_string(),
+                                                    doc_res.insert(field_name,
                                                         Bson::String(hash));
                                                 }
                                             }
@@ -458,14 +460,14 @@ macro_rules! model {
                                                             NaiveDateTime::parse_from_str(
                                                                 field_data, "%Y-%m-%d %H:%M:%S")?,
                                                         Utc);
-                                                    doc_res.insert(field.to_string(),
+                                                    doc_res.insert(field_name,
                                                         Bson::DateTime(dt));
                                                 }
                                             }
                                             _ => {
                                                 // Insert result from other fields
                                                 attrs.value = field_data.to_string();
-                                                doc_res.insert(field.to_string(),
+                                                doc_res.insert(field_name,
                                                     Bson::String(field_data.to_string()));
                                             }
                                         }
