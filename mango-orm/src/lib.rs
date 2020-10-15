@@ -115,15 +115,47 @@ mod tests {
         assert!(!re.is_match("0000-01-010T00:00:00"));
         assert!(!re.is_match("0000-01-01T000:00:00"));
         assert!(!re.is_match("0000-01-01T00:000:00"));
-        assert!(!re.is_match("0000-01-01T00:00:000"));
-        assert!(!re.is_match("0000/01/01T00:00:000"));
+        assert!(!re.is_match("0000-01-01T00:00:00"));
+        assert!(!re.is_match("0000/01/01T00:00:00"));
         assert!(!re.is_match("0000-01-01 00:00:00"));
         assert!(!re.is_match("01010000"));
         assert!(!re.is_match("01/01/0000"));
         assert!(!re.is_match("0000-01-01"));
         assert!(!re.is_match("0000-01-01 00:00"));
+        assert!(!re.is_match("0000-01-01T00:00:00Z"));
         assert!(re.is_match("0000-01-01T00:00:00"));
         assert!(re.is_match("9999-12-31T23:59:59"));
         assert!(re.is_match("2020-10-15T11:17:49"));
+    }
+
+    #[test]
+    fn regex_validate_date() {
+        let re = RegexBuilder::new(
+            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$",
+        )
+        .build()
+        .unwrap();
+        assert!(!re.is_match("0000-00-00"));
+        assert!(!re.is_match("0000-13-01"));
+        assert!(!re.is_match("0000-01-32"));
+        assert!(!re.is_match("000-01-01"));
+        assert!(!re.is_match("0000-1-01"));
+        assert!(!re.is_match("0000-01-1"));
+        assert!(!re.is_match("00000-01-01"));
+        assert!(!re.is_match("0000-010-01"));
+        assert!(!re.is_match("0000-01-010"));
+        assert!(!re.is_match("0000/01/01"));
+        assert!(!re.is_match("01010000"));
+        assert!(!re.is_match("01/01/0000"));
+        assert!(!re.is_match("0000-01-01 00:00"));
+        assert!(!re.is_match("0000-01-01T00:00"));
+        assert!(!re.is_match("0000-01-01 00:00:00"));
+        assert!(!re.is_match("0000-01-01T00:00:00"));
+        assert!(!re.is_match("0000-01-01T00:00:00Z"));
+        assert!(!re.is_match("9999-12-31T23:59:59"));
+        assert!(!re.is_match("2020-10-15T11:17:49"));
+        assert!(re.is_match("0000-01-01"));
+        assert!(re.is_match("9999-12-31"));
+        assert!(re.is_match("2020-10-15"));
     }
 }
