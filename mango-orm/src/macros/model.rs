@@ -454,7 +454,7 @@ macro_rules! model {
                                             }
                                             "InputDateTime" => {
                                                 if field_data.len() > 0 {
-                                                    // Example: "2017-06-01T08:30:00"
+                                                    // Example: "2020-10-15T11:17:49"
                                                     attrs.value = field_data.to_string();
                                                     let dt: DateTime<Utc> =
                                                         DateTime::<Utc>::from_utc(
