@@ -79,7 +79,7 @@ model! {
         password_confirm: String,
         datetime: String,
         date: String,
-        timestamp: u32
+        timestamp: i64
     }
 
     impl Model for User {
