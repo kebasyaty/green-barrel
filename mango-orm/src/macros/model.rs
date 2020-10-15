@@ -368,7 +368,8 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 "InputText" | "InputEmail" | "TextArea" | "InputColor" |
                                     "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                                    "InputPassword" | "InputDateTime" | "InputDate" => {
+                                    "InputPassword" | "InputDateTime" | "InputDate" |
+                                    "InputTimeStamp" => {
                                     let field_data: &str = value.as_str().unwrap();
                                     let attrs: &mut Transport =
                                         attrs_map.get_mut(&field_name.to_string()).unwrap();
@@ -428,7 +429,7 @@ macro_rules! model {
                                                             max: Some(max)}, len) {
                                             stop_err = true;
                                             let msg = format!(
-                                                "Length {}, is out of range (min={} <> max={}).",
+                                                "Length {} is out of range (min={} <> max={}).",
                                                 len, min, max);
                                             attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                         }
