@@ -521,6 +521,27 @@ macro_rules! model {
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
                                 let field_data: i32 = value.as_i32().unwrap();
+                                // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
+                                let min: f64 = attrs.min.parse().unwrap();
+                                let max: f64 = attrs.max.parse().unwrap();
+                                let num: f64 = field_data as f64;
+                                if (min > 0_f64 || max > 0_f64) &&
+                                    !validate_range(Validator::Range{min: Some(min),
+                                                    max: Some(max)}, num) {
+                                    stop_err = true;
+                                    let msg = format!(
+                                        "Number {} is out of range (min={} <> max={}).",
+                                        num, min, max);
+                                    attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                }
+                                // Insert result
+                                // -----------------------------------------------------------------
+                                if !stop_err && !ignore_fields.contains(field_name) {
+                                    attrs.value = field_data.to_string();
+                                    doc_res.insert(field_name.to_string(),
+                                        Bson::Int32(field_data));
+                                }
                             }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
