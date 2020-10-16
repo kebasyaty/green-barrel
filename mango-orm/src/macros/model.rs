@@ -571,6 +571,32 @@ macro_rules! model {
                                         Bson::Int64(field_data));
                                 }
                             }
+                            "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
+                            | "InputRangeF64" | "SelectF64" => {
+                                // Get field value for validation
+                                let field_data: f64 = value.as_f64().unwrap();
+                                // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
+                                let min: f64 = attrs.min.parse().unwrap();
+                                let max: f64 = attrs.max.parse().unwrap();
+                                let num: f64 = field_data.clone();
+                                if (min > 0_f64 || max > 0_f64) &&
+                                    !validate_range(Validator::Range{min: Some(min),
+                                                    max: Some(max)}, num) {
+                                    stop_err = true;
+                                    let msg = format!(
+                                        "Number {} is out of range (min={} <> max={}).",
+                                        num, min, max);
+                                    attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                }
+                                // Insert result
+                                // -----------------------------------------------------------------
+                                if !stop_err && !ignore_fields.contains(field_name) {
+                                    attrs.value = field_data.to_string();
+                                    doc_res.insert(field_name.to_string(),
+                                        Bson::Double(field_data));
+                                }
+                            }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                             `check()` : Unsupported data type.",
