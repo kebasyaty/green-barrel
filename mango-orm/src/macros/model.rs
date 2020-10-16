@@ -1223,7 +1223,7 @@ macro_rules! model {
                         _ => panic!("Service: `{}` -> Model: `{}` -> Field: `{}` : `field_type` - Non-existent field type.",
                         meta.service, MODEL_NAME, field),
                     }
-                    // Checking the values of the fields `step`,` min` and `max`
+                    // Checking the values of the `step`, `min` and `max` attributes
                     match widget.step.get_enum_type() {
                         "I32" => {
                             let step: i32 =  widget.step.get_raw_data().parse().unwrap();
