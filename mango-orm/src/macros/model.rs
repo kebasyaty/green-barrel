@@ -84,7 +84,8 @@ macro_rules! model {
                     let mut widget_map: HashMap<String, String> = HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
-                        widget_map.insert(field.to_string(), widget.value.get_enum_type().to_string());
+                        widget_map.insert(
+                            field.to_string(), widget.value.get_enum_type().to_string());
                     }
                     // Add default data
                     let form_cache = FormCache{
