@@ -687,8 +687,24 @@ macro_rules! model {
                 // Checking for a required field `hash`
                 if !FIELD_NAMES.contains(&"hash") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
-                        `hash`- Required field.",
+                        "Service: `{}` -> Model: `{}` -> Field: `hash` : \
+                        Add a `hash` field to the Model (`String` type).",
+                        meta.service, MODEL_NAME
+                    )
+                }
+                // Reserved field `created`
+                if FIELD_NAMES.contains(&"created") {
+                    panic!(
+                        "Service: `{}` -> Model: `{}` -> Field: `created` : \
+                        This field is reserved.",
+                        meta.service, MODEL_NAME
+                    )
+                }
+                // Reserved field `created`
+                if FIELD_NAMES.contains(&"updated") {
+                    panic!(
+                        "Service: `{}` -> Model: `{}` -> Field: `updated` : \
+                        This field is reserved.",
                         meta.service, MODEL_NAME
                     )
                 }
