@@ -517,6 +517,11 @@ macro_rules! model {
                                     }
                                 }
                             }
+                            "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
+                            | "InputRangeI32" | "SelectI32" => {
+                                // Get field value for validation
+                                let field_data: i32 = value.as_i32().unwrap();
+                            }
                             _ => {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                             `check()` : Unsupported data type.",
