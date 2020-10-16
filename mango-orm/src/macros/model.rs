@@ -1361,7 +1361,10 @@ macro_rules! model {
                                     // If no field exists, get default value
                                     let value = &default_values[field];
                                     tmp_doc.insert(field.to_string(), match value.0 {
-                                        "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
+                                        "InputCheckBoxText" | "InputRadioText" | "InputColor"
+                                        | "InputEmail" | "InputPassword" | "InputTel"
+                                        | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
+                                        | "InputIPv6" | "TextArea" | "SelectText" => {
                                             Bson::String(value.1.clone())
                                         }
                                         "InputDateTime" => {
@@ -1371,7 +1374,10 @@ macro_rules! model {
                                                     r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
                                                 ).build().unwrap();
                                                 if !re.is_match(&val) {
-                                                    panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
+                                                    panic!("Service: `{}` -> Model: `{}` -> \
+                                                            Method: `widgets()` : \
+                                                            Incorrect date and time format. \
+                                                            Example: 0000-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                             } else {
@@ -1391,7 +1397,10 @@ macro_rules! model {
                                                     r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
                                                 ).build().unwrap();
                                                 if !re.is_match(&val) {
-                                                    panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
+                                                    panic!("Service: `{}` -> Model: `{}` -> \
+                                                            Method: `widgets()` : Incorrect date \
+                                                            and time format. Example: \
+                                                            0000-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 val = format!("{}T00:00:00", val);
@@ -1405,13 +1414,18 @@ macro_rules! model {
                                                     &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
                                             Bson::DateTime(dt)
                                         }
-                                        "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32" | "InputRangeI32" | "SelectI32" => {
+                                        "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
+                                        | "InputRangeI32" | "SelectI32" => {
                                             Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
-                                        "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32" | "InputRangeU32" | "SelectU32" | "InputCheckBoxI64" | "InputRadioI64" | "InputNumberI64" | "InputRangeI64" | "SelectI64" => {
+                                        "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
+                                        | "InputRangeU32" | "SelectU32" | "InputCheckBoxI64"
+                                        | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
+                                        | "SelectI64" => {
                                             Bson::Int64(value.1.parse::<i64>().unwrap())
                                         }
-                                        "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64" | "InputRangeF64" | "SelectF64" => {
+                                        "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
+                                        | "InputRangeF64" | "SelectF64" => {
                                             Bson::Double(value.1.parse::<f64>().unwrap())
                                         }
                                         "InputCheckBoxBool" => {
