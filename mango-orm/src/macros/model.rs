@@ -1361,8 +1361,25 @@ macro_rules! model {
                                     // If no field exists, get default value
                                     let value = &default_values[field];
                                     tmp_doc.insert(field.to_string(), match value.0 {
-                                        "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputDate" | "InputDateTime" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
+                                        "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
                                             Bson::String(value.1.clone())
+                                        }
+                                        "InputDateTime" => {
+                                            let val: String = value.1.clone();
+                                            if val.len() == 0 {
+                                                val = "0000-01-01T00:00:00".to_string();
+                                            }
+                                            // Example: "0000-01-01T00:00:00"
+                                            let dt: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &val, "%Y-%m-%dT%H:%M:%S").unwrap(),
+                                            Utc);
+                                            Bson::DateTime(dt)
+
+                                        }
+                                        "InputDate" => {
+                                            //
                                         }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32" | "InputRangeI32" | "SelectI32" => {
                                             Bson::Int32(value.1.parse::<i32>().unwrap())
