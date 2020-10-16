@@ -19,7 +19,6 @@ async fn mango_migration() {
     monitor.refresh().await;
     // Register models
     mango_models::User::migrat(&client, KEYWORD).await;
-    mango_models::Category::migrat(&client, KEYWORD).await;
     // Reorganize databases state
     // (full delete of orphaned collections and databases)
     monitor.napalm().await;
@@ -36,7 +35,7 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "test_7_@test.test".to_string(),
+        email: "test_8_@test.test".to_string(),
         password: "12345678".to_string(),
         password_confirm: "12345678".to_string(),
         datetime: "2020-10-15T11:17:49".to_string(),

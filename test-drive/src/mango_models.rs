@@ -28,49 +28,6 @@ const _SERVICE_NAME: &str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT
 const _DATABASE_NAME: &str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 
 model! {
-    struct Category {
-        hash: String, // Required field
-        title: String
-    }
-
-    impl Model for Category {
-        // Example:
-        // Metadata (database name, collection name, etc)
-        fn meta<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
-            Ok(Meta {
-                service: _SERVICE_NAME.to_string(),
-                database: _DATABASE_NAME.to_string(),
-                ..Default::default()
-            })
-        }
-    }
-
-    impl Form for Category {
-        // Example:
-        // Customizing widgets by model fields
-        // (For `hash` field, Widget is added automatically)
-        fn widgets<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
-            let mut map = HashMap::new();
-            // Title
-            map.insert(
-                "title",
-                Widget {
-                    label: "Category Name".to_string(),
-                    value: FieldType::InputText(String::new()),
-                    maxlength: 40,
-                    required: true,
-                    hint: "Please enter Category name.".to_string(),
-                    other_attrs: format!("placeholder=\"{}\"", "Category Name"),
-                    ..Default::default()
-                },
-            );
-            //
-            Ok(map)
-        }
-    }
-}
-
-model! {
     struct User {
         hash: String, // Required field
         username: String,
