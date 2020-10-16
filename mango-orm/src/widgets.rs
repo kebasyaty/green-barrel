@@ -10,6 +10,7 @@ use serde::Serialize;
 #[derive(PartialEq, Clone, Debug)]
 pub enum FieldType {
     Hash,
+    InputCheckBoxBool(bool),
     InputCheckBoxText(String),
     InputCheckBoxI32(i32),
     InputCheckBoxU32(u32),
@@ -62,6 +63,7 @@ impl FieldType {
     pub fn get_input_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "hidden",
+            Self::InputCheckBoxBool(_) => "checkbox",
             Self::InputCheckBoxText(_) => "checkbox",
             Self::InputCheckBoxI32(_) => "checkbox",
             Self::InputCheckBoxU32(_) => "checkbox",
@@ -108,6 +110,7 @@ impl FieldType {
     pub fn get_raw_data(&self) -> String {
         match self {
             Self::Hash => String::new(),
+            Self::InputCheckBoxBool(data) => data.to_string(),
             Self::InputCheckBoxText(data) => data.to_string(),
             Self::InputCheckBoxI32(data) => data.to_string(),
             Self::InputCheckBoxU32(data) => data.to_string(),
@@ -154,6 +157,7 @@ impl FieldType {
     pub fn get_data_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "String",
+            Self::InputCheckBoxBool(_) => "bool",
             Self::InputCheckBoxText(_) => "String",
             Self::InputCheckBoxI32(_) => "i32",
             Self::InputCheckBoxU32(_) => "i64",
@@ -200,6 +204,7 @@ impl FieldType {
     pub fn get_enum_type<'a>(&self) -> &'a str {
         match self {
             Self::Hash => "Hash",
+            Self::InputCheckBoxBool(_) => "InputCheckBoxBool",
             Self::InputCheckBoxText(_) => "InputCheckBoxText",
             Self::InputCheckBoxI32(_) => "InputCheckBoxI32",
             Self::InputCheckBoxU32(_) => "InputCheckBoxU32",
@@ -438,6 +443,10 @@ mod tests {
         assert_eq!(FieldType::default().get_input_type(), "text");
         assert_eq!(FieldType::Hash.get_input_type(), "hidden");
         assert_eq!(
+            FieldType::InputCheckBoxBool(true).get_input_type(),
+            "checkbox"
+        );
+        assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_input_type(),
             "checkbox"
         );
@@ -521,6 +530,7 @@ mod tests {
         // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::default().get_raw_data(), String::new());
         assert_eq!(FieldType::Hash.get_raw_data(), String::new());
+        assert_eq!(FieldType::InputCheckBoxBool(true).get_raw_data(), "true");
         assert_eq!(
             FieldType::InputCheckBoxText("Some text".to_string()).get_raw_data(),
             "Some text".to_string()
@@ -603,6 +613,7 @@ mod tests {
         // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::default().get_data_type(), "String");
         assert_eq!(FieldType::Hash.get_data_type(), "String");
+        assert_eq!(FieldType::InputCheckBoxBool(true).get_data_type(), "bool");
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_data_type(),
             "String"
@@ -681,6 +692,10 @@ mod tests {
         // -----------------------------------------------------------------------------------------
         assert_eq!(FieldType::default().get_enum_type(), "InputText");
         assert_eq!(FieldType::Hash.get_enum_type(), "Hash");
+        assert_eq!(
+            FieldType::InputCheckBoxBool(true).get_enum_type(),
+            "InputCheckBoxBool"
+        );
         assert_eq!(
             FieldType::InputCheckBoxText(String::new()).get_enum_type(),
             "InputCheckBoxText"
