@@ -1366,9 +1366,7 @@ macro_rules! model {
                                         }
                                         "InputDateTime" => {
                                             let mut val: String = value.1.clone();
-                                            if val.len() == 0 {
-                                                val = "0000-01-01T00:00:00".to_string();
-                                            } else {
+                                            if val.len() > 0 {
                                                 let re = RegexBuilder::new(
                                                     r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
                                                 ).build().unwrap();
@@ -1376,6 +1374,8 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
+                                            } else {
+                                                val = "0000-01-01T00:00:00".to_string();
                                             }
                                             // Example: "0000-01-01T00:00:00"
                                             let dt: DateTime<Utc> =
@@ -1387,6 +1387,13 @@ macro_rules! model {
                                         "InputDate" => {
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
+                                                let re = RegexBuilder::new(
+                                                    r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
+                                                ).build().unwrap();
+                                                if !re.is_match(&val) {
+                                                    panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
+                                                        meta.service, MODEL_NAME)
+                                                }
                                                 val = format!("{}T00:00:00", val);
                                             } else {
                                                 val = "0000-01-01T00:00:00".to_string();
