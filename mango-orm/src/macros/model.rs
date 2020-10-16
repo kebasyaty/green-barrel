@@ -732,7 +732,7 @@ macro_rules! model {
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
                 // Map of default values and value types from `value` attribute -
-                // (String, String) -> index 0 = type ; index 1 = value
+                // (String, String) -> index `0` - `enum type` , index `1` - `value`
                 let mut default_values: HashMap<&str, (&str, String)> = HashMap::new();
 
                 // Checking Widgets
@@ -747,7 +747,7 @@ macro_rules! model {
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, (widget.value.get_data_type(), widget.value.get_raw_data()));
+                    default_values.insert(field, (widget.value.get_enum_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
                         // Hash
@@ -1361,12 +1361,24 @@ macro_rules! model {
                                     // If no field exists, get default value
                                     let value = &default_values[field];
                                     tmp_doc.insert(field.to_string(), match value.0 {
-                                        "String" => Bson::String(value.1.clone()),
-                                        "i32" => Bson::Int32(value.1.parse::<i32>().unwrap()),
-                                        "u32" | "i64" => Bson::Int64(value.1.parse::<i64>().unwrap()),
-                                        "f64" => Bson::Double(value.1.parse::<f64>().unwrap()),
-                                        "bool" => Bson::Boolean(value.1.parse::<bool>().unwrap()),
-                                        "none" => Bson::Null,
+                                        "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputDate" | "InputDateTime" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
+                                            Bson::String(value.1.clone())
+                                        }
+                                        "InputCheckBoxI32" => {
+                                            Bson::Int32(value.1.parse::<i32>().unwrap())
+                                        }
+                                        "u32" | "i64" => {
+                                            Bson::Int64(value.1.parse::<i64>().unwrap())
+                                        }
+                                        "f64" => {
+                                            Bson::Double(value.1.parse::<f64>().unwrap())
+                                        }
+                                        "bool" => {
+                                            Bson::Boolean(value.1.parse::<bool>().unwrap())
+                                        }
+                                        "none" => {
+                                            Bson::Null
+                                        }
                                         _ => {
                                             panic!("Service: `{}` -> Model: `{}` -> Method: \
                                                     `migrat()` : Invalid data type.",
