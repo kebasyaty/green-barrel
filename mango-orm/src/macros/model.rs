@@ -1373,7 +1373,9 @@ macro_rules! model {
                                                     r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
                                                 ).build().unwrap();
                                                 if !re.is_match(&val) {
-                                                    panic!("Incorrect date and time format. Example: 0000-01-01T00:00:00")
+                                                    panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
+                                                        meta.service, MODEL_NAME)
+                                        }
                                                 }
                                             }
                                             // Example: "0000-01-01T00:00:00"
