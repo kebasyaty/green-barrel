@@ -1368,6 +1368,13 @@ macro_rules! model {
                                             let mut val: String = value.1.clone();
                                             if val.len() == 0 {
                                                 val = "0000-01-01T00:00:00".to_string();
+                                            } else {
+                                                let re = RegexBuilder::new(
+                                                    r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
+                                                ).build().unwrap();
+                                                if !re.is_match(&val) {
+                                                    panic!("Incorrect date and time format. Example: 0000-01-01T00:00:00")
+                                                }
                                             }
                                             // Example: "0000-01-01T00:00:00"
                                             let dt: DateTime<Utc> =
