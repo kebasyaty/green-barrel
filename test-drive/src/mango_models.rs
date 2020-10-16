@@ -9,7 +9,7 @@ use mango_orm::{
     widgets::{DataType, FieldType, Transport, Widget},
 };
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson, Timestamp},
+    bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
     options::UpdateModifications,
     results, Client, Collection, Cursor, Database,
 };
@@ -78,8 +78,7 @@ model! {
         password: String,
         password_confirm: String,
         datetime: String,
-        date: String,
-        timestamp: i64
+        date: String
     }
 
     impl Model for User {
@@ -194,18 +193,6 @@ model! {
                     ..Default::default()
                 },
             );
-            // Timestamp
-            map.insert(
-            "timestamp",
-            Widget {
-                label: "Timestamp".to_string(),
-                value: FieldType::InputTimeStamp(0),
-                required: true,
-                hint: "Enter timestamp.".to_string(),
-                other_attrs: format!("placeholder=\"{}\"", "Enter timestamp"),
-                ..Default::default()
-            },
-        );
             //
             Ok(map)
         }
