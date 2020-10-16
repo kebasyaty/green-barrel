@@ -767,7 +767,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputCheckBoxU32(_) => {
                                     enum_field_type = "InputCheckBoxU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::InputCheckBoxI64(_) => {
                                     enum_field_type = "InputCheckBoxI64".to_string();
@@ -910,7 +910,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputNumberU32(_) => {
                                     enum_field_type = "InputNumberU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
                                 FieldType::InputNumberI64(_) => {
@@ -978,7 +978,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputRadioU32(_) => {
                                     enum_field_type = "InputRadioU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::InputRadioI64(_) => {
                                     enum_field_type = "InputRadioI64".to_string();
@@ -1040,7 +1040,7 @@ macro_rules! model {
                                 }
                                 FieldType::InputRangeU32(_) => {
                                     enum_field_type = "InputRangeU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
                                 FieldType::InputRangeI64(_) => {
@@ -1108,7 +1108,7 @@ macro_rules! model {
                                 }
                                 FieldType::SelectU32(_) => {
                                     enum_field_type = "SelectU32".to_string();
-                                    data_field_type = "u32".to_string();
+                                    data_field_type = "i64".to_string();
                                 }
                                 FieldType::SelectI64(_) => {
                                     enum_field_type = "SelectI64".to_string();
@@ -1243,25 +1243,7 @@ macro_rules! model {
                                 }
                             }
                         }
-                        "U32" => {
-                            let step: u32 =  widget.step.get_raw_data().parse().unwrap();
-                            let min: u32 =  widget.min.get_raw_data().parse().unwrap();
-                            let max: u32 =  widget.max.get_raw_data().parse().unwrap();
-                            if step > 0_u32 || min > 0_u32 || max > 0_u32 {
-                                if min > max {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The `min` attribute must not be greater than `max`.",
-                                        meta.service, MODEL_NAME, field
-                                    )
-                                } else if step > 0_u32 && (max - min) % step != 0_u32 {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> widgets : The value of the `step` attribute does not match the condition (max - min) % step == 0.",
-                                        meta.service, MODEL_NAME, field
-                                    )
-                                }
-                            }
-                        }
-                        "I64" => {
+                        "U32" | "I64" => {
                             let step: i64 =  widget.step.get_raw_data().parse().unwrap();
                             let min: i64 =  widget.min.get_raw_data().parse().unwrap();
                             let max: i64 =  widget.max.get_raw_data().parse().unwrap();
