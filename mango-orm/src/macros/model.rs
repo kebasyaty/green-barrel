@@ -1364,6 +1364,26 @@ macro_rules! model {
                                         "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
                                             Bson::String(value.1.clone())
                                         }
+                                        "InputDateTime" => {
+                                            let mut val: String = value.1.clone();
+                                            if val.len() == 0 {
+                                                val = "0000-01-01T00:00:00".to_string();
+                                            } else {
+                                                let re = RegexBuilder::new(
+                                                    r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
+                                                ).build().unwrap();
+                                                if !re.is_match(&val) {
+                                                    panic!("Service: `{}` -> Model: `{}` -> Method: `widgets()` : Incorrect date and time format. Example: 0000-01-01T00:00:00",
+                                                        meta.service, MODEL_NAME)
+                                                }
+                                            }
+                                            // Example: "0000-01-01T00:00:00"
+                                            let dt: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
+                                            Bson::DateTime(dt)
+                                        }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32" | "InputRangeI32" | "SelectI32" => {
                                             Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
