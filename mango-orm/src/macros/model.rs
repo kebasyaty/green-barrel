@@ -1376,12 +1376,9 @@ macro_rules! model {
                                         "InputCheckBoxBool" => {
                                             Bson::Boolean(value.1.parse::<bool>().unwrap())
                                         }
-                                        "none" => {
-                                            Bson::Null
-                                        }
                                         _ => {
                                             panic!("Service: `{}` -> Model: `{}` -> Method: \
-                                                    `migrat()` : Invalid data type.",
+                                                    `migrat()` : Invalid enum type.",
                                                 meta.service, MODEL_NAME)
                                         }
                                     });
