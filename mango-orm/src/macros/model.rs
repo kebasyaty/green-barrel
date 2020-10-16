@@ -742,12 +742,14 @@ macro_rules! model {
                     // Checking for the correct field name
                     if !FIELD_NAMES.contains(&field) {
                         panic!(
-                            "Service: `{}` -> Model: `{}` -> widgets() : `{}` - Incorrect field name.",
+                            "Service: `{}` -> Model: `{}` -> widgets() : \
+                            `{}` - Incorrect field name.",
                             meta.service, MODEL_NAME, field
                         )
                     }
                     // Add in map default value
-                    default_values.insert(field, (widget.value.get_enum_type(), widget.value.get_raw_data()));
+                    default_values.insert(field,
+                        (widget.value.get_enum_type(), widget.value.get_raw_data()));
                     // Checking attribute states
                     match widget.value {
                         // Hash
@@ -1318,7 +1320,8 @@ macro_rules! model {
                     let mango_orm_fnames: Vec<String> = {
                         let model: Document = model.unwrap();
                         let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
-                        fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string()).collect()
+                        fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string())
+                        .collect()
                     };
                     // Check if the set of fields in the collection of the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
