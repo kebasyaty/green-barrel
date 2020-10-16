@@ -1370,7 +1370,7 @@ macro_rules! model {
                                         "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32" | "InputRangeU32" | "SelectU32" | "InputCheckBoxI64" | "InputRadioI64" | "InputNumberI64" | "InputRangeI64" | "SelectI64" => {
                                             Bson::Int64(value.1.parse::<i64>().unwrap())
                                         }
-                                        "f64" => {
+                                        "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64" | "InputRangeF64" | "SelectF64" => {
                                             Bson::Double(value.1.parse::<f64>().unwrap())
                                         }
                                         "bool" => {
