@@ -550,7 +550,6 @@ macro_rules! model {
                                 // Get field value for validation
                                 let field_data: i64 = value.as_i64().unwrap();
                                 // Validation of range (`min` <> `max`)
-                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_data as f64;
@@ -564,7 +563,6 @@ macro_rules! model {
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
-                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_data.to_string();
                                     doc_res.insert(field_name.to_string(),
@@ -576,7 +574,6 @@ macro_rules! model {
                                 // Get field value for validation
                                 let field_data: f64 = value.as_f64().unwrap();
                                 // Validation of range (`min` <> `max`)
-                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_data.clone();
@@ -590,11 +587,20 @@ macro_rules! model {
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
-                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_data.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Double(field_data));
+                                }
+                            }
+                            "InputCheckBoxBool" => {
+                                // Get field value for validation
+                                let field_data: bool = value.as_bool().unwrap();
+                                // Insert result
+                                if !stop_err && !ignore_fields.contains(field_name) {
+                                    attrs.value = field_data.to_string();
+                                    doc_res.insert(field_name.to_string(),
+                                        Bson::Boolean(field_data));
                                 }
                             }
                             _ => {
