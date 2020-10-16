@@ -696,15 +696,15 @@ macro_rules! model {
                 if FIELD_NAMES.contains(&"created") {
                     panic!(
                         "Service: `{}` -> Model: `{}` -> Field: `created` : \
-                        This field is reserved.",
+                        This field is reserved. Solution: Replace with a different name",
                         meta.service, MODEL_NAME
                     )
                 }
-                // Reserved field `created`
+                // Reserved field `updated`
                 if FIELD_NAMES.contains(&"updated") {
                     panic!(
                         "Service: `{}` -> Model: `{}` -> Field: `updated` : \
-                        This field is reserved.",
+                        This field is reserved. Solution: Replace with a different name",
                         meta.service, MODEL_NAME
                     )
                 }
