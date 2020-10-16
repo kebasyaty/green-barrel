@@ -376,9 +376,9 @@ macro_rules! model {
                         match field_type {
                             // Validation of text type fields
                             // ---------------------------------------------------------------------
-                            "InputText" | "InputEmail" | "TextArea" | "InputColor" |
-                                "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" |
-                                "InputPassword" | "InputDateTime" | "InputDate" => {
+                            "InputText" | "InputEmail" | "TextArea" | "InputColor"
+                            | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6"
+                            | "InputPassword" | "InputDateTime" | "InputDate" => {
                                 let field_data: &str = value.as_str().unwrap();
 
                                 // Validation for a required field
