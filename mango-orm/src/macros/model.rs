@@ -1384,6 +1384,20 @@ macro_rules! model {
                                                     &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
                                             Bson::DateTime(dt)
                                         }
+                                        "InputDate" => {
+                                            let mut val: String = value.1.clone();
+                                            if val.len() > 0 {
+                                                val = format!("{}T00:00:00", val);
+                                            } else {
+                                                val = "0000-01-01T00:00:00".to_string();
+                                            }
+                                            // Example: "0000-01-01"
+                                            let dt: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
+                                            Bson::DateTime(dt)
+                                        }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32" | "InputRangeI32" | "SelectI32" => {
                                             Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
