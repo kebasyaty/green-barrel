@@ -1364,7 +1364,7 @@ macro_rules! model {
                                         "InputCheckBoxText" | "InputRadioText" | "InputColor" | "InputDate" | "InputDateTime" | "InputEmail" | "InputPassword" | "InputTel" | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" | "SelectText" => {
                                             Bson::String(value.1.clone())
                                         }
-                                        "InputCheckBoxI32" => {
+                                        "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32" | "InputRangeI32" | "SelectI32" => {
                                             Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
                                         "u32" | "i64" => {
