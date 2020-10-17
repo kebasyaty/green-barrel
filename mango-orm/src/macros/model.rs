@@ -621,7 +621,9 @@ macro_rules! model {
                                     doc_res.insert("created".to_string(), value_from_db.unwrap());
                                     doc_res.insert("updated".to_string(), Bson::DateTime(dt));
                                 } else {
-                                    //
+                                    Err(format!("Model: `{}` -> Field: `created` -> Method: \
+                                                `check()` : Can't get field value from database.",
+                                    MODEL_NAME))?
                                 }
                             }
                         }
