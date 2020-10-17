@@ -1424,6 +1424,7 @@ macro_rules! model {
                 let model: Option<Document> = client.database(&mango_orm_keyword)
                     .collection("models").find_one(filter, None).await.unwrap();
                 if model.is_some() {
+                    // Get a list of fields from the technical database
                     let mango_orm_fnames: Vec<String> = {
                         let model: Document = model.unwrap();
                         let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
