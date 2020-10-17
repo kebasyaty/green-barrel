@@ -815,6 +815,10 @@ macro_rules! model {
                         meta.service, MODEL_NAME
                     )
                 }
+                // Check if ignored fields match model fields
+                for field in ignore_fields.iter() {
+                    //
+                }
                 // List field names without `hash` and other auxiliary fields
                 let field_names_without_auxiliary: Vec<&str> = FIELD_NAMES.iter()
                     .map(|field| field.clone())
