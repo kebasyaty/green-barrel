@@ -1431,7 +1431,8 @@ macro_rules! model {
                         fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string())
                         .collect()
                     };
-                    // Check if the set of fields in the collection of the current Model needs to be updated
+                    // Check if the set of fields in the collection of
+                    // the current Model needs to be updated
                     let mut run_documents_modification: bool = false;
                     if field_names_without_auxiliary.len() != mango_orm_fnames.len() {
                         run_documents_modification = true;
