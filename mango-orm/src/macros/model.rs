@@ -609,7 +609,7 @@ macro_rules! model {
                                     MODEL_NAME, field_name))?
                             }
                         }
-U                        // Insert or update fields for timestamps `created` and `updated`
+                        // Insert or update fields for timestamps `created` and `updated`
                         if !stop_err {
                             let dt: DateTime<Utc> = Utc::now();
                             if !is_update {
