@@ -611,13 +611,20 @@ macro_rules! model {
                         }
                         // Insert or update fields for timestamps `created` and `updated`
                         if !stop_err {
+                            let dt: DateTime<Utc> = Utc::now();
+                            let sec: i64 = dt.timestamp();
+                            let ts = Timestamp::from_le_i64(sec);
                             if !is_update {
-                                let dt: DateTime<Utc> = Utc::now();
-                                let ts: Timestamp = "";
                                 doc_res.insert("created".to_string(), Bson::Timestamp(ts));
                                 doc_res.insert("updated".to_string(), Bson::Timestamp(ts));
                             } else {
-                                //
+                                let value_from_db: Option<&Bson> = doc_from_db.get("created");
+                                if value_from_db.is_some() {
+                                    doc_res.insert("created".to_string(), value_from_db.unwrap());
+                                    doc_res.insert("updated".to_string(), Bson::Timestamp(ts));
+                                } else {
+                                    //
+                                }
                             }
                         }
                     }
