@@ -609,15 +609,21 @@ macro_rules! model {
                                     MODEL_NAME, field_name))?
                             }
                         }
-                        // Insert or update field for timestamp `updated`
+U                        // Insert or update fields for timestamps `created` and `updated`
                         if !stop_err {
                             let dt: DateTime<Utc> = Utc::now();
-                            let sec: i64 = dt.timestamp();
-                            let ts = Timestamp{
-                                time: sec as u32,
-                                increment: 0_u32,
-                            };
-                            doc_res.insert("updated".to_string(), Bson::Timestamp(ts));
+                            if !is_update {
+                                doc_res.insert("created".to_string(), Bson::DateTime(dt));
+                                doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                            } else {
+                                let value_from_db: Option<&Bson> = doc_from_db.get("created");
+                                if value_from_db.is_some() {
+                                    doc_res.insert("created".to_string(), value_from_db.unwrap());
+                                    doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                                } else {
+                                    //
+                                }
+                            }
                         }
                     }
                 } else {
@@ -788,6 +794,14 @@ macro_rules! model {
                     panic!(
                         "Service: `{}` -> Model: `{}` -> Field: `hash` : \
                         Add a `hash` field to the Model (`String` type).",
+                        meta.service, MODEL_NAME
+                    )
+                }
+                // Reserved field `created`
+                if FIELD_NAMES.contains(&"created") {
+                    panic!(
+                        "Service: `{}` -> Model: `{}` -> Field: `created` : \
+                        This field is reserved. Solution - Replace with a different name",
                         meta.service, MODEL_NAME
                     )
                 }
