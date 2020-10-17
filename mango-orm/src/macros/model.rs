@@ -817,7 +817,13 @@ macro_rules! model {
                 }
                 // Check if ignored fields match model fields
                 for field in ignore_fields.iter() {
-                    //
+                    if !FIELD_NAMES.contains(field) {
+                        panic!(
+                            "Service: `{}` -> Model: `{}` : \
+                            The model structure is missing an ignored `{}` field.",
+                            meta.service, MODEL_NAME, field
+                        )
+                    }
                 }
                 // List field names without `hash` and other auxiliary fields
                 let field_names_without_auxiliary: Vec<&str> = FIELD_NAMES.iter()
