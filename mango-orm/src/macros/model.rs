@@ -1473,11 +1473,14 @@ macro_rules! model {
                                 }
                                 // If the field exists, get its value
                                 if doc_from_db.contains_key(field) {
-                                    for item in doc_from_db.iter() {
-                                        if item.0 == field {
-                                            tmp_doc.insert(field.to_string(), item.1);
-                                            break;
-                                        }
+                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    if value_from_db.is_some() {
+                                        tmp_doc.insert(field.to_string(), value_from_db.unwrap());
+                                    } else {
+                                        panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                                Method: `migrat()` : \
+                                                Can't get field value from database.",
+                                            meta.service, MODEL_NAME, field);
                                     }
                                 } else {
                                     // If no field exists, get default value
@@ -1559,6 +1562,26 @@ macro_rules! model {
                                                 meta.service, MODEL_NAME)
                                         }
                                     });
+                                }
+                            }
+                            // Insert fields for timestamps `created` and `updated`
+                            for field in vec!["created", "updated"] {
+                                if doc_from_db.contains_key(field) {
+                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    if value_from_db.is_some() {
+                                        tmp_doc.insert(field.to_string(), value_from_db.unwrap());
+                                    } else {
+                                        panic!("Service: `{}` -> Model: `{}` -> \
+                                                Method: `migrat()` : \
+                                                Cannot get field value from database for \
+                                                field `{}`.",
+                                            meta.service, MODEL_NAME, field);
+                                    }
+                                } else {
+                                    panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
+                                            Key `{}` was not found in the document from \
+                                            the database.",
+                                        meta.service, MODEL_NAME, field);
                                 }
                             }
                             // Save updated document
