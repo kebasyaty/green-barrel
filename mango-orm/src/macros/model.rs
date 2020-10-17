@@ -481,7 +481,7 @@ macro_rules! model {
                                         }
                                         "InputDateTime" => {
                                             if field_data.len() > 0 {
-                                                // Example: "0000-01-01T00:00:00"
+                                                // Example: "1970-01-01T00:00:00"
                                                 attrs.value = field_data.to_string();
                                                 let dt: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
@@ -494,7 +494,7 @@ macro_rules! model {
                                         }
                                         "InputDate" => {
                                             if field_data.len() > 0 {
-                                                // Example: "0000-01-01"
+                                                // Example: "1970-01-01"
                                                 let value = format!("{}T00:00:00",
                                                     field_data.to_string());
                                                 attrs.value = value.clone();
@@ -607,6 +607,17 @@ macro_rules! model {
                                 Err(format!("Model: `{}` -> Field: `{}` -> Method: \
                                             `check()` : Unsupported data type.",
                                     MODEL_NAME, field_name))?
+                            }
+                        }
+                        // Insert or update fields for timestamps `created` and `updated`
+                        if !stop_err {
+                            if !is_update {
+                                let dt: DateTime<Utc> = Utc::now();
+                                let ts: Timestamp = "";
+                                doc_res.insert("created".to_string(), Bson::Timestamp(ts));
+                                doc_res.insert("updated".to_string(), Bson::Timestamp(ts));
+                            } else {
+                                //
                             }
                         }
                     }
@@ -1460,6 +1471,7 @@ macro_rules! model {
                                             Bson::String(value.1.clone())
                                         }
                                         "InputDateTime" => {
+                                            // Example: "1970-01-01T00:00:00"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
@@ -1469,13 +1481,12 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
-                                                            Example: 0000-01-01T00:00:00",
+                                                            Example: 1970-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                             } else {
-                                                val = "0000-01-01T00:00:00".to_string();
+                                                val = "1970-01-01T00:00:00".to_string();
                                             }
-                                            // Example: "0000-01-01T00:00:00"
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
                                                 NaiveDateTime::parse_from_str(
@@ -1483,6 +1494,7 @@ macro_rules! model {
                                             Bson::DateTime(dt)
                                         }
                                         "InputDate" => {
+                                            // Example: "1970-01-01"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
@@ -1492,14 +1504,13 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             and time format. Example: \
-                                                            0000-01-01T00:00:00",
+                                                            1970-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 val = format!("{}T00:00:00", val);
                                             } else {
-                                                val = "0000-01-01T00:00:00".to_string();
+                                                val = "1970-01-01T00:00:00".to_string();
                                             }
-                                            // Example: "0000-01-01"
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
                                                 NaiveDateTime::parse_from_str(
