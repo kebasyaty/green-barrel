@@ -1453,7 +1453,7 @@ macro_rules! model {
                         let mut cursor: Cursor = collection.find(None, None).await.unwrap();
                         // Iterate through all documents in a current (model) collection
                         while let Some(result) = cursor.next().await {
-                            let curr_doc: Document = result.unwrap();
+                            let doc_from_db: Document = result.unwrap();
                             // Create temporary blank document
                             let mut tmp_doc = doc! {};
                             // Loop over all fields of the model
@@ -1462,8 +1462,8 @@ macro_rules! model {
                                     continue;
                                 }
                                 // If the field exists, get its value
-                                if curr_doc.contains_key(field) {
-                                    for item in curr_doc.iter() {
+                                if doc_from_db.contains_key(field) {
+                                    for item in doc_from_db.iter() {
                                         if item.0 == field {
                                             tmp_doc.insert(field.to_string(), item.1);
                                             break;
@@ -1552,7 +1552,7 @@ macro_rules! model {
                                 }
                             }
                             // Save updated document
-                            let query = doc! {"_id": curr_doc.get_object_id("_id").unwrap()};
+                            let query = doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
                             let update = UpdateModifications::Document(tmp_doc);
                             collection.update_one(query, update, None).await.unwrap();
                         }
