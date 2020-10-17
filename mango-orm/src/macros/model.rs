@@ -274,7 +274,7 @@ macro_rules! model {
                             r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
                         ).build()?;
                         if !re.is_match(data) {
-                            Err("Incorrect date and time format.<br>Example: 0000-01-01T00:00:00")?
+                            Err("Incorrect date and time format.<br>Example: 1970-01-01T00:00:00")?
                         }
                     }
                     "InputDate" => {
@@ -282,7 +282,7 @@ macro_rules! model {
                             r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
                         ).build()?;
                         if !re.is_match(data) {
-                            Err("Incorrect date format.<br>Example: 0000-01-01")?
+                            Err("Incorrect date format.<br>Example: 1970-01-01")?
                         }
                     }
                     _ => return Ok(()),
