@@ -613,7 +613,10 @@ macro_rules! model {
                         if !stop_err {
                             let dt: DateTime<Utc> = Utc::now();
                             let sec: i64 = dt.timestamp();
-                            let ts = Timestamp::from_le_i64(sec);
+                            let ts = Timestamp{
+                                time: sec as u32,
+                                increment: 0_u32,
+                            };
                             doc_res.insert("updated".to_string(), Bson::Timestamp(ts));
                         }
                     }
