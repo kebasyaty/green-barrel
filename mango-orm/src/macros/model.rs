@@ -1525,8 +1525,7 @@ macro_rules! model {
                                                 if !re.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
-                                                            and time format. Example: \
-                                                            1900-01-01T00:00",
+                                                            format. Example: 1900-01-01",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 val = format!("{}T00:00", val);
