@@ -481,7 +481,7 @@ macro_rules! model {
                                         }
                                         "InputDateTime" => {
                                             if field_data.len() > 0 {
-                                                // Example: "1970-01-01T00:00:00"
+                                                // Example: "1900-01-01T00:00:00"
                                                 attrs.value = field_data.to_string();
                                                 let dt: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
@@ -494,7 +494,7 @@ macro_rules! model {
                                         }
                                         "InputDate" => {
                                             if field_data.len() > 0 {
-                                                // Example: "1970-01-01"
+                                                // Example: "1900-01-01"
                                                 let value = format!("{}T00:00:00",
                                                     field_data.to_string());
                                                 attrs.value = value.clone();
@@ -1493,7 +1493,7 @@ macro_rules! model {
                                             Bson::String(value.1.clone())
                                         }
                                         "InputDateTime" => {
-                                            // Example: "1970-01-01T00:00:00"
+                                            // Example: "1900-01-01T00:00:00"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
@@ -1516,7 +1516,7 @@ macro_rules! model {
                                             Bson::DateTime(dt)
                                         }
                                         "InputDate" => {
-                                            // Example: "1970-01-01"
+                                            // Example: "1900-01-01"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
