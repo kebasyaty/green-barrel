@@ -271,7 +271,7 @@ macro_rules! model {
                     }
                     "InputDateTime" => {
                         let re = RegexBuilder::new(
-                            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
+                            r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])T([0-1]\d|[2][0-3]):[0-5]\d$"
                         ).build()?;
                         if !re.is_match(data) {
                             Err("Incorrect date and time format.<br>Example: 1970-01-01T00:00:00")?
@@ -279,7 +279,7 @@ macro_rules! model {
                     }
                     "InputDate" => {
                         let re = RegexBuilder::new(
-                            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
+                            r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])$"
                         ).build()?;
                         if !re.is_match(data) {
                             Err("Incorrect date format.<br>Example: 1970-01-01")?
@@ -1497,7 +1497,7 @@ macro_rules! model {
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
-                                                    r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]:[0-5][0-9]$"
+                                                    r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])T([0-1]\d|[2][0-3]):[0-5]\d$"
                                                 ).build().unwrap();
                                                 if !re.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
@@ -1520,7 +1520,7 @@ macro_rules! model {
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
-                                                    r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$"
+                                                    r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])$"
                                                 ).build().unwrap();
                                                 if !re.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \

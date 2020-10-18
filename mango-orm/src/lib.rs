@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn regex_validate_datetime() {
         let re = RegexBuilder::new(
-            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])T([0-1][0-9]|[2][0-3]):[0-5][0-9]$",
+            r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])T([0-1]\d|[2][0-3]):[0-5]\d$",
         )
         .build()
         .unwrap();
@@ -133,11 +133,9 @@ mod tests {
 
     #[test]
     fn regex_validate_date() {
-        let re = RegexBuilder::new(
-            r"^[\d]{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1][0-9]|[2][0-9]|[3][0-1])$",
-        )
-        .build()
-        .unwrap();
+        let re = RegexBuilder::new(r"^\d{4}-([0][1-9]|[1][0-2])-([0][1-9]|[1]\d|[2]\d|[3][0-1])$")
+            .build()
+            .unwrap();
         assert!(!re.is_match("0000-00-00"));
         assert!(!re.is_match("0000-01-01"));
         assert!(!re.is_match("1970-00-00"));
