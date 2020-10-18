@@ -274,7 +274,7 @@ macro_rules! model {
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
                         ).build()?;
                         if !re.is_match(data) {
-                            Err("Incorrect date and time format.<br>Example: 1900-01-01T00:00:00")?
+                            Err("Incorrect date and time format.<br>Example: 1900-01-01T00:00")?
                         }
                     }
                     "InputDate" => {
@@ -486,7 +486,7 @@ macro_rules! model {
                                                 let dt: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
                                                         NaiveDateTime::parse_from_str(
-                                                            field_data, "%Y-%m-%dT%H:%M:%S")?,
+                                                            field_data, "%Y-%m-%dT%H:%M")?,
                                                     Utc);
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::DateTime(dt));
@@ -495,14 +495,14 @@ macro_rules! model {
                                         "InputDate" => {
                                             if field_data.len() > 0 {
                                                 // Example: "1900-01-01"
-                                                let value = format!("{}T00:00:00",
+                                                let value = format!("{}T00:00",
                                                     field_data.to_string());
                                                 attrs.value = value.clone();
                                                 let date: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
                                                         NaiveDateTime::parse_from_str(
                                                             &value.to_string(),
-                                                            "%Y-%m-%dT%H:%M:%S")?,
+                                                            "%Y-%m-%dT%H:%M")?,
                                                     Utc);
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::DateTime(date));
@@ -1503,16 +1503,16 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
-                                                            Example: 1900-01-01T00:00:00",
+                                                            Example: 1900-01-01T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                             } else {
-                                                val = "1900-01-01T00:00:00".to_string();
+                                                val = "1900-01-01T00:00".to_string();
                                             }
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
                                                 NaiveDateTime::parse_from_str(
-                                                    &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
+                                                    &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
                                             Bson::DateTime(dt)
                                         }
                                         "InputDate" => {
@@ -1526,17 +1526,17 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             and time format. Example: \
-                                                            1900-01-01T00:00:00",
+                                                            1900-01-01T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
-                                                val = format!("{}T00:00:00", val);
+                                                val = format!("{}T00:00", val);
                                             } else {
-                                                val = "1900-01-01T00:00:00".to_string();
+                                                val = "1900-01-01T00:00".to_string();
                                             }
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
                                                 NaiveDateTime::parse_from_str(
-                                                    &val, "%Y-%m-%dT%H:%M:%S").unwrap(), Utc);
+                                                    &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
                                             Bson::DateTime(dt)
                                         }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
