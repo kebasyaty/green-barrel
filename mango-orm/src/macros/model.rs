@@ -360,15 +360,15 @@ macro_rules! model {
                             continue;
                         }
                         // Get field value for validation
-                        let value: Option<&Bson> = doc_tmp.get(field_name);
+                        let value_bson: Option<&Bson> = doc_tmp.get(field_name);
                         // Check field value
-                        if value.is_none() {
+                        if value_bson.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
                                         This field is missing.",
                                 MODEL_NAME, field_name))?
                         }
                         //
-                        let value: &Bson = value.unwrap();
+                        let value_bson: &Bson = value_bson.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
@@ -382,16 +382,16 @@ macro_rules! model {
                             | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                             | "InputIPv6" | "TextArea" | "SelectText"
                             | "InputDateTime" | "InputDate" => {
-                                let field_data: &str = value.as_str().unwrap();
+                                let field_value: &str = value_bson.as_str().unwrap();
 
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
-                                if attrs.required && field_data.len() == 0 {
+                                if attrs.required && field_value.len() == 0 {
                                     stop_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
                                             &"Required field.".to_owned()).unwrap();
-                                    attrs.value = field_data.to_string();
+                                    attrs.value = field_value.to_string();
                                     continue;
                                 }
 
@@ -399,7 +399,7 @@ macro_rules! model {
                                 // take data from the database
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name) &&
-                                    ((!attrs.required && field_data.len() == 0) ||
+                                    ((!attrs.required && field_value.len() == 0) ||
                                     field_type == "InputPassword") {
                                     let value_from_db: Option<&Bson> =
                                         doc_from_db.get(&field_name);
@@ -418,7 +418,7 @@ macro_rules! model {
 
                                 // Checking `maxlength`, `min length`, `max length`
                                 // -----------------------------------------------------------------
-                                Self::check_maxlength(attrs.maxlength, field_data)
+                                Self::check_maxlength(attrs.maxlength, field_value)
                                     .unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
@@ -426,14 +426,14 @@ macro_rules! model {
                                 });
 
                                 // -----------------------------------------------------------------
-                                if field_data.len() > 0 {
+                                if field_value.len() > 0 {
                                     // Validation of range (`min` <> `max`)
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
                                     // -------------------------------------------------------------
                                     let min: f64 = attrs.min.parse().unwrap();
                                     let max: f64 = attrs.max.parse().unwrap();
-                                    let len: f64 = field_data.encode_utf16().count() as f64;
+                                    let len: f64 = field_value.encode_utf16().count() as f64;
                                     if (min > 0_f64 || max > 0_f64) &&
                                         !validate_range(Validator::Range{min: Some(min),
                                                         max: Some(max)}, len) {
@@ -447,7 +447,7 @@ macro_rules! model {
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
-                                        &field_name.to_string(), field_data, &coll)
+                                        &field_name.to_string(), field_value, &coll)
                                         .await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
@@ -457,7 +457,7 @@ macro_rules! model {
 
                                     // Validation in regular expression (email, password, etc...)
                                     // -------------------------------------------------------------
-                                    Self::regex_validation(field_type, field_data)
+                                    Self::regex_validation(field_type, field_value)
                                         .unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
@@ -471,32 +471,32 @@ macro_rules! model {
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     match field_type {
                                         "InputPassword" => {
-                                            if field_data.len() > 0 {
+                                            if field_value.len() > 0 {
                                                 // Generate password hash and add to result document
                                                 let hash: String =
-                                                    Self::create_password_hash(field_data)?;
+                                                    Self::create_password_hash(field_value)?;
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::String(hash));
                                             }
                                         }
                                         "InputDateTime" => {
-                                            if field_data.len() > 0 {
+                                            if field_value.len() > 0 {
                                                 // Example: "1970-01-01T00:00"
-                                                attrs.value = field_data.to_string();
+                                                attrs.value = field_value.to_string();
                                                 let dt: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
                                                         NaiveDateTime::parse_from_str(
-                                                            field_data, "%Y-%m-%dT%H:%M")?,
+                                                            field_value, "%Y-%m-%dT%H:%M")?,
                                                     Utc);
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::DateTime(dt));
                                             }
                                         }
                                         "InputDate" => {
-                                            if field_data.len() > 0 {
+                                            if field_value.len() > 0 {
                                                 // Example: "1970-01-01"
                                                 let value = format!("{}T00:00",
-                                                    field_data.to_string());
+                                                    field_value.to_string());
                                                 attrs.value = value.clone();
                                                 let date: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
@@ -510,9 +510,9 @@ macro_rules! model {
                                         }
                                         _ => {
                                             // Insert result from other fields
-                                            attrs.value = field_data.to_string();
+                                            attrs.value = field_value.to_string();
                                             doc_res.insert(field_name.to_string(),
-                                                Bson::String(field_data.to_string()));
+                                                Bson::String(field_value.to_string()));
                                         }
                                     }
                                 }
@@ -520,12 +520,12 @@ macro_rules! model {
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
-                                let field_data: i32 = value.as_i32().unwrap();
+                                let field_value: i32 = value_bson.as_i32().unwrap();
                                 // Validation of range (`min` <> `max`)
                                 // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
-                                let num: f64 = field_data as f64;
+                                let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
@@ -538,9 +538,9 @@ macro_rules! model {
                                 // Insert result
                                 // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
-                                    attrs.value = field_data.to_string();
+                                    attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int32(field_data));
+                                        Bson::Int32(field_value));
                                 }
                             }
                             "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
@@ -548,11 +548,11 @@ macro_rules! model {
                             | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                             | "SelectI64" => {
                                 // Get field value for validation
-                                let field_data: i64 = value.as_i64().unwrap();
+                                let field_value: i64 = value_bson.as_i64().unwrap();
                                 // Validation of range (`min` <> `max`)
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
-                                let num: f64 = field_data as f64;
+                                let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
@@ -564,19 +564,19 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 if !stop_err && !ignore_fields.contains(field_name) {
-                                    attrs.value = field_data.to_string();
+                                    attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int64(field_data));
+                                        Bson::Int64(field_value));
                                 }
                             }
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                             | "InputRangeF64" | "SelectF64" => {
                                 // Get field value for validation
-                                let field_data: f64 = value.as_f64().unwrap();
+                                let field_value: f64 = value_bson.as_f64().unwrap();
                                 // Validation of range (`min` <> `max`)
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
-                                let num: f64 = field_data.clone();
+                                let num: f64 = field_value.clone();
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
@@ -588,19 +588,19 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 if !stop_err && !ignore_fields.contains(field_name) {
-                                    attrs.value = field_data.to_string();
+                                    attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Double(field_data));
+                                        Bson::Double(field_value));
                                 }
                             }
                             "InputCheckBoxBool" => {
                                 // Get field value for validation
-                                let field_data: bool = value.as_bool().unwrap();
+                                let field_value: bool = value_bson.as_bool().unwrap();
                                 // Insert result
                                 if !stop_err && !ignore_fields.contains(field_name) {
-                                    attrs.value = field_data.to_string();
+                                    attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Boolean(field_data));
+                                        Bson::Boolean(field_value));
                                 }
                             }
                             _ => {
