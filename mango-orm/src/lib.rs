@@ -134,6 +134,13 @@ mod tests {
         assert!(!re.is_match("1900-01-01 00:00"));
         assert!(!re.is_match("1900-01-01T00:00Z"));
         assert!(!re.is_match("1901-02-29T00:00"));
+        assert!(!re.is_match("2002-02-29T00:00"));
+        assert!(!re.is_match("2005-02-29T00:00"));
+        assert!(!re.is_match("2009-02-29T00:00"));
+        assert!(!re.is_match("2010-02-29T00:00"));
+        assert!(!re.is_match("2011-02-29T00:00"));
+        assert!(!re.is_match("2019-02-29T00:00"));
+        assert!(!re.is_match("2023-02-29T00:00"));
         assert!(!re.is_match("1900-04-31T00:00"));
         assert!(!re.is_match("1900-06-31T00:00"));
         assert!(!re.is_match("1900-09-31T00:00"));
@@ -141,6 +148,13 @@ mod tests {
         // valids
         assert!(re.is_match("1900-01-31T00:00"));
         assert!(re.is_match("1904-02-29T00:00"));
+        assert!(re.is_match("2000-02-29T00:00"));
+        assert!(re.is_match("2004-02-29T00:00"));
+        assert!(re.is_match("2008-02-29T00:00"));
+        assert!(re.is_match("2012-02-29T00:00"));
+        assert!(re.is_match("2016-02-29T00:00"));
+        assert!(re.is_match("2020-02-29T00:00"));
+        assert!(re.is_match("2024-02-29T00:00"));
         assert!(re.is_match("1900-03-31T00:00"));
         assert!(re.is_match("1900-04-30T00:00"));
         assert!(re.is_match("1900-05-31T00:00"));
