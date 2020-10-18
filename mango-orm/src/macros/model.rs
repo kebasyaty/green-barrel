@@ -200,11 +200,23 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field_name: &String, value: &str,
-                coll: &Collection) -> Result<(), Box<dyn Error>> {
+                is_update: bool, is_unique: bool, field_name: String, value_bson: &Bson,
+                value_type: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
-                    let filter: Document = doc!{ field_name.to_string() : value };
+                    let filter: Document = match value_type {
+                        "str" => {
+                            let field_value: &str = value_bson.as_str().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
+                        "i32" => {
+                            let field_value: i32 = value_bson.as_i32().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
+                        _ => {
+                            Err("???")?
+                        }
+                    };
                     let count: i64 = coll.count_documents(filter, None).await?;
                     if count > 0 {
                         Err("Is not unique.")?
@@ -447,7 +459,7 @@ macro_rules! model {
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
-                                        &field_name.to_string(), field_value, &coll)
+                                        field_name.to_string(), value_bson, "str", &coll)
                                         .await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
@@ -521,6 +533,16 @@ macro_rules! model {
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
                                 let field_value: i32 = value_bson.as_i32().unwrap();
+                                 // Validation of `unique`
+                                // -----------------------------------------------------------------
+                                Self::check_unique(is_update, attrs.unique,
+                                    field_name.to_string(), value_bson, "i32", &coll)
+                                    .await.unwrap_or_else(|err| {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
                                 // Validation of range (`min` <> `max`)
                                 // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
