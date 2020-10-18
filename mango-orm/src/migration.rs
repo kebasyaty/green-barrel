@@ -100,7 +100,8 @@ impl<'a> Monitor<'a> {
                             .drop(None)
                             .await
                             .unwrap();
-                        // Delete a document with a record about the state of the model from the technical base
+                        // Delete a document with a record about the state of
+                        // the model from the technical base
                         let query: Document = bson::doc! {
                             "database": &model_state.database,
                             "collection": &model_state.collection
