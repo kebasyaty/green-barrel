@@ -223,12 +223,12 @@ macro_rules! model {
             }
 
             // Validation in regular expression (email, password, etc...)
-            fn regex_validation(field_type: &str, data: &str) ->
+            fn regex_validation(field_type: &str, value: &str) ->
                 Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 match field_type {
                     "InputEmail" => {
-                        if !validate_email(data) {
+                        if !validate_email(value) {
                             Err("Invalid email address.")?
                         }
                     }
@@ -236,27 +236,27 @@ macro_rules! model {
                         let re = RegexBuilder::new(
                             r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
                             .case_insensitive(true).build()?;
-                        if !re.is_match(data) {
+                        if !re.is_match(value) {
                             Err("Invalid Color code.")?
                         }
                     }
                     "InputUrl" => {
-                        if !validate_url(data) {
+                        if !validate_url(value) {
                             Err("Invalid Url.")?
                         }
                     }
                     "InputIP" => {
-                        if !validate_ip(data) {
+                        if !validate_ip(value) {
                             Err("Invalid IP address.")?
                         }
                     }
                     "InputIPv4" => {
-                        if !validate_ip_v4(data) {
+                        if !validate_ip_v4(value) {
                             Err("Invalid IPv4 address.")?
                         }
                     }
                     "InputIPv6" => {
-                        if !validate_ip_v6(data) {
+                        if !validate_ip_v6(value) {
                             Err("Invalid IPv6 address.")?
                         }
                     }
@@ -264,7 +264,7 @@ macro_rules! model {
                         let re = RegexBuilder::new(
                             r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
                             .case_insensitive(true).build()?;
-                        if !re.is_match(data) {
+                        if !re.is_match(value) {
                             Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
                                  Minimum size 8 characters")?
                         }
@@ -273,7 +273,7 @@ macro_rules! model {
                         let re = RegexBuilder::new(
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
                         ).build()?;
-                        if !re.is_match(data) {
+                        if !re.is_match(value) {
                             Err("Incorrect date and time format.<br>Example: 1900-01-01T00:00")?
                         }
                     }
@@ -281,7 +281,7 @@ macro_rules! model {
                         let re = RegexBuilder::new(
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
                         ).build()?;
-                        if !re.is_match(data) {
+                        if !re.is_match(value) {
                             Err("Incorrect date format.<br>Example: 1900-01-01")?
                         }
                     }
@@ -495,14 +495,13 @@ macro_rules! model {
                                         "InputDate" => {
                                             if field_data.len() > 0 {
                                                 // Example: "1900-01-01"
-                                                let value = format!("{}T00:00",
-                                                    field_data.to_string());
+                                                let value = field_data.to_string();
                                                 attrs.value = value.clone();
                                                 let date: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
                                                         NaiveDateTime::parse_from_str(
                                                             &value.to_string(),
-                                                            "%Y-%m-%dT%H:%M")?,
+                                                            "%Y-%m-%d")?,
                                                     Utc);
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::DateTime(date));
