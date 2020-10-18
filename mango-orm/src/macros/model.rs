@@ -214,7 +214,7 @@ macro_rules! model {
                             doc!{ field_name.to_string() : field_value }
                         }
                         _ => {
-                            Err("???")?
+                            Err("Undefined data type for determining uniqueness.")?
                         }
                     };
                     let count: i64 = coll.count_documents(filter, None).await?;
