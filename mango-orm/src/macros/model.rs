@@ -200,11 +200,11 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field: &String, value: &str,
+                is_update: bool, is_unique: bool, field_name: &String, value: &str,
                 coll: &Collection) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
-                    let filter: Document = doc!{ field.to_string() : value };
+                    let filter: Document = doc!{ field_name.to_string() : value };
                     let count: i64 = coll.count_documents(filter, None).await?;
                     if count > 0 {
                         Err("Is not unique.")?
@@ -291,13 +291,13 @@ macro_rules! model {
             }
 
             // Generate password hash and add to result document
-            pub fn create_password_hash(field_data: &str) -> Result<String, Box<dyn Error>> {
+            pub fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
                     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                             abcdefghijklmnopqrstuvwxyz\
                                             0123456789@#$%^&+=*!~)(";
                     const SALT_LEN: usize = 12;
                     let mut rng = rand::thread_rng();
-                    let password: &[u8] = field_data.as_bytes();
+                    let password: &[u8] = field_value.as_bytes();
                     let salt: String = (0..SALT_LEN)
                         .map(|_| {
                             let idx = rng.gen_range(0, CHARSET.len());
