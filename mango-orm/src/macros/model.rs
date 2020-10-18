@@ -1506,14 +1506,14 @@ macro_rules! model {
                                                             Example: 1900-01-01T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
+                                                let dt: DateTime<Utc> =
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                                Bson::DateTime(dt)
                                             } else {
-                                                val = "1900-01-01T00:00".to_string();
+                                                Bson::Null
                                             }
-                                            let dt: DateTime<Utc> =
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                            Bson::DateTime(dt)
                                         }
                                         "InputDate" => {
                                             // Example: "1900-01-01"
@@ -1530,14 +1530,14 @@ macro_rules! model {
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 val = format!("{}T00:00", val);
+                                                let dt: DateTime<Utc> =
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                                Bson::DateTime(dt)
                                             } else {
-                                                val = "1900-01-01T00:00".to_string();
+                                                Bson::Null
                                             }
-                                            let dt: DateTime<Utc> =
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                            Bson::DateTime(dt)
                                         }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                                         | "InputRangeI32" | "SelectI32" => {
