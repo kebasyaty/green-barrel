@@ -34,8 +34,7 @@ model! {
         email: String,
         password: String,
         password_confirm: String,
-        datetime: String,
-        date: String
+        datetime: String
     }
 
     impl Model for User {
@@ -135,18 +134,6 @@ model! {
                     required: true,
                     hint: "Enter date and time.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date and time"),
-                    ..Default::default()
-                },
-            );
-            // Date
-            map.insert(
-                "date",
-                Widget {
-                    label: "Date".to_string(),
-                    value: FieldType::InputDate(String::new()),
-                    required: true,
-                    hint: "Enter date.".to_string(),
-                    other_attrs: format!("placeholder=\"{}\"", "Enter date"),
                     ..Default::default()
                 },
             );
