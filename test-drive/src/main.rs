@@ -35,7 +35,7 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "test_6_@test.test".to_string(),
+        email: "test_7_@test.test".to_string(),
         password: "12345678".to_string(),
         password_confirm: "12345678".to_string(),
         datetime: "2020-10-16T12:52".to_string(),
