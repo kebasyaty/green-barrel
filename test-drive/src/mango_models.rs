@@ -143,7 +143,7 @@ model! {
                 "date",
                 Widget {
                     label: "Date".to_string(),
-                    value: FieldType::InputDateTime(String::new()),
+                    value: FieldType::InputDate(String::new()),
                     required: true,
                     hint: "Enter date.".to_string(),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date"),
