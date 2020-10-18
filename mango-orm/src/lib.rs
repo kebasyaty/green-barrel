@@ -49,6 +49,7 @@ mod tests {
                 .case_insensitive(true)
                 .build()
                 .unwrap();
+        // valids
         assert!(re.is_match("#f2f2f2"));
         assert!(re.is_match("#F2F2F2"));
         assert!(re.is_match("#fff"));
@@ -61,6 +62,7 @@ mod tests {
         assert!(re.is_match("hsla(170, 23%, 25%, 0.2 )"));
         assert!(re.is_match("0x00ffff"));
         assert!(re.is_match("0x00FFFF"));
+        // invalids
         assert!(!re.is_match("#f2ewq"));
     }
 
@@ -70,6 +72,7 @@ mod tests {
             .case_insensitive(true)
             .build()
             .unwrap();
+        // invalids
         assert!(!re.is_match("1234567"));
         assert!(!re.is_match(&"`".repeat(8)));
         assert!(!re.is_match(&"№".repeat(8)));
@@ -86,6 +89,7 @@ mod tests {
         assert!(!re.is_match(&"?".repeat(8)));
         assert!(!re.is_match(&"/".repeat(8)));
         assert!(!re.is_match(&"  ".repeat(8)));
+        // valids
         assert!(re.is_match(&"zeDKs9LtfrB7Xm2"));
         assert!(re.is_match(&"@#$%^&+=*!~)("));
         assert!(re.is_match(&"0123456789"));
@@ -100,6 +104,7 @@ mod tests {
         )
         .build()
         .unwrap();
+        // invalids
         assert!(!re.is_match("0000-00-00T00:00"));
         assert!(!re.is_match("0000-00-00T00:00Z"));
         assert!(!re.is_match("0000-01-01T00:00"));
@@ -128,6 +133,7 @@ mod tests {
         assert!(!re.is_match("1900-01-01"));
         assert!(!re.is_match("1900-01-01 00:00"));
         assert!(!re.is_match("1900-01-01T00:00Z"));
+        // valids
         assert!(re.is_match("1000-01-01T00:00"));
         assert!(re.is_match("1900-01-01T00:00"));
         assert!(re.is_match("9999-12-31T23:59"));
@@ -141,6 +147,7 @@ mod tests {
         )
             .build()
             .unwrap();
+        // invalids
         assert!(!re.is_match("0000-00-00"));
         assert!(!re.is_match("1900-00-00"));
         assert!(!re.is_match("1900-13-01"));
@@ -163,6 +170,14 @@ mod tests {
         assert!(!re.is_match("1900-01-01T00:00:00Z"));
         assert!(!re.is_match("9999-12-31T23:59:59"));
         assert!(!re.is_match("1900-01-01T00:00"));
+        assert!(!re.is_match("1900-04-31"));
+        // valids
+        assert!(re.is_match("1900-06-31"));
+        assert!(re.is_match("1900-01-31"));
+        assert!(re.is_match("1900-03-31"));
+        assert!(re.is_match("1900-04-30"));
+        assert!(re.is_match("1900-05-31"));
+        assert!(re.is_match("1900-06-30"));
         assert!(re.is_match("1000-01-01"));
         assert!(re.is_match("1900-01-01"));
         assert!(re.is_match("9999-12-31"));
