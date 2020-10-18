@@ -188,7 +188,7 @@ mod tests {
         assert!(re.is_match("1000-01-01T00:00"));
         assert!(re.is_match("1900-01-01T00:00"));
         assert!(re.is_match("9999-12-31T23:59"));
-        assert!(re.is_match("2020-10-15T11:17"));
+        assert!(re.is_match("2020-10-16T12:52"));
     }
 
     #[test]
