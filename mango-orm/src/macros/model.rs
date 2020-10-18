@@ -213,6 +213,18 @@ macro_rules! model {
                             let field_value: i32 = value_bson.as_i32().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
+                        "i64" => {
+                            let field_value: i64 = value_bson.as_i64().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
+                        "f64" => {
+                            let field_value: f64 = value_bson.as_f64().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
+                        "bool" => {
+                            let field_value: bool = value_bson.as_bool().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
                         _ => {
                             Err("Undefined data type for determining uniqueness.")?
                         }
@@ -571,6 +583,16 @@ macro_rules! model {
                             | "SelectI64" => {
                                 // Get field value for validation
                                 let field_value: i64 = value_bson.as_i64().unwrap();
+                                // Validation of `unique`
+                                // -----------------------------------------------------------------
+                                Self::check_unique(is_update, attrs.unique,
+                                    field_name.to_string(), value_bson, "i64", &coll)
+                                    .await.unwrap_or_else(|err| {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
                                 // Validation of range (`min` <> `max`)
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
@@ -595,6 +617,16 @@ macro_rules! model {
                             | "InputRangeF64" | "SelectF64" => {
                                 // Get field value for validation
                                 let field_value: f64 = value_bson.as_f64().unwrap();
+                                // Validation of `unique`
+                                // -----------------------------------------------------------------
+                                Self::check_unique(is_update, attrs.unique,
+                                    field_name.to_string(), value_bson, "f64", &coll)
+                                    .await.unwrap_or_else(|err| {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
                                 // Validation of range (`min` <> `max`)
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
@@ -618,6 +650,16 @@ macro_rules! model {
                             "InputCheckBoxBool" => {
                                 // Get field value for validation
                                 let field_value: bool = value_bson.as_bool().unwrap();
+                                // Validation of `unique`
+                                // -----------------------------------------------------------------
+                                Self::check_unique(is_update, attrs.unique,
+                                    field_name.to_string(), value_bson, "bool", &coll)
+                                    .await.unwrap_or_else(|err| {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
                                 // Insert result
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
