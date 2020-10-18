@@ -495,13 +495,14 @@ macro_rules! model {
                                         "InputDate" => {
                                             if field_data.len() > 0 {
                                                 // Example: "1970-01-01"
-                                                let value = field_data.to_string();
+                                                let value = format!("{}T00:00",
+                                                    field_data.to_string());
                                                 attrs.value = value.clone();
                                                 let date: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
                                                         NaiveDateTime::parse_from_str(
                                                             &value.to_string(),
-                                                            "%Y-%m-%d")?,
+                                                            "%Y-%m-%dT%H:%M")?,
                                                     Utc);
                                                 doc_res.insert(field_name.to_string(),
                                                     Bson::DateTime(date));
@@ -1527,10 +1528,11 @@ macro_rules! model {
                                                             format. Example: 1970-01-01",
                                                         meta.service, MODEL_NAME)
                                                 }
+                                                let val = format!("{}T00:00", val);
                                                 let dt: DateTime<Utc> =
                                                 DateTime::<Utc>::from_utc(
                                                     NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%d").unwrap(), Utc);
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
                                                 Bson::DateTime(dt)
                                             } else {
                                                 Bson::Null
