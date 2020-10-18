@@ -102,7 +102,8 @@ mod tests {
         .unwrap();
         assert!(!re.is_match("0000-00-00T00:00"));
         assert!(!re.is_match("0000-00-00T00:00Z"));
-        assert!(!re.is_match("0000-01-01T00:00:00"));
+        assert!(!re.is_match("0000-01-01T00:00"));
+        assert!(!re.is_match("1970-01-01T00:00:00"));
         assert!(!re.is_match("1970-00-00T00:00"));
         assert!(!re.is_match("1970-13-01T00:00"));
         assert!(!re.is_match("1970-01-32T00:00"));
