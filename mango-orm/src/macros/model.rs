@@ -274,7 +274,7 @@ macro_rules! model {
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
                         ).build()?;
                         if !re.is_match(data) {
-                            Err("Incorrect date and time format.<br>Example: 1970-01-01T00:00:00")?
+                            Err("Incorrect date and time format.<br>Example: 1900-01-01T00:00:00")?
                         }
                     }
                     "InputDate" => {
@@ -282,7 +282,7 @@ macro_rules! model {
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
                         ).build()?;
                         if !re.is_match(data) {
-                            Err("Incorrect date format.<br>Example: 1970-01-01")?
+                            Err("Incorrect date format.<br>Example: 1900-01-01")?
                         }
                     }
                     _ => return Ok(()),
@@ -1503,11 +1503,11 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
-                                                            Example: 1970-01-01T00:00:00",
+                                                            Example: 1900-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                             } else {
-                                                val = "1970-01-01T00:00:00".to_string();
+                                                val = "1900-01-01T00:00:00".to_string();
                                             }
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
@@ -1526,12 +1526,12 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             and time format. Example: \
-                                                            1970-01-01T00:00:00",
+                                                            1900-01-01T00:00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 val = format!("{}T00:00:00", val);
                                             } else {
-                                                val = "1970-01-01T00:00:00".to_string();
+                                                val = "1900-01-01T00:00:00".to_string();
                                             }
                                             let dt: DateTime<Utc> =
                                             DateTime::<Utc>::from_utc(
