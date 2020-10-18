@@ -120,9 +120,11 @@ mod tests {
         assert!(!re.is_match("1970-01-01T000:00"));
         assert!(!re.is_match("1970-01-01T00:000"));
         assert!(!re.is_match("1970/01/01T00:00"));
+        assert!(!re.is_match("1970.01.01T00:00"));
         assert!(!re.is_match("1970-01-01 00:00"));
-        assert!(!re.is_match("01010000"));
-        assert!(!re.is_match("01/01/0000"));
+        assert!(!re.is_match("01011970"));
+        assert!(!re.is_match("01/01/1970"));
+        assert!(!re.is_match("01.01.1970"));
         assert!(!re.is_match("1970-01-01"));
         assert!(!re.is_match("1970-01-01 00:00"));
         assert!(!re.is_match("1970-01-01T00:00Z"));
@@ -141,6 +143,7 @@ mod tests {
         assert!(!re.is_match("0000-00-00"));
         assert!(!re.is_match("0000-01-01"));
         assert!(!re.is_match("1970-00-00"));
+        assert!(!re.is_match("1969-01-01"));
         assert!(!re.is_match("1970-13-01"));
         assert!(!re.is_match("1970-01-32"));
         assert!(!re.is_match("197-01-01"));
@@ -150,8 +153,10 @@ mod tests {
         assert!(!re.is_match("1970-010-01"));
         assert!(!re.is_match("1970-01-010"));
         assert!(!re.is_match("1970/01/01"));
+        assert!(!re.is_match("1970.01.01"));
         assert!(!re.is_match("01011970"));
         assert!(!re.is_match("01/01/1970"));
+        assert!(!re.is_match("01.01.1970"));
         assert!(!re.is_match("1970-01-01 00:00"));
         assert!(!re.is_match("1970-01-01T00:00"));
         assert!(!re.is_match("1970-01-01 00:00"));
