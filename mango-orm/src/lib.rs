@@ -133,12 +133,14 @@ mod tests {
         assert!(!re.is_match("1900-01-01"));
         assert!(!re.is_match("1900-01-01 00:00"));
         assert!(!re.is_match("1900-01-01T00:00Z"));
+        assert!(!re.is_match("1901-02-29T00:00"));
         assert!(!re.is_match("1900-04-31T00:00"));
         assert!(!re.is_match("1900-06-31T00:00"));
         assert!(!re.is_match("1900-09-31T00:00"));
         assert!(!re.is_match("1900-11-31T00:00"));
         // valids
         assert!(re.is_match("1900-01-31T00:00"));
+        assert!(re.is_match("1904-02-29T00:00"));
         assert!(re.is_match("1900-03-31T00:00"));
         assert!(re.is_match("1900-04-30T00:00"));
         assert!(re.is_match("1900-05-31T00:00"));
