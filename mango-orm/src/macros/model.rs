@@ -191,8 +191,8 @@ macro_rules! model {
             // Validation of database queries
             // *************************************************************************************
             // Validation of `maxlength`
-            fn check_maxlength(maxlength: usize, data: &str ) -> Result<(), Box<dyn Error>>  {
-                if maxlength > 0 && data.encode_utf16().count() > maxlength {
+            fn check_maxlength(maxlength: usize, value: &str ) -> Result<(), Box<dyn Error>>  {
+                if maxlength > 0 && value.encode_utf16().count() > maxlength {
                     Err(format!("Exceeds limit, maxlength={}.", maxlength))?
                 }
                 Ok(())
@@ -200,11 +200,11 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field: &String, data: &str,
+                is_update: bool, is_unique: bool, field: &String, value: &str,
                 coll: &Collection) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
-                    let filter: Document = doc!{ field.to_string() : data };
+                    let filter: Document = doc!{ field.to_string() : value };
                     let count: i64 = coll.count_documents(filter, None).await?;
                     if count > 0 {
                         Err("Is not unique.")?
