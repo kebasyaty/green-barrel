@@ -551,6 +551,21 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
+                                        // Validation of `unique`
+                                        // ---------------------------------------------------------
+                                        let value_type: &str = if field_type == "InputDateTime" {
+                                            "datetime"
+                                        } else {
+                                            "date"
+                                        };
+                                        Self::check_unique(is_update, attrs.unique,
+                                            field_name.to_string(), value_bson, value_type, &coll)
+                                            .await.unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                                Self::accumula_err(&attrs, &err.to_string())
+                                                    .unwrap();
+                                        });
                                     }
                                     // Insert result
                                     // -------------------------------------------------------------
