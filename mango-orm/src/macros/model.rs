@@ -536,7 +536,7 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                        // Get datetime bson type
+                                        // Get datetime in bson type
                                         // ---------------------------------------------------------
                                         let field_value: String = if field_type == "InputDate" {
                                             format!("{}T00:00", field_value.to_string())
