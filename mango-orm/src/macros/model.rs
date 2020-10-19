@@ -210,23 +210,6 @@ macro_rules! model {
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
                             doc!{ field_name.to_string() : Bson::Int64(field_value) }
                         }
-                        "date" => {
-                            let field_value: &str = value_bson_pre.as_str().unwrap();
-                            let date: DateTime<Utc> =
-                                DateTime::<Utc>::from_utc(
-                                    NaiveDateTime::parse_from_str(
-                                        &format!("{}T00:00", field_value),
-                                        "%Y-%m-%dT%H:%M")?, Utc);
-                            doc!{ field_name.to_string() : Bson::DateTime(date) }
-                        }
-                        "datetime" => {
-                            let field_value: &str = value_bson_pre.as_str().unwrap();
-                            let dt: DateTime<Utc> =
-                                DateTime::<Utc>::from_utc(
-                                    NaiveDateTime::parse_from_str(
-                                        field_value, "%Y-%m-%dT%H:%M")?, Utc);
-                            doc!{ field_name.to_string() : Bson::DateTime(dt) }
-                        }
                         _ => {
                             doc!{ field_name.to_string() : value_bson_pre }
                         }
@@ -553,64 +536,40 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
+                                        // Get datetime bson type
+                                        // ---------------------------------------------------------
+                                        let field_value: &str = if field_type == "InputDate" {
+                                            &format!("{}T00:00", field_value.to_string())
+                                        } else {
+                                            field_value
+                                        };
+                                        let dt: DateTime<Utc> =
+                                        DateTime::<Utc>::from_utc(
+                                            NaiveDateTime::parse_from_str(
+                                                field_value, "%Y-%m-%dT%H:%M")?, Utc);
+                                        let dt_bson: Bson = Bson::DateTime(dt);
+
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
-                                        let value_type: &str = if field_type == "InputDate" {
-                                            "date"
-                                        } else {
-                                            "datetime"
-                                        };
                                         Self::check_unique(is_update, attrs.unique,
-                                            field_name.to_string(), value_bson_pre
-                                            ,value_type, &coll)
+                                            field_name.to_string(), &dt_bson
+                                            , "datetime", &coll)
                                             .await.unwrap_or_else(|err| {
                                             stop_err = true;
                                             attrs.error =
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                    }
-                                    // Insert result
-                                    // -------------------------------------------------------------
-                                    if !stop_err && !ignore_fields.contains(field_name) {
-                                        match field_type {
-                                            "InputDate" => {
-                                                if field_value.len() > 0 {
-                                                    // Example: "1970-02-28"
-                                                    let value = format!("{}T00:00",
-                                                        field_value.to_string());
-                                                    attrs.value = value.clone();
-                                                    let date: DateTime<Utc> =
-                                                        DateTime::<Utc>::from_utc(
-                                                            NaiveDateTime::parse_from_str(
-                                                                &value.to_string(),
-                                                                "%Y-%m-%dT%H:%M")?,
-                                                        Utc);
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::DateTime(date));
-                                                } else {
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::Null);
-                                                }
-                                            }
-                                            "InputDateTime" => {
-                                                if field_value.len() > 0 {
-                                                    // Example: "1970-02-28T00:00"
-                                                    attrs.value = field_value.to_string();
-                                                    let dt: DateTime<Utc> =
-                                                        DateTime::<Utc>::from_utc(
-                                                            NaiveDateTime::parse_from_str(
-                                                                field_value, "%Y-%m-%dT%H:%M")?,
-                                                        Utc);
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::DateTime(dt));
-                                                } else {
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::Null);
-                                                }
-                                            }
-                                            _ => {}
+                                        // Insert result
+                                        // ---------------------------------------------------------
+                                        if !stop_err {
+                                            doc_res.insert(field_name.to_string(), dt_bson);
+                                        } else {
+                                            doc_res.insert(field_name.to_string(), Bson::Null);
                                         }
+                                    } else {
+                                        // Insert result
+                                        doc_res.insert(field_name.to_string(), Bson::Null);
                                     }
                                 }
                             }
