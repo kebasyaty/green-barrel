@@ -1123,6 +1123,8 @@ macro_rules! model {
                                         meta.service, MODEL_NAME, field
                                     )
                             } else {
+                                let date_min: String = widget.min.get_raw_data();
+                                let date_max: String = widget.max.get_raw_data();
                                 match widget.value {
                                     FieldType::InputDate(value) => {
                                         // Example: "1970-02-28"
