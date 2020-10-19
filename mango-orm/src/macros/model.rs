@@ -200,37 +200,37 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field_name: String, value_bson: &Bson,
+                is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &Bson,
                 value_type: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
                     let filter: Document = match value_type {
                         "str" => {
-                            let field_value: &str = value_bson.as_str().unwrap();
+                            let field_value: &str = value_bson_pre.as_str().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "i32" => {
-                            let field_value: i32 = value_bson.as_i32().unwrap();
+                            let field_value: i32 = value_bson_pre.as_i32().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "i64" => {
-                            let field_value: i64 = value_bson.as_i64().unwrap();
+                            let field_value: i64 = value_bson_pre.as_i64().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "f64" => {
-                            let field_value: f64 = value_bson.as_f64().unwrap();
+                            let field_value: f64 = value_bson_pre.as_f64().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "bool" => {
-                            let field_value: bool = value_bson.as_bool().unwrap();
+                            let field_value: bool = value_bson_pre.as_bool().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "date" => {
-                            let field_value: &str = value_bson.as_str().unwrap();
+                            let field_value: &str = value_bson_pre.as_str().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "datetime" => {
-                            let field_value: &str = value_bson.as_str().unwrap();
+                            let field_value: &str = value_bson_pre.as_str().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         _ => {
@@ -392,15 +392,15 @@ macro_rules! model {
                             continue;
                         }
                         // Get field value for validation
-                        let value_bson: Option<&Bson> = doc_pre.get(field_name);
+                        let value_bson_pre: Option<&Bson> = doc_pre.get(field_name);
                         // Check field value
-                        if value_bson.is_none() {
+                        if value_bson_pre.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
                                         This field is missing.",
                                 MODEL_NAME, field_name))?
                         }
                         //
-                        let value_bson: &Bson = value_bson.unwrap();
+                        let value_bson_pre: &Bson = value_bson_pre.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
@@ -413,7 +413,7 @@ macro_rules! model {
                             | "InputEmail" | "InputPassword" | "InputTel"
                             | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                             | "InputIPv6" | "TextArea" | "SelectText" => {
-                                let field_value: &str = value_bson.as_str().unwrap();
+                                let field_value: &str = value_bson_pre.as_str().unwrap();
 
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
@@ -478,7 +478,7 @@ macro_rules! model {
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
-                                        field_name.to_string(), value_bson, "str", &coll)
+                                        field_name.to_string(), value_bson_pre, "str", &coll)
                                         .await.unwrap_or_else(|err| {
                                         stop_err = true;
                                         attrs.error =
@@ -520,7 +520,7 @@ macro_rules! model {
                                 }
                             }
                             "InputDate" | "InputDateTime" => {
-                                let field_value: &str = value_bson.as_str().unwrap();
+                                let field_value: &str = value_bson_pre.as_str().unwrap();
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
                                 if attrs.required && field_value.len() == 0 {
@@ -567,7 +567,8 @@ macro_rules! model {
                                             "datetime"
                                         };
                                         Self::check_unique(is_update, attrs.unique,
-                                            field_name.to_string(), value_bson, value_type, &coll)
+                                            field_name.to_string(), value_bson_pre
+                                            ,value_type, &coll)
                                             .await.unwrap_or_else(|err| {
                                             stop_err = true;
                                             attrs.error =
@@ -622,11 +623,11 @@ macro_rules! model {
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
-                                let field_value: i32 = value_bson.as_i32().unwrap();
+                                let field_value: i32 = value_bson_pre.as_i32().unwrap();
                                  // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
-                                    field_name.to_string(), value_bson, "i32", &coll)
+                                    field_name.to_string(), value_bson_pre, "i32", &coll)
                                     .await.unwrap_or_else(|err| {
                                     stop_err = true;
                                     attrs.error =
@@ -660,11 +661,11 @@ macro_rules! model {
                             | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                             | "SelectI64" => {
                                 // Get field value for validation
-                                let field_value: i64 = value_bson.as_i64().unwrap();
+                                let field_value: i64 = value_bson_pre.as_i64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
-                                    field_name.to_string(), value_bson, "i64", &coll)
+                                    field_name.to_string(), value_bson_pre, "i64", &coll)
                                     .await.unwrap_or_else(|err| {
                                     stop_err = true;
                                     attrs.error =
@@ -694,11 +695,11 @@ macro_rules! model {
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                             | "InputRangeF64" | "SelectF64" => {
                                 // Get field value for validation
-                                let field_value: f64 = value_bson.as_f64().unwrap();
+                                let field_value: f64 = value_bson_pre.as_f64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
-                                    field_name.to_string(), value_bson, "f64", &coll)
+                                    field_name.to_string(), value_bson_pre, "f64", &coll)
                                     .await.unwrap_or_else(|err| {
                                     stop_err = true;
                                     attrs.error =
@@ -727,11 +728,11 @@ macro_rules! model {
                             }
                             "InputCheckBoxBool" => {
                                 // Get field value for validation
-                                let field_value: bool = value_bson.as_bool().unwrap();
+                                let field_value: bool = value_bson_pre.as_bool().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
-                                    field_name.to_string(), value_bson, "bool", &coll)
+                                    field_name.to_string(), value_bson_pre, "bool", &coll)
                                     .await.unwrap_or_else(|err| {
                                     stop_err = true;
                                     attrs.error =
