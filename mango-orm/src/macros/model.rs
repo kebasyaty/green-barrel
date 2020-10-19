@@ -1126,11 +1126,43 @@ macro_rules! model {
                                 let date_min: String = widget.min.get_raw_data();
                                 let date_max: String = widget.max.get_raw_data();
                                 match widget.value {
-                                    FieldType::InputDate(value) => {
+                                    FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
+                                        let re = RegexBuilder::new(
+                                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
+                                        ).build().unwrap();
+                                        if !re.is_match(&date_min) {
+                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `min` : \
+                                                    Incorrect date format. Example: 1970-02-28",
+                                                meta.service, MODEL_NAME)
+                                        }
+                                        if !re.is_match(&date_max) {
+                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `min` : \
+                                                    Incorrect date format. Example: 1970-02-28",
+                                                meta.service, MODEL_NAME)
+                                        }
                                     }
                                     FieldType::InputDateTime(value) => {
                                         // Example: "1970-02-28T00:00"
+                                        let re = RegexBuilder::new(
+                                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
+                                        ).build().unwrap();
+                                        if !re.is_match(&date_min) {
+                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `min` : \
+                                                    Incorrect date format. \
+                                                    Example: 1970-02-28T00:00",
+                                                meta.service, MODEL_NAME)
+                                        }
+                                        if !re.is_match(&date_max) {
+                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `min` : \
+                                                    Incorrect date format. \
+                                                    Example: 1970-02-28T00:00",
+                                                meta.service, MODEL_NAME)
+                                        }
                                     }
                                     _ => {
                                         panic!("Invalid field type")
