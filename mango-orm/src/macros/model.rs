@@ -225,11 +225,11 @@ macro_rules! model {
                             let field_value: bool = value_bson.as_bool().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
-                        "datetime" => {
+                        "date" => {
                             let field_value: &str = value_bson.as_str().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
-                        "date" => {
+                        "datetime" => {
                             let field_value: &str = value_bson.as_str().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
@@ -301,20 +301,20 @@ macro_rules! model {
                                  Minimum size 8 characters")?
                         }
                     }
-                    "InputDateTime" => {
-                        let re = RegexBuilder::new(
-                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                        ).build()?;
-                        if !re.is_match(value) {
-                            Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
-                        }
-                    }
                     "InputDate" => {
                         let re = RegexBuilder::new(
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
                         ).build()?;
                         if !re.is_match(value) {
                             Err("Incorrect date format.<br>Example: 1970-02-28")?
+                        }
+                    }
+                    "InputDateTime" => {
+                        let re = RegexBuilder::new(
+                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
+                        ).build()?;
+                        if !re.is_match(value) {
+                            Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
                         }
                     }
                     _ => return Ok(()),
@@ -519,7 +519,7 @@ macro_rules! model {
                                     }
                                 }
                             }
-                            "InputDateTime" | "InputDate" => {
+                            "InputDate" | "InputDateTime" => {
                                 let field_value: &str = value_bson.as_str().unwrap();
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
@@ -561,10 +561,10 @@ macro_rules! model {
                                         });
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
-                                        let value_type: &str = if field_type == "InputDateTime" {
-                                            "datetime"
-                                        } else {
+                                        let value_type: &str = if field_type == "InputDate" {
                                             "date"
+                                        } else {
+                                            "datetime"
                                         };
                                         Self::check_unique(is_update, attrs.unique,
                                             field_name.to_string(), value_bson, value_type, &coll)
