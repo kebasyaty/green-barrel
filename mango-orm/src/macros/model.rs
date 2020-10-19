@@ -1103,7 +1103,7 @@ macro_rules! model {
                         // InputDateTime
                         // ( Additional verification )
                         // -------------------------------------------------------------------------
-                        FieldType::InputDate(_) | FieldType::InputDateTime(_) {
+                        FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
                             if widget.min.get_enum_type() != "Text"
                                 || widget.max.get_enum_type() != "Text" {
                                 panic!(
