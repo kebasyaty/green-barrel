@@ -227,12 +227,20 @@ macro_rules! model {
                         }
                         "date" => {
                             let field_value: &str = value_bson_pre.as_str().unwrap();
-                            let field_value = format!("{}T00:00", field_value);
-                            doc!{ field_name.to_string() : field_value }
+                            let date: DateTime<Utc> =
+                                DateTime::<Utc>::from_utc(
+                                    NaiveDateTime::parse_from_str(
+                                        &format!("{}T00:00", field_value),
+                                        "%Y-%m-%dT%H:%M")?, Utc);
+                            doc!{ field_name.to_string() : Bson::DateTime(date) }
                         }
                         "datetime" => {
                             let field_value: &str = value_bson_pre.as_str().unwrap();
-                            doc!{ field_name.to_string() : field_value }
+                            let dt: DateTime<Utc> =
+                                DateTime::<Utc>::from_utc(
+                                    NaiveDateTime::parse_from_str(
+                                        field_value, "%Y-%m-%dT%H:%M")?, Utc);
+                            doc!{ field_name.to_string() : Bson::DateTime(dt) }
                         }
                         _ => {
                             Err("Undefined data type for determining uniqueness.")?
