@@ -548,7 +548,6 @@ macro_rules! model {
                                             NaiveDateTime::parse_from_str(
                                                 &field_value, "%Y-%m-%dT%H:%M")?, Utc);
                                         let dt_bson: Bson = Bson::DateTime(dt);
-
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
                                         Self::check_unique(is_update, attrs.unique
