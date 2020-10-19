@@ -1104,9 +1104,13 @@ macro_rules! model {
                         // ( Additional verification )
                         // -------------------------------------------------------------------------
                         FieldType::InputDate(_) | FieldType::InputDateTime(_) {
-                            if widget.relation_model != String::new() {
+                            if widget.min.get_enum_type() != "Text"
+                                || widget.max.get_enum_type() != "Text" {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` ->",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
+                                    For widgets of type `InputDate` and \
+                                    `FieldType::InputDateTime`, the `min` and `max` \
+                                    attributes must be of the `DataType::Text` data type.",
                                     meta.service, MODEL_NAME, field
                                 )
                             }
