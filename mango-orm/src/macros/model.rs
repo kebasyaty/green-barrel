@@ -298,7 +298,7 @@ macro_rules! model {
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
                         ).build()?;
                         if !re.is_match(value) {
-                            Err("Incorrect date and time format.<br>Example: 1970-01-01T00:00")?
+                            Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
                         }
                     }
                     "InputDate" => {
@@ -306,7 +306,7 @@ macro_rules! model {
                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
                         ).build()?;
                         if !re.is_match(value) {
-                            Err("Incorrect date format.<br>Example: 1970-01-01")?
+                            Err("Incorrect date format.<br>Example: 1970-02-28")?
                         }
                     }
                     _ => return Ok(()),
@@ -505,7 +505,7 @@ macro_rules! model {
                                         }
                                         "InputDateTime" => {
                                             if field_value.len() > 0 {
-                                                // Example: "1970-01-01T00:00"
+                                                // Example: "1970-02-28T00:00"
                                                 attrs.value = field_value.to_string();
                                                 let dt: DateTime<Utc> =
                                                     DateTime::<Utc>::from_utc(
@@ -518,7 +518,7 @@ macro_rules! model {
                                         }
                                         "InputDate" => {
                                             if field_value.len() > 0 {
-                                                // Example: "1970-01-01"
+                                                // Example: "1970-02-28"
                                                 let value = format!("{}T00:00",
                                                     field_value.to_string());
                                                 attrs.value = value.clone();
@@ -1113,6 +1113,9 @@ macro_rules! model {
                                     attributes must be of the `DataType::Text` data type.",
                                     meta.service, MODEL_NAME, field
                                 )
+                            } else if widget.min.get_raw_data().len()
+                                != widget.max.get_raw_data().len() {
+                                //
                             }
                         }
 
@@ -1704,7 +1707,7 @@ macro_rules! model {
                                             Bson::String(value.1.clone())
                                         }
                                         "InputDateTime" => {
-                                            // Example: "1970-01-01T00:00"
+                                            // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
@@ -1714,7 +1717,7 @@ macro_rules! model {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
-                                                            Example: 1970-01-01T00:00",
+                                                            Example: 1970-02-28T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 let dt: DateTime<Utc> =
@@ -1727,7 +1730,7 @@ macro_rules! model {
                                             }
                                         }
                                         "InputDate" => {
-                                            // Example: "1970-01-01"
+                                            // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
                                                 let re = RegexBuilder::new(
@@ -1736,7 +1739,7 @@ macro_rules! model {
                                                 if !re.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
-                                                            format. Example: 1970-01-01",
+                                                            format. Example: 1970-02-28",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 let val = format!("{}T00:00", val);

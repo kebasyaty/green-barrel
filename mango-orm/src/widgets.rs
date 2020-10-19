@@ -22,8 +22,8 @@ pub enum FieldType {
     InputRadioI64(i64),
     InputRadioF64(f64),
     InputColor(String),
-    InputDate(String),     // Example: "1970-01-01"
-    InputDateTime(String), // Example: "1970-01-01T00:00"
+    InputDate(String),     // Example: "1970-02-28"
+    InputDateTime(String), // Example: "1970-02-28T00:00"
     InputEmail(String),
     InputFile,
     InputImage,
