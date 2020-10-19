@@ -1237,7 +1237,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -1382,7 +1382,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.other_attrs.contains("checked") {
@@ -1529,7 +1529,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
@@ -1561,7 +1561,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -1594,7 +1594,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -1627,7 +1627,7 @@ macro_rules! model {
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` fields must have the same types.",
+                                    The `step`, `min` and `max` attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
