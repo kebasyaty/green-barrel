@@ -1023,8 +1023,6 @@ macro_rules! model {
                         }
 
                         // InputColor
-                        // InputDate
-                        // InputDateTime
                         // InputEmail
                         // InputPassword
                         // InputText
@@ -1034,8 +1032,7 @@ macro_rules! model {
                         // InputIPv6
                         // TextArea
                         // -------------------------------------------------------------------------
-                        FieldType::InputColor(_) | FieldType::InputDate(_)
-                        | FieldType::InputDateTime(_) | FieldType::InputEmail(_)
+                        FieldType::InputColor(_) | FieldType::InputEmail(_)
                         | FieldType::InputPassword(_) | FieldType::InputText(_)
                         | FieldType::InputUrl(_) | FieldType::InputIP(_)
                         | FieldType::InputIPv4(_) | FieldType::InputIPv6(_)
@@ -1044,12 +1041,6 @@ macro_rules! model {
                             match widget.value {
                                 FieldType::InputColor(_) => {
                                     enum_field_type = "InputColor".to_string();
-                                }
-                                FieldType::InputDate(_) => {
-                                    enum_field_type = "InputDate".to_string();
-                                }
-                                FieldType::InputDateTime(_) => {
-                                    enum_field_type = "InputDateTime".to_string();
                                 }
                                 FieldType::InputEmail(_) => {
                                     enum_field_type = "InputEmail".to_string();
@@ -1081,7 +1072,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     `widgets()` : The fields `min` and `max` must be of types \
-                                    `StepMinMax::U32`.",
+                                    `DataType::U32`.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -1101,10 +1092,47 @@ macro_rules! model {
 
                         // InputDate
                         // InputDateTime
-                        // ( Additional verification )
                         // -------------------------------------------------------------------------
                         FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
-                            if widget.min.get_enum_type() != "Text"
+                            let mut enum_field_type = String::new();
+                            match widget.value {
+                                FieldType::InputDate(_) => {
+                                    enum_field_type = "InputDate".to_string();
+                                }
+                                FieldType::InputDateTime(_) => {
+                                    enum_field_type = "InputDateTime".to_string();
+                                }
+                                _ => panic!("Invalid field type")
+                            }
+                            if widget.relation_model != String::new() {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
+                                    For `value` = FieldType `{}` : `relation_model` = \
+                                    only blank string.",
+                                    meta.service, MODEL_NAME, field, enum_field_type
+                                )
+                            }  else if widget.step.get_enum_type() != "U32"
+                                || widget.min.get_enum_type() != "Text"
+                                ||  widget.max.get_enum_type() != "Text" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    `widgets()` : The fields `min` and `max` must be of types \
+                                    `DataType::U32`.",
+                                    meta.service, MODEL_NAME, field
+                                )
+                            } else if widget.select.len() != 0 {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
+                                    For `value` = FieldType `{}` : `select` = only blank vec![].",
+                                    meta.service, MODEL_NAME, field, enum_field_type
+                                )
+                            } else if map_field_types[field] != "String" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : \
+                                    Field type is not equal to `String`.",
+                                    meta.service, MODEL_NAME, field
+                                )
+                            } else if widget.min.get_enum_type() != "Text"
                                 || widget.max.get_enum_type() != "Text" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
