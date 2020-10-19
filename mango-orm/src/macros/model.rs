@@ -1154,7 +1154,8 @@ macro_rules! model {
                                         ` 1970-02-28T00:00` or an empty strings.",
                                         meta.service, MODEL_NAME, field
                                     )
-                            } else {
+                            } else if widget.min.get_raw_data().len() > 0
+                                && widget.max.get_raw_data().len() > 0 {
                                 let mut date_min: String = widget.min.get_raw_data();
                                 let mut date_max: String = widget.max.get_raw_data();
                                 match widget.value {
