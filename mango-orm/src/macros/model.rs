@@ -543,7 +543,7 @@ macro_rules! model {
                                     }
                                     if field_value.len() > 0 {
                                         // Validation in regular expression
-                                        // -------------------------------------------------------------
+                                        // ---------------------------------------------------------
                                         Self::regex_validation(field_type, field_value)
                                             .unwrap_or_else(|err| {
                                             stop_err = true;
@@ -553,7 +553,7 @@ macro_rules! model {
                                         });
                                     }
                                     // Insert result
-                                    // -----------------------------------------------------------------
+                                    // -------------------------------------------------------------
                                     if !stop_err && !ignore_fields.contains(field_name) {
                                         match field_type {
                                             "InputDateTime" => {
