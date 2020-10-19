@@ -227,6 +227,7 @@ macro_rules! model {
                         }
                         "date" => {
                             let field_value: &str = value_bson_pre.as_str().unwrap();
+                            let field_value = format!("{}T00:00", field_value);
                             doc!{ field_name.to_string() : field_value }
                         }
                         "datetime" => {
@@ -580,22 +581,6 @@ macro_rules! model {
                                     // -------------------------------------------------------------
                                     if !stop_err && !ignore_fields.contains(field_name) {
                                         match field_type {
-                                            "InputDateTime" => {
-                                                if field_value.len() > 0 {
-                                                    // Example: "1970-02-28T00:00"
-                                                    attrs.value = field_value.to_string();
-                                                    let dt: DateTime<Utc> =
-                                                        DateTime::<Utc>::from_utc(
-                                                            NaiveDateTime::parse_from_str(
-                                                                field_value, "%Y-%m-%dT%H:%M")?,
-                                                        Utc);
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::DateTime(dt));
-                                                } else {
-                                                    doc_res.insert(field_name.to_string(),
-                                                        Bson::Null);
-                                                }
-                                            }
                                             "InputDate" => {
                                                 if field_value.len() > 0 {
                                                     // Example: "1970-02-28"
@@ -610,6 +595,22 @@ macro_rules! model {
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(date));
+                                                } else {
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::Null);
+                                                }
+                                            }
+                                            "InputDateTime" => {
+                                                if field_value.len() > 0 {
+                                                    // Example: "1970-02-28T00:00"
+                                                    attrs.value = field_value.to_string();
+                                                    let dt: DateTime<Utc> =
+                                                        DateTime::<Utc>::from_utc(
+                                                            NaiveDateTime::parse_from_str(
+                                                                field_value, "%Y-%m-%dT%H:%M")?,
+                                                        Utc);
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::DateTime(dt));
                                                 } else {
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::Null);
