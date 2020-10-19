@@ -1573,23 +1573,25 @@ macro_rules! model {
                         FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `ForeignKey` : `relation_model` = \
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `ForeignKey` : \
+                                    `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
                             }  else if widget.step.get_enum_type() != widget.min.get_enum_type()
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` attributes must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` : The `step`, `min` and `max` \
+                                    attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `ForeignKey` : `select` = \
-                                    only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = \
+                                    FieldType `ForeignKey` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1606,23 +1608,25 @@ macro_rules! model {
                         FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `ManyToMany` : `relation_model` = \
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = \
+                                    FieldType `ManyToMany` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
                             }  else if widget.step.get_enum_type() != widget.min.get_enum_type()
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` attributes must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` : The `step`, `min` and `max` \
+                                    attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `ManyToMany` : `select` = \
-                                    only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = \
+                                    FieldType `ManyToMany` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1639,23 +1643,25 @@ macro_rules! model {
                         FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `OneToOne` : `relation_model` = \
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = \
+                                    FieldType `OneToOne` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
                             }  else if widget.step.get_enum_type() != widget.min.get_enum_type()
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` attributes must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` : The `step`, `min` and `max` \
+                                    attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `OneToOne` : `select` = \
-                                    only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = \
+                                    FieldType `OneToOne` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
