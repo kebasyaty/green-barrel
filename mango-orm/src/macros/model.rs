@@ -564,13 +564,11 @@ macro_rules! model {
                                         // ---------------------------------------------------------
                                         if !stop_err {
                                             doc_res.insert(field_name.to_string(), dt_bson);
-                                        } else {
-                                            doc_res.insert(field_name.to_string(), Bson::Null);
+                                            continue;
                                         }
-                                    } else {
-                                        // Insert result
-                                        doc_res.insert(field_name.to_string(), Bson::Null);
                                     }
+                                    // Insert result
+                                    doc_res.insert(field_name.to_string(), Bson::Null);
                                 }
                             }
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
