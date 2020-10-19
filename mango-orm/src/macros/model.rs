@@ -225,6 +225,14 @@ macro_rules! model {
                             let field_value: bool = value_bson.as_bool().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
+                        "datetime" => {
+                            let field_value: &str = value_bson.as_str().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
+                        "date" => {
+                            let field_value: &str = value_bson.as_str().unwrap();
+                            doc!{ field_name.to_string() : field_value }
+                        }
                         _ => {
                             Err("Undefined data type for determining uniqueness.")?
                         }
