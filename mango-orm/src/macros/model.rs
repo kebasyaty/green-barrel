@@ -1680,79 +1680,82 @@ macro_rules! model {
 
                     // Checking the values of the `step`, `min` and `max` attributes
                     // -----------------------------------------------------------------------------
-                    match widget.step.get_enum_type() {
-                        "I32" => {
-                            let step: i32 =  widget.step.get_raw_data().parse().unwrap();
-                            let min: i32 =  widget.min.get_raw_data().parse().unwrap();
-                            let max: i32 =  widget.max.get_raw_data().parse().unwrap();
-                            if step > 0_i32 || min > 0_i32 || max > 0_i32 {
-                                if min > max {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The `min` attribute must not be greater \
-                                        than `max`.",
-                                        meta.service, MODEL_NAME, field
-                                    )
-                                } else if step > 0_i32 && (max - min) % step != 0_i32 {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The value of the `step` attribute does not \
-                                        match the condition (max - min) % step == 0.",
-                                        meta.service, MODEL_NAME, field
-                                    )
+                    if widget.min.get_enum_type() != "Text"
+                        && widget.max.get_enum_type() != "Text" {
+                        match widget.step.get_enum_type() {
+                            "I32" => {
+                                let step: i32 =  widget.step.get_raw_data().parse().unwrap();
+                                let min: i32 =  widget.min.get_raw_data().parse().unwrap();
+                                let max: i32 =  widget.max.get_raw_data().parse().unwrap();
+                                if step > 0_i32 || min > 0_i32 || max > 0_i32 {
+                                    if min > max {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The `min` attribute must not be greater \
+                                            than `max`.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    } else if step > 0_i32 && (max - min) % step != 0_i32 {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The value of the `step` attribute does not \
+                                            match the condition (max - min) % step == 0.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        "U32" | "I64" => {
-                            let step: i64 =  widget.step.get_raw_data().parse().unwrap();
-                            let min: i64 =  widget.min.get_raw_data().parse().unwrap();
-                            let max: i64 =  widget.max.get_raw_data().parse().unwrap();
-                            if step > 0_i64 || min > 0_i64 || max > 0_i64 {
-                                if min > max {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The `min` attribute must not be greater \
-                                        than `max`.",
-                                        meta.service, MODEL_NAME, field
-                                    )
-                                } else if step > 0_i64 && (max - min) % step != 0_i64 {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The value of the `step` attribute does not \
-                                        match the condition (max - min) % step == 0.",
-                                        meta.service, MODEL_NAME, field
-                                    )
+                            "U32" | "I64" => {
+                                let step: i64 =  widget.step.get_raw_data().parse().unwrap();
+                                let min: i64 =  widget.min.get_raw_data().parse().unwrap();
+                                let max: i64 =  widget.max.get_raw_data().parse().unwrap();
+                                if step > 0_i64 || min > 0_i64 || max > 0_i64 {
+                                    if min > max {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The `min` attribute must not be greater \
+                                            than `max`.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    } else if step > 0_i64 && (max - min) % step != 0_i64 {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The value of the `step` attribute does not \
+                                            match the condition (max - min) % step == 0.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        "F64" => {
-                            let step: f64 =  widget.step.get_raw_data().parse().unwrap();
-                            let min: f64 =  widget.min.get_raw_data().parse().unwrap();
-                            let max: f64 =  widget.max.get_raw_data().parse().unwrap();
-                            if step > 0_f64 || min > 0_f64 || max > 0_f64 {
-                                if min > max {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The `min` attribute must not be greater \
-                                        than `max`.",
-                                        meta.service, MODEL_NAME, field
-                                    )
-                                } else if step > 0_f64 && (max - min) % step != 0_f64 {
-                                    panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                        widgets : The value of the `step` attribute does not \
-                                        match the condition (max - min) % step == 0.",
-                                        meta.service, MODEL_NAME, field
-                                    )
+                            "F64" => {
+                                let step: f64 =  widget.step.get_raw_data().parse().unwrap();
+                                let min: f64 =  widget.min.get_raw_data().parse().unwrap();
+                                let max: f64 =  widget.max.get_raw_data().parse().unwrap();
+                                if step > 0_f64 || min > 0_f64 || max > 0_f64 {
+                                    if min > max {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The `min` attribute must not be greater \
+                                            than `max`.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    } else if step > 0_f64 && (max - min) % step != 0_f64 {
+                                        panic!(
+                                            "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                            widgets : The value of the `step` attribute does not \
+                                            match the condition (max - min) % step == 0.",
+                                            meta.service, MODEL_NAME, field
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        _ => {
-                            panic!(
-                                "Service: `{}` -> Model: `{}` -> Field: `{}` : \
-                                Non-existent field type.",
-                                meta.service, MODEL_NAME, field
-                            )
+                            _ => {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` : \
+                                    Non-existent field type.",
+                                    meta.service, MODEL_NAME, field
+                                )
+                            }
                         }
                     }
                 }
