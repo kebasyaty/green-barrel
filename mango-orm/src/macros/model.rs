@@ -1115,7 +1115,10 @@ macro_rules! model {
                                 )
                             } else if widget.min.get_raw_data().len()
                                 != widget.max.get_raw_data().len() {
-                                //
+                                    panic!(
+                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : ",
+                                        meta.service, MODEL_NAME, field
+                                    )
                             }
                         }
 
