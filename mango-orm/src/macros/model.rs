@@ -404,8 +404,7 @@ macro_rules! model {
                             "InputCheckBoxText" | "InputRadioText" | "InputColor"
                             | "InputEmail" | "InputPassword" | "InputTel"
                             | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
-                            | "InputIPv6" | "TextArea" | "SelectText"
-                            | "InputDateTime" | "InputDate" => {
+                            | "InputIPv6" | "TextArea" | "SelectText" => {
                                 let field_value: &str = value_bson.as_str().unwrap();
 
                                 // Validation for a required field
@@ -538,6 +537,38 @@ macro_rules! model {
                                             doc_res.insert(field_name.to_string(),
                                                 Bson::String(field_value.to_string()));
                                         }
+                                    }
+                                }
+                            }
+                            "InputDateTime" | "InputDate" => {
+                                let field_value: &str = value_bson.as_str().unwrap();
+                                // Validation for a required field
+                                // -----------------------------------------------------------------
+                                if attrs.required && field_value.len() == 0 {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs,
+                                            &"Required field.".to_owned()).unwrap();
+                                    attrs.value = field_value.to_string();
+                                    continue;
+                                }
+                                // If the field is not required and there is no data in it,
+                                // take data from the database
+                                // -----------------------------------------------------------------
+                                if is_update && !ignore_fields.contains(field_name)
+                                    && !attrs.required && field_value.len() == 0 {
+                                    let value_from_db: Option<&Bson> =
+                                        doc_from_db.get(&field_name);
+
+                                    if value_from_db.is_some() {
+                                        doc_res.insert(field_name.to_string(),
+                                            value_from_db.unwrap());
+                                        continue;
+                                    } else {
+                                        Err(format!("Model: `{}` -> Field: `{}` -> Method: \
+                                                    `check()` : \
+                                                    This field is missing from the database.",
+                                            MODEL_NAME, &field_name))?
                                     }
                                 }
                             }
