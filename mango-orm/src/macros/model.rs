@@ -1080,7 +1080,7 @@ macro_rules! model {
                                 ||  widget.max.get_enum_type() != "U32" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    widgets : The fields `min` and `max` must be of types \
+                                    `widgets()` : The fields `min` and `max` must be of types \
                                     `StepMinMax::U32`.",
                                     meta.service, MODEL_NAME, field
                                 )

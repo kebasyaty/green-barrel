@@ -134,6 +134,7 @@ model! {
                     value: FieldType::InputDateTime(String::new()),
                     required: true,
                     hint: "Enter date and time.".to_string(),
+                    min: DataType::F64(0_f64),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date and time"),
                     ..Default::default()
                 },
