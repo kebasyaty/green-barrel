@@ -148,6 +148,8 @@ model! {
                     value: FieldType::InputDate(String::new()),
                     required: true,
                     hint: "Enter date.".to_string(),
+                    min: DataType::Text(String::new()),
+                    max: DataType::Text(String::new()),
                     other_attrs: format!("placeholder=\"{}\"", "Enter date"),
                     ..Default::default()
                 },
