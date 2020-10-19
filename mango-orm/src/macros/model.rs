@@ -1132,16 +1132,16 @@ macro_rules! model {
                                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
                                         ).build().unwrap();
                                         if !re.is_match(&date_min) {
-                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. Example: 1970-02-28",
-                                                meta.service, MODEL_NAME)
+                                                meta.service, MODEL_NAME, field)
                                         }
                                         if !re.is_match(&date_max) {
-                                            panic!("Service: `{}` -> Model: `{}` -> \
-                                                    Method: `widgets()` -> Attribute: `min` : \
+                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. Example: 1970-02-28",
-                                                meta.service, MODEL_NAME)
+                                                meta.service, MODEL_NAME, field)
                                         }
                                         date_min = format!("{}T00:00", date_min);
                                         date_max = format!("{}T00:00", date_max);
@@ -1152,18 +1152,18 @@ macro_rules! model {
                                             r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
                                         ).build().unwrap();
                                         if !re.is_match(&date_min) {
-                                            panic!("Service: `{}` -> Model: `{}` -> \
+                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
-                                                meta.service, MODEL_NAME)
+                                                meta.service, MODEL_NAME, field)
                                         }
                                         if !re.is_match(&date_max) {
-                                            panic!("Service: `{}` -> Model: `{}` -> \
-                                                    Method: `widgets()` -> Attribute: `min` : \
+                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                                    Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
-                                                meta.service, MODEL_NAME)
+                                                meta.service, MODEL_NAME, field)
                                         }
                                         let dt_min: DateTime<Utc> =
                                         DateTime::<Utc>::from_utc(
@@ -1173,6 +1173,12 @@ macro_rules! model {
                                             DateTime::<Utc>::from_utc(
                                                 NaiveDateTime::parse_from_str(
                                                     &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                        if dt_min >= dt_max {
+                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                                Method: `widgets()` -> Attribute: `min` : \
+                                                Must be less than `max`.",
+                                            meta.service, MODEL_NAME, field)
+                                        }
                                     }
                                     _ => {
                                         panic!("Invalid field type")
