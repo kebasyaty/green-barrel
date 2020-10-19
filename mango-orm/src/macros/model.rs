@@ -541,15 +541,17 @@ macro_rules! model {
                                                     This field is missing from the database.",
                                             MODEL_NAME, &field_name))?
                                     }
-                                    // Validation in regular expression
-                                    // -------------------------------------------------------------
-                                    Self::regex_validation(field_type, field_value)
-                                        .unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string())
-                                                .unwrap();
-                                    });
+                                    if field_value.len() > 0 {
+                                        // Validation in regular expression
+                                        // -------------------------------------------------------------
+                                        Self::regex_validation(field_type, field_value)
+                                            .unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                                Self::accumula_err(&attrs, &err.to_string())
+                                                    .unwrap();
+                                        });
+                                    }
                                     // Insert result
                                     // -----------------------------------------------------------------
                                     if !stop_err && !ignore_fields.contains(field_name) {
@@ -565,6 +567,9 @@ macro_rules! model {
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(dt));
+                                                } else {
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::Null);
                                                 }
                                             }
                                             "InputDate" => {
@@ -581,6 +586,9 @@ macro_rules! model {
                                                         Utc);
                                                     doc_res.insert(field_name.to_string(),
                                                         Bson::DateTime(date));
+                                                } else {
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::Null);
                                                 }
                                             }
                                             _ => {}
