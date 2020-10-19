@@ -1125,10 +1125,10 @@ macro_rules! model {
                             } else {
                                 match widget.value {
                                     FieldType::InputDate(value) => {
-                                        //
+                                        // Example: "1970-02-28"
                                     }
                                     FieldType::InputDateTime(value) => {
-                                        //
+                                        // Example: "1970-02-28T00:00"
                                     }
                                     _ => {
                                         panic!("Invalid field type")
