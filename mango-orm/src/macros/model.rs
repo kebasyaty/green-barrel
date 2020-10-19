@@ -502,35 +502,6 @@ macro_rules! model {
                                                     Bson::String(hash));
                                             }
                                         }
-                                        "InputDateTime" => {
-                                            if field_value.len() > 0 {
-                                                // Example: "1970-02-28T00:00"
-                                                attrs.value = field_value.to_string();
-                                                let dt: DateTime<Utc> =
-                                                    DateTime::<Utc>::from_utc(
-                                                        NaiveDateTime::parse_from_str(
-                                                            field_value, "%Y-%m-%dT%H:%M")?,
-                                                    Utc);
-                                                doc_res.insert(field_name.to_string(),
-                                                    Bson::DateTime(dt));
-                                            }
-                                        }
-                                        "InputDate" => {
-                                            if field_value.len() > 0 {
-                                                // Example: "1970-02-28"
-                                                let value = format!("{}T00:00",
-                                                    field_value.to_string());
-                                                attrs.value = value.clone();
-                                                let date: DateTime<Utc> =
-                                                    DateTime::<Utc>::from_utc(
-                                                        NaiveDateTime::parse_from_str(
-                                                            &value.to_string(),
-                                                            "%Y-%m-%dT%H:%M")?,
-                                                    Utc);
-                                                doc_res.insert(field_name.to_string(),
-                                                    Bson::DateTime(date));
-                                            }
-                                        }
                                         _ => {
                                             // Insert result from other fields
                                             attrs.value = field_value.to_string();
@@ -569,6 +540,51 @@ macro_rules! model {
                                                     `check()` : \
                                                     This field is missing from the database.",
                                             MODEL_NAME, &field_name))?
+                                    }
+                                    // Validation in regular expression
+                                    // -------------------------------------------------------------
+                                    Self::regex_validation(field_type, field_value)
+                                        .unwrap_or_else(|err| {
+                                        stop_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string())
+                                                .unwrap();
+                                    });
+                                    // Insert result
+                                    // -----------------------------------------------------------------
+                                    if !stop_err && !ignore_fields.contains(field_name) {
+                                        match field_type {
+                                            "InputDateTime" => {
+                                                if field_value.len() > 0 {
+                                                    // Example: "1970-02-28T00:00"
+                                                    attrs.value = field_value.to_string();
+                                                    let dt: DateTime<Utc> =
+                                                        DateTime::<Utc>::from_utc(
+                                                            NaiveDateTime::parse_from_str(
+                                                                field_value, "%Y-%m-%dT%H:%M")?,
+                                                        Utc);
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::DateTime(dt));
+                                                }
+                                            }
+                                            "InputDate" => {
+                                                if field_value.len() > 0 {
+                                                    // Example: "1970-02-28"
+                                                    let value = format!("{}T00:00",
+                                                        field_value.to_string());
+                                                    attrs.value = value.clone();
+                                                    let date: DateTime<Utc> =
+                                                        DateTime::<Utc>::from_utc(
+                                                            NaiveDateTime::parse_from_str(
+                                                                &value.to_string(),
+                                                                "%Y-%m-%dT%H:%M")?,
+                                                        Utc);
+                                                    doc_res.insert(field_name.to_string(),
+                                                        Bson::DateTime(date));
+                                                }
+                                            }
+                                            _ => {}
+                                        }
                                     }
                                 }
                             }
