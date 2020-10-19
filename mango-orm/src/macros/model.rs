@@ -208,7 +208,7 @@ macro_rules! model {
                         "i64" => {
                             // For u32 and i64
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
-                            doc!{ field_name.to_string() : field_value }
+                            doc!{ field_name.to_string() : Bson::Int64(field_value) }
                         }
                         "date" => {
                             let field_value: &str = value_bson_pre.as_str().unwrap();
