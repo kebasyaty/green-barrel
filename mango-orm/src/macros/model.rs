@@ -1143,6 +1143,16 @@ macro_rules! model {
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME)
                                         }
+                                        let date_min = format!("{}T00:00", date_min);
+                                        let dt_min: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                        let date_max = format!("{}T00:00", date_max);
+                                        let dt_max: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
                                     }
                                     FieldType::InputDateTime(value) => {
                                         // Example: "1970-02-28T00:00"
