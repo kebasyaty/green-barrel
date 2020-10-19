@@ -551,8 +551,8 @@ macro_rules! model {
 
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
-                                        Self::check_unique(is_update, attrs.unique,
-                                            field_name.to_string(), &dt_bson
+                                        Self::check_unique(is_update, attrs.unique
+                                            , field_name.to_string(), &dt_bson
                                             , "datetime", &coll)
                                             .await.unwrap_or_else(|err| {
                                             stop_err = true;
