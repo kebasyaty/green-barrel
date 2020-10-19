@@ -1299,15 +1299,16 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `relation_model` = \
-                                    only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -1318,22 +1319,25 @@ macro_rules! model {
                                 )
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `step` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `min` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `max` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
@@ -1376,36 +1380,38 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `relation_model` = \
-                                    only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `maxlength` = only 0 (zero).",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `maxlength` = only 0 (zero).",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if widget.step.get_enum_type() != widget.min.get_enum_type()
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` attributes must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` : The `step`, `min` and `max` \
+                                    attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `other_attrs` - \
-                                    must not contain the word `checked`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `select` - \
-                                    must not be an empty vec![]",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `select` - must not be an empty vec![]",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -1452,15 +1458,16 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `relation_model` = \
-                                    only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.len() != 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `select` = only blank vec![].",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
@@ -1471,22 +1478,25 @@ macro_rules! model {
                                 )
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `step` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `min` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType = `{}` : `max` = `{}`.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType = `{}` : \
+                                    `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
                                 )
@@ -1529,22 +1539,24 @@ macro_rules! model {
                             }
                             if widget.relation_model != String::new() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `relation_model` = \
-                                    only blank string.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if widget.step.get_enum_type() != widget.min.get_enum_type()
                                 || widget.step.get_enum_type() != widget.max.get_enum_type() {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    The `step`, `min` and `max` attributes must have the same types.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` : The `step`, `min` and `max` \
+                                    attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() == 0 {
                                 panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` -> \
-                                    For `value` = FieldType `{}` : `select` - Should not be empty.",
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    Method: `widgets()` -> For `value` = FieldType `{}` : \
+                                    `select` - Should not be empty.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             }  else if data_field_type != map_field_types[field] {
