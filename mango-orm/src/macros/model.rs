@@ -538,16 +538,18 @@ macro_rules! model {
                                         });
                                         // Get datetime in bson type
                                         // ---------------------------------------------------------
-                                        let field_value: String = if field_type == "InputDate" {
-                                            format!("{}T00:00", field_value.to_string())
-                                        } else {
-                                            field_value.to_string()
+                                        let dt_bson: Bson = {
+                                            let field_value: String = if field_type == "InputDate" {
+                                                format!("{}T00:00", field_value.to_string())
+                                            } else {
+                                                field_value.to_string()
+                                            };
+                                            let dt: DateTime<Utc> =
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &field_value, "%Y-%m-%dT%H:%M")?, Utc);
+                                            Bson::DateTime(dt)
                                         };
-                                        let dt: DateTime<Utc> =
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &field_value, "%Y-%m-%dT%H:%M")?, Utc);
-                                        let dt_bson: Bson = Bson::DateTime(dt);
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
                                         Self::check_unique(is_update, attrs.unique
