@@ -346,8 +346,8 @@ macro_rules! model {
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
-                // Get data from model
-                let mut doc_tmp: Document = to_document(self).unwrap();
+                // Get preliminary data from the model
+                let mut doc_pre: Document = to_document(self).unwrap();
                 // Get data for model from database (if available)
                 let mut doc_from_db: Document = if is_update {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
@@ -384,7 +384,7 @@ macro_rules! model {
                             continue;
                         }
                         // Get field value for validation
-                        let value_bson: Option<&Bson> = doc_tmp.get(field_name);
+                        let value_bson: Option<&Bson> = doc_pre.get(field_name);
                         // Check field value
                         if value_bson.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
