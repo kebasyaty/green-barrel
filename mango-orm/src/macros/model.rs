@@ -538,15 +538,15 @@ macro_rules! model {
                                         });
                                         // Get datetime bson type
                                         // ---------------------------------------------------------
-                                        let field_value: &str = if field_type == "InputDate" {
-                                            &format!("{}T00:00", field_value.to_string())
+                                        let field_value: String = if field_type == "InputDate" {
+                                            format!("{}T00:00", field_value.to_string())
                                         } else {
-                                            field_value
+                                            field_value.to_string()
                                         };
                                         let dt: DateTime<Utc> =
                                         DateTime::<Utc>::from_utc(
                                             NaiveDateTime::parse_from_str(
-                                                field_value, "%Y-%m-%dT%H:%M")?, Utc);
+                                                &field_value, "%Y-%m-%dT%H:%M")?, Utc);
                                         let dt_bson: Bson = Bson::DateTime(dt);
 
                                         // Validation of `unique`
