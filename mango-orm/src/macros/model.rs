@@ -442,12 +442,14 @@ macro_rules! model {
 
                                 // Checking `maxlength`, `min length`, `max length`
                                 // -----------------------------------------------------------------
-                                Self::check_maxlength(attrs.maxlength, field_value)
-                                    .unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                        Self::accumula_err(&attrs, &err.to_string()).unwrap();
-                                });
+                                if field_type != "InputDateTime" && field_type != "InputDate" {
+                                    Self::check_maxlength(attrs.maxlength, field_value)
+                                        .unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                            Self::accumula_err(&attrs, &err.to_string()).unwrap();
+                                    });
+                                }
 
                                 // -----------------------------------------------------------------
                                 if field_value.len() > 0 {
@@ -455,29 +457,37 @@ macro_rules! model {
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
                                     // -------------------------------------------------------------
-                                    let min: f64 = attrs.min.parse().unwrap();
-                                    let max: f64 = attrs.max.parse().unwrap();
-                                    let len: f64 = field_value.encode_utf16().count() as f64;
-                                    if (min > 0_f64 || max > 0_f64) &&
-                                        !validate_range(Validator::Range{min: Some(min),
-                                                        max: Some(max)}, len) {
-                                        stop_err = true;
-                                        let msg = format!(
-                                            "Length {} is out of range (min={} <> max={}).",
-                                            len, min, max);
-                                        attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                    if field_type != "InputDateTime" && field_type != "InputDate" {
+                                        let min: f64 = attrs.min.parse().unwrap();
+                                        let max: f64 = attrs.max.parse().unwrap();
+                                        let len: f64 = field_value.encode_utf16().count() as f64;
+                                        if (min > 0_f64 || max > 0_f64) &&
+                                            !validate_range(Validator::Range{min: Some(min),
+                                                            max: Some(max)}, len) {
+                                            stop_err = true;
+                                            let msg = format!(
+                                                "Length {} is out of range (min={} <> max={}).",
+                                                len, min, max);
+                                            attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
+                                        }
+                                    } else {
+                                        //
                                     }
 
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
-                                    Self::check_unique(is_update, attrs.unique,
-                                        field_name.to_string(), value_bson, "str", &coll)
-                                        .await.unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string())
-                                                .unwrap();
-                                    });
+                                    if field_type != "InputDateTime" && field_type != "InputDate" {
+                                        Self::check_unique(is_update, attrs.unique,
+                                            field_name.to_string(), value_bson, "str", &coll)
+                                            .await.unwrap_or_else(|err| {
+                                            stop_err = true;
+                                            attrs.error =
+                                                Self::accumula_err(&attrs, &err.to_string())
+                                                    .unwrap();
+                                        });
+                                    } else {
+                                        //
+                                    }
 
                                     // Validation in regular expression (email, password, etc...)
                                     // -------------------------------------------------------------
