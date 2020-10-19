@@ -1123,8 +1123,8 @@ macro_rules! model {
                                         meta.service, MODEL_NAME, field
                                     )
                             } else {
-                                let date_min: String = widget.min.get_raw_data();
-                                let date_max: String = widget.max.get_raw_data();
+                                let mut date_min: String = widget.min.get_raw_data();
+                                let mut date_max: String = widget.max.get_raw_data();
                                 match widget.value {
                                     FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
@@ -1143,16 +1143,8 @@ macro_rules! model {
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME)
                                         }
-                                        let date_min = format!("{}T00:00", date_min);
-                                        let dt_min: DateTime<Utc> =
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                        let date_max = format!("{}T00:00", date_max);
-                                        let dt_max: DateTime<Utc> =
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                        date_min = format!("{}T00:00", date_min);
+                                        date_max = format!("{}T00:00", date_max);
                                     }
                                     FieldType::InputDateTime(value) => {
                                         // Example: "1970-02-28T00:00"
@@ -1173,6 +1165,14 @@ macro_rules! model {
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME)
                                         }
+                                        let dt_min: DateTime<Utc> =
+                                        DateTime::<Utc>::from_utc(
+                                            NaiveDateTime::parse_from_str(
+                                                &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                        let dt_max: DateTime<Utc> =
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
                                     }
                                     _ => {
                                         panic!("Invalid field type")
