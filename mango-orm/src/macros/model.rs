@@ -1116,9 +1116,24 @@ macro_rules! model {
                             } else if widget.min.get_raw_data().len()
                                 != widget.max.get_raw_data().len() {
                                     panic!(
-                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : ",
+                                        "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                        `widgets()` : The `min` and` max` attributes must be in \
+                                        the appropriate format `1970-02-28` or \
+                                        ` 1970-02-28T00:00` or an empty strings.",
                                         meta.service, MODEL_NAME, field
                                     )
+                            } else {
+                                match widget.value {
+                                    FieldType::InputDate(value) => {
+                                        //
+                                    }
+                                    FieldType::InputDateTime(value) => {
+                                        //
+                                    }
+                                    _ => {
+                                        panic!("Invalid field type")
+                                    }
+                                }
                             }
                         }
 
