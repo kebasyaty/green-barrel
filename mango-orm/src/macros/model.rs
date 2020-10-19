@@ -1071,7 +1071,7 @@ macro_rules! model {
                                 ||  widget.max.get_enum_type() != "U32" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    `widgets()` : The fields `min` and `max` must be of types \
+                                    `widgets()` : The attributes `min` and `max` must be of type \
                                     `DataType::U32`.",
                                     meta.service, MODEL_NAME, field
                                 )
@@ -1111,13 +1111,19 @@ macro_rules! model {
                                     only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            }  else if widget.step.get_enum_type() != "U32"
-                                || widget.min.get_enum_type() != "Text"
+                            }  else if widget.step.get_enum_type() != "U32" {
+                                panic!(
+                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                    `widgets()` : The attribute `step` must be of type \
+                                    `DataType::U32`.",
+                                    meta.service, MODEL_NAME, field
+                                )
+                            }  else if widget.min.get_enum_type() != "Text"
                                 ||  widget.max.get_enum_type() != "Text" {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    `widgets()` : The fields `min` and `max` must be of types \
-                                    `DataType::U32`.",
+                                    `widgets()` : The attributes `min` and `max` must be of type \
+                                    `DataType::Text`.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.select.len() != 0 {
@@ -1130,15 +1136,6 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` : \
                                     Field type is not equal to `String`.",
-                                    meta.service, MODEL_NAME, field
-                                )
-                            } else if widget.min.get_enum_type() != "Text"
-                                || widget.max.get_enum_type() != "Text" {
-                                panic!(
-                                    "Service: `{}` -> Model: `{}` -> Field: `{}` -> `widgets()` : \
-                                    For widgets of type `InputDate` and \
-                                    `FieldType::InputDateTime`, the `min` and `max` \
-                                    attributes must be of the `DataType::Text` data type.",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if widget.min.get_raw_data().len()
