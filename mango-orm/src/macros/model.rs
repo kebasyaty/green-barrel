@@ -205,24 +205,9 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
                     let filter: Document = match value_type {
-                        "str" => {
-                            let field_value: &str = value_bson_pre.as_str().unwrap();
-                            doc!{ field_name.to_string() : field_value }
-                        }
-                        "i32" => {
-                            let field_value: i32 = value_bson_pre.as_i32().unwrap();
-                            doc!{ field_name.to_string() : field_value }
-                        }
                         "i64" => {
+                            // For u32 and i64
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
-                            doc!{ field_name.to_string() : field_value }
-                        }
-                        "f64" => {
-                            let field_value: f64 = value_bson_pre.as_f64().unwrap();
-                            doc!{ field_name.to_string() : field_value }
-                        }
-                        "bool" => {
-                            let field_value: bool = value_bson_pre.as_bool().unwrap();
                             doc!{ field_name.to_string() : field_value }
                         }
                         "date" => {
@@ -243,7 +228,7 @@ macro_rules! model {
                             doc!{ field_name.to_string() : Bson::DateTime(dt) }
                         }
                         _ => {
-                            Err("Undefined data type for determining uniqueness.")?
+                            doc!{ field_name.to_string() : value_bson_pre }
                         }
                     };
                     let count: i64 = coll.count_documents(filter, None).await?;
