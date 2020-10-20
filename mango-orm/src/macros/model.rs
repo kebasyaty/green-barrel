@@ -1862,29 +1862,6 @@ macro_rules! model {
                                         | "InputIPv6" | "TextArea" | "SelectText" => {
                                             Bson::String(value.1.clone())
                                         }
-                                        "InputDateTime" => {
-                                            // Example: "1970-02-28T00:00"
-                                            let mut val: String = value.1.clone();
-                                            if val.len() > 0 {
-                                                let re = RegexBuilder::new(
-                                                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                                                ).build().unwrap();
-                                                if !re.is_match(&val) {
-                                                    panic!("Service: `{}` -> Model: `{}` -> \
-                                                            Method: `widgets()` : \
-                                                            Incorrect date and time format. \
-                                                            Example: 1970-02-28T00:00",
-                                                        meta.service, MODEL_NAME)
-                                                }
-                                                let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                                Bson::DateTime(dt)
-                                            } else {
-                                                Bson::Null
-                                            }
-                                        }
                                         "InputDate" => {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
@@ -1899,6 +1876,29 @@ macro_rules! model {
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 let val = format!("{}T00:00", val);
+                                                let dt: DateTime<Utc> =
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                                Bson::DateTime(dt)
+                                            } else {
+                                                Bson::Null
+                                            }
+                                        }
+                                        "InputDateTime" => {
+                                            // Example: "1970-02-28T00:00"
+                                            let mut val: String = value.1.clone();
+                                            if val.len() > 0 {
+                                                let re = RegexBuilder::new(
+                                                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
+                                                ).build().unwrap();
+                                                if !re.is_match(&val) {
+                                                    panic!("Service: `{}` -> Model: `{}` -> \
+                                                            Method: `widgets()` : \
+                                                            Incorrect date and time format. \
+                                                            Example: 1970-02-28T00:00",
+                                                        meta.service, MODEL_NAME)
+                                                }
                                                 let dt: DateTime<Utc> =
                                                 DateTime::<Utc>::from_utc(
                                                     NaiveDateTime::parse_from_str(
