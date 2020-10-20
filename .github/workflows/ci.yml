@@ -39,6 +39,6 @@ jobs:
           override: true
           components: clippy, rustfmt
       - name: Build on nightly without features
-        run: cargo build --no-default-features
+        run: cargo build
       - name: Build on nightly
         run: cargo build --all --verbose
