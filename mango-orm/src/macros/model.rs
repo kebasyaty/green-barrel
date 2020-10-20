@@ -242,10 +242,7 @@ macro_rules! model {
                         }
                     }
                     "InputColor" => {
-                        let re = RegexBuilder::new(
-                            r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
-                            .case_insensitive(true).build()?;
-                        if !re.is_match(value) {
+                        if !REGEX_IS_COLOR_CODE.is_match(value) {
                             Err("Invalid Color code.")?
                         }
                     }
@@ -270,27 +267,18 @@ macro_rules! model {
                         }
                     }
                     "InputPassword" => {
-                        let re = RegexBuilder::new(
-                            r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")
-                            .case_insensitive(true).build()?;
-                        if !re.is_match(value) {
+                        if !REGEX_IS_PASSWORD.is_match(value) {
                             Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
                                  Minimum size 8 characters")?
                         }
                     }
                     "InputDate" => {
-                        let re = RegexBuilder::new(
-                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
-                        ).build()?;
-                        if !re.is_match(value) {
+                        if !REGEX_IS_DATE.is_match(value) {
                             Err("Incorrect date format.<br>Example: 1970-02-28")?
                         }
                     }
                     "InputDateTime" => {
-                        let re = RegexBuilder::new(
-                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                        ).build()?;
-                        if !re.is_match(value) {
+                        if !REGEX_IS_DATETIME.is_match(value) {
                             Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
                         }
                     }
@@ -1192,16 +1180,13 @@ macro_rules! model {
                                 match widget.value {
                                     FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
-                                        let re = RegexBuilder::new(
-                                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
-                                        ).build().unwrap();
-                                        if !re.is_match(&date_min) {
+                                        if !REGEX_IS_DATE.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !re.is_match(&date_max) {
+                                        if !REGEX_IS_DATE.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. Example: 1970-02-28",
@@ -1212,17 +1197,14 @@ macro_rules! model {
                                     }
                                     FieldType::InputDateTime(value) => {
                                         // Example: "1970-02-28T00:00"
-                                        let re = RegexBuilder::new(
-                                            r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                                        ).build().unwrap();
-                                        if !re.is_match(&date_min) {
+                                        if !REGEX_IS_DATETIME.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !re.is_match(&date_max) {
+                                        if !REGEX_IS_DATETIME.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. \
@@ -1866,10 +1848,7 @@ macro_rules! model {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
-                                                let re = RegexBuilder::new(
-                                                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
-                                                ).build().unwrap();
-                                                if !re.is_match(&val) {
+                                                if !REGEX_IS_DATE.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             format. Example: 1970-02-28",
@@ -1889,10 +1868,7 @@ macro_rules! model {
                                             // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
                                             if val.len() > 0 {
-                                                let re = RegexBuilder::new(
-                                                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                                                ).build().unwrap();
-                                                if !re.is_match(&val) {
+                                                if !REGEX_IS_DATETIME.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \

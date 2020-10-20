@@ -5,7 +5,10 @@ use mango_orm::{
     forms::{Form, OutputData, OutputType},
     model,
     models::{Meta, Model},
-    store::{FormCache, FORM_CACHE},
+    store::{
+        FormCache, FORM_CACHE, REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME,
+        REGEX_IS_PASSWORD,
+    },
     widgets::{DataType, FieldType, Transport, Widget},
 };
 use mongodb::{
@@ -14,7 +17,6 @@ use mongodb::{
     results, Client, Collection, Cursor, Database,
 };
 use rand::Rng;
-use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
