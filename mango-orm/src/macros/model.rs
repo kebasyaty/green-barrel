@@ -1711,7 +1711,8 @@ macro_rules! model {
 
                     // Checking the values of the `step`, `min` and `max` attributes
                     // -----------------------------------------------------------------------------
-                    if widget.min.get_enum_type() != "Text"
+                    if widget.step.get_enum_type() != "Text"
+                        && widget.min.get_enum_type() != "Text"
                         && widget.max.get_enum_type() != "Text" {
                         match widget.step.get_enum_type() {
                             "I32" => {
