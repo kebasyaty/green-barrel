@@ -1211,24 +1211,24 @@ macro_rules! model {
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        let dt_min: DateTime<Utc> =
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                        let dt_max: DateTime<Utc> =
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                        if dt_min >= dt_max {
-                                            panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                                Method: `widgets()` -> Attribute: `min` : \
-                                                Must be less than `max`.",
-                                            meta.service, MODEL_NAME, field)
-                                        }
                                     }
                                     _ => {
                                         panic!("Invalid field type")
                                     }
+                                }
+                                let dt_min: DateTime<Utc> =
+                                DateTime::<Utc>::from_utc(
+                                    NaiveDateTime::parse_from_str(
+                                        &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                let dt_max: DateTime<Utc> =
+                                    DateTime::<Utc>::from_utc(
+                                        NaiveDateTime::parse_from_str(
+                                            &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                if dt_min >= dt_max {
+                                    panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                        Method: `widgets()` -> Attribute: `min` : \
+                                        Must be less than `max`.",
+                                    meta.service, MODEL_NAME, field)
                                 }
                             }
                         }
