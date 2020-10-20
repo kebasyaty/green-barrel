@@ -1252,7 +1252,8 @@ macro_rules! model {
                                         Must be less than `max`.",
                                     meta.service, MODEL_NAME, field)
                                 } else if date_value.len() > 0 {
-                                    //
+                                    // Check that the default is in the dates range
+                                    // from `min` to `max`.
                                     let dt_value: DateTime<Utc> =
                                         DateTime::<Utc>::from_utc(
                                             NaiveDateTime::parse_from_str(
