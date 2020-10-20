@@ -24,7 +24,7 @@ jobs:
       - name: Check format
         run: cargo fmt --all -- --check
       - name: Check with clippy
-        run: cargo clippy --all
+        run: cd mango-orm && cargo clippy --all
       - name: Build without features
         run: cargo build --no-default-features
       - name: Build

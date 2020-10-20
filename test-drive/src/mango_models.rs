@@ -18,7 +18,6 @@ use mongodb::{
 };
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 use validator::{
@@ -48,7 +47,7 @@ model! {
                 service: _SERVICE_NAME.to_string(),
                 database: _DATABASE_NAME.to_string(),
                 // List of field names that will not be saved to the database
-                ignore_fields: vec!["password_confirm"],
+                ignore_fields: vec!{"password_confirm"},
                 ..Default::default()
             })
         }

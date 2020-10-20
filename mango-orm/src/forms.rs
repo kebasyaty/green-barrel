@@ -50,11 +50,11 @@ pub trait Form {
                             trans.value,
                             if trans.maxlength > 0 { format!(" maxlength=\"{}\" ", trans.maxlength) } else { String::new() },
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                            if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.some_classes.is_empty() { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
+                            if !trans.other_attrs.is_empty() { format!(" {}", trans.other_attrs) } else { String::new()},
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "checkbox" => {
@@ -67,19 +67,19 @@ pub trait Form {
                             trans.name,
                             trans.value,
                             if trans.checked { " checked " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "radio" => {
@@ -93,19 +93,19 @@ pub trait Form {
                                 trans.name,
                                 item.1,
                                 if trans.checked { " checked " } else { "" },
-                                if trans.some_classes.len() > 0 {
+                                if !trans.some_classes.is_empty() {
                                     format!(" class=\"{}\" ", trans.some_classes)
                                 } else {
                                     String::new()
                                 },
-                                if trans.other_attrs.len() > 0 {
+                                if !trans.other_attrs.is_empty() {
                                     format!(" {}", trans.other_attrs)
                                 } else {
                                     String::new()
                                 },
-                                if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                                if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                                if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                                if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                                if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                                if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                             );
                         }
                         controls = format!("{}{}</p>", controls, tags);
@@ -120,19 +120,19 @@ pub trait Form {
                             trans.name,
                             trans.value,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "file" => {
@@ -144,27 +144,27 @@ pub trait Form {
                             trans.field_type,
                             trans.name,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 {
+                            if !trans.hint.is_empty() {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
-                            if trans.warning.len() > 0 {
+                            if !trans.warning.is_empty() {
                                 format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
-                            if trans.error.len() > 0 {
+                            if !trans.error.is_empty() {
                                 format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
@@ -180,27 +180,27 @@ pub trait Form {
                             trans.field_type,
                             trans.name,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 {
+                            if !trans.hint.is_empty() {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
-                            if trans.warning.len() > 0 {
+                            if !trans.warning.is_empty() {
                                 format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
-                            if trans.error.len() > 0 {
+                            if !trans.error.is_empty() {
                                 format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
@@ -221,19 +221,19 @@ pub trait Form {
                             if trans.step != "0" { format!(" step=\"{}\" ", trans.step) } else { String::new() },
                             if trans.min != "0" { format!(" min=\"{}\" ", trans.step) } else { String::new() },
                             if trans.max != "0" { format!(" max=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "range" => {
@@ -249,19 +249,19 @@ pub trait Form {
                             if trans.step != "0" { format!(" step=\"{}\" ", trans.step) } else { String::new() },
                             if trans.min != "0" { format!(" min=\"{}\" ", trans.step) } else { String::new() },
                             if trans.max != "0" { format!(" max=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "textarea" => {
@@ -273,12 +273,12 @@ pub trait Form {
                             trans.name,
                             trans.maxlength,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                            if trans.other_attrs.len() > 0 { format!(" {}", trans.other_attrs) } else { String::new()},
+                            if !trans.some_classes.is_empty() { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
+                            if !trans.other_attrs.is_empty() { format!(" {}", trans.other_attrs) } else { String::new()},
                             trans.value,
-                            if trans.hint.len() > 0 { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if trans.warning.len() > 0 { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if trans.error.len() > 0 { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
+                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
+                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
                         );
                     }
                     "select" => {
@@ -303,28 +303,28 @@ pub trait Form {
                             id_field,
                             trans.name,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
                             },
                             options,
-                            if trans.hint.len() > 0 {
+                            if !trans.hint.is_empty() {
                                 format!("<br><small class=\"hint\">{}</small>", trans.hint)
                             } else {
                                 String::new()
                             },
-                            if trans.warning.len() > 0 {
+                            if !trans.warning.is_empty() {
                                 format!("<br><small class=\"warning\">{}</small>", trans.warning)
                             } else {
                                 String::new()
                             },
-                            if trans.error.len() > 0 {
+                            if !trans.error.is_empty() {
                                 format!("<br><small class=\"error\">{}</small>", trans.error)
                             } else {
                                 String::new()
@@ -341,12 +341,12 @@ pub trait Form {
                             trans.name,
                             trans.value,
                             if trans.required { " required " } else { "" },
-                            if trans.some_classes.len() > 0 {
+                            if !trans.some_classes.is_empty() {
                                 format!(" class=\"{}\" ", trans.some_classes)
                             } else {
                                 String::new()
                             },
-                            if trans.other_attrs.len() > 0 {
+                            if !trans.other_attrs.is_empty() {
                                 format!(" {}", trans.other_attrs)
                             } else {
                                 String::new()
