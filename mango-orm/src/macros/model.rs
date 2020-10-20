@@ -485,6 +485,8 @@ macro_rules! model {
                                 }
                             }
                             "InputDate" | "InputDateTime" => {
+                                // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: &str = value_bson_pre.as_str().unwrap();
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
@@ -563,8 +565,9 @@ macro_rules! model {
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: i32 = value_bson_pre.as_i32().unwrap();
-                                 // Validation of `unique`
+                                // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "i32", &coll)
@@ -601,6 +604,7 @@ macro_rules! model {
                             | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                             | "SelectI64" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: i64 = value_bson_pre.as_i64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
@@ -613,6 +617,7 @@ macro_rules! model {
                                             .unwrap();
                                 });
                                 // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
@@ -626,6 +631,7 @@ macro_rules! model {
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
+                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
@@ -635,6 +641,7 @@ macro_rules! model {
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                             | "InputRangeF64" | "SelectF64" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: f64 = value_bson_pre.as_f64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
@@ -647,6 +654,7 @@ macro_rules! model {
                                             .unwrap();
                                 });
                                 // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value.clone();
@@ -660,6 +668,7 @@ macro_rules! model {
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
+                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
@@ -668,6 +677,7 @@ macro_rules! model {
                             }
                             "InputCheckBoxBool" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: bool = value_bson_pre.as_bool().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
@@ -680,6 +690,7 @@ macro_rules! model {
                                             .unwrap();
                                 });
                                 // Insert result
+                                // -----------------------------------------------------------------
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
@@ -692,7 +703,9 @@ macro_rules! model {
                                     MODEL_NAME, field_name))?
                             }
                         }
+
                         // Insert or update fields for timestamps `created` and `updated`
+                        // -------------------------------------------------------------------------
                         if !stop_err {
                             let dt: DateTime<Utc> = Utc::now();
                             if !is_update {
