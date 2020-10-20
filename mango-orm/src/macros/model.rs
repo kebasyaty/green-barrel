@@ -1225,7 +1225,7 @@ macro_rules! model {
                                     DateTime::<Utc>::from_utc(
                                         NaiveDateTime::parse_from_str(
                                             &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                // If the `max` attribute is not greater than` min`, call a panic
+                                // If the `max` attribute is not greater than `min`, call a panic
                                 if dt_min >= dt_max {
                                     panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                         Method: `widgets()` -> Attribute: `min` : \
