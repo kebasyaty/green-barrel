@@ -8,7 +8,7 @@ use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 
-// Global storage
+// GLOBAL STORAGE
 // #################################################################################################
 /// Structure for caching From (map, json) attributes and Html
 #[derive(Default, Clone, Debug)]
