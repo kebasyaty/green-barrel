@@ -1177,6 +1177,7 @@ macro_rules! model {
                                 && widget.max.get_raw_data().len() > 0 {
                                 let mut date_min: String = widget.min.get_raw_data();
                                 let mut date_max: String = widget.max.get_raw_data();
+                                let mut date_value: String = widget.value.get_raw_data();
                                 match widget.value {
                                     FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
@@ -1192,10 +1193,20 @@ macro_rules! model {
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
+                                        if date_value.len() > 0 {
+                                            if !REGEX_IS_DATE.is_match(&date_value) {
+                                                panic!("Service: `{}` -> Model: `{}` -> \
+                                                        Field: `{}` -> Method: `widgets()` -> \
+                                                        Attribute: `value` : Incorrect date \
+                                                        format. Example: 1970-02-28",
+                                                    meta.service, MODEL_NAME, field)
+                                            }
+                                            date_value = format!("{}T00:00", date_value);
+                                        }
                                         date_min = format!("{}T00:00", date_min);
                                         date_max = format!("{}T00:00", date_max);
                                     }
-                                    FieldType::InputDateTime(value) => {
+                                    FieldType::InputDateTime(_) => {
                                         // Example: "1970-02-28T00:00"
                                         if !REGEX_IS_DATETIME.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
@@ -1210,6 +1221,15 @@ macro_rules! model {
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
+                                        }
+                                        if date_value.len() > 0 {
+                                            if !REGEX_IS_DATETIME.is_match(&date_value) {
+                                                panic!("Service: `{}` -> Model: `{}` -> \
+                                                        Field: `{}` -> Method: `widgets()` -> \
+                                                        Attribute: `value` : Incorrect date \
+                                                        format. Example: 1970-02-28T00:00",
+                                                    meta.service, MODEL_NAME, field)
+                                            }
                                         }
                                     }
                                     _ => {
@@ -1231,6 +1251,18 @@ macro_rules! model {
                                         Method: `widgets()` -> Attribute: `min` : \
                                         Must be less than `max`.",
                                     meta.service, MODEL_NAME, field)
+                                } else if date_value.len() > 0 {
+                                    //
+                                    let dt_value: DateTime<Utc> =
+                                        DateTime::<Utc>::from_utc(
+                                            NaiveDateTime::parse_from_str(
+                                                &date_value, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                    if dt_value < dt_min || dt_value > dt_max {
+                                        panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
+                                                Method: `widgets()` -> Attribute: `value` : \
+                                                Out of range between `min` and` max`.",
+                                            meta.service, MODEL_NAME, field)
+                                    }
                                 }
                             }
                         }
