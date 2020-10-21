@@ -586,11 +586,13 @@ macro_rules! model {
                                                     Self::accumula_err(&attrs, &err.to_string())
                                                         .unwrap();
                                             });
-                                            // Insert result
-                                            // -----------------------------------------------------
+                                            if !stop_err {
+                                                // Insert result
+                                                // -------------------------------------------------
                                                 doc_res.insert(field_name.to_string(),
                                                     dt_value_bson);
                                                 continue;
+                                            }
                                         }
                                     }
                                     // Insert result
