@@ -567,7 +567,7 @@ macro_rules! model {
                                                 attrs.error =
                                                     Self::accumula_err(&attrs,
                                                         &"Date out of range between `min` and` max`."
-                                                        .to_string()
+                                                        .to_owned()
                                                     ).unwrap();
                                             }
                                         }
