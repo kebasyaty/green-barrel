@@ -526,22 +526,6 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                        if !attrs.min.is_empty() && !attrs.max.is_empty() {
-                                            Self::regex_validation(field_type, &attrs.min)
-                                                .unwrap_or_else(|err| {
-                                                stop_err = true;
-                                                attrs.error =
-                                                    Self::accumula_err(&attrs, &err.to_string())
-                                                        .unwrap();
-                                            });
-                                                Self::regex_validation(field_type, &attrs.max)
-                                                .unwrap_or_else(|err| {
-                                                stop_err = true;
-                                                attrs.error =
-                                                    Self::accumula_err(&attrs, &err.to_string())
-                                                        .unwrap();
-                                            });
-                                        }
                                         // Create datetime
                                         // ---------------------------------------------------------
                                         let dt_value: DateTime<Utc> = {
