@@ -120,14 +120,14 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    if cache.attrs_json.len() == 0 {
+                    if cache.attrs_json.is_empty() {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
                         let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
-                            if json_text.len() > 0 {
+                            if !json_text.is_empty() {
                                 json_text = format!("{},\"{}\":{}", json_text, field, tmp);
                             } else {
                                 json_text = format!("\"{}\":{}", field, tmp);
@@ -160,7 +160,7 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    let is_cached: bool = cache.form_html.len() == 0;
+                    let is_cached: bool = cache.form_html.is_empty();
                     if is_cached {
                         build_controls = true;
                         attrs = cache.attrs_map.clone();
@@ -227,7 +227,7 @@ macro_rules! model {
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut tmp = attrs.error.clone();
-                tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
+                tmp = if !tmp.is_empty() { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
 
@@ -314,8 +314,8 @@ macro_rules! model {
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::metadata()?;
-                let mut stop_err = false;
-                let is_update: bool = self.hash.len() > 0;
+                let mut global_err = false;
+                let is_update: bool = !self.hash.is_empty();
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
@@ -344,7 +344,7 @@ macro_rules! model {
                     // Apply custom check
                     {
                         let error_map: HashMap<&str, &str> = self.custom_check()?;
-                        if !error_map.is_empty() { stop_err = true; }
+                        if !error_map.is_empty() { global_err = true; }
                         for (field_name, err_msg) in error_map {
                             let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
                             attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
@@ -353,9 +353,7 @@ macro_rules! model {
                     // Loop over fields for validation
                     for field_name in FIELD_NAMES {
                         // Don't check the `hash` field
-                        if field_name == &"hash" {
-                            continue;
-                        }
+                        if field_name == &"hash" { continue; }
                         // Get field value for validation
                         let value_bson_pre: Option<&Bson> = doc_pre.get(field_name);
                         // Check field value
@@ -370,6 +368,8 @@ macro_rules! model {
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
+                        // For each iteration of the loop
+                        let mut local_err = false;
                         // Field validation
                         match field_type {
                             // Validation of text type fields
@@ -378,24 +378,25 @@ macro_rules! model {
                             | "InputEmail" | "InputPassword" | "InputTel"
                             | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                             | "InputIPv6" | "TextArea" | "SelectText" => {
+                                // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: &str = value_bson_pre.as_str().unwrap();
-
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
-                                if attrs.required && field_value.len() == 0 {
-                                    stop_err = true;
+                                if attrs.required && field_value.is_empty() {
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
                                             &"Required field.".to_owned()).unwrap();
                                     attrs.value = field_value.to_string();
                                     continue;
                                 }
-
                                 // If the field is not required and there is no data in it,
                                 // take data from the database
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name) &&
-                                    ((!attrs.required && field_value.len() == 0) ||
+                                    ((!attrs.required && field_value.is_empty()) ||
                                     field_type == "InputPassword") {
                                     let value_from_db: Option<&Bson> =
                                         doc_from_db.get(&field_name);
@@ -411,18 +412,17 @@ macro_rules! model {
                                             MODEL_NAME, &field_name))?
                                     }
                                 }
-
                                 // Checking `maxlength`, `min length`, `max length`
                                 // -----------------------------------------------------------------
                                 Self::check_maxlength(attrs.maxlength, field_value)
                                     .unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                 });
-
                                 // -----------------------------------------------------------------
-                                if field_value.len() > 0 {
+                                if !field_value.is_empty() {
                                     // Validation of range (`min` <> `max`)
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
@@ -433,41 +433,41 @@ macro_rules! model {
                                     if (min > 0_f64 || max > 0_f64) &&
                                         !validate_range(Validator::Range{min: Some(min),
                                                         max: Some(max)}, len) {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         let msg = format!(
                                             "Length {} is out of range (min={} <> max={}).",
                                             len, min, max);
                                         attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                     }
-
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
                                         field_name.to_string(), value_bson_pre, "str", &coll)
                                         .await.unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string())
                                                 .unwrap();
                                     });
-
                                     // Validation in regular expression (email, password, etc...)
                                     // -------------------------------------------------------------
                                     Self::regex_validation(field_type, field_value)
                                         .unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string())
                                                 .unwrap();
                                     });
                                 }
-
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     match field_type {
                                         "InputPassword" => {
-                                            if field_value.len() > 0 {
+                                            if !field_value.is_empty() {
                                                 // Generate password hash and add to result document
                                                 let hash: String =
                                                     Self::create_password_hash(field_value)?;
@@ -485,11 +485,14 @@ macro_rules! model {
                                 }
                             }
                             "InputDate" | "InputDateTime" => {
+                                // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: &str = value_bson_pre.as_str().unwrap();
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
-                                if attrs.required && field_value.len() == 0 {
-                                    stop_err = true;
+                                if attrs.required && field_value.is_empty() {
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
                                             &"Required field.".to_owned()).unwrap();
@@ -500,7 +503,7 @@ macro_rules! model {
                                 // take data from the database
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name)
-                                    && !attrs.required && field_value.len() == 0 {
+                                    && !attrs.required && field_value.is_empty() {
                                     let value_from_db: Option<&Bson> =
                                         doc_from_db.get(&field_name);
 
@@ -514,62 +517,101 @@ macro_rules! model {
                                                     This field is missing from the database.",
                                             MODEL_NAME, &field_name))?
                                     }
-                                    if field_value.len() > 0 {
-                                        // Validation in regular expression
-                                        // ---------------------------------------------------------
-                                        Self::regex_validation(field_type, field_value)
-                                            .unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                                Self::accumula_err(&attrs, &err.to_string())
-                                                    .unwrap();
-                                        });
-                                        // Get datetime in bson type
-                                        // ---------------------------------------------------------
-                                        let dt_bson: Bson = {
-                                            let field_value: String = if field_type == "InputDate" {
-                                                format!("{}T00:00", field_value.to_string())
-                                            } else {
-                                                field_value.to_string()
-                                            };
-                                            let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &field_value, "%Y-%m-%dT%H:%M")?, Utc);
-                                            Bson::DateTime(dt)
+                                }
+                                if field_value.is_empty() { continue; }
+                                // Validation in regular expression
+                                // -----------------------------------------------------------------
+                                Self::regex_validation(field_type, field_value)
+                                    .unwrap_or_else(|err| {
+                                    global_err = true;
+                                    local_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
+                                if local_err { continue; }
+                                // Create Date and Time Object
+                                // -----------------------------------------------------------------
+                                let dt_value: DateTime<Utc> = {
+                                    let field_value: String = if field_type == "InputDate" {
+                                        format!("{}T00:00", field_value.to_string())
+                                    } else {
+                                        field_value.to_string()
+                                    };
+                                    DateTime::<Utc>::from_utc(
+                                        NaiveDateTime::parse_from_str(
+                                            &field_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                };
+                                // Create dates for `min` and `max` attributes values to
+                                // check, if the value of user falls within the range
+                                // between these dates
+                                if !attrs.min.is_empty() && !attrs.max.is_empty() {
+                                    let dt_min: DateTime<Utc> = {
+                                        let min_value: String = if field_type == "InputDate" {
+                                            format!("{}T00:00", attrs.min.clone())
+                                        } else {
+                                            attrs.min.clone()
                                         };
-                                        // Validation of `unique`
-                                        // ---------------------------------------------------------
-                                        Self::check_unique(is_update, attrs.unique
-                                            , field_name.to_string(), &dt_bson
-                                            , "datetime", &coll)
-                                            .await.unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                                Self::accumula_err(&attrs, &err.to_string())
-                                                    .unwrap();
-                                        });
-                                        // Insert result
-                                        // ---------------------------------------------------------
-                                        if !stop_err {
-                                            doc_res.insert(field_name.to_string(), dt_bson);
-                                            continue;
-                                        }
+                                        DateTime::<Utc>::from_utc(
+                                            NaiveDateTime::parse_from_str(
+                                                &min_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                    };
+                                    let dt_max: DateTime<Utc> = {
+                                        let max_value: String = if field_type == "InputDate" {
+                                            format!("{}T00:00", attrs.max.clone())
+                                        } else {
+                                            attrs.max.clone()
+                                        };
+                                        DateTime::<Utc>::from_utc(
+                                            NaiveDateTime::parse_from_str(
+                                                &max_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                    };
+                                    if dt_value < dt_min || dt_value > dt_max {
+                                        global_err = true;
+                                        attrs.error =
+                                            Self::accumula_err(&attrs,
+                                                &"Date out of range between `min` and` max`."
+                                                .to_owned()
+                                            ).unwrap();
+                                        continue;
                                     }
-                                    // Insert result
+                                }
+                                // Create datetime in bson type
+                                // -----------------------------------------------------------------
+                                let dt_value_bson = Bson::DateTime(dt_value);
+                                // Validation of `unique`
+                                // -----------------------------------------------------------------
+                                Self::check_unique(is_update, attrs.unique
+                                    , field_name.to_string(), &dt_value_bson
+                                    , "datetime", &coll)
+                                    .await.unwrap_or_else(|err| {
+                                    global_err = true;
+                                    local_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
+                                // Insert result
+                                // -----------------------------------------------------------------
+                                if !local_err {
+                                    doc_res.insert(field_name.to_string(),
+                                        dt_value_bson);
+                                } else {
                                     doc_res.insert(field_name.to_string(), Bson::Null);
                                 }
                             }
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                             | "InputRangeI32" | "SelectI32" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: i32 = value_bson_pre.as_i32().unwrap();
-                                 // Validation of `unique`
+                                // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "i32", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
@@ -582,7 +624,8 @@ macro_rules! model {
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
@@ -590,7 +633,7 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Int32(field_value));
@@ -601,32 +644,37 @@ macro_rules! model {
                             | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                             | "SelectI64" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: i64 = value_bson_pre.as_i64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "i64", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
                                 // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                // -----------------------------------------------------------------
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Int64(field_value));
@@ -635,32 +683,37 @@ macro_rules! model {
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                             | "InputRangeF64" | "SelectF64" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: f64 = value_bson_pre.as_f64().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "f64", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
                                 // Validation of range (`min` <> `max`)
+                                // -----------------------------------------------------------------
                                 let min: f64 = attrs.min.parse().unwrap();
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value.clone();
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
                                     attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                 }
                                 // Insert result
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                // -----------------------------------------------------------------
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Double(field_value));
@@ -668,19 +721,22 @@ macro_rules! model {
                             }
                             "InputCheckBoxBool" => {
                                 // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: bool = value_bson_pre.as_bool().unwrap();
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "bool", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
                                 // Insert result
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                // -----------------------------------------------------------------
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Boolean(field_value));
@@ -692,8 +748,10 @@ macro_rules! model {
                                     MODEL_NAME, field_name))?
                             }
                         }
+
                         // Insert or update fields for timestamps `created` and `updated`
-                        if !stop_err {
+                        // -------------------------------------------------------------------------
+                        if !global_err {
                             let dt: DateTime<Utc> = Utc::now();
                             if !is_update {
                                 doc_res.insert("created".to_string(), Bson::DateTime(dt));
@@ -723,19 +781,19 @@ macro_rules! model {
                     // Get Hash-line
                     OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, !stop_err, doc_res))
+                        OutputData::Hash((data, !global_err, doc_res))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map((attrs_map, !stop_err, doc_res)),
+                    OutputType::Map => OutputData::Map((attrs_map, !global_err, doc_res)),
                     // Get Json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, !stop_err, doc_res))
+                        OutputData::Json((data, !global_err, doc_res))
                     }
                     // Get Html-line
                     OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, !stop_err, doc_res))
+                        OutputData::Html((data, !global_err, doc_res))
                     }
                 };
 
@@ -750,16 +808,16 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
                 for (field, trans) in attrs_map {
-                    let tmp = if errors.len() > 0_usize {
+                    let tmp = if !errors.is_empty() {
                         format!("{} ; ", errors)
                     } else {
                         String::new()
                     };
-                    if trans.error.len() > 0_usize {
+                    if !trans.error.is_empty() {
                         errors = format!("{}Field: `{}` - {}", tmp, field, trans.error);
                     }
                 }
-                if errors.len() == 0 {
+                if errors.is_empty() {
                     Ok(attrs_map
                         .get(&"hash".to_string())
                         .unwrap()
@@ -777,7 +835,7 @@ macro_rules! model {
                 let mut json_text = String::new();
                 for (field, trans) in attrs_map {
                     let tmp = serde_json::to_string(&trans).unwrap();
-                    if json_text.len() > 0 {
+                    if !json_text.is_empty() {
                         json_text = format!("{},\"{}\":{}", json_text, field, tmp);
                     } else {
                         json_text = format!("\"{}\":{}", field, tmp);
@@ -809,7 +867,7 @@ macro_rules! model {
                 let verified_data: OutputData = self.check(client, OutputType::Map).await?;
                 let mut attrs_map: HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::metadata()?;
-                let is_update: bool = self.hash.len() > 0;
+                let is_update: bool = !self.hash.is_empty();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
@@ -867,7 +925,7 @@ macro_rules! model {
                 let meta: Meta = Self::metadata().unwrap();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 // Validation of required fields in `Meta`
-                if meta.service.len() == 0 || meta.database.len() == 0 {
+                if meta.service.is_empty() || meta.database.is_empty() {
                     panic!(
                         "Service: `{}` -> Model: `{}` -> Method: `meta()` : \
                         The `service` and` database` fields must not be empty.",
@@ -913,7 +971,7 @@ macro_rules! model {
                     .map(|field| field.clone())
                     .filter(|field| field != &"hash" && !ignore_fields.contains(field)).collect();
                 // Checking for the presence of fields
-                if field_names_without_auxiliary.len() == 0 {
+                if field_names_without_auxiliary.is_empty() {
                     panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
                             The model structure has no fields.",
                         meta.service, MODEL_NAME);
@@ -1029,7 +1087,7 @@ macro_rules! model {
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1098,7 +1156,7 @@ macro_rules! model {
                                     must be of type `DataType::U32`.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1150,7 +1208,7 @@ macro_rules! model {
                                     must be of type `DataType::Text`.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1173,8 +1231,8 @@ macro_rules! model {
                                         ` 1970-02-28T00:00` or an empty strings.",
                                         meta.service, MODEL_NAME, field
                                     )
-                            } else if widget.min.get_raw_data().len() > 0
-                                && widget.max.get_raw_data().len() > 0 {
+                            } else if !widget.min.get_raw_data().is_empty()
+                                && !widget.max.get_raw_data().is_empty() {
                                 let mut date_min: String = widget.min.get_raw_data();
                                 let mut date_max: String = widget.max.get_raw_data();
                                 let mut date_value: String = widget.value.get_raw_data();
@@ -1193,7 +1251,7 @@ macro_rules! model {
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if date_value.len() > 0 {
+                                        if !date_value.is_empty() {
                                             if !REGEX_IS_DATE.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
@@ -1222,7 +1280,7 @@ macro_rules! model {
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if date_value.len() > 0 {
+                                        if !date_value.is_empty() {
                                             if !REGEX_IS_DATETIME.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
@@ -1251,7 +1309,7 @@ macro_rules! model {
                                         Method: `widgets()` -> Attribute: `min` : \
                                         Must be less than `max`.",
                                     meta.service, MODEL_NAME, field)
-                                } else if date_value.len() > 0 {
+                                } else if !date_value.is_empty() {
                                     // Check that the default is in the dates range
                                     // from `min` to `max`.
                                     let dt_value: DateTime<Utc> =
@@ -1297,7 +1355,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1353,7 +1411,7 @@ macro_rules! model {
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1456,7 +1514,7 @@ macro_rules! model {
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() == 0 {
+                            } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1512,7 +1570,7 @@ macro_rules! model {
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1601,7 +1659,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() == 0 {
+                            } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1636,7 +1694,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1671,7 +1729,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1706,7 +1764,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1882,7 +1940,7 @@ macro_rules! model {
                                         "InputDate" => {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
-                                            if val.len() > 0 {
+                                            if !val.is_empty() {
                                                 if !REGEX_IS_DATE.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
@@ -1902,7 +1960,7 @@ macro_rules! model {
                                         "InputDateTime" => {
                                             // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
-                                            if val.len() > 0 {
+                                            if !val.is_empty() {
                                                 if !REGEX_IS_DATETIME.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
