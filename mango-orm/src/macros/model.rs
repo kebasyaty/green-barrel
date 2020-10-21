@@ -577,10 +577,10 @@ macro_rules! model {
                                         }
                                     }
                                     // Create datetime in bson type
+                                    // -------------------------------------------------------------
                                     let dt_value_bson = Bson::DateTime(dt_value);
-                                    // -----------------------------------------------------
                                     // Validation of `unique`
-                                    // -----------------------------------------------------
+                                    // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique
                                         , field_name.to_string(), &dt_value_bson
                                         , "datetime", &coll)
