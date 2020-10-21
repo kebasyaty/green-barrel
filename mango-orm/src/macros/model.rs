@@ -562,6 +562,14 @@ macro_rules! model {
                                                     NaiveDateTime::parse_from_str(
                                                         &max_value, "%Y-%m-%dT%H:%M")?, Utc)
                                             };
+                                            if dt_value < dt_min || dt_value > dt_max {
+                                                stop_err = true;
+                                                attrs.error =
+                                                    Self::accumula_err(&attrs,
+                                                        &"Date out of range between `min` and` max`."
+                                                        .to_string()
+                                                    ).unwrap();
+                                            }
                                         }
                                         // Create datetime in bson type
                                         let dt_value_bson = Bson::DateTime(dt_value);
