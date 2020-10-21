@@ -353,9 +353,7 @@ macro_rules! model {
                     // Loop over fields for validation
                     for field_name in FIELD_NAMES {
                         // Don't check the `hash` field
-                        if field_name == &"hash" {
-                            continue;
-                        }
+                        if field_name == &"hash" { continue; }
                         // Get field value for validation
                         let value_bson_pre: Option<&Bson> = doc_pre.get(field_name);
                         // Check field value
@@ -370,7 +368,8 @@ macro_rules! model {
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
-                        let mut local_err = false; // For each iteration of the loop
+                        // For each iteration of the loop
+                        let mut local_err = false;
                         // Field validation
                         match field_type {
                             // Validation of text type fields
