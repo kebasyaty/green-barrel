@@ -120,14 +120,14 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    if cache.attrs_json.len() == 0 {
+                    if cache.attrs_json.is_empty() {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
                         let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
-                            if json_text.len() > 0 {
+                            if !json_text.is_empty() {
                                 json_text = format!("{},\"{}\":{}", json_text, field, tmp);
                             } else {
                                 json_text = format!("\"{}\":{}", field, tmp);
@@ -160,7 +160,7 @@ macro_rules! model {
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
                     let cache: &FormCache = cache.unwrap();
-                    let is_cached: bool = cache.form_html.len() == 0;
+                    let is_cached: bool = cache.form_html.is_empty();
                     if is_cached {
                         build_controls = true;
                         attrs = cache.attrs_map.clone();
@@ -227,7 +227,7 @@ macro_rules! model {
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut tmp = attrs.error.clone();
-                tmp = if tmp.len() > 0_usize { format!("{}<br>", tmp) } else { String::new() };
+                tmp = if !tmp.is_empty() { format!("{}<br>", tmp) } else { String::new() };
                 Ok(format!("{}{}", tmp, err))
             }
 
@@ -315,7 +315,7 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::metadata()?;
                 let mut stop_err = false;
-                let is_update: bool = self.hash.len() > 0;
+                let is_update: bool = !self.hash.is_empty();
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
@@ -382,7 +382,7 @@ macro_rules! model {
 
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
-                                if attrs.required && field_value.len() == 0 {
+                                if attrs.required && field_value.is_empty() {
                                     stop_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
@@ -395,7 +395,7 @@ macro_rules! model {
                                 // take data from the database
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name) &&
-                                    ((!attrs.required && field_value.len() == 0) ||
+                                    ((!attrs.required && field_value.is_empty()) ||
                                     field_type == "InputPassword") {
                                     let value_from_db: Option<&Bson> =
                                         doc_from_db.get(&field_name);
@@ -422,7 +422,7 @@ macro_rules! model {
                                 });
 
                                 // -----------------------------------------------------------------
-                                if field_value.len() > 0 {
+                                if !field_value.is_empty() {
                                     // Validation of range (`min` <> `max`)
                                     // ( Hint: The `validate_length()` method did not
                                     // provide the desired result )
@@ -467,7 +467,7 @@ macro_rules! model {
                                 if !stop_err && !ignore_fields.contains(field_name) {
                                     match field_type {
                                         "InputPassword" => {
-                                            if field_value.len() > 0 {
+                                            if !field_value.is_empty() {
                                                 // Generate password hash and add to result document
                                                 let hash: String =
                                                     Self::create_password_hash(field_value)?;
@@ -490,7 +490,7 @@ macro_rules! model {
                                 let field_value: &str = value_bson_pre.as_str().unwrap();
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
-                                if attrs.required && field_value.len() == 0 {
+                                if attrs.required && field_value.is_empty() {
                                     stop_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
@@ -502,7 +502,7 @@ macro_rules! model {
                                 // take data from the database
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name)
-                                    && !attrs.required && field_value.len() == 0 {
+                                    && !attrs.required && field_value.is_empty() {
                                     let value_from_db: Option<&Bson> =
                                         doc_from_db.get(&field_name);
 
@@ -516,7 +516,7 @@ macro_rules! model {
                                                     This field is missing from the database.",
                                             MODEL_NAME, &field_name))?
                                     }
-                                    if field_value.len() > 0 {
+                                    if !field_value.is_empty() {
                                         // Validation in regular expression
                                         // ---------------------------------------------------------
                                         Self::regex_validation(field_type, field_value)
@@ -800,16 +800,16 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
                 for (field, trans) in attrs_map {
-                    let tmp = if errors.len() > 0_usize {
+                    let tmp = if !errors.is_empty() {
                         format!("{} ; ", errors)
                     } else {
                         String::new()
                     };
-                    if trans.error.len() > 0_usize {
+                    if !trans.error.is_empty() {
                         errors = format!("{}Field: `{}` - {}", tmp, field, trans.error);
                     }
                 }
-                if errors.len() == 0 {
+                if errors.is_empty() {
                     Ok(attrs_map
                         .get(&"hash".to_string())
                         .unwrap()
@@ -827,7 +827,7 @@ macro_rules! model {
                 let mut json_text = String::new();
                 for (field, trans) in attrs_map {
                     let tmp = serde_json::to_string(&trans).unwrap();
-                    if json_text.len() > 0 {
+                    if !json_text.is_empty() {
                         json_text = format!("{},\"{}\":{}", json_text, field, tmp);
                     } else {
                         json_text = format!("\"{}\":{}", field, tmp);
@@ -859,7 +859,7 @@ macro_rules! model {
                 let verified_data: OutputData = self.check(client, OutputType::Map).await?;
                 let mut attrs_map: HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::metadata()?;
-                let is_update: bool = self.hash.len() > 0;
+                let is_update: bool = !self.hash.is_empty();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
@@ -917,7 +917,7 @@ macro_rules! model {
                 let meta: Meta = Self::metadata().unwrap();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 // Validation of required fields in `Meta`
-                if meta.service.len() == 0 || meta.database.len() == 0 {
+                if meta.service.is_empty() || meta.database.is_empty() {
                     panic!(
                         "Service: `{}` -> Model: `{}` -> Method: `meta()` : \
                         The `service` and` database` fields must not be empty.",
@@ -963,7 +963,7 @@ macro_rules! model {
                     .map(|field| field.clone())
                     .filter(|field| field != &"hash" && !ignore_fields.contains(field)).collect();
                 // Checking for the presence of fields
-                if field_names_without_auxiliary.len() == 0 {
+                if field_names_without_auxiliary.is_empty() {
                     panic!("Service: `{}` -> Model: `{}` -> Method: `migrat()` : \
                             The model structure has no fields.",
                         meta.service, MODEL_NAME);
@@ -1079,7 +1079,7 @@ macro_rules! model {
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1148,7 +1148,7 @@ macro_rules! model {
                                     must be of type `DataType::U32`.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1200,7 +1200,7 @@ macro_rules! model {
                                     must be of type `DataType::Text`.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1223,8 +1223,8 @@ macro_rules! model {
                                         ` 1970-02-28T00:00` or an empty strings.",
                                         meta.service, MODEL_NAME, field
                                     )
-                            } else if widget.min.get_raw_data().len() > 0
-                                && widget.max.get_raw_data().len() > 0 {
+                            } else if !widget.min.get_raw_data().is_empty()
+                                && !widget.max.get_raw_data().is_empty() {
                                 let mut date_min: String = widget.min.get_raw_data();
                                 let mut date_max: String = widget.max.get_raw_data();
                                 let mut date_value: String = widget.value.get_raw_data();
@@ -1243,7 +1243,7 @@ macro_rules! model {
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if date_value.len() > 0 {
+                                        if !date_value.is_empty() {
                                             if !REGEX_IS_DATE.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
@@ -1272,7 +1272,7 @@ macro_rules! model {
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if date_value.len() > 0 {
+                                        if !date_value.is_empty() {
                                             if !REGEX_IS_DATETIME.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
@@ -1301,7 +1301,7 @@ macro_rules! model {
                                         Method: `widgets()` -> Attribute: `min` : \
                                         Must be less than `max`.",
                                     meta.service, MODEL_NAME, field)
-                                } else if date_value.len() > 0 {
+                                } else if !date_value.is_empty() {
                                     // Check that the default is in the dates range
                                     // from `min` to `max`.
                                     let dt_value: DateTime<Utc> =
@@ -1347,7 +1347,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1403,7 +1403,7 @@ macro_rules! model {
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1506,7 +1506,7 @@ macro_rules! model {
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() == 0 {
+                            } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1562,7 +1562,7 @@ macro_rules! model {
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1651,7 +1651,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() == 0 {
+                            } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = FieldType::`{}` : \
@@ -1686,7 +1686,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1721,7 +1721,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1756,7 +1756,7 @@ macro_rules! model {
                                     attributes must have the same types.",
                                     meta.service, MODEL_NAME, field
                                 )
-                            } else if widget.select.len() != 0 {
+                            } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
@@ -1932,7 +1932,7 @@ macro_rules! model {
                                         "InputDate" => {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
-                                            if val.len() > 0 {
+                                            if !val.is_empty() {
                                                 if !REGEX_IS_DATE.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
@@ -1952,7 +1952,7 @@ macro_rules! model {
                                         "InputDateTime" => {
                                             // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
-                                            if val.len() > 0 {
+                                            if !val.is_empty() {
                                                 if !REGEX_IS_DATETIME.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
