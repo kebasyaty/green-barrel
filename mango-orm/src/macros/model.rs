@@ -314,7 +314,7 @@ macro_rules! model {
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::metadata()?;
-                let mut stop_err = false;
+                let mut global_err = false;
                 let is_update: bool = !self.hash.is_empty();
                 let mut attrs_map: HashMap<String, Transport> = HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
@@ -344,7 +344,7 @@ macro_rules! model {
                     // Apply custom check
                     {
                         let error_map: HashMap<&str, &str> = self.custom_check()?;
-                        if !error_map.is_empty() { stop_err = true; }
+                        if !error_map.is_empty() { global_err = true; }
                         for (field_name, err_msg) in error_map {
                             let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
                             attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
@@ -370,6 +370,7 @@ macro_rules! model {
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
+                        let mut local_err = false;
                         // Field validation
                         match field_type {
                             // Validation of text type fields
@@ -383,7 +384,8 @@ macro_rules! model {
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
                                 if attrs.required && field_value.is_empty() {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
                                             &"Required field.".to_owned()).unwrap();
@@ -416,7 +418,8 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 Self::check_maxlength(attrs.maxlength, field_value)
                                     .unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                 });
@@ -433,7 +436,8 @@ macro_rules! model {
                                     if (min > 0_f64 || max > 0_f64) &&
                                         !validate_range(Validator::Range{min: Some(min),
                                                         max: Some(max)}, len) {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         let msg = format!(
                                             "Length {} is out of range (min={} <> max={}).",
                                             len, min, max);
@@ -445,7 +449,8 @@ macro_rules! model {
                                     Self::check_unique(is_update, attrs.unique,
                                         field_name.to_string(), value_bson_pre, "str", &coll)
                                         .await.unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string())
                                                 .unwrap();
@@ -455,7 +460,8 @@ macro_rules! model {
                                     // -------------------------------------------------------------
                                     Self::regex_validation(field_type, field_value)
                                         .unwrap_or_else(|err| {
-                                        stop_err = true;
+                                        global_err = true;
+                                        local_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs, &err.to_string())
                                                 .unwrap();
@@ -464,7 +470,7 @@ macro_rules! model {
 
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     match field_type {
                                         "InputPassword" => {
                                             if !field_value.is_empty() {
@@ -491,7 +497,8 @@ macro_rules! model {
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
                                 if attrs.required && field_value.is_empty() {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs,
                                             &"Required field.".to_owned()).unwrap();
@@ -522,12 +529,13 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 Self::regex_validation(field_type, field_value)
                                     .unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
-                                if stop_err { continue; }
+                                if local_err { continue; }
                                 // Create Date and Time Object
                                 // -----------------------------------------------------------------
                                 let dt_value: DateTime<Utc> = {
@@ -565,7 +573,7 @@ macro_rules! model {
                                                 &max_value, "%Y-%m-%dT%H:%M")?, Utc)
                                     };
                                     if dt_value < dt_min || dt_value > dt_max {
-                                        stop_err = true;
+                                        global_err = true;
                                         attrs.error =
                                             Self::accumula_err(&attrs,
                                                 &"Date out of range between `min` and` max`."
@@ -583,14 +591,15 @@ macro_rules! model {
                                     , field_name.to_string(), &dt_value_bson
                                     , "datetime", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err {
+                                if !local_err {
                                     doc_res.insert(field_name.to_string(),
                                         dt_value_bson);
                                 } else {
@@ -607,7 +616,8 @@ macro_rules! model {
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "i32", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
@@ -620,7 +630,8 @@ macro_rules! model {
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
@@ -628,7 +639,7 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Int32(field_value));
@@ -646,7 +657,8 @@ macro_rules! model {
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "i64", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
@@ -659,7 +671,8 @@ macro_rules! model {
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
@@ -667,7 +680,7 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Int64(field_value));
@@ -683,7 +696,8 @@ macro_rules! model {
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "f64", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
@@ -696,7 +710,8 @@ macro_rules! model {
                                 if (min > 0_f64 || max > 0_f64) &&
                                     !validate_range(Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     let msg = format!(
                                         "Number {} is out of range (min={} <> max={}).",
                                         num, min, max);
@@ -704,7 +719,7 @@ macro_rules! model {
                                 }
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Double(field_value));
@@ -719,14 +734,15 @@ macro_rules! model {
                                 Self::check_unique(is_update, attrs.unique,
                                     field_name.to_string(), value_bson_pre, "bool", &coll)
                                     .await.unwrap_or_else(|err| {
-                                    stop_err = true;
+                                    global_err = true;
+                                    local_err = true;
                                     attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string())
                                             .unwrap();
                                 });
                                 // Insert result
                                 // -----------------------------------------------------------------
-                                if !stop_err && !ignore_fields.contains(field_name) {
+                                if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
                                         Bson::Boolean(field_value));
@@ -741,7 +757,7 @@ macro_rules! model {
 
                         // Insert or update fields for timestamps `created` and `updated`
                         // -------------------------------------------------------------------------
-                        if !stop_err {
+                        if !global_err {
                             let dt: DateTime<Utc> = Utc::now();
                             if !is_update {
                                 doc_res.insert("created".to_string(), Bson::DateTime(dt));
@@ -771,19 +787,19 @@ macro_rules! model {
                     // Get Hash-line
                     OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, !stop_err, doc_res))
+                        OutputData::Hash((data, !global_err, doc_res))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map((attrs_map, !stop_err, doc_res)),
+                    OutputType::Map => OutputData::Map((attrs_map, !global_err, doc_res)),
                     // Get Json-line
                     OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, !stop_err, doc_res))
+                        OutputData::Json((data, !global_err, doc_res))
                     }
                     // Get Html-line
                     OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, !stop_err, doc_res))
+                        OutputData::Html((data, !global_err, doc_res))
                     }
                 };
 
