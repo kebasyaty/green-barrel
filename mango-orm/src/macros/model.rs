@@ -379,8 +379,9 @@ macro_rules! model {
                             | "InputEmail" | "InputPassword" | "InputTel"
                             | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                             | "InputIPv6" | "TextArea" | "SelectText" => {
+                                // Get field value for validation
+                                // -----------------------------------------------------------------
                                 let field_value: &str = value_bson_pre.as_str().unwrap();
-
                                 // Validation for a required field
                                 // -----------------------------------------------------------------
                                 if attrs.required && field_value.is_empty() {
@@ -392,7 +393,6 @@ macro_rules! model {
                                     attrs.value = field_value.to_string();
                                     continue;
                                 }
-
                                 // If the field is not required and there is no data in it,
                                 // take data from the database
                                 // -----------------------------------------------------------------
@@ -413,7 +413,6 @@ macro_rules! model {
                                             MODEL_NAME, &field_name))?
                                     }
                                 }
-
                                 // Checking `maxlength`, `min length`, `max length`
                                 // -----------------------------------------------------------------
                                 Self::check_maxlength(attrs.maxlength, field_value)
@@ -423,7 +422,6 @@ macro_rules! model {
                                         attrs.error =
                                         Self::accumula_err(&attrs, &err.to_string()).unwrap();
                                 });
-
                                 // -----------------------------------------------------------------
                                 if !field_value.is_empty() {
                                     // Validation of range (`min` <> `max`)
@@ -443,7 +441,6 @@ macro_rules! model {
                                             len, min, max);
                                         attrs.error = Self::accumula_err(&attrs, &msg).unwrap();
                                     }
-
                                     // Validation of `unique`
                                     // -------------------------------------------------------------
                                     Self::check_unique(is_update, attrs.unique,
@@ -455,7 +452,6 @@ macro_rules! model {
                                             Self::accumula_err(&attrs, &err.to_string())
                                                 .unwrap();
                                     });
-
                                     // Validation in regular expression (email, password, etc...)
                                     // -------------------------------------------------------------
                                     Self::regex_validation(field_type, field_value)
@@ -467,7 +463,6 @@ macro_rules! model {
                                                 .unwrap();
                                     });
                                 }
-
                                 // Insert result
                                 // -----------------------------------------------------------------
                                 if !local_err && !ignore_fields.contains(field_name) {
