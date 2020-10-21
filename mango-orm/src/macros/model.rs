@@ -528,18 +528,39 @@ macro_rules! model {
                                         });
                                         // Create datetime in bson type
                                         // ---------------------------------------------------------
-                                        let dt_value_bson: Bson = {
+                                        let dt_value: DateTime<Utc> = {
                                             let field_value: String = if field_type == "InputDate" {
                                                 format!("{}T00:00", field_value.to_string())
                                             } else {
                                                 field_value.to_string()
                                             };
-                                            let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &field_value, "%Y-%m-%dT%H:%M")?, Utc);
-                                            Bson::DateTime(dt)
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &field_value, "%Y-%m-%dT%H:%M")?, Utc)
                                         };
+                                        let dt_min: DateTime<Utc> = {
+                                            let min_value: String = if field_type == "InputDate" {
+                                                format!("{}T00:00", attrs.min.clone())
+                                            } else {
+                                                attrs.min.clone()
+                                            };
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &min_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        };
+                                        let dt_max: DateTime<Utc> = {
+                                            let max_value: String = if field_type == "InputDate" {
+                                                format!("{}T00:00", attrs.max.clone())
+                                            } else {
+                                                attrs.max.clone()
+                                            };
+                                            DateTime::<Utc>::from_utc(
+                                                NaiveDateTime::parse_from_str(
+                                                    &max_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        };
+                                        // Create datetime in bson type
+                                        let dt_value_bson: Bson = Bson::DateTime(dt_value);
+                                        // ---------------------------------------------------------
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
                                         Self::check_unique(is_update, attrs.unique
