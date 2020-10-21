@@ -526,7 +526,7 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                        // Create datetime
+                                        // Create Date and Time Object
                                         // ---------------------------------------------------------
                                         let dt_value: DateTime<Utc> = {
                                             let field_value: String = if field_type == "InputDate" {

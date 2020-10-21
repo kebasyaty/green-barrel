@@ -317,7 +317,7 @@ pub struct Transport {
     pub step: String,
     pub min: String,
     pub max: String,
-    pub other_attrs: String,  // "autofocus size=\"число\" ..."
+    pub other_attrs: String,  // "autofocus size=\"number\" ..."
     pub some_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
     pub warning: String,
