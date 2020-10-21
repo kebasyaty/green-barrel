@@ -559,7 +559,7 @@ macro_rules! model {
                                                     &max_value, "%Y-%m-%dT%H:%M")?, Utc)
                                         };
                                         // Create datetime in bson type
-                                        let dt_value_bson: Bson = Bson::DateTime(dt_value);
+                                        let dt_value_bson = Bson::DateTime(dt_value);
                                         // ---------------------------------------------------------
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
