@@ -526,6 +526,22 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
+                                        if !attrs.min.is_empty() && !attrs.max.is_empty() {
+                                            Self::regex_validation(field_type, &attrs.min)
+                                                .unwrap_or_else(|err| {
+                                                stop_err = true;
+                                                attrs.error =
+                                                    Self::accumula_err(&attrs, &err.to_string())
+                                                        .unwrap();
+                                            });
+                                                Self::regex_validation(field_type, &attrs.max)
+                                                .unwrap_or_else(|err| {
+                                                stop_err = true;
+                                                attrs.error =
+                                                    Self::accumula_err(&attrs, &err.to_string())
+                                                        .unwrap();
+                                            });
+                                        }
                                         // Create datetime
                                         // ---------------------------------------------------------
                                         let dt_value: DateTime<Utc> = {
@@ -541,26 +557,28 @@ macro_rules! model {
                                         // Create dates for `min` and `max` attributes values to
                                         // check, if the value of user falls within the range
                                         // between these dates
-                                        let dt_min: DateTime<Utc> = {
-                                            let min_value: String = if field_type == "InputDate" {
-                                                format!("{}T00:00", attrs.min.clone())
-                                            } else {
-                                                attrs.min.clone()
+                                        if !attrs.min.is_empty() && !attrs.max.is_empty() {
+                                            let dt_min: DateTime<Utc> = {
+                                                let min_value: String = if field_type == "InputDate" {
+                                                    format!("{}T00:00", attrs.min.clone())
+                                                } else {
+                                                    attrs.min.clone()
+                                                };
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &min_value, "%Y-%m-%dT%H:%M")?, Utc)
                                             };
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &min_value, "%Y-%m-%dT%H:%M")?, Utc)
-                                        };
-                                        let dt_max: DateTime<Utc> = {
-                                            let max_value: String = if field_type == "InputDate" {
-                                                format!("{}T00:00", attrs.max.clone())
-                                            } else {
-                                                attrs.max.clone()
+                                            let dt_max: DateTime<Utc> = {
+                                                let max_value: String = if field_type == "InputDate" {
+                                                    format!("{}T00:00", attrs.max.clone())
+                                                } else {
+                                                    attrs.max.clone()
+                                                };
+                                                DateTime::<Utc>::from_utc(
+                                                    NaiveDateTime::parse_from_str(
+                                                        &max_value, "%Y-%m-%dT%H:%M")?, Utc)
                                             };
-                                            DateTime::<Utc>::from_utc(
-                                                NaiveDateTime::parse_from_str(
-                                                    &max_value, "%Y-%m-%dT%H:%M")?, Utc)
-                                        };
+                                        }
                                         // Create datetime in bson type
                                         let dt_value_bson = Bson::DateTime(dt_value);
                                         // ---------------------------------------------------------
