@@ -526,7 +526,7 @@ macro_rules! model {
                                                 Self::accumula_err(&attrs, &err.to_string())
                                                     .unwrap();
                                         });
-                                        // Create datetime in bson type
+                                        // Create datetime
                                         // ---------------------------------------------------------
                                         let dt_value: DateTime<Utc> = {
                                             let field_value: String = if field_type == "InputDate" {
@@ -538,6 +538,9 @@ macro_rules! model {
                                                 NaiveDateTime::parse_from_str(
                                                     &field_value, "%Y-%m-%dT%H:%M")?, Utc)
                                         };
+                                        // Create dates for `min` and `max` attributes values to
+                                        // check, if the value of user falls within the range
+                                        // between these dates
                                         let dt_min: DateTime<Utc> = {
                                             let min_value: String = if field_type == "InputDate" {
                                                 format!("{}T00:00", attrs.min.clone())
