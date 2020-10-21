@@ -518,15 +518,15 @@ macro_rules! model {
                                     }
                                 }
                                 if field_value.is_empty() { continue; }
-                                    // Validation in regular expression
-                                    // -------------------------------------------------------------
-                                    Self::regex_validation(field_type, field_value)
-                                        .unwrap_or_else(|err| {
-                                        stop_err = true;
-                                        attrs.error =
-                                            Self::accumula_err(&attrs, &err.to_string())
-                                                .unwrap();
-                                    });
+                                // Validation in regular expression
+                                // -----------------------------------------------------------------
+                                Self::regex_validation(field_type, field_value)
+                                    .unwrap_or_else(|err| {
+                                    stop_err = true;
+                                    attrs.error =
+                                        Self::accumula_err(&attrs, &err.to_string())
+                                            .unwrap();
+                                });
                                 if stop_err { continue; }
                                 // Create Date and Time Object
                                 // -----------------------------------------------------------------
