@@ -370,7 +370,7 @@ macro_rules! model {
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
-                        let mut local_err = false;
+                        let mut local_err = false; // For each iteration of the loop
                         // Field validation
                         match field_type {
                             // Validation of text type fields
