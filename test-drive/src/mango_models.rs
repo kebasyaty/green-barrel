@@ -18,7 +18,6 @@ use mongodb::{
 };
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 use validator::{
