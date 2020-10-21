@@ -571,25 +571,26 @@ macro_rules! model {
                                                     ).unwrap();
                                             }
                                         }
-                                        // Create datetime in bson type
-                                        let dt_value_bson = Bson::DateTime(dt_value);
-                                        // ---------------------------------------------------------
-                                        // Validation of `unique`
-                                        // ---------------------------------------------------------
-                                        Self::check_unique(is_update, attrs.unique
-                                            , field_name.to_string(), &dt_value_bson
-                                            , "datetime", &coll)
-                                            .await.unwrap_or_else(|err| {
-                                            stop_err = true;
-                                            attrs.error =
-                                                Self::accumula_err(&attrs, &err.to_string())
-                                                    .unwrap();
-                                        });
-                                        // Insert result
-                                        // ---------------------------------------------------------
                                         if !stop_err {
-                                            doc_res.insert(field_name.to_string(), dt_value_bson);
-                                            continue;
+                                            // Create datetime in bson type
+                                            let dt_value_bson = Bson::DateTime(dt_value);
+                                            // -----------------------------------------------------
+                                            // Validation of `unique`
+                                            // -----------------------------------------------------
+                                            Self::check_unique(is_update, attrs.unique
+                                                , field_name.to_string(), &dt_value_bson
+                                                , "datetime", &coll)
+                                                .await.unwrap_or_else(|err| {
+                                                stop_err = true;
+                                                attrs.error =
+                                                    Self::accumula_err(&attrs, &err.to_string())
+                                                        .unwrap();
+                                            });
+                                            // Insert result
+                                            // -----------------------------------------------------
+                                                doc_res.insert(field_name.to_string(),
+                                                    dt_value_bson);
+                                                continue;
                                         }
                                     }
                                     // Insert result
