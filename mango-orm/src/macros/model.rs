@@ -528,7 +528,7 @@ macro_rules! model {
                                         });
                                         // Create datetime in bson type
                                         // ---------------------------------------------------------
-                                        let dt_bson: Bson = {
+                                        let dt_value_bson: Bson = {
                                             let field_value: String = if field_type == "InputDate" {
                                                 format!("{}T00:00", field_value.to_string())
                                             } else {
@@ -543,7 +543,7 @@ macro_rules! model {
                                         // Validation of `unique`
                                         // ---------------------------------------------------------
                                         Self::check_unique(is_update, attrs.unique
-                                            , field_name.to_string(), &dt_bson
+                                            , field_name.to_string(), &dt_value_bson
                                             , "datetime", &coll)
                                             .await.unwrap_or_else(|err| {
                                             stop_err = true;
@@ -554,7 +554,7 @@ macro_rules! model {
                                         // Insert result
                                         // ---------------------------------------------------------
                                         if !stop_err {
-                                            doc_res.insert(field_name.to_string(), dt_bson);
+                                            doc_res.insert(field_name.to_string(), dt_value_bson);
                                             continue;
                                         }
                                     }
