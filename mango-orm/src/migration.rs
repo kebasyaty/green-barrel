@@ -33,7 +33,7 @@ impl<'a> Monitor<'a> {
         // Keyword Validation
         let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.keyword) {
-            panic!("Keyword - Valid characters: _|a-z|A-Z|0-9 ; Size: 8-16.");
+            panic!("Keyword - Valid characters: _ a-z A-Z 0-9 ; Size: 8-16.");
         }
         // Establish a connection with the technical database of the project
         let mango_orm_keyword: String = format!("mango_orm_{}", self.keyword);
