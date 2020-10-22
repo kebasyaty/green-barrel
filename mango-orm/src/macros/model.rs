@@ -302,7 +302,7 @@ macro_rules! model {
                         })
                         .collect();
                     let salt: &[u8] = salt.as_bytes();
-                    let config = Config::default();
+                    let config = argon2::Config::default();
                     let hash: String = argon2::hash_encoded(password, salt, &config)?;
                     Ok(hash)
             }
@@ -532,39 +532,39 @@ macro_rules! model {
                                 if local_err { continue; }
                                 // Create Date and Time Object
                                 // -----------------------------------------------------------------
-                                let dt_value: DateTime<Utc> = {
+                                let dt_value: chrono::DateTime<chrono::Utc> = {
                                     let field_value: String = if field_type == "InputDate" {
                                         format!("{}T00:00", field_value.to_string())
                                     } else {
                                         field_value.to_string()
                                     };
-                                    DateTime::<Utc>::from_utc(
-                                        NaiveDateTime::parse_from_str(
-                                            &field_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                            &field_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                 };
                                 // Create dates for `min` and `max` attributes values to
                                 // check, if the value of user falls within the range
                                 // between these dates
                                 if !attrs.min.is_empty() && !attrs.max.is_empty() {
-                                    let dt_min: DateTime<Utc> = {
+                                    let dt_min: chrono::DateTime<chrono::Utc> = {
                                         let min_value: String = if field_type == "InputDate" {
                                             format!("{}T00:00", attrs.min.clone())
                                         } else {
                                             attrs.min.clone()
                                         };
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &min_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &min_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                     };
-                                    let dt_max: DateTime<Utc> = {
+                                    let dt_max: chrono::DateTime<chrono::Utc> = {
                                         let max_value: String = if field_type == "InputDate" {
                                             format!("{}T00:00", attrs.max.clone())
                                         } else {
                                             attrs.max.clone()
                                         };
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &max_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &max_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                     };
                                     if dt_value < dt_min || dt_value > dt_max {
                                         global_err = true;
@@ -752,7 +752,7 @@ macro_rules! model {
                         // Insert or update fields for timestamps `created` and `updated`
                         // -------------------------------------------------------------------------
                         if !global_err {
-                            let dt: DateTime<Utc> = Utc::now();
+                            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                             if !is_update {
                                 doc_res.insert("created".to_string(), Bson::DateTime(dt));
                                 doc_res.insert("updated".to_string(), Bson::DateTime(dt));
@@ -1295,14 +1295,14 @@ macro_rules! model {
                                     }
                                 }
                                 // Get DateTime
-                                let dt_min: DateTime<Utc> =
-                                DateTime::<Utc>::from_utc(
-                                    NaiveDateTime::parse_from_str(
-                                        &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                let dt_max: DateTime<Utc> =
-                                    DateTime::<Utc>::from_utc(
-                                        NaiveDateTime::parse_from_str(
-                                            &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                let dt_min: chrono::DateTime<chrono::Utc> =
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                        &date_min, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
+                                let dt_max: chrono::DateTime<chrono::Utc> =
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                            &date_max, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                 // If the `max` attribute is not greater than `min`, call a panic
                                 if dt_min >= dt_max {
                                     panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
@@ -1312,10 +1312,10 @@ macro_rules! model {
                                 } else if !date_value.is_empty() {
                                     // Check that the default is in the dates range
                                     // from `min` to `max`.
-                                    let dt_value: DateTime<Utc> =
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &date_value, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                    let dt_value: chrono::DateTime<chrono::Utc> =
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &date_value, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                     if dt_value < dt_min || dt_value > dt_max {
                                         panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                 Method: `widgets()` -> Attribute: `value` : \
@@ -1948,10 +1948,10 @@ macro_rules! model {
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 let val = format!("{}T00:00", val);
-                                                let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                chrono::DateTime::<chrono::Utc>::from_utc(
+                                                    chrono::NaiveDateTime::parse_from_str(
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                                 Bson::DateTime(dt)
                                             } else {
                                                 Bson::Null
@@ -1968,10 +1968,10 @@ macro_rules! model {
                                                             Example: 1970-02-28T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
-                                                let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                        chrono::NaiveDateTime::parse_from_str(
+                                                            &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                                 Bson::DateTime(dt)
                                             } else {
                                                 Bson::Null
