@@ -918,7 +918,8 @@ macro_rules! model {
 
             // Migrating Model
             // *************************************************************************************
-            // Check model changes and (if required) apply to the database
+            // 1.Checking widgets for correct attribute values and default values.
+            // 2.Check model changes and (if required) apply to the database.
             pub async fn migrat<'a>(client: &mongodb::Client, keyword: &'a str) {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
