@@ -22,25 +22,25 @@ macro_rules! model {
             // Info Model
             // *************************************************************************************
             // Get model name
-            pub fn model_name<'a>() -> Result<&'a str, Box<dyn Error>> {
+            pub fn model_name<'a>() -> Result<&'a str, Box<dyn std::error::Error>> {
                 Ok(stringify!($sname))
             }
 
             // Get array of field names
-            pub fn field_names<'a>() -> Result<&'a [&'a str], Box<dyn Error>> {
+            pub fn field_names<'a>() -> Result<&'a [&'a str], Box<dyn std::error::Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
 
             // // Get a map with field types
-            pub fn field_types<'a>() -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+            pub fn field_types<'a>() -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
             }
 
             // Metadata (database name, collection name, etc)
-            pub fn metadata<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
-                let mut meta: Meta = Self::meta()?;
+            pub fn metadata<'a>() -> Result<mango_orm::models::Meta<'a>, Box<dyn std::error::Error>> {
+                let mut meta: mango_orm::models::Meta = Self::meta()?;
                 meta.service = meta.service.to_lowercase();
                 meta.database = meta.database.to_lowercase();
                 meta.collection = format!("{}__{}",
@@ -52,13 +52,13 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&str, Widget> = Self::widgets()?;
+            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, mango_orm::widgets::Widget>, Box<dyn std::error::Error>> {
+                let mut map: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
                         "hash",
-                        Widget {
-                            value: FieldType::Hash,
+                        mango_orm::widgets::Widget {
+                            value: mango_orm::widgets::FieldType::Hash,
                             hidden: true,
                             ..Default::default()
                         }
@@ -69,26 +69,26 @@ macro_rules! model {
 
             // Add (if required) default form data to cache
             pub async fn form_cache() -> Result<(
-                async_mutex::MutexGuard<'static, HashMap<String,
-                FormCache>>, String), Box<dyn Error>> {
+                async_mutex::MutexGuard<'static, std::collections::HashMap<String,
+                mango_orm::store::FormCache>>, String), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
-                let meta: Meta = Self::metadata()?;
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let key = meta.collection.clone();
-                let mut store: async_mutex::MutexGuard<'_, HashMap<String,
-                    FormCache>> = FORM_CACHE.lock().await;
-                let mut cache: Option<&FormCache> = store.get(&key);
+                let mut store: async_mutex::MutexGuard<'_, std::collections::HashMap<String,
+                mango_orm::store::FormCache>> = mango_orm::store::FORM_CACHE.lock().await;
+                let mut cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
-                    let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
-                    let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut widget_map: HashMap<String, String> = HashMap::new();
+                    let widgets: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets_full_map()?;
+                    let mut clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
+                    let mut widget_map: std::collections::HashMap<String, String> = std::collections::HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
                         widget_map.insert(
                             field.to_string(), widget.value.get_enum_type().to_string());
                     }
                     // Add default data
-                    let form_cache = FormCache{
+                    let form_cache = mango_orm::store::FormCache{
                         attrs_map: clean_attrs,
                         widget_map: widget_map,
                         ..Default::default()
@@ -101,11 +101,11 @@ macro_rules! model {
             }
 
             // Get a map of pure attributes of Form for page templates
-            pub async fn form_map() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+            pub async fn form_map() -> Result<std::collections::HashMap<String, mango_orm::widgets::Transport>, Box<dyn std::error::Error>> {
                 let (store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
+                    let clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
                     Err(format!("Model: `{}` -> Method: `form_map()` : \
@@ -115,15 +115,15 @@ macro_rules! model {
             }
 
             // Get Form attributes in Json format for page templates
-            pub async fn form_json() -> Result<String, Box<dyn Error>> {
+            pub async fn form_json() -> Result<String, Box<dyn std::error::Error>> {
                 let (mut store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     if cache.attrs_json.is_empty() {
                         // Create Json-string
-                        let mut form_cache: FormCache = cache.clone();
-                        let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
+                        let mut form_cache: mango_orm::store::FormCache = cache.clone();
+                        let attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -150,16 +150,16 @@ macro_rules! model {
 
             // Get Html Form of Model for page templates
             pub async fn form_html() ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let mut build_controls = false;
-                let mut attrs: HashMap<String, Transport> = HashMap::new();
+                let mut attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 //
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     let is_cached: bool = cache.form_html.is_empty();
                     if is_cached {
                         build_controls = true;
@@ -172,7 +172,7 @@ macro_rules! model {
                     )?;
                     if is_cached {
                          // Clone cache
-                         let mut form_cache: FormCache = cache.clone();
+                         let mut form_cache: mango_orm::store::FormCache = cache.clone();
                         // Update cache
                         form_cache.form_html = controls.clone();
                         // Save to cache
@@ -191,7 +191,7 @@ macro_rules! model {
             // Validation of database queries
             // *************************************************************************************
             // Validation of `maxlength`
-            fn check_maxlength(maxlength: usize, value: &str ) -> Result<(), Box<dyn Error>>  {
+            fn check_maxlength(maxlength: usize, value: &str ) -> Result<(), Box<dyn std::error::Error>>  {
                 if maxlength > 0 && value.encode_utf16().count() > maxlength {
                     Err(format!("Exceeds limit, maxlength={}.", maxlength))?
                 }
@@ -200,18 +200,18 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &Bson,
-                value_type: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
+                is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &mongodb::bson::Bson,
+                value_type: &str, coll: &mongodb::Collection) -> Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
-                    let filter: Document = match value_type {
+                    let filter: mongodb::bson::document::Document = match value_type {
                         "i64" => {
                             // For u32 and i64
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
-                            doc!{ field_name.to_string() : Bson::Int64(field_value) }
+                            mongodb::bson::doc!{ field_name.to_string() : mongodb::bson::Bson::Int64(field_value) }
                         }
                         _ => {
-                            doc!{ field_name.to_string() : value_bson_pre }
+                            mongodb::bson::doc!{ field_name.to_string() : value_bson_pre }
                         }
                     };
                     let count: i64 = coll.count_documents(filter, None).await?;
@@ -223,8 +223,8 @@ macro_rules! model {
             }
 
             // Accumulation of errors
-            fn accumula_err(attrs: &Transport, err: &String) ->
-                Result<String, Box<dyn Error>> {
+            fn accumula_err(attrs: &mango_orm::widgets::Transport, err: &String) ->
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut tmp = attrs.error.clone();
                 tmp = if !tmp.is_empty() { format!("{}<br>", tmp) } else { String::new() };
@@ -233,52 +233,52 @@ macro_rules! model {
 
             // Validation in regular expression (email, password, etc...)
             fn regex_validation(field_type: &str, value: &str) ->
-                Result<(), Box<dyn Error>> {
+                Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 match field_type {
                     "InputEmail" => {
-                        if !validate_email(value) {
+                        if !validator::validate_email(value) {
                             Err("Invalid email address.")?
                         }
                     }
                     "InputColor" => {
-                        if !REGEX_IS_COLOR_CODE.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_COLOR_CODE.is_match(value) {
                             Err("Invalid Color code.")?
                         }
                     }
                     "InputUrl" => {
-                        if !validate_url(value) {
+                        if !validator::validate_url(value) {
                             Err("Invalid Url.")?
                         }
                     }
                     "InputIP" => {
-                        if !validate_ip(value) {
+                        if !validator::validate_ip(value) {
                             Err("Invalid IP address.")?
                         }
                     }
                     "InputIPv4" => {
-                        if !validate_ip_v4(value) {
+                        if !validator::validate_ip_v4(value) {
                             Err("Invalid IPv4 address.")?
                         }
                     }
                     "InputIPv6" => {
-                        if !validate_ip_v6(value) {
+                        if !validator::validate_ip_v6(value) {
                             Err("Invalid IPv6 address.")?
                         }
                     }
                     "InputPassword" => {
-                        if !REGEX_IS_PASSWORD.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_PASSWORD.is_match(value) {
                             Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
                                  Minimum size 8 characters")?
                         }
                     }
                     "InputDate" => {
-                        if !REGEX_IS_DATE.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_DATE.is_match(value) {
                             Err("Incorrect date format.<br>Example: 1970-02-28")?
                         }
                     }
                     "InputDateTime" => {
-                        if !REGEX_IS_DATETIME.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(value) {
                             Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
                         }
                     }
@@ -288,7 +288,7 @@ macro_rules! model {
             }
 
             // Generate password hash and add to result document
-            pub fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
+            pub fn create_password_hash(field_value: &str) -> Result<String, Box<dyn std::error::Error>> {
                     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                             abcdefghijklmnopqrstuvwxyz\
                                             0123456789@#$%^&+=*!~)(";
@@ -302,51 +302,51 @@ macro_rules! model {
                         })
                         .collect();
                     let salt: &[u8] = salt.as_bytes();
-                    let config = Config::default();
+                    let config = argon2::Config::default();
                     let hash: String = argon2::hash_encoded(password, salt, &config)?;
                     Ok(hash)
             }
 
             // Validation of Form
-            pub async fn check(&self, client: &Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn Error>> {
+            pub async fn check(&self, client: &mongodb::Client, output_format: mango_orm::forms::OutputType) ->
+                Result<mango_orm::forms::OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
-                let meta: Meta = Self::metadata()?;
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let mut global_err = false;
                 let is_update: bool = !self.hash.is_empty();
-                let mut attrs_map: HashMap<String, Transport> = HashMap::new();
+                let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+                let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get preliminary data from the model
-                let mut doc_pre: Document = to_document(self).unwrap();
+                let mut doc_pre: mongodb::bson::document::Document = mongodb::bson::to_document(self).unwrap();
                 // Get data for model from database (if available)
-                let mut doc_from_db: Document = if is_update {
-                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                let mut doc_from_db: mongodb::bson::document::Document = if is_update {
+                    let object_id = mongodb::bson::oid::ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
-                    let filter: Document = doc!{"_id": object_id};
+                    let filter: mongodb::bson::document::Document = mongodb::bson::doc!{"_id": object_id};
                     coll.find_one(filter, None).await?.unwrap()
                 } else {
-                    doc! {}
+                    mongodb::bson::doc! {}
                 };
                 // Document for the final result
-                let mut doc_res: Document = doc! {};
+                let mut doc_res: mongodb::bson::document::Document = mongodb::bson::doc! {};
 
                 // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     attrs_map = cache.attrs_map.clone();
-                    let widget_map: HashMap<String, String> = cache.widget_map.clone();
+                    let widget_map: std::collections::HashMap<String, String> = cache.widget_map.clone();
                     // Apply custom check
                     {
-                        let error_map: HashMap<&str, &str> = self.custom_check()?;
+                        let error_map: std::collections::HashMap<&str, &str> = self.custom_check()?;
                         if !error_map.is_empty() { global_err = true; }
                         for (field_name, err_msg) in error_map {
-                            let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
+                            let attrs: &mut mango_orm::widgets::Transport = attrs_map.get_mut(field_name).unwrap();
                             attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
                         }
                     }
@@ -355,7 +355,7 @@ macro_rules! model {
                         // Don't check the `hash` field
                         if field_name == &"hash" { continue; }
                         // Get field value for validation
-                        let value_bson_pre: Option<&Bson> = doc_pre.get(field_name);
+                        let value_bson_pre: Option<&mongodb::bson::Bson> = doc_pre.get(field_name);
                         // Check field value
                         if value_bson_pre.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
@@ -363,10 +363,10 @@ macro_rules! model {
                                 MODEL_NAME, field_name))?
                         }
                         //
-                        let value_bson_pre: &Bson = value_bson_pre.unwrap();
+                        let value_bson_pre: &mongodb::bson::Bson = value_bson_pre.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
-                        let attrs: &mut Transport =
+                        let attrs: &mut mango_orm::widgets::Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
                         // For each iteration of the loop
                         let mut local_err = false;
@@ -398,7 +398,7 @@ macro_rules! model {
                                 if is_update && !ignore_fields.contains(field_name) &&
                                     ((!attrs.required && field_value.is_empty()) ||
                                     field_type == "InputPassword") {
-                                    let value_from_db: Option<&Bson> =
+                                    let value_from_db: Option<&mongodb::bson::Bson> =
                                         doc_from_db.get(&field_name);
 
                                     if value_from_db.is_some() {
@@ -431,7 +431,7 @@ macro_rules! model {
                                     let max: f64 = attrs.max.parse().unwrap();
                                     let len: f64 = field_value.encode_utf16().count() as f64;
                                     if (min > 0_f64 || max > 0_f64) &&
-                                        !validate_range(Validator::Range{min: Some(min),
+                                        !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                         max: Some(max)}, len) {
                                         global_err = true;
                                         local_err = true;
@@ -472,14 +472,14 @@ macro_rules! model {
                                                 let hash: String =
                                                     Self::create_password_hash(field_value)?;
                                                 doc_res.insert(field_name.to_string(),
-                                                    Bson::String(hash));
+                                                mongodb::bson::Bson::String(hash));
                                             }
                                         }
                                         _ => {
                                             // Insert result from other fields
                                             attrs.value = field_value.to_string();
                                             doc_res.insert(field_name.to_string(),
-                                                Bson::String(field_value.to_string()));
+                                            mongodb::bson::Bson::String(field_value.to_string()));
                                         }
                                     }
                                 }
@@ -504,7 +504,7 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name)
                                     && !attrs.required && field_value.is_empty() {
-                                    let value_from_db: Option<&Bson> =
+                                    let value_from_db: Option<&mongodb::bson::Bson> =
                                         doc_from_db.get(&field_name);
 
                                     if value_from_db.is_some() {
@@ -532,39 +532,39 @@ macro_rules! model {
                                 if local_err { continue; }
                                 // Create Date and Time Object
                                 // -----------------------------------------------------------------
-                                let dt_value: DateTime<Utc> = {
+                                let dt_value: chrono::DateTime<chrono::Utc> = {
                                     let field_value: String = if field_type == "InputDate" {
                                         format!("{}T00:00", field_value.to_string())
                                     } else {
                                         field_value.to_string()
                                     };
-                                    DateTime::<Utc>::from_utc(
-                                        NaiveDateTime::parse_from_str(
-                                            &field_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                            &field_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                 };
                                 // Create dates for `min` and `max` attributes values to
                                 // check, if the value of user falls within the range
                                 // between these dates
                                 if !attrs.min.is_empty() && !attrs.max.is_empty() {
-                                    let dt_min: DateTime<Utc> = {
+                                    let dt_min: chrono::DateTime<chrono::Utc> = {
                                         let min_value: String = if field_type == "InputDate" {
                                             format!("{}T00:00", attrs.min.clone())
                                         } else {
                                             attrs.min.clone()
                                         };
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &min_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &min_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                     };
-                                    let dt_max: DateTime<Utc> = {
+                                    let dt_max: chrono::DateTime<chrono::Utc> = {
                                         let max_value: String = if field_type == "InputDate" {
                                             format!("{}T00:00", attrs.max.clone())
                                         } else {
                                             attrs.max.clone()
                                         };
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &max_value, "%Y-%m-%dT%H:%M")?, Utc)
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &max_value, "%Y-%m-%dT%H:%M")?, chrono::Utc)
                                     };
                                     if dt_value < dt_min || dt_value > dt_max {
                                         global_err = true;
@@ -578,7 +578,7 @@ macro_rules! model {
                                 }
                                 // Create datetime in bson type
                                 // -----------------------------------------------------------------
-                                let dt_value_bson = Bson::DateTime(dt_value);
+                                let dt_value_bson = mongodb::bson::Bson::DateTime(dt_value);
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique
@@ -597,7 +597,7 @@ macro_rules! model {
                                     doc_res.insert(field_name.to_string(),
                                         dt_value_bson);
                                 } else {
-                                    doc_res.insert(field_name.to_string(), Bson::Null);
+                                    doc_res.insert(field_name.to_string(), mongodb::bson::Bson::Null);
                                 }
                             }
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
@@ -622,7 +622,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -636,7 +636,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int32(field_value));
+                                    mongodb::bson::Bson::Int32(field_value));
                                 }
                             }
                             "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
@@ -663,7 +663,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -677,7 +677,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int64(field_value));
+                                    mongodb::bson::Bson::Int64(field_value));
                                 }
                             }
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
@@ -702,7 +702,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value.clone();
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -716,7 +716,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Double(field_value));
+                                    mongodb::bson::Bson::Double(field_value));
                                 }
                             }
                             "InputCheckBoxBool" => {
@@ -739,7 +739,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Boolean(field_value));
+                                    mongodb::bson::Bson::Boolean(field_value));
                                 }
                             }
                             _ => {
@@ -752,15 +752,15 @@ macro_rules! model {
                         // Insert or update fields for timestamps `created` and `updated`
                         // -------------------------------------------------------------------------
                         if !global_err {
-                            let dt: DateTime<Utc> = Utc::now();
+                            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                             if !is_update {
-                                doc_res.insert("created".to_string(), Bson::DateTime(dt));
-                                doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                                doc_res.insert("created".to_string(), mongodb::bson::Bson::DateTime(dt));
+                                doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
                             } else {
-                                let value_from_db: Option<&Bson> = doc_from_db.get("created");
+                                let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get("created");
                                 if value_from_db.is_some() {
                                     doc_res.insert("created".to_string(), value_from_db.unwrap());
-                                    doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                                    doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
                                 } else {
                                     Err(format!("Model: `{}` -> Field: `created` -> Method: \
                                                 `check()` : Can't get field value from database.",
@@ -777,23 +777,23 @@ macro_rules! model {
 
                 // Post processing
                 // ---------------------------------------------------------------------------------
-                let result: OutputData = match output_format {
+                let result: mango_orm::forms::OutputData = match output_format {
                     // Get Hash-line
-                    OutputType::Hash => {
+                    mango_orm::forms::OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Hash((data, !global_err, doc_res))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map((attrs_map, !global_err, doc_res)),
+                    mango_orm::forms::OutputType::Map => mango_orm::forms::OutputData::Map((attrs_map, !global_err, doc_res)),
                     // Get Json-line
-                    OutputType::Json => {
+                    mango_orm::forms::OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Json((data, !global_err, doc_res))
                     }
                     // Get Html-line
-                    OutputType::Html => {
+                    mango_orm::forms::OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Html((data, !global_err, doc_res))
                     }
                 };
 
@@ -803,8 +803,8 @@ macro_rules! model {
             // Post processing database queries
             // *************************************************************************************
             // Get Hash-line
-            pub fn to_hash(attrs_map: &HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+            pub fn to_hash(attrs_map: &std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
                 for (field, trans) in attrs_map {
@@ -829,8 +829,8 @@ macro_rules! model {
             }
 
             // Get Json-line
-            pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+            pub fn to_json(attrs_map: &std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut json_text = String::new();
                 for (field, trans) in attrs_map {
@@ -845,8 +845,8 @@ macro_rules! model {
             }
 
             // Get Html-line
-            pub fn to_html(attrs_map: HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+            pub fn to_html(attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let controls = Self::html(
                     attrs_map,
@@ -861,26 +861,26 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn Error>> {
+            pub async fn save(& mut self, client: &mongodb::Client, output_format: mango_orm::forms::OutputType) ->
+                Result<mango_orm::forms::OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
-                let verified_data: OutputData = self.check(client, OutputType::Map).await?;
-                let mut attrs_map: HashMap<String, Transport> = verified_data.map();
-                let meta: Meta = Self::metadata()?;
+                let verified_data: mango_orm::forms::OutputData = self.check(client, mango_orm::forms::OutputType::Map).await?;
+                let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = verified_data.map();
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let is_update: bool = !self.hash.is_empty();
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+                let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
                 // ---------------------------------------------------------------------------------
                 if verified_data.bool() {
                     if !is_update {
-                        let result: results::InsertOneResult =
+                        let result: mongodb::results::InsertOneResult =
                             coll.insert_one(verified_data.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
-                        let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                        let object_id = mongodb::bson::oid::ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
-                        let query: Document = doc!{"_id": object_id};
+                        let query: mongodb::bson::document::Document = mongodb::bson::doc!{"_id": object_id};
                         coll.update_one(query, verified_data.doc(), None).await?;
                     }
                 }
@@ -891,25 +891,25 @@ macro_rules! model {
 
                 // Post processing
                 // ---------------------------------------------------------------------------------
-                let result: OutputData = match output_format {
+                let result: mango_orm::forms::OutputData = match output_format {
                     // Get Hash-line
-                    OutputType::Hash => {
+                    mango_orm::forms::OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Attribute Map
-                    OutputType::Map => {
-                        OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc()))
+                    mango_orm::forms::OutputType::Map => {
+                        mango_orm::forms::OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Json-line
-                    OutputType::Json => {
+                    mango_orm::forms::OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Json((data, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Html-line
-                    OutputType::Html => {
+                    mango_orm::forms::OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Html((data, verified_data.bool(), verified_data.doc()))
                     }
                 };
 
@@ -920,10 +920,10 @@ macro_rules! model {
             // *************************************************************************************
             // 1.Checking widgets for correct attribute values and default values.
             // 2.Check model changes and (if required) apply to the database.
-            pub async fn migrat<'a>(client: &Client, keyword: &'a str) {
+            pub async fn migrat<'a>(client: &mongodb::Client, keyword: &'a str) {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                let meta: Meta = Self::metadata().unwrap();
+                let meta: mango_orm::models::Meta = Self::metadata().unwrap();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 // Validation of required fields in `Meta`
                 if meta.service.is_empty() || meta.database.is_empty() {
@@ -978,21 +978,21 @@ macro_rules! model {
                         meta.service, MODEL_NAME);
                 }
                 // Create a map with field types
-                let map_field_types: HashMap<&str, &str> =
+                let map_field_types: std::collections::HashMap<&str, &str> =
                     FIELD_NAMES.iter().map(|item| item.to_owned())
                     .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
-                let meta: Meta = Self::metadata().unwrap();
+                let meta: mango_orm::models::Meta = Self::metadata().unwrap();
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let map_widgets: HashMap<&str, Widget> = Self::widgets_full_map().unwrap();
+                let map_widgets: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
                 // Map of default values and value types from `value` attribute -
                 // (String, String) -> index `0` - `enum type` , index `1` - `value`
-                let mut default_values: HashMap<&str, (&str, String)> = HashMap::new();
+                let mut default_values: std::collections::HashMap<&str, (&str, String)> = std::collections::HashMap::new();
 
                 // Checking Widgets
                 // ---------------------------------------------------------------------------------
@@ -1013,7 +1013,7 @@ macro_rules! model {
                     match widget.value {
                         // Hash
                         // -------------------------------------------------------------------------
-                        FieldType::Hash => {
+                        mango_orm::widgets::FieldType::Hash => {
                             let enum_field_type = "Hash".to_string();
                             let data_field_type = "String".to_string();
                             if map_field_types[field] != "String" {
@@ -1031,29 +1031,29 @@ macro_rules! model {
                         // InputCheckBoxI64
                         // InputCheckBoxF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_)
-                        | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_)
-                        | FieldType::InputCheckBoxF64(_) => {
+                        mango_orm::widgets::FieldType::InputCheckBoxText(_) | mango_orm::widgets::FieldType::InputCheckBoxI32(_)
+                        | mango_orm::widgets::FieldType::InputCheckBoxU32(_) | mango_orm::widgets::FieldType::InputCheckBoxI64(_)
+                        | mango_orm::widgets::FieldType::InputCheckBoxF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::InputCheckBoxText(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxText(_) => {
                                     enum_field_type = "InputCheckBoxText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::InputCheckBoxI32(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxI32(_) => {
                                     enum_field_type = "InputCheckBoxI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::InputCheckBoxU32(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxU32(_) => {
                                     enum_field_type = "InputCheckBoxU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputCheckBoxI64(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxI64(_) => {
                                     enum_field_type = "InputCheckBoxI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputCheckBoxF64(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxF64(_) => {
                                     enum_field_type = "InputCheckBoxF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1062,14 +1062,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `maxlength` = only 0 (zero).",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1084,14 +1084,14 @@ macro_rules! model {
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1114,29 +1114,29 @@ macro_rules! model {
                         // InputIPv6
                         // TextArea
                         // -------------------------------------------------------------------------
-                        FieldType::InputColor(_) | FieldType::InputEmail(_)
-                        | FieldType::InputPassword(_) | FieldType::InputText(_)
-                        | FieldType::InputUrl(_) | FieldType::InputIP(_)
-                        | FieldType::InputIPv4(_) | FieldType::InputIPv6(_)
-                        | FieldType::TextArea(_) => {
+                        mango_orm::widgets::FieldType::InputColor(_) | mango_orm::widgets::FieldType::InputEmail(_)
+                        | mango_orm::widgets::FieldType::InputPassword(_) | mango_orm::widgets::FieldType::InputText(_)
+                        | mango_orm::widgets::FieldType::InputUrl(_) | mango_orm::widgets::FieldType::InputIP(_)
+                        | mango_orm::widgets::FieldType::InputIPv4(_) | mango_orm::widgets::FieldType::InputIPv6(_)
+                        | mango_orm::widgets::FieldType::TextArea(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputColor(_) => {
+                                mango_orm::widgets::FieldType::InputColor(_) => {
                                     enum_field_type = "InputColor".to_string();
                                 }
-                                FieldType::InputEmail(_) => {
+                                mango_orm::widgets::FieldType::InputEmail(_) => {
                                     enum_field_type = "InputEmail".to_string();
                                 }
-                                FieldType::InputPassword(_) => {
+                                mango_orm::widgets::FieldType::InputPassword(_) => {
                                     enum_field_type = "InputPassword".to_string();
                                 }
-                                FieldType::InputText(_) => {
+                                mango_orm::widgets::FieldType::InputText(_) => {
                                     enum_field_type = "InputText".to_string();
                                 }
-                                FieldType::InputUrl(_) => {
+                                mango_orm::widgets::FieldType::InputUrl(_) => {
                                     enum_field_type = "InputUrl".to_string();
                                 }
-                                FieldType::TextArea(_) => {
+                                mango_orm::widgets::FieldType::TextArea(_) => {
                                     enum_field_type = "TextArea".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1144,7 +1144,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1160,7 +1160,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1176,13 +1176,13 @@ macro_rules! model {
                         // InputDate
                         // InputDateTime
                         // -------------------------------------------------------------------------
-                        FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
+                        mango_orm::widgets::FieldType::InputDate(_) | mango_orm::widgets::FieldType::InputDateTime(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputDate(_) => {
+                                mango_orm::widgets::FieldType::InputDate(_) => {
                                     enum_field_type = "InputDate".to_string();
                                 }
-                                FieldType::InputDateTime(_) => {
+                                mango_orm::widgets::FieldType::InputDateTime(_) => {
                                     enum_field_type = "InputDateTime".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1190,7 +1190,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` ->\
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1212,7 +1212,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1238,22 +1238,22 @@ macro_rules! model {
                                 let mut date_max: String = widget.max.get_raw_data();
                                 let mut date_value: String = widget.value.get_raw_data();
                                 match widget.value {
-                                    FieldType::InputDate(_) => {
+                                    mango_orm::widgets::FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
-                                        if !REGEX_IS_DATE.is_match(&date_min) {
+                                        if !mango_orm::store::REGEX_IS_DATE.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !REGEX_IS_DATE.is_match(&date_max) {
+                                        if !mango_orm::store::REGEX_IS_DATE.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
                                         if !date_value.is_empty() {
-                                            if !REGEX_IS_DATE.is_match(&date_value) {
+                                            if !mango_orm::store::REGEX_IS_DATE.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
                                                         Attribute: `value` : Incorrect date \
@@ -1265,16 +1265,16 @@ macro_rules! model {
                                         date_min = format!("{}T00:00", date_min);
                                         date_max = format!("{}T00:00", date_max);
                                     }
-                                    FieldType::InputDateTime(_) => {
+                                    mango_orm::widgets::FieldType::InputDateTime(_) => {
                                         // Example: "1970-02-28T00:00"
-                                        if !REGEX_IS_DATETIME.is_match(&date_min) {
+                                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !REGEX_IS_DATETIME.is_match(&date_max) {
+                                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. \
@@ -1282,7 +1282,7 @@ macro_rules! model {
                                                 meta.service, MODEL_NAME, field)
                                         }
                                         if !date_value.is_empty() {
-                                            if !REGEX_IS_DATETIME.is_match(&date_value) {
+                                            if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
                                                         Attribute: `value` : Incorrect date \
@@ -1296,14 +1296,14 @@ macro_rules! model {
                                     }
                                 }
                                 // Get DateTime
-                                let dt_min: DateTime<Utc> =
-                                DateTime::<Utc>::from_utc(
-                                    NaiveDateTime::parse_from_str(
-                                        &date_min, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                let dt_max: DateTime<Utc> =
-                                    DateTime::<Utc>::from_utc(
-                                        NaiveDateTime::parse_from_str(
-                                            &date_max, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                let dt_min: chrono::DateTime<chrono::Utc> =
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                        &date_min, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
+                                let dt_max: chrono::DateTime<chrono::Utc> =
+                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                        chrono::NaiveDateTime::parse_from_str(
+                                            &date_max, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                 // If the `max` attribute is not greater than `min`, call a panic
                                 if dt_min >= dt_max {
                                     panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
@@ -1313,10 +1313,10 @@ macro_rules! model {
                                 } else if !date_value.is_empty() {
                                     // Check that the default is in the dates range
                                     // from `min` to `max`.
-                                    let dt_value: DateTime<Utc> =
-                                        DateTime::<Utc>::from_utc(
-                                            NaiveDateTime::parse_from_str(
-                                                &date_value, "%Y-%m-%dT%H:%M").unwrap(), Utc);
+                                    let dt_value: chrono::DateTime<chrono::Utc> =
+                                        chrono::DateTime::<chrono::Utc>::from_utc(
+                                            chrono::NaiveDateTime::parse_from_str(
+                                                &date_value, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
                                     if dt_value < dt_min || dt_value > dt_max {
                                         panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                 Method: `widgets()` -> Attribute: `value` : \
@@ -1330,13 +1330,13 @@ macro_rules! model {
                         // InputFile
                         // InputImage
                         // -------------------------------------------------------------------------
-                        FieldType::InputFile | FieldType::InputImage => {
+                        mango_orm::widgets::FieldType::InputFile | mango_orm::widgets::FieldType::InputImage => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputFile => {
+                                mango_orm::widgets::FieldType::InputFile => {
                                     enum_field_type = "InputFile".to_string();
                                 }
-                                FieldType::InputImage => {
+                                mango_orm::widgets::FieldType::InputImage => {
                                     enum_field_type = "InputImage".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1344,7 +1344,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1359,7 +1359,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1377,28 +1377,28 @@ macro_rules! model {
                         // InputNumberI64
                         // InputNumberF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_)
-                        | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
+                        mango_orm::widgets::FieldType::InputNumberI32(_) | mango_orm::widgets::FieldType::InputNumberU32(_)
+                        | mango_orm::widgets::FieldType::InputNumberI64(_) | mango_orm::widgets::FieldType::InputNumberF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             let mut step_min_max_enum_type = String::new();
                             match widget.value {
-                                FieldType::InputNumberI32(_) => {
+                                mango_orm::widgets::FieldType::InputNumberI32(_) => {
                                     enum_field_type = "InputNumberI32".to_string();
                                     data_field_type = "i32".to_string();
                                     step_min_max_enum_type = "I32".to_string();
                                 }
-                                FieldType::InputNumberU32(_) => {
+                                mango_orm::widgets::FieldType::InputNumberU32(_) => {
                                     enum_field_type = "InputNumberU32".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
-                                FieldType::InputNumberI64(_) => {
+                                mango_orm::widgets::FieldType::InputNumberI64(_) => {
                                     enum_field_type = "InputNumberI64".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "I64".to_string();
                                 }
-                                FieldType::InputNumberF64(_) => {
+                                mango_orm::widgets::FieldType::InputNumberF64(_) => {
                                     enum_field_type = "InputNumberF64".to_string();
                                     data_field_type = "f64".to_string();
                                     step_min_max_enum_type = "F64".to_string();
@@ -1408,14 +1408,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1428,7 +1428,7 @@ macro_rules! model {
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1436,7 +1436,7 @@ macro_rules! model {
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1444,7 +1444,7 @@ macro_rules! model {
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1458,29 +1458,29 @@ macro_rules! model {
                         // InputRadioI64
                         // InputRadioF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputRadioText(_) | FieldType::InputRadioI32(_)
-                        | FieldType::InputRadioU32(_) | FieldType::InputRadioI64(_)
-                        | FieldType::InputRadioF64(_) => {
+                        mango_orm::widgets::FieldType::InputRadioText(_) | mango_orm::widgets::FieldType::InputRadioI32(_)
+                        | mango_orm::widgets::FieldType::InputRadioU32(_) | mango_orm::widgets::FieldType::InputRadioI64(_)
+                        | mango_orm::widgets::FieldType::InputRadioF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::InputRadioText(_) => {
+                                mango_orm::widgets::FieldType::InputRadioText(_) => {
                                     enum_field_type = "InputRadioText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::InputRadioI32(_) => {
+                                mango_orm::widgets::FieldType::InputRadioI32(_) => {
                                     enum_field_type = "InputRadioI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::InputRadioU32(_) => {
+                                mango_orm::widgets::FieldType::InputRadioU32(_) => {
                                     enum_field_type = "InputRadioU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputRadioI64(_) => {
+                                mango_orm::widgets::FieldType::InputRadioI64(_) => {
                                     enum_field_type = "InputRadioI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputRadioF64(_) => {
+                                mango_orm::widgets::FieldType::InputRadioF64(_) => {
                                     enum_field_type = "InputRadioF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1489,14 +1489,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `maxlength` = only 0 (zero).",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1511,14 +1511,14 @@ macro_rules! model {
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` - must not be an empty vec![]",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1536,28 +1536,28 @@ macro_rules! model {
                         // InputRangeI64
                         // InputRangeF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_)
-                        | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
+                        mango_orm::widgets::FieldType::InputRangeI32(_) | mango_orm::widgets::FieldType::InputRangeU32(_)
+                        | mango_orm::widgets::FieldType::InputRangeI64(_) | mango_orm::widgets::FieldType::InputRangeF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             let mut step_min_max_enum_type = String::new();
                             match widget.value {
-                                FieldType::InputRangeI32(_) => {
+                                mango_orm::widgets::FieldType::InputRangeI32(_) => {
                                     enum_field_type = "InputRangeI32".to_string();
                                     data_field_type = "i32".to_string();
                                     step_min_max_enum_type = "I32".to_string();
                                 }
-                                FieldType::InputRangeU32(_) => {
+                                mango_orm::widgets::FieldType::InputRangeU32(_) => {
                                     enum_field_type = "InputRangeU32".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
-                                FieldType::InputRangeI64(_) => {
+                                mango_orm::widgets::FieldType::InputRangeI64(_) => {
                                     enum_field_type = "InputRangeI64".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "I64".to_string();
                                 }
-                                FieldType::InputRangeF64(_) => {
+                                mango_orm::widgets::FieldType::InputRangeF64(_) => {
                                     enum_field_type = "InputRangeI64".to_string();
                                     data_field_type = "f64".to_string();
                                     step_min_max_enum_type = "F64".to_string();
@@ -1567,14 +1567,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1587,7 +1587,7 @@ macro_rules! model {
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1595,7 +1595,7 @@ macro_rules! model {
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1603,7 +1603,7 @@ macro_rules! model {
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1617,29 +1617,29 @@ macro_rules! model {
                         // SelectI64
                         // SelectF64
                         // -------------------------------------------------------------------------
-                         FieldType::SelectText(_) | FieldType::SelectI32(_)
-                         | FieldType::SelectU32(_) | FieldType::SelectI64(_)
-                         | FieldType::SelectF64(_) => {
+                         mango_orm::widgets::FieldType::SelectText(_) | mango_orm::widgets::FieldType::SelectI32(_)
+                         | mango_orm::widgets::FieldType::SelectU32(_) | mango_orm::widgets::FieldType::SelectI64(_)
+                         | mango_orm::widgets::FieldType::SelectF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::SelectText(_) => {
+                                mango_orm::widgets::FieldType::SelectText(_) => {
                                     enum_field_type = "SelectText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::SelectI32(_) => {
+                                mango_orm::widgets::FieldType::SelectI32(_) => {
                                     enum_field_type = "SelectI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::SelectU32(_) => {
+                                mango_orm::widgets::FieldType::SelectU32(_) => {
                                     enum_field_type = "SelectU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::SelectI64(_) => {
+                                mango_orm::widgets::FieldType::SelectI64(_) => {
                                     enum_field_type = "SelectI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::SelectF64(_) => {
+                                mango_orm::widgets::FieldType::SelectF64(_) => {
                                     enum_field_type = "SelectF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1648,7 +1648,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1663,7 +1663,7 @@ macro_rules! model {
                             } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` - Should not be empty.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1678,11 +1678,11 @@ macro_rules! model {
 
                         // ForeignKey
                         // -------------------------------------------------------------------------
-                        FieldType::ForeignKey => {
+                        mango_orm::widgets::FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType `ForeignKey` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType `ForeignKey` : \
                                     `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
@@ -1699,7 +1699,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ForeignKey` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `ForeignKey` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1713,12 +1713,12 @@ macro_rules! model {
 
                         // ManyToMany
                         // -------------------------------------------------------------------------
-                        FieldType::ManyToMany => {
+                        mango_orm::widgets::FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ManyToMany` : `relation_model` = \
+                                    mango_orm::widgets::FieldType `ManyToMany` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
@@ -1734,7 +1734,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ManyToMany` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `ManyToMany` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1748,12 +1748,12 @@ macro_rules! model {
 
                         // OneToOne
                         // -------------------------------------------------------------------------
-                        FieldType::OneToOne => {
+                        mango_orm::widgets::FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `OneToOne` : `relation_model` = \
+                                    mango_orm::widgets::FieldType `OneToOne` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
@@ -1769,7 +1769,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `OneToOne` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `OneToOne` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1873,18 +1873,18 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 // Get a list of current model field names from the technical database
                 // `mango_orm_keyword`
-                let filter: Document = doc! {
+                let filter: mongodb::bson::document::Document = mongodb::bson::doc! {
                     "database": &meta.database,
                     "collection": &meta.collection
                 };
-                let model: Option<Document> = client.database(&mango_orm_keyword)
+                let model: Option<mongodb::bson::document::Document> = client.database(&mango_orm_keyword)
                     .collection("models").find_one(filter, None).await.unwrap();
                 if model.is_some() {
                     // Get a list of fields from the technical database
                     let mango_orm_fnames: Vec<String> = {
-                        let model: Document = model.unwrap();
-                        let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
-                        fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string())
+                        let model: mongodb::bson::document::Document = model.unwrap();
+                        let fields: Vec<mongodb::bson::Bson> = model.get_array("fields").unwrap().to_vec();
+                        fields.into_iter().map(|item: mongodb::bson::Bson| item.as_str().unwrap().to_string())
                         .collect()
                     };
                     // Check if the set of fields in the collection of
@@ -1903,15 +1903,15 @@ macro_rules! model {
                     // Start (if necessary) updating the set of fields in the current collection
                     if run_documents_modification {
                         // Get the database and collection of the current Model
-                        let db: Database = client.database(&meta.database);
-                        let collection: Collection = db.collection(&meta.collection);
+                        let db: mongodb::Database = client.database(&meta.database);
+                        let collection: mongodb::Collection = db.collection(&meta.collection);
                         // Get cursor to all documents of the current Model
-                        let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+                        let mut cursor: mongodb::Cursor = collection.find(None, None).await.unwrap();
                         // Iterate through all documents in a current (model) collection
                         while let Some(result) = cursor.next().await {
-                            let doc_from_db: Document = result.unwrap();
+                            let doc_from_db: mongodb::bson::document::Document = result.unwrap();
                             // Create temporary blank document
-                            let mut tmp_doc = doc! {};
+                            let mut tmp_doc = mongodb::bson::doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
                                 if field == &"hash" || ignore_fields.contains(field) {
@@ -1919,7 +1919,7 @@ macro_rules! model {
                                 }
                                 // If the field exists, get its value
                                 if doc_from_db.contains_key(field) {
-                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get(field);
                                     if value_from_db.is_some() {
                                         tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                     } else {
@@ -1936,64 +1936,64 @@ macro_rules! model {
                                         | "InputEmail" | "InputPassword" | "InputTel"
                                         | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                                         | "InputIPv6" | "TextArea" | "SelectText" => {
-                                            Bson::String(value.1.clone())
+                                            mongodb::bson::Bson::String(value.1.clone())
                                         }
                                         "InputDate" => {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                if !REGEX_IS_DATE.is_match(&val) {
+                                                if !mango_orm::store::REGEX_IS_DATE.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             format. Example: 1970-02-28",
                                                         meta.service, MODEL_NAME)
                                                 }
                                                 let val = format!("{}T00:00", val);
-                                                let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                                Bson::DateTime(dt)
+                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                chrono::DateTime::<chrono::Utc>::from_utc(
+                                                    chrono::NaiveDateTime::parse_from_str(
+                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
+                                                mongodb::bson::Bson::DateTime(dt)
                                             } else {
-                                                Bson::Null
+                                                mongodb::bson::Bson::Null
                                             }
                                         }
                                         "InputDateTime" => {
                                             // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                if !REGEX_IS_DATETIME.is_match(&val) {
+                                                if !mango_orm::store::REGEX_IS_DATETIME.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
                                                             Example: 1970-02-28T00:00",
                                                         meta.service, MODEL_NAME)
                                                 }
-                                                let dt: DateTime<Utc> =
-                                                DateTime::<Utc>::from_utc(
-                                                    NaiveDateTime::parse_from_str(
-                                                        &val, "%Y-%m-%dT%H:%M").unwrap(), Utc);
-                                                Bson::DateTime(dt)
+                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                        chrono::NaiveDateTime::parse_from_str(
+                                                            &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
+                                                    mongodb::bson::Bson::DateTime(dt)
                                             } else {
-                                                Bson::Null
+                                                mongodb::bson::Bson::Null
                                             }
                                         }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                                         | "InputRangeI32" | "SelectI32" => {
-                                            Bson::Int32(value.1.parse::<i32>().unwrap())
+                                            mongodb::bson::Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
                                         "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
                                         | "InputRangeU32" | "SelectU32" | "InputCheckBoxI64"
                                         | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                                         | "SelectI64" => {
-                                            Bson::Int64(value.1.parse::<i64>().unwrap())
+                                            mongodb::bson::Bson::Int64(value.1.parse::<i64>().unwrap())
                                         }
                                         "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                                         | "InputRangeF64" | "SelectF64" => {
-                                            Bson::Double(value.1.parse::<f64>().unwrap())
+                                            mongodb::bson::Bson::Double(value.1.parse::<f64>().unwrap())
                                         }
                                         "InputCheckBoxBool" => {
-                                            Bson::Boolean(value.1.parse::<bool>().unwrap())
+                                            mongodb::bson::Bson::Boolean(value.1.parse::<bool>().unwrap())
                                         }
                                         _ => {
                                             panic!("Service: `{}` -> Model: `{}` -> Method: \
@@ -2006,7 +2006,7 @@ macro_rules! model {
                             // Insert fields for timestamps `created` and `updated`
                             for field in vec!["created", "updated"] {
                                 if doc_from_db.contains_key(field) {
-                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get(field);
                                     if value_from_db.is_some() {
                                         tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                     } else {
@@ -2024,8 +2024,8 @@ macro_rules! model {
                                 }
                             }
                             // Save updated document
-                            let query = doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
-                            let update = UpdateModifications::Document(tmp_doc);
+                            let query = mongodb::bson::doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
+                            let update = mongodb::options::UpdateModifications::Document(tmp_doc);
                             collection.update_one(query, update, None).await.unwrap();
                         }
                     }
@@ -2034,7 +2034,7 @@ macro_rules! model {
                 // Create a new database (if doesn't exist) and add new collection
                 // ---------------------------------------------------------------------------------
                 // Get the database for the current collection of Model
-                let db: Database = client.database(&meta.database);
+                let db: mongodb::Database = client.database(&meta.database);
                 // If there is no collection for the current Model, create it
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
@@ -2044,15 +2044,15 @@ macro_rules! model {
                 // Update the state of models for `models::Monitor`
                 // ---------------------------------------------------------------------------------
                 // Get the technical database `mango_orm_keyword` for the current model
-                let db: Database = client.database(&mango_orm_keyword);
+                let db: mongodb::Database = client.database(&mango_orm_keyword);
                 // Check if there is a technical database of the project, if not, causes panic
                 if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 } else {
                     let collection = db.collection("models");
-                    let filter = doc! {"database": &meta.database, "collection": &meta.collection};
-                    let doc = doc!{
+                    let filter = mongodb::bson::doc! {"database": &meta.database, "collection": &meta.collection};
+                    let doc = mongodb::bson::doc!{
                         "database": &meta.database,
                         "collection": &meta.collection,
                         "fields": FIELD_NAMES.iter().map(|field| field.to_string())
@@ -2067,7 +2067,7 @@ macro_rules! model {
                         collection.insert_one(doc, None).await.unwrap();
                     } else {
                         // Update model state information
-                        let update = UpdateModifications::Document(doc);
+                        let update = mongodb::options::UpdateModifications::Document(doc);
                         collection.update_one(filter, update, None).await.unwrap();
                     }
                 }
