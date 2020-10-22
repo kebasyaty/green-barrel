@@ -32,7 +32,7 @@ macro_rules! model {
             }
 
             // // Get a map with field types
-            pub fn field_types<'a>() -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+            pub fn field_types<'a>() -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
@@ -52,8 +52,8 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map<'a>() -> Result<HashMap<&'a str, Widget>, Box<dyn Error>> {
-                let mut map: HashMap<&str, Widget> = Self::widgets()?;
+            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, Widget>, Box<dyn Error>> {
+                let mut map: std::collections::HashMap<&str, Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
                         "hash",
@@ -69,19 +69,19 @@ macro_rules! model {
 
             // Add (if required) default form data to cache
             pub async fn form_cache() -> Result<(
-                async_mutex::MutexGuard<'static, HashMap<String,
+                async_mutex::MutexGuard<'static, std::collections::HashMap<String,
                 FormCache>>, String), Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let meta: Meta = Self::metadata()?;
                 let key = meta.collection.clone();
-                let mut store: async_mutex::MutexGuard<'_, HashMap<String,
+                let mut store: async_mutex::MutexGuard<'_, std::collections::HashMap<String,
                     FormCache>> = FORM_CACHE.lock().await;
                 let mut cache: Option<&FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
-                    let widgets: HashMap<&str, Widget> = Self::widgets_full_map()?;
-                    let mut clean_attrs: HashMap<String, Transport> = HashMap::new();
-                    let mut widget_map: HashMap<String, String> = HashMap::new();
+                    let widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map()?;
+                    let mut clean_attrs: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
+                    let mut widget_map: std::collections::HashMap<String, String> = std::collections::HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
                         widget_map.insert(
@@ -101,11 +101,11 @@ macro_rules! model {
             }
 
             // Get a map of pure attributes of Form for page templates
-            pub async fn form_map() -> Result<HashMap<String, Transport>, Box<dyn Error>> {
+            pub async fn form_map() -> Result<std::collections::HashMap<String, Transport>, Box<dyn Error>> {
                 let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let clean_attrs: HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
+                    let clean_attrs: std::collections::HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
                     Err(format!("Model: `{}` -> Method: `form_map()` : \
@@ -123,7 +123,7 @@ macro_rules! model {
                     if cache.attrs_json.is_empty() {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
-                        let attrs: HashMap<String, Transport> = form_cache.attrs_map.clone();
+                        let attrs: std::collections::HashMap<String, Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -155,7 +155,7 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let mut build_controls = false;
-                let mut attrs: HashMap<String, Transport> = HashMap::new();
+                let mut attrs: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
                 //
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
@@ -316,7 +316,7 @@ macro_rules! model {
                 let meta: Meta = Self::metadata()?;
                 let mut global_err = false;
                 let is_update: bool = !self.hash.is_empty();
-                let mut attrs_map: HashMap<String, Transport> = HashMap::new();
+                let mut attrs_map: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get preliminary data from the model
@@ -340,10 +340,10 @@ macro_rules! model {
                     let cache: &FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     attrs_map = cache.attrs_map.clone();
-                    let widget_map: HashMap<String, String> = cache.widget_map.clone();
+                    let widget_map: std::collections::HashMap<String, String> = cache.widget_map.clone();
                     // Apply custom check
                     {
-                        let error_map: HashMap<&str, &str> = self.custom_check()?;
+                        let error_map: std::collections::HashMap<&str, &str> = self.custom_check()?;
                         if !error_map.is_empty() { global_err = true; }
                         for (field_name, err_msg) in error_map {
                             let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
@@ -803,7 +803,7 @@ macro_rules! model {
             // Post processing database queries
             // *************************************************************************************
             // Get Hash-line
-            pub fn to_hash(attrs_map: &HashMap<String, Transport>) ->
+            pub fn to_hash(attrs_map: &std::collections::HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
@@ -829,7 +829,7 @@ macro_rules! model {
             }
 
             // Get Json-line
-            pub fn to_json(attrs_map: &HashMap<String, Transport>) ->
+            pub fn to_json(attrs_map: &std::collections::HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut json_text = String::new();
@@ -845,7 +845,7 @@ macro_rules! model {
             }
 
             // Get Html-line
-            pub fn to_html(attrs_map: HashMap<String, Transport>) ->
+            pub fn to_html(attrs_map: std::collections::HashMap<String, Transport>) ->
                 Result<String, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let controls = Self::html(
@@ -865,7 +865,7 @@ macro_rules! model {
                 Result<OutputData, Box<dyn Error>> {
                 // ---------------------------------------------------------------------------------
                 let verified_data: OutputData = self.check(client, OutputType::Map).await?;
-                let mut attrs_map: HashMap<String, Transport> = verified_data.map();
+                let mut attrs_map: std::collections::HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::metadata()?;
                 let is_update: bool = !self.hash.is_empty();
                 let coll: Collection = client.database(&meta.database).collection(&meta.collection);
@@ -977,7 +977,7 @@ macro_rules! model {
                         meta.service, MODEL_NAME);
                 }
                 // Create a map with field types
-                let map_field_types: HashMap<&str, &str> =
+                let map_field_types: std::collections::HashMap<&str, &str> =
                     FIELD_NAMES.iter().map(|item| item.to_owned())
                     .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
@@ -985,13 +985,13 @@ macro_rules! model {
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let map_widgets: HashMap<&str, Widget> = Self::widgets_full_map().unwrap();
+                let map_widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
                 // Map of default values and value types from `value` attribute -
                 // (String, String) -> index `0` - `enum type` , index `1` - `value`
-                let mut default_values: HashMap<&str, (&str, String)> = HashMap::new();
+                let mut default_values: std::collections::HashMap<&str, (&str, String)> = std::collections::HashMap::new();
 
                 // Checking Widgets
                 // ---------------------------------------------------------------------------------
