@@ -30,7 +30,9 @@ impl<'a> Monitor<'a> {
     // Refresh models state
     // *********************************************************************************************
     pub async fn refresh(&self) {
-        // Keyword Validation
+        // Keyword Validation.
+        // KEYWORD - It is recommended not to change within the boundaries of one project.
+        // ( Valid characters: _ a-z A-Z 0-9 ; Size: 8-16 )
         let re = Regex::new(r"^[_a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.keyword) {
             panic!("Keyword - Valid characters: _ a-z A-Z 0-9 ; Size: 8-16.");
