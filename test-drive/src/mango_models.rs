@@ -11,11 +11,7 @@ use mango_orm::{
     },
     widgets::{DataType, FieldType, Transport, Widget},
 };
-use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
-    options::UpdateModifications,
-    results, Client, Collection, Cursor, Database,
-};
+use mongodb::bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

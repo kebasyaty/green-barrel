@@ -201,7 +201,7 @@ macro_rules! model {
             // Validation of `unique`
             async fn check_unique(
                 is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &Bson,
-                value_type: &str, coll: &Collection) -> Result<(), Box<dyn std::error::Error>> {
+                value_type: &str, coll: &mongodb::Collection) -> Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
                     let filter: Document = match value_type {
@@ -308,7 +308,7 @@ macro_rules! model {
             }
 
             // Validation of Form
-            pub async fn check(&self, client: &Client, output_format: OutputType) ->
+            pub async fn check(&self, client: &mongodb::Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &str = stringify!($sname);
@@ -318,7 +318,7 @@ macro_rules! model {
                 let is_update: bool = !self.hash.is_empty();
                 let mut attrs_map: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+                let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get preliminary data from the model
                 let mut doc_pre: Document = to_document(self).unwrap();
                 // Get data for model from database (if available)
@@ -861,20 +861,20 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
+            pub async fn save(& mut self, client: &mongodb::Client, output_format: OutputType) ->
                 Result<OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let verified_data: OutputData = self.check(client, OutputType::Map).await?;
                 let mut attrs_map: std::collections::HashMap<String, Transport> = verified_data.map();
                 let meta: Meta = Self::metadata()?;
                 let is_update: bool = !self.hash.is_empty();
-                let coll: Collection = client.database(&meta.database).collection(&meta.collection);
+                let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
 
                 // Save to database
                 // ---------------------------------------------------------------------------------
                 if verified_data.bool() {
                     if !is_update {
-                        let result: results::InsertOneResult =
+                        let result: mongodb::results::InsertOneResult =
                             coll.insert_one(verified_data.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
@@ -919,7 +919,7 @@ macro_rules! model {
             // Migrating Model
             // *************************************************************************************
             // Check model changes and (if required) apply to the database
-            pub async fn migrat<'a>(client: &Client, keyword: &'a str) {
+            pub async fn migrat<'a>(client: &mongodb::Client, keyword: &'a str) {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 let meta: Meta = Self::metadata().unwrap();
@@ -1902,10 +1902,10 @@ macro_rules! model {
                     // Start (if necessary) updating the set of fields in the current collection
                     if run_documents_modification {
                         // Get the database and collection of the current Model
-                        let db: Database = client.database(&meta.database);
-                        let collection: Collection = db.collection(&meta.collection);
+                        let db: mongodb::Database = client.database(&meta.database);
+                        let collection: mongodb::Collection = db.collection(&meta.collection);
                         // Get cursor to all documents of the current Model
-                        let mut cursor: Cursor = collection.find(None, None).await.unwrap();
+                        let mut cursor: mongodb::Cursor = collection.find(None, None).await.unwrap();
                         // Iterate through all documents in a current (model) collection
                         while let Some(result) = cursor.next().await {
                             let doc_from_db: Document = result.unwrap();
@@ -2024,7 +2024,7 @@ macro_rules! model {
                             }
                             // Save updated document
                             let query = doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
-                            let update = UpdateModifications::Document(tmp_doc);
+                            let update = mongodb::options::UpdateModifications::Document(tmp_doc);
                             collection.update_one(query, update, None).await.unwrap();
                         }
                     }
@@ -2033,7 +2033,7 @@ macro_rules! model {
                 // Create a new database (if doesn't exist) and add new collection
                 // ---------------------------------------------------------------------------------
                 // Get the database for the current collection of Model
-                let db: Database = client.database(&meta.database);
+                let db: mongodb::Database = client.database(&meta.database);
                 // If there is no collection for the current Model, create it
                 if !database_names.contains(&meta.database) ||
                     !db.list_collection_names(None).await.unwrap().contains(&meta.collection) {
@@ -2043,7 +2043,7 @@ macro_rules! model {
                 // Update the state of models for `models::Monitor`
                 // ---------------------------------------------------------------------------------
                 // Get the technical database `mango_orm_keyword` for the current model
-                let db: Database = client.database(&mango_orm_keyword);
+                let db: mongodb::Database = client.database(&mango_orm_keyword);
                 // Check if there is a technical database of the project, if not, causes panic
                 if !database_names.contains(&mango_orm_keyword) ||
                     !db.list_collection_names(None).await.unwrap().contains(&"models".to_owned()) {
@@ -2066,7 +2066,7 @@ macro_rules! model {
                         collection.insert_one(doc, None).await.unwrap();
                     } else {
                         // Update model state information
-                        let update = UpdateModifications::Document(doc);
+                        let update = mongodb::options::UpdateModifications::Document(doc);
                         collection.update_one(filter, update, None).await.unwrap();
                     }
                 }
