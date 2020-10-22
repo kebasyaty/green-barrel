@@ -35,11 +35,11 @@ async fn main() {
 
     let mut user = mango_models::User {
         username: "Rust".to_string(),
-        email: "test_10_@test.test".to_string(),
+        email: "test_11_@test.test".to_string(),
         password: "12345678".to_string(),
         password_confirm: "12345678".to_string(),
-        datetime: "2020-10-18T12:52".to_string(),
-        date: "2020-10-20".to_string(),
+        datetime: "2020-10-19T12:52".to_string(),
+        date: "2020-10-21".to_string(),
         ..Default::default()
     };
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
