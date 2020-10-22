@@ -208,10 +208,10 @@ macro_rules! model {
                         "i64" => {
                             // For u32 and i64
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
-                            doc!{ field_name.to_string() : Bson::Int64(field_value) }
+                            mongodb::bson::doc!{ field_name.to_string() : Bson::Int64(field_value) }
                         }
                         _ => {
-                            doc!{ field_name.to_string() : value_bson_pre }
+                            mongodb::bson::doc!{ field_name.to_string() : value_bson_pre }
                         }
                     };
                     let count: i64 = coll.count_documents(filter, None).await?;
@@ -325,13 +325,13 @@ macro_rules! model {
                 let mut doc_from_db: Document = if is_update {
                     let object_id: ObjectId = ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
-                    let filter: Document = doc!{"_id": object_id};
+                    let filter: Document = mongodb::bson::doc!{"_id": object_id};
                     coll.find_one(filter, None).await?.unwrap()
                 } else {
-                    doc! {}
+                    mongodb::bson::doc! {}
                 };
                 // Document for the final result
-                let mut doc_res: Document = doc! {};
+                let mut doc_res: Document = mongodb::bson::doc! {};
 
                 // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
@@ -880,7 +880,7 @@ macro_rules! model {
                     } else {
                         let object_id: ObjectId = ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
-                        let query: Document = doc!{"_id": object_id};
+                        let query: Document = mongodb::bson::doc!{"_id": object_id};
                         coll.update_one(query, verified_data.doc(), None).await?;
                     }
                 }
@@ -1872,7 +1872,7 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 // Get a list of current model field names from the technical database
                 // `mango_orm_keyword`
-                let filter: Document = doc! {
+                let filter: Document = mongodb::bson::doc! {
                     "database": &meta.database,
                     "collection": &meta.collection
                 };
@@ -1910,7 +1910,7 @@ macro_rules! model {
                         while let Some(result) = cursor.next().await {
                             let doc_from_db: Document = result.unwrap();
                             // Create temporary blank document
-                            let mut tmp_doc = doc! {};
+                            let mut tmp_doc = mongodb::bson::doc! {};
                             // Loop over all fields of the model
                             for field in FIELD_NAMES {
                                 if field == &"hash" || ignore_fields.contains(field) {
@@ -2023,7 +2023,7 @@ macro_rules! model {
                                 }
                             }
                             // Save updated document
-                            let query = doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
+                            let query = mongodb::bson::doc! {"_id": doc_from_db.get_object_id("_id").unwrap()};
                             let update = mongodb::options::UpdateModifications::Document(tmp_doc);
                             collection.update_one(query, update, None).await.unwrap();
                         }
@@ -2050,8 +2050,8 @@ macro_rules! model {
                     panic!("For migration not used `models::Monitor.refresh()`.");
                 } else {
                     let collection = db.collection("models");
-                    let filter = doc! {"database": &meta.database, "collection": &meta.collection};
-                    let doc = doc!{
+                    let filter = mongodb::bson::doc! {"database": &meta.database, "collection": &meta.collection};
+                    let doc = mongodb::bson::doc!{
                         "database": &meta.database,
                         "collection": &meta.collection,
                         "fields": FIELD_NAMES.iter().map(|field| field.to_string())

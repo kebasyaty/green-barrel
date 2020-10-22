@@ -1,5 +1,3 @@
-//use argon2::{self, Config};
-//use chrono::{DateTime, NaiveDateTime, Utc};
 use futures::stream::StreamExt;
 use mango_orm::{
     forms::{Form, OutputData, OutputType},
@@ -11,15 +9,11 @@ use mango_orm::{
     },
     widgets::{DataType, FieldType, Transport, Widget},
 };
-use mongodb::bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson};
+use mongodb::bson::{document::Document, oid::ObjectId, ser::to_document, Bson};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
-//use validator::{
-//validate_email, validate_ip, validate_ip_v4, validate_ip_v6, validate_range, validate_url,
-//Validator,
-//};
 
 const _SERVICE_NAME: &str = "account"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
 const _DATABASE_NAME: &str = "test_drive"; // _SERVICE_NAME or _APP_NAME or _PROJECT_NAME etc...
