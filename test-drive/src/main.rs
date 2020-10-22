@@ -6,7 +6,7 @@ mod mango_models;
 // Migration Service `Mango`
 async fn mango_migration() {
     // KEYWORD - It is recommended not to change within the boundaries of one project
-    // (Valid characters: _|a-z|A-Z|0-9 ; Size: 8-16.)
+    // (Valid characters: _ a-z A-Z 0-9 ; Size: 8-16.)
     static KEYWORD: &str = "7rzg_cfqQB3B7q7T";
     let client: Client = Client::with_uri_str("mongodb://localhost:27017")
         .await
@@ -14,14 +14,11 @@ async fn mango_migration() {
     let monitor = Monitor {
         keyword: KEYWORD,
         client: &client,
+        // Register models
+        models: vec![mango_models::User::metadata()],
     };
-    // Refresh models state
-    monitor.refresh().await;
-    // Register models
-    mango_models::User::migrat(&client, KEYWORD).await;
-    // Reorganize databases state
-    // (full delete of orphaned collections and databases)
-    monitor.napalm().await;
+    // Start the migration process
+    monitor.migrat().await;
 }
 
 #[tokio::main]

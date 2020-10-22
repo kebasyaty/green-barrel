@@ -1,6 +1,5 @@
 use argon2::{self, Config};
 use chrono::{DateTime, NaiveDateTime, Utc};
-use futures::stream::StreamExt;
 use mango_orm::{
     forms::{Form, OutputData, OutputType},
     model,
@@ -13,8 +12,7 @@ use mango_orm::{
 };
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, ser::to_document, Bson},
-    options::UpdateModifications,
-    results, Client, Collection, Cursor, Database,
+    results, Client, Collection,
 };
 use rand::Rng;
 use serde::{Deserialize, Serialize};
