@@ -200,15 +200,15 @@ macro_rules! model {
 
             // Validation of `unique`
             async fn check_unique(
-                is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &Bson,
+                is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &mongodb::bson::Bson,
                 value_type: &str, coll: &mongodb::Collection) -> Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
-                    let filter: Document = match value_type {
+                    let filter: mongodb::bson::document::Document = match value_type {
                         "i64" => {
                             // For u32 and i64
                             let field_value: i64 = value_bson_pre.as_i64().unwrap();
-                            mongodb::bson::doc!{ field_name.to_string() : Bson::Int64(field_value) }
+                            mongodb::bson::doc!{ field_name.to_string() : mongodb::bson::Bson::Int64(field_value) }
                         }
                         _ => {
                             mongodb::bson::doc!{ field_name.to_string() : value_bson_pre }
@@ -320,18 +320,18 @@ macro_rules! model {
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get preliminary data from the model
-                let mut doc_pre: Document = to_document(self).unwrap();
+                let mut doc_pre: mongodb::bson::document::Document = mongodb::bson::to_document(self).unwrap();
                 // Get data for model from database (if available)
-                let mut doc_from_db: Document = if is_update {
-                    let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                let mut doc_from_db: mongodb::bson::document::Document = if is_update {
+                    let object_id = mongodb::bson::oid::ObjectId::with_string(&self.hash)
                         .unwrap_or_else(|err| { panic!("{:?}", err) });
-                    let filter: Document = mongodb::bson::doc!{"_id": object_id};
+                    let filter: mongodb::bson::document::Document = mongodb::bson::doc!{"_id": object_id};
                     coll.find_one(filter, None).await?.unwrap()
                 } else {
                     mongodb::bson::doc! {}
                 };
                 // Document for the final result
-                let mut doc_res: Document = mongodb::bson::doc! {};
+                let mut doc_res: mongodb::bson::document::Document = mongodb::bson::doc! {};
 
                 // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
@@ -355,7 +355,7 @@ macro_rules! model {
                         // Don't check the `hash` field
                         if field_name == &"hash" { continue; }
                         // Get field value for validation
-                        let value_bson_pre: Option<&Bson> = doc_pre.get(field_name);
+                        let value_bson_pre: Option<&mongodb::bson::Bson> = doc_pre.get(field_name);
                         // Check field value
                         if value_bson_pre.is_none() {
                             Err(format!("Model: `{}` -> Field: `{}` -> Method: `check()` : \
@@ -363,7 +363,7 @@ macro_rules! model {
                                 MODEL_NAME, field_name))?
                         }
                         //
-                        let value_bson_pre: &Bson = value_bson_pre.unwrap();
+                        let value_bson_pre: &mongodb::bson::Bson = value_bson_pre.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
                         let attrs: &mut Transport =
@@ -398,7 +398,7 @@ macro_rules! model {
                                 if is_update && !ignore_fields.contains(field_name) &&
                                     ((!attrs.required && field_value.is_empty()) ||
                                     field_type == "InputPassword") {
-                                    let value_from_db: Option<&Bson> =
+                                    let value_from_db: Option<&mongodb::bson::Bson> =
                                         doc_from_db.get(&field_name);
 
                                     if value_from_db.is_some() {
@@ -472,14 +472,14 @@ macro_rules! model {
                                                 let hash: String =
                                                     Self::create_password_hash(field_value)?;
                                                 doc_res.insert(field_name.to_string(),
-                                                    Bson::String(hash));
+                                                mongodb::bson::Bson::String(hash));
                                             }
                                         }
                                         _ => {
                                             // Insert result from other fields
                                             attrs.value = field_value.to_string();
                                             doc_res.insert(field_name.to_string(),
-                                                Bson::String(field_value.to_string()));
+                                            mongodb::bson::Bson::String(field_value.to_string()));
                                         }
                                     }
                                 }
@@ -504,7 +504,7 @@ macro_rules! model {
                                 // -----------------------------------------------------------------
                                 if is_update && !ignore_fields.contains(field_name)
                                     && !attrs.required && field_value.is_empty() {
-                                    let value_from_db: Option<&Bson> =
+                                    let value_from_db: Option<&mongodb::bson::Bson> =
                                         doc_from_db.get(&field_name);
 
                                     if value_from_db.is_some() {
@@ -578,7 +578,7 @@ macro_rules! model {
                                 }
                                 // Create datetime in bson type
                                 // -----------------------------------------------------------------
-                                let dt_value_bson = Bson::DateTime(dt_value);
+                                let dt_value_bson = mongodb::bson::Bson::DateTime(dt_value);
                                 // Validation of `unique`
                                 // -----------------------------------------------------------------
                                 Self::check_unique(is_update, attrs.unique
@@ -597,7 +597,7 @@ macro_rules! model {
                                     doc_res.insert(field_name.to_string(),
                                         dt_value_bson);
                                 } else {
-                                    doc_res.insert(field_name.to_string(), Bson::Null);
+                                    doc_res.insert(field_name.to_string(), mongodb::bson::Bson::Null);
                                 }
                             }
                             "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
@@ -636,7 +636,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int32(field_value));
+                                    mongodb::bson::Bson::Int32(field_value));
                                 }
                             }
                             "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
@@ -677,7 +677,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Int64(field_value));
+                                    mongodb::bson::Bson::Int64(field_value));
                                 }
                             }
                             "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
@@ -716,7 +716,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Double(field_value));
+                                    mongodb::bson::Bson::Double(field_value));
                                 }
                             }
                             "InputCheckBoxBool" => {
@@ -739,7 +739,7 @@ macro_rules! model {
                                 if !local_err && !ignore_fields.contains(field_name) {
                                     attrs.value = field_value.to_string();
                                     doc_res.insert(field_name.to_string(),
-                                        Bson::Boolean(field_value));
+                                    mongodb::bson::Bson::Boolean(field_value));
                                 }
                             }
                             _ => {
@@ -754,13 +754,13 @@ macro_rules! model {
                         if !global_err {
                             let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                             if !is_update {
-                                doc_res.insert("created".to_string(), Bson::DateTime(dt));
-                                doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                                doc_res.insert("created".to_string(), mongodb::bson::Bson::DateTime(dt));
+                                doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
                             } else {
-                                let value_from_db: Option<&Bson> = doc_from_db.get("created");
+                                let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get("created");
                                 if value_from_db.is_some() {
                                     doc_res.insert("created".to_string(), value_from_db.unwrap());
-                                    doc_res.insert("updated".to_string(), Bson::DateTime(dt));
+                                    doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
                                 } else {
                                     Err(format!("Model: `{}` -> Field: `created` -> Method: \
                                                 `check()` : Can't get field value from database.",
@@ -878,9 +878,9 @@ macro_rules! model {
                             coll.insert_one(verified_data.doc(), None).await?;
                         self.hash = result.inserted_id.as_object_id().unwrap().to_hex();
                     } else {
-                        let object_id: ObjectId = ObjectId::with_string(&self.hash)
+                        let object_id = mongodb::bson::oid::ObjectId::with_string(&self.hash)
                             .unwrap_or_else(|err| { panic!("{}", err.to_string()) });
-                        let query: Document = mongodb::bson::doc!{"_id": object_id};
+                        let query: mongodb::bson::document::Document = mongodb::bson::doc!{"_id": object_id};
                         coll.update_one(query, verified_data.doc(), None).await?;
                     }
                 }
@@ -1872,18 +1872,18 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 // Get a list of current model field names from the technical database
                 // `mango_orm_keyword`
-                let filter: Document = mongodb::bson::doc! {
+                let filter: mongodb::bson::document::Document = mongodb::bson::doc! {
                     "database": &meta.database,
                     "collection": &meta.collection
                 };
-                let model: Option<Document> = client.database(&mango_orm_keyword)
+                let model: Option<mongodb::bson::document::Document> = client.database(&mango_orm_keyword)
                     .collection("models").find_one(filter, None).await.unwrap();
                 if model.is_some() {
                     // Get a list of fields from the technical database
                     let mango_orm_fnames: Vec<String> = {
-                        let model: Document = model.unwrap();
-                        let fields: Vec<Bson> = model.get_array("fields").unwrap().to_vec();
-                        fields.into_iter().map(|item: Bson| item.as_str().unwrap().to_string())
+                        let model: mongodb::bson::document::Document = model.unwrap();
+                        let fields: Vec<mongodb::bson::Bson> = model.get_array("fields").unwrap().to_vec();
+                        fields.into_iter().map(|item: mongodb::bson::Bson| item.as_str().unwrap().to_string())
                         .collect()
                     };
                     // Check if the set of fields in the collection of
@@ -1908,7 +1908,7 @@ macro_rules! model {
                         let mut cursor: mongodb::Cursor = collection.find(None, None).await.unwrap();
                         // Iterate through all documents in a current (model) collection
                         while let Some(result) = cursor.next().await {
-                            let doc_from_db: Document = result.unwrap();
+                            let doc_from_db: mongodb::bson::document::Document = result.unwrap();
                             // Create temporary blank document
                             let mut tmp_doc = mongodb::bson::doc! {};
                             // Loop over all fields of the model
@@ -1918,7 +1918,7 @@ macro_rules! model {
                                 }
                                 // If the field exists, get its value
                                 if doc_from_db.contains_key(field) {
-                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get(field);
                                     if value_from_db.is_some() {
                                         tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                     } else {
@@ -1935,7 +1935,7 @@ macro_rules! model {
                                         | "InputEmail" | "InputPassword" | "InputTel"
                                         | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                                         | "InputIPv6" | "TextArea" | "SelectText" => {
-                                            Bson::String(value.1.clone())
+                                            mongodb::bson::Bson::String(value.1.clone())
                                         }
                                         "InputDate" => {
                                             // Example: "1970-02-28"
@@ -1952,9 +1952,9 @@ macro_rules! model {
                                                 chrono::DateTime::<chrono::Utc>::from_utc(
                                                     chrono::NaiveDateTime::parse_from_str(
                                                         &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
-                                                Bson::DateTime(dt)
+                                                mongodb::bson::Bson::DateTime(dt)
                                             } else {
-                                                Bson::Null
+                                                mongodb::bson::Bson::Null
                                             }
                                         }
                                         "InputDateTime" => {
@@ -1972,27 +1972,27 @@ macro_rules! model {
                                                     chrono::DateTime::<chrono::Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             &val, "%Y-%m-%dT%H:%M").unwrap(), chrono::Utc);
-                                                Bson::DateTime(dt)
+                                                    mongodb::bson::Bson::DateTime(dt)
                                             } else {
-                                                Bson::Null
+                                                mongodb::bson::Bson::Null
                                             }
                                         }
                                         "InputCheckBoxI32" | "InputRadioI32" | "InputNumberI32"
                                         | "InputRangeI32" | "SelectI32" => {
-                                            Bson::Int32(value.1.parse::<i32>().unwrap())
+                                            mongodb::bson::Bson::Int32(value.1.parse::<i32>().unwrap())
                                         }
                                         "InputCheckBoxU32" | "InputRadioU32" | "InputNumberU32"
                                         | "InputRangeU32" | "SelectU32" | "InputCheckBoxI64"
                                         | "InputRadioI64" | "InputNumberI64" | "InputRangeI64"
                                         | "SelectI64" => {
-                                            Bson::Int64(value.1.parse::<i64>().unwrap())
+                                            mongodb::bson::Bson::Int64(value.1.parse::<i64>().unwrap())
                                         }
                                         "InputCheckBoxF64" | "InputRadioF64" | "InputNumberF64"
                                         | "InputRangeF64" | "SelectF64" => {
-                                            Bson::Double(value.1.parse::<f64>().unwrap())
+                                            mongodb::bson::Bson::Double(value.1.parse::<f64>().unwrap())
                                         }
                                         "InputCheckBoxBool" => {
-                                            Bson::Boolean(value.1.parse::<bool>().unwrap())
+                                            mongodb::bson::Bson::Boolean(value.1.parse::<bool>().unwrap())
                                         }
                                         _ => {
                                             panic!("Service: `{}` -> Model: `{}` -> Method: \
@@ -2005,7 +2005,7 @@ macro_rules! model {
                             // Insert fields for timestamps `created` and `updated`
                             for field in vec!["created", "updated"] {
                                 if doc_from_db.contains_key(field) {
-                                    let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                                    let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get(field);
                                     if value_from_db.is_some() {
                                         tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                     } else {
