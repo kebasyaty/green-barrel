@@ -39,8 +39,8 @@ macro_rules! model {
             }
 
             // Metadata (database name, collection name, etc)
-            pub fn metadata<'a>() -> Result<Meta<'a>, Box<dyn std::error::Error>> {
-                let mut meta: Meta = Self::meta()?;
+            pub fn metadata<'a>() -> Result<mango_orm::models::Meta<'a>, Box<dyn std::error::Error>> {
+                let mut meta: mango_orm::models::Meta = Self::meta()?;
                 meta.service = meta.service.to_lowercase();
                 meta.database = meta.database.to_lowercase();
                 meta.collection = format!("{}__{}",
@@ -52,13 +52,13 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, Widget>, Box<dyn std::error::Error>> {
-                let mut map: std::collections::HashMap<&str, Widget> = Self::widgets()?;
+            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, mango_orm::widgets::Widget>, Box<dyn std::error::Error>> {
+                let mut map: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
                         "hash",
-                        Widget {
-                            value: FieldType::Hash,
+                        mango_orm::widgets::Widget {
+                            value: mango_orm::widgets::FieldType::Hash,
                             hidden: true,
                             ..Default::default()
                         }
@@ -72,14 +72,14 @@ macro_rules! model {
                 async_mutex::MutexGuard<'static, std::collections::HashMap<String,
                 mango_orm::store::FormCache>>, String), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
-                let meta: Meta = Self::metadata()?;
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let key = meta.collection.clone();
                 let mut store: async_mutex::MutexGuard<'_, std::collections::HashMap<String,
                 mango_orm::store::FormCache>> = mango_orm::store::FORM_CACHE.lock().await;
                 let mut cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
-                    let widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map()?;
+                    let widgets: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets_full_map()?;
                     let mut clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                     let mut widget_map: std::collections::HashMap<String, String> = std::collections::HashMap::new();
                     for (field, widget) in &widgets {
@@ -313,7 +313,7 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
-                let meta: Meta = Self::metadata()?;
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let mut global_err = false;
                 let is_update: bool = !self.hash.is_empty();
                 let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
@@ -866,7 +866,7 @@ macro_rules! model {
                 // ---------------------------------------------------------------------------------
                 let verified_data: mango_orm::forms::OutputData = self.check(client, mango_orm::forms::OutputType::Map).await?;
                 let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = verified_data.map();
-                let meta: Meta = Self::metadata()?;
+                let meta: mango_orm::models::Meta = Self::metadata()?;
                 let is_update: bool = !self.hash.is_empty();
                 let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
 
@@ -922,7 +922,7 @@ macro_rules! model {
             pub async fn migrat<'a>(client: &mongodb::Client, keyword: &'a str) {
                 static MODEL_NAME: &str = stringify!($sname);
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
-                let meta: Meta = Self::metadata().unwrap();
+                let meta: mango_orm::models::Meta = Self::metadata().unwrap();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 // Validation of required fields in `Meta`
                 if meta.service.is_empty() || meta.database.is_empty() {
@@ -981,11 +981,11 @@ macro_rules! model {
                     FIELD_NAMES.iter().map(|item| item.to_owned())
                     .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect();
                 // Metadata of model (database name, collection name, etc)
-                let meta: Meta = Self::metadata().unwrap();
+                let meta: mango_orm::models::Meta = Self::metadata().unwrap();
                 // Technical database for `models::Monitor`
                 let mango_orm_keyword = format!("mango_orm_{}", keyword);
                 // Checking the status of Widgets
-                let map_widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map().unwrap();
+                let map_widgets: std::collections::HashMap<&str, mango_orm::widgets::Widget> = Self::widgets_full_map().unwrap();
                 // List of existing databases
                 let database_names: Vec<String> =
                     client.list_database_names(None, None).await.unwrap();
@@ -1012,7 +1012,7 @@ macro_rules! model {
                     match widget.value {
                         // Hash
                         // -------------------------------------------------------------------------
-                        FieldType::Hash => {
+                        mango_orm::widgets::FieldType::Hash => {
                             let enum_field_type = "Hash".to_string();
                             let data_field_type = "String".to_string();
                             if map_field_types[field] != "String" {
@@ -1030,29 +1030,29 @@ macro_rules! model {
                         // InputCheckBoxI64
                         // InputCheckBoxF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputCheckBoxText(_) | FieldType::InputCheckBoxI32(_)
-                        | FieldType::InputCheckBoxU32(_) | FieldType::InputCheckBoxI64(_)
-                        | FieldType::InputCheckBoxF64(_) => {
+                        mango_orm::widgets::FieldType::InputCheckBoxText(_) | mango_orm::widgets::FieldType::InputCheckBoxI32(_)
+                        | mango_orm::widgets::FieldType::InputCheckBoxU32(_) | mango_orm::widgets::FieldType::InputCheckBoxI64(_)
+                        | mango_orm::widgets::FieldType::InputCheckBoxF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::InputCheckBoxText(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxText(_) => {
                                     enum_field_type = "InputCheckBoxText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::InputCheckBoxI32(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxI32(_) => {
                                     enum_field_type = "InputCheckBoxI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::InputCheckBoxU32(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxU32(_) => {
                                     enum_field_type = "InputCheckBoxU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputCheckBoxI64(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxI64(_) => {
                                     enum_field_type = "InputCheckBoxI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputCheckBoxF64(_) => {
+                                mango_orm::widgets::FieldType::InputCheckBoxF64(_) => {
                                     enum_field_type = "InputCheckBoxF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1061,14 +1061,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `maxlength` = only 0 (zero).",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1083,14 +1083,14 @@ macro_rules! model {
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1113,29 +1113,29 @@ macro_rules! model {
                         // InputIPv6
                         // TextArea
                         // -------------------------------------------------------------------------
-                        FieldType::InputColor(_) | FieldType::InputEmail(_)
-                        | FieldType::InputPassword(_) | FieldType::InputText(_)
-                        | FieldType::InputUrl(_) | FieldType::InputIP(_)
-                        | FieldType::InputIPv4(_) | FieldType::InputIPv6(_)
-                        | FieldType::TextArea(_) => {
+                        mango_orm::widgets::FieldType::InputColor(_) | mango_orm::widgets::FieldType::InputEmail(_)
+                        | mango_orm::widgets::FieldType::InputPassword(_) | mango_orm::widgets::FieldType::InputText(_)
+                        | mango_orm::widgets::FieldType::InputUrl(_) | mango_orm::widgets::FieldType::InputIP(_)
+                        | mango_orm::widgets::FieldType::InputIPv4(_) | mango_orm::widgets::FieldType::InputIPv6(_)
+                        | mango_orm::widgets::FieldType::TextArea(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputColor(_) => {
+                                mango_orm::widgets::FieldType::InputColor(_) => {
                                     enum_field_type = "InputColor".to_string();
                                 }
-                                FieldType::InputEmail(_) => {
+                                mango_orm::widgets::FieldType::InputEmail(_) => {
                                     enum_field_type = "InputEmail".to_string();
                                 }
-                                FieldType::InputPassword(_) => {
+                                mango_orm::widgets::FieldType::InputPassword(_) => {
                                     enum_field_type = "InputPassword".to_string();
                                 }
-                                FieldType::InputText(_) => {
+                                mango_orm::widgets::FieldType::InputText(_) => {
                                     enum_field_type = "InputText".to_string();
                                 }
-                                FieldType::InputUrl(_) => {
+                                mango_orm::widgets::FieldType::InputUrl(_) => {
                                     enum_field_type = "InputUrl".to_string();
                                 }
-                                FieldType::TextArea(_) => {
+                                mango_orm::widgets::FieldType::TextArea(_) => {
                                     enum_field_type = "TextArea".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1143,7 +1143,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1159,7 +1159,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1175,13 +1175,13 @@ macro_rules! model {
                         // InputDate
                         // InputDateTime
                         // -------------------------------------------------------------------------
-                        FieldType::InputDate(_) | FieldType::InputDateTime(_) => {
+                        mango_orm::widgets::FieldType::InputDate(_) | mango_orm::widgets::FieldType::InputDateTime(_) => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputDate(_) => {
+                                mango_orm::widgets::FieldType::InputDate(_) => {
                                     enum_field_type = "InputDate".to_string();
                                 }
-                                FieldType::InputDateTime(_) => {
+                                mango_orm::widgets::FieldType::InputDateTime(_) => {
                                     enum_field_type = "InputDateTime".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1189,7 +1189,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` ->\
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1211,7 +1211,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1237,7 +1237,7 @@ macro_rules! model {
                                 let mut date_max: String = widget.max.get_raw_data();
                                 let mut date_value: String = widget.value.get_raw_data();
                                 match widget.value {
-                                    FieldType::InputDate(_) => {
+                                    mango_orm::widgets::FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
                                         if !mango_orm::store::REGEX_IS_DATE.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
@@ -1264,7 +1264,7 @@ macro_rules! model {
                                         date_min = format!("{}T00:00", date_min);
                                         date_max = format!("{}T00:00", date_max);
                                     }
-                                    FieldType::InputDateTime(_) => {
+                                    mango_orm::widgets::FieldType::InputDateTime(_) => {
                                         // Example: "1970-02-28T00:00"
                                         if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
@@ -1329,13 +1329,13 @@ macro_rules! model {
                         // InputFile
                         // InputImage
                         // -------------------------------------------------------------------------
-                        FieldType::InputFile | FieldType::InputImage => {
+                        mango_orm::widgets::FieldType::InputFile | mango_orm::widgets::FieldType::InputImage => {
                             let mut enum_field_type = String::new();
                             match widget.value {
-                                FieldType::InputFile => {
+                                mango_orm::widgets::FieldType::InputFile => {
                                     enum_field_type = "InputFile".to_string();
                                 }
-                                FieldType::InputImage => {
+                                mango_orm::widgets::FieldType::InputImage => {
                                     enum_field_type = "InputImage".to_string();
                                 }
                                 _ => panic!("Invalid field type")
@@ -1343,7 +1343,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1358,7 +1358,7 @@ macro_rules! model {
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1376,28 +1376,28 @@ macro_rules! model {
                         // InputNumberI64
                         // InputNumberF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputNumberI32(_) | FieldType::InputNumberU32(_)
-                        | FieldType::InputNumberI64(_) | FieldType::InputNumberF64(_) => {
+                        mango_orm::widgets::FieldType::InputNumberI32(_) | mango_orm::widgets::FieldType::InputNumberU32(_)
+                        | mango_orm::widgets::FieldType::InputNumberI64(_) | mango_orm::widgets::FieldType::InputNumberF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             let mut step_min_max_enum_type = String::new();
                             match widget.value {
-                                FieldType::InputNumberI32(_) => {
+                                mango_orm::widgets::FieldType::InputNumberI32(_) => {
                                     enum_field_type = "InputNumberI32".to_string();
                                     data_field_type = "i32".to_string();
                                     step_min_max_enum_type = "I32".to_string();
                                 }
-                                FieldType::InputNumberU32(_) => {
+                                mango_orm::widgets::FieldType::InputNumberU32(_) => {
                                     enum_field_type = "InputNumberU32".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
-                                FieldType::InputNumberI64(_) => {
+                                mango_orm::widgets::FieldType::InputNumberI64(_) => {
                                     enum_field_type = "InputNumberI64".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "I64".to_string();
                                 }
-                                FieldType::InputNumberF64(_) => {
+                                mango_orm::widgets::FieldType::InputNumberF64(_) => {
                                     enum_field_type = "InputNumberF64".to_string();
                                     data_field_type = "f64".to_string();
                                     step_min_max_enum_type = "F64".to_string();
@@ -1407,14 +1407,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1427,7 +1427,7 @@ macro_rules! model {
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1435,7 +1435,7 @@ macro_rules! model {
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1443,7 +1443,7 @@ macro_rules! model {
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1457,29 +1457,29 @@ macro_rules! model {
                         // InputRadioI64
                         // InputRadioF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputRadioText(_) | FieldType::InputRadioI32(_)
-                        | FieldType::InputRadioU32(_) | FieldType::InputRadioI64(_)
-                        | FieldType::InputRadioF64(_) => {
+                        mango_orm::widgets::FieldType::InputRadioText(_) | mango_orm::widgets::FieldType::InputRadioI32(_)
+                        | mango_orm::widgets::FieldType::InputRadioU32(_) | mango_orm::widgets::FieldType::InputRadioI64(_)
+                        | mango_orm::widgets::FieldType::InputRadioF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::InputRadioText(_) => {
+                                mango_orm::widgets::FieldType::InputRadioText(_) => {
                                     enum_field_type = "InputRadioText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::InputRadioI32(_) => {
+                                mango_orm::widgets::FieldType::InputRadioI32(_) => {
                                     enum_field_type = "InputRadioI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::InputRadioU32(_) => {
+                                mango_orm::widgets::FieldType::InputRadioU32(_) => {
                                     enum_field_type = "InputRadioU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputRadioI64(_) => {
+                                mango_orm::widgets::FieldType::InputRadioI64(_) => {
                                     enum_field_type = "InputRadioI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::InputRadioF64(_) => {
+                                mango_orm::widgets::FieldType::InputRadioF64(_) => {
                                     enum_field_type = "InputRadioF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1488,14 +1488,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.maxlength != 0 {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `maxlength` = only 0 (zero).",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1510,14 +1510,14 @@ macro_rules! model {
                             } else if widget.other_attrs.contains("checked") {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `other_attrs` - must not contain the word `checked`.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` - must not be an empty vec![]",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1535,28 +1535,28 @@ macro_rules! model {
                         // InputRangeI64
                         // InputRangeF64
                         // -------------------------------------------------------------------------
-                        FieldType::InputRangeI32(_) | FieldType::InputRangeU32(_)
-                        | FieldType::InputRangeI64(_) | FieldType::InputRangeF64(_) => {
+                        mango_orm::widgets::FieldType::InputRangeI32(_) | mango_orm::widgets::FieldType::InputRangeU32(_)
+                        | mango_orm::widgets::FieldType::InputRangeI64(_) | mango_orm::widgets::FieldType::InputRangeF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             let mut step_min_max_enum_type = String::new();
                             match widget.value {
-                                FieldType::InputRangeI32(_) => {
+                                mango_orm::widgets::FieldType::InputRangeI32(_) => {
                                     enum_field_type = "InputRangeI32".to_string();
                                     data_field_type = "i32".to_string();
                                     step_min_max_enum_type = "I32".to_string();
                                 }
-                                FieldType::InputRangeU32(_) => {
+                                mango_orm::widgets::FieldType::InputRangeU32(_) => {
                                     enum_field_type = "InputRangeU32".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "U32".to_string();
                                 }
-                                FieldType::InputRangeI64(_) => {
+                                mango_orm::widgets::FieldType::InputRangeI64(_) => {
                                     enum_field_type = "InputRangeI64".to_string();
                                     data_field_type = "i64".to_string();
                                     step_min_max_enum_type = "I64".to_string();
                                 }
-                                FieldType::InputRangeF64(_) => {
+                                mango_orm::widgets::FieldType::InputRangeF64(_) => {
                                     enum_field_type = "InputRangeI64".to_string();
                                     data_field_type = "f64".to_string();
                                     step_min_max_enum_type = "F64".to_string();
@@ -1566,14 +1566,14 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
                             } else if !widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1586,7 +1586,7 @@ macro_rules! model {
                             }  else if widget.step.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `step` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1594,7 +1594,7 @@ macro_rules! model {
                             } else if widget.min.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `min` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1602,7 +1602,7 @@ macro_rules! model {
                             } else if widget.max.get_data_type() != data_field_type {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `max` = `{}`.",
                                     meta.service, MODEL_NAME, field, enum_field_type,
                                     step_min_max_enum_type
@@ -1616,29 +1616,29 @@ macro_rules! model {
                         // SelectI64
                         // SelectF64
                         // -------------------------------------------------------------------------
-                         FieldType::SelectText(_) | FieldType::SelectI32(_)
-                         | FieldType::SelectU32(_) | FieldType::SelectI64(_)
-                         | FieldType::SelectF64(_) => {
+                         mango_orm::widgets::FieldType::SelectText(_) | mango_orm::widgets::FieldType::SelectI32(_)
+                         | mango_orm::widgets::FieldType::SelectU32(_) | mango_orm::widgets::FieldType::SelectI64(_)
+                         | mango_orm::widgets::FieldType::SelectF64(_) => {
                             let mut enum_field_type = String::new();
                             let mut data_field_type = String::new();
                             match widget.value {
-                                FieldType::SelectText(_) => {
+                                mango_orm::widgets::FieldType::SelectText(_) => {
                                     enum_field_type = "SelectText".to_string();
                                     data_field_type = "String".to_string();
                                 }
-                                FieldType::SelectI32(_) => {
+                                mango_orm::widgets::FieldType::SelectI32(_) => {
                                     enum_field_type = "SelectI32".to_string();
                                     data_field_type = "i32".to_string();
                                 }
-                                FieldType::SelectU32(_) => {
+                                mango_orm::widgets::FieldType::SelectU32(_) => {
                                     enum_field_type = "SelectU32".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::SelectI64(_) => {
+                                mango_orm::widgets::FieldType::SelectI64(_) => {
                                     enum_field_type = "SelectI64".to_string();
                                     data_field_type = "i64".to_string();
                                 }
-                                FieldType::SelectF64(_) => {
+                                mango_orm::widgets::FieldType::SelectF64(_) => {
                                     enum_field_type = "SelectF64".to_string();
                                     data_field_type = "f64".to_string();
                                 }
@@ -1647,7 +1647,7 @@ macro_rules! model {
                             if widget.relation_model != String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `relation_model` = only blank string.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1662,7 +1662,7 @@ macro_rules! model {
                             } else if widget.select.is_empty() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType::`{}` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType::`{}` : \
                                     `select` - Should not be empty.",
                                     meta.service, MODEL_NAME, field, enum_field_type
                                 )
@@ -1677,11 +1677,11 @@ macro_rules! model {
 
                         // ForeignKey
                         // -------------------------------------------------------------------------
-                        FieldType::ForeignKey => {
+                        mango_orm::widgets::FieldType::ForeignKey => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
-                                    Method: `widgets()` -> For `value` = FieldType `ForeignKey` : \
+                                    Method: `widgets()` -> For `value` = mango_orm::widgets::FieldType `ForeignKey` : \
                                     `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
@@ -1698,7 +1698,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ForeignKey` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `ForeignKey` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1712,12 +1712,12 @@ macro_rules! model {
 
                         // ManyToMany
                         // -------------------------------------------------------------------------
-                        FieldType::ManyToMany => {
+                        mango_orm::widgets::FieldType::ManyToMany => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ManyToMany` : `relation_model` = \
+                                    mango_orm::widgets::FieldType `ManyToMany` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
@@ -1733,7 +1733,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `ManyToMany` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `ManyToMany` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
@@ -1747,12 +1747,12 @@ macro_rules! model {
 
                         // OneToOne
                         // -------------------------------------------------------------------------
-                        FieldType::OneToOne => {
+                        mango_orm::widgets::FieldType::OneToOne => {
                             if widget.relation_model == String::new() {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `OneToOne` : `relation_model` = \
+                                    mango_orm::widgets::FieldType `OneToOne` : `relation_model` = \
                                     <CategoryName>::meta().collection.to_string().",
                                     meta.service, MODEL_NAME, field
                                 )
@@ -1768,7 +1768,7 @@ macro_rules! model {
                                 panic!(
                                     "Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                     Method: `widgets()` -> For `value` = \
-                                    FieldType `OneToOne` : `select` = only blank vec![].",
+                                    mango_orm::widgets::FieldType `OneToOne` : `select` = only blank vec![].",
                                     meta.service, MODEL_NAME, field
                                 )
                             } else if map_field_types[field] != "String" {
