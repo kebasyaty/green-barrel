@@ -22,24 +22,24 @@ macro_rules! model {
             // Info Model
             // *************************************************************************************
             // Get model name
-            pub fn model_name<'a>() -> Result<&'a str, Box<dyn Error>> {
+            pub fn model_name<'a>() -> Result<&'a str, Box<dyn std::error::Error>> {
                 Ok(stringify!($sname))
             }
 
             // Get array of field names
-            pub fn field_names<'a>() -> Result<&'a [&'a str], Box<dyn Error>> {
+            pub fn field_names<'a>() -> Result<&'a [&'a str], Box<dyn std::error::Error>> {
                 Ok(&[$(stringify!($fname)),*])
             }
 
             // // Get a map with field types
-            pub fn field_types<'a>() -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn Error>> {
+            pub fn field_types<'a>() -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
                 static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                 Ok(FIELD_NAMES.iter().map(|item| item.to_owned())
                 .zip([$(stringify!($ftype)),*].iter().map(|item| item.to_owned())).collect())
             }
 
             // Metadata (database name, collection name, etc)
-            pub fn metadata<'a>() -> Result<Meta<'a>, Box<dyn Error>> {
+            pub fn metadata<'a>() -> Result<Meta<'a>, Box<dyn std::error::Error>> {
                 let mut meta: Meta = Self::meta()?;
                 meta.service = meta.service.to_lowercase();
                 meta.database = meta.database.to_lowercase();
@@ -52,7 +52,7 @@ macro_rules! model {
             // Form - Widgets, attributes (HashMap, Json), Html
             // *************************************************************************************
             // Get full map of Widgets (with widget for id field)
-            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, Widget>, Box<dyn Error>> {
+            pub fn widgets_full_map<'a>() -> Result<std::collections::HashMap<&'a str, Widget>, Box<dyn std::error::Error>> {
                 let mut map: std::collections::HashMap<&str, Widget> = Self::widgets()?;
                 if map.get("hash").is_none() {
                     map.insert(
@@ -70,7 +70,7 @@ macro_rules! model {
             // Add (if required) default form data to cache
             pub async fn form_cache() -> Result<(
                 async_mutex::MutexGuard<'static, std::collections::HashMap<String,
-                FormCache>>, String), Box<dyn Error>> {
+                FormCache>>, String), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let meta: Meta = Self::metadata()?;
                 let key = meta.collection.clone();
@@ -101,7 +101,7 @@ macro_rules! model {
             }
 
             // Get a map of pure attributes of Form for page templates
-            pub async fn form_map() -> Result<std::collections::HashMap<String, Transport>, Box<dyn Error>> {
+            pub async fn form_map() -> Result<std::collections::HashMap<String, Transport>, Box<dyn std::error::Error>> {
                 let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
@@ -115,7 +115,7 @@ macro_rules! model {
             }
 
             // Get Form attributes in Json format for page templates
-            pub async fn form_json() -> Result<String, Box<dyn Error>> {
+            pub async fn form_json() -> Result<String, Box<dyn std::error::Error>> {
                 let (mut store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
@@ -150,7 +150,7 @@ macro_rules! model {
 
             // Get Html Form of Model for page templates
             pub async fn form_html() ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
@@ -191,7 +191,7 @@ macro_rules! model {
             // Validation of database queries
             // *************************************************************************************
             // Validation of `maxlength`
-            fn check_maxlength(maxlength: usize, value: &str ) -> Result<(), Box<dyn Error>>  {
+            fn check_maxlength(maxlength: usize, value: &str ) -> Result<(), Box<dyn std::error::Error>>  {
                 if maxlength > 0 && value.encode_utf16().count() > maxlength {
                     Err(format!("Exceeds limit, maxlength={}.", maxlength))?
                 }
@@ -201,7 +201,7 @@ macro_rules! model {
             // Validation of `unique`
             async fn check_unique(
                 is_update: bool, is_unique: bool, field_name: String, value_bson_pre: &Bson,
-                value_type: &str, coll: &Collection) -> Result<(), Box<dyn Error>> {
+                value_type: &str, coll: &Collection) -> Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 if !is_update && is_unique {
                     let filter: Document = match value_type {
@@ -224,7 +224,7 @@ macro_rules! model {
 
             // Accumulation of errors
             fn accumula_err(attrs: &Transport, err: &String) ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut tmp = attrs.error.clone();
                 tmp = if !tmp.is_empty() { format!("{}<br>", tmp) } else { String::new() };
@@ -233,11 +233,11 @@ macro_rules! model {
 
             // Validation in regular expression (email, password, etc...)
             fn regex_validation(field_type: &str, value: &str) ->
-                Result<(), Box<dyn Error>> {
+                Result<(), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 match field_type {
                     "InputEmail" => {
-                        if !validate_email(value) {
+                        if !validator::validate_email(value) {
                             Err("Invalid email address.")?
                         }
                     }
@@ -247,22 +247,22 @@ macro_rules! model {
                         }
                     }
                     "InputUrl" => {
-                        if !validate_url(value) {
+                        if !validator::validate_url(value) {
                             Err("Invalid Url.")?
                         }
                     }
                     "InputIP" => {
-                        if !validate_ip(value) {
+                        if !validator::validate_ip(value) {
                             Err("Invalid IP address.")?
                         }
                     }
                     "InputIPv4" => {
-                        if !validate_ip_v4(value) {
+                        if !validator::validate_ip_v4(value) {
                             Err("Invalid IPv4 address.")?
                         }
                     }
                     "InputIPv6" => {
-                        if !validate_ip_v6(value) {
+                        if !validator::validate_ip_v6(value) {
                             Err("Invalid IPv6 address.")?
                         }
                     }
@@ -288,7 +288,7 @@ macro_rules! model {
             }
 
             // Generate password hash and add to result document
-            pub fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
+            pub fn create_password_hash(field_value: &str) -> Result<String, Box<dyn std::error::Error>> {
                     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                                             abcdefghijklmnopqrstuvwxyz\
                                             0123456789@#$%^&+=*!~)(";
@@ -309,7 +309,7 @@ macro_rules! model {
 
             // Validation of Form
             pub async fn check(&self, client: &Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn Error>> {
+                Result<OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
@@ -431,7 +431,7 @@ macro_rules! model {
                                     let max: f64 = attrs.max.parse().unwrap();
                                     let len: f64 = field_value.encode_utf16().count() as f64;
                                     if (min > 0_f64 || max > 0_f64) &&
-                                        !validate_range(Validator::Range{min: Some(min),
+                                        !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                         max: Some(max)}, len) {
                                         global_err = true;
                                         local_err = true;
@@ -622,7 +622,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -663,7 +663,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value as f64;
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -702,7 +702,7 @@ macro_rules! model {
                                 let max: f64 = attrs.max.parse().unwrap();
                                 let num: f64 = field_value.clone();
                                 if (min > 0_f64 || max > 0_f64) &&
-                                    !validate_range(Validator::Range{min: Some(min),
+                                    !validator::validate_range(validator::Validator::Range{min: Some(min),
                                                     max: Some(max)}, num) {
                                     global_err = true;
                                     local_err = true;
@@ -804,7 +804,7 @@ macro_rules! model {
             // *************************************************************************************
             // Get Hash-line
             pub fn to_hash(attrs_map: &std::collections::HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
                 for (field, trans) in attrs_map {
@@ -830,7 +830,7 @@ macro_rules! model {
 
             // Get Json-line
             pub fn to_json(attrs_map: &std::collections::HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut json_text = String::new();
                 for (field, trans) in attrs_map {
@@ -846,7 +846,7 @@ macro_rules! model {
 
             // Get Html-line
             pub fn to_html(attrs_map: std::collections::HashMap<String, Transport>) ->
-                Result<String, Box<dyn Error>> {
+                Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let controls = Self::html(
                     attrs_map,
@@ -862,7 +862,7 @@ macro_rules! model {
             // update an existing document.
             // (Returns the hash-line of the identifier)
             pub async fn save(& mut self, client: &Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn Error>> {
+                Result<OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let verified_data: OutputData = self.check(client, OutputType::Map).await?;
                 let mut attrs_map: std::collections::HashMap<String, Transport> = verified_data.map();
