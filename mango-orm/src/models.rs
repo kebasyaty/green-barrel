@@ -15,9 +15,6 @@ pub struct Meta<'a> {
     pub service: String,
     pub database: String,
     pub collection: String,
-    pub model_name: &'a str,
-    pub field_names: &'a [&'a str],
-    pub field_types: HashMap<&'a str, &'a str>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<&'a str>,
 }
