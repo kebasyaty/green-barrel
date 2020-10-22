@@ -70,13 +70,13 @@ macro_rules! model {
             // Add (if required) default form data to cache
             pub async fn form_cache() -> Result<(
                 async_mutex::MutexGuard<'static, std::collections::HashMap<String,
-                FormCache>>, String), Box<dyn std::error::Error>> {
+                mango_orm::store::FormCache>>, String), Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let meta: Meta = Self::metadata()?;
                 let key = meta.collection.clone();
                 let mut store: async_mutex::MutexGuard<'_, std::collections::HashMap<String,
-                    FormCache>> = FORM_CACHE.lock().await;
-                let mut cache: Option<&FormCache> = store.get(&key);
+                mango_orm::store::FormCache>> = mango_orm::store::FORM_CACHE.lock().await;
+                let mut cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map()?;
@@ -88,7 +88,7 @@ macro_rules! model {
                             field.to_string(), widget.value.get_enum_type().to_string());
                     }
                     // Add default data
-                    let form_cache = FormCache{
+                    let form_cache = mango_orm::store::FormCache{
                         attrs_map: clean_attrs,
                         widget_map: widget_map,
                         ..Default::default()
@@ -103,7 +103,7 @@ macro_rules! model {
             // Get a map of pure attributes of Form for page templates
             pub async fn form_map() -> Result<std::collections::HashMap<String, mango_orm::widgets::Transport>, Box<dyn std::error::Error>> {
                 let (store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
                     let clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
@@ -117,12 +117,12 @@ macro_rules! model {
             // Get Form attributes in Json format for page templates
             pub async fn form_json() -> Result<String, Box<dyn std::error::Error>> {
                 let (mut store, key) = Self::form_cache().await?;
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     if cache.attrs_json.is_empty() {
                         // Create Json-string
-                        let mut form_cache: FormCache = cache.clone();
+                        let mut form_cache: mango_orm::store::FormCache = cache.clone();
                         let attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
@@ -157,9 +157,9 @@ macro_rules! model {
                 let mut build_controls = false;
                 let mut attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 //
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     let is_cached: bool = cache.form_html.is_empty();
                     if is_cached {
                         build_controls = true;
@@ -172,7 +172,7 @@ macro_rules! model {
                     )?;
                     if is_cached {
                          // Clone cache
-                         let mut form_cache: FormCache = cache.clone();
+                         let mut form_cache: mango_orm::store::FormCache = cache.clone();
                         // Update cache
                         form_cache.form_html = controls.clone();
                         // Save to cache
@@ -242,7 +242,7 @@ macro_rules! model {
                         }
                     }
                     "InputColor" => {
-                        if !REGEX_IS_COLOR_CODE.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_COLOR_CODE.is_match(value) {
                             Err("Invalid Color code.")?
                         }
                     }
@@ -267,18 +267,18 @@ macro_rules! model {
                         }
                     }
                     "InputPassword" => {
-                        if !REGEX_IS_PASSWORD.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_PASSWORD.is_match(value) {
                             Err("Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
                                  Minimum size 8 characters")?
                         }
                     }
                     "InputDate" => {
-                        if !REGEX_IS_DATE.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_DATE.is_match(value) {
                             Err("Incorrect date format.<br>Example: 1970-02-28")?
                         }
                     }
                     "InputDateTime" => {
-                        if !REGEX_IS_DATETIME.is_match(value) {
+                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(value) {
                             Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
                         }
                     }
@@ -335,9 +335,9 @@ macro_rules! model {
 
                 // Validation of field by attributes (maxlength, unique, min, max, etc...)
                 // ---------------------------------------------------------------------------------
-                let cache: Option<&FormCache> = store.get(&key);
+                let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let cache: &FormCache = cache.unwrap();
+                    let cache: &mango_orm::store::FormCache = cache.unwrap();
                     static FIELD_NAMES: &'static [&'static str] = &[$(stringify!($fname)),*];
                     attrs_map = cache.attrs_map.clone();
                     let widget_map: std::collections::HashMap<String, String> = cache.widget_map.clone();
@@ -1239,20 +1239,20 @@ macro_rules! model {
                                 match widget.value {
                                     FieldType::InputDate(_) => {
                                         // Example: "1970-02-28"
-                                        if !REGEX_IS_DATE.is_match(&date_min) {
+                                        if !mango_orm::store::REGEX_IS_DATE.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !REGEX_IS_DATE.is_match(&date_max) {
+                                        if !mango_orm::store::REGEX_IS_DATE.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. Example: 1970-02-28",
                                                 meta.service, MODEL_NAME, field)
                                         }
                                         if !date_value.is_empty() {
-                                            if !REGEX_IS_DATE.is_match(&date_value) {
+                                            if !mango_orm::store::REGEX_IS_DATE.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
                                                         Attribute: `value` : Incorrect date \
@@ -1266,14 +1266,14 @@ macro_rules! model {
                                     }
                                     FieldType::InputDateTime(_) => {
                                         // Example: "1970-02-28T00:00"
-                                        if !REGEX_IS_DATETIME.is_match(&date_min) {
+                                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_min) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `min` : \
                                                     Incorrect date format. \
                                                     Example: 1970-02-28T00:00",
                                                 meta.service, MODEL_NAME, field)
                                         }
-                                        if !REGEX_IS_DATETIME.is_match(&date_max) {
+                                        if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_max) {
                                             panic!("Service: `{}` -> Model: `{}` -> Field: `{}` -> \
                                                     Method: `widgets()` -> Attribute: `max` : \
                                                     Incorrect date format. \
@@ -1281,7 +1281,7 @@ macro_rules! model {
                                                 meta.service, MODEL_NAME, field)
                                         }
                                         if !date_value.is_empty() {
-                                            if !REGEX_IS_DATETIME.is_match(&date_value) {
+                                            if !mango_orm::store::REGEX_IS_DATETIME.is_match(&date_value) {
                                                 panic!("Service: `{}` -> Model: `{}` -> \
                                                         Field: `{}` -> Method: `widgets()` -> \
                                                         Attribute: `value` : Incorrect date \
@@ -1941,7 +1941,7 @@ macro_rules! model {
                                             // Example: "1970-02-28"
                                             let mut val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                if !REGEX_IS_DATE.is_match(&val) {
+                                                if !mango_orm::store::REGEX_IS_DATE.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : Incorrect date \
                                                             format. Example: 1970-02-28",
@@ -1961,7 +1961,7 @@ macro_rules! model {
                                             // Example: "1970-02-28T00:00"
                                             let mut val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                if !REGEX_IS_DATETIME.is_match(&val) {
+                                                if !mango_orm::store::REGEX_IS_DATETIME.is_match(&val) {
                                                     panic!("Service: `{}` -> Model: `{}` -> \
                                                             Method: `widgets()` : \
                                                             Incorrect date and time format. \
