@@ -80,7 +80,7 @@ macro_rules! model {
                 if cache.is_none() {
                     // Add a map of pure attributes of Form for page templates
                     let widgets: std::collections::HashMap<&str, Widget> = Self::widgets_full_map()?;
-                    let mut clean_attrs: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
+                    let mut clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                     let mut widget_map: std::collections::HashMap<String, String> = std::collections::HashMap::new();
                     for (field, widget) in &widgets {
                         clean_attrs.insert(field.to_string(), widget.clean_attrs(field)?);
@@ -101,11 +101,11 @@ macro_rules! model {
             }
 
             // Get a map of pure attributes of Form for page templates
-            pub async fn form_map() -> Result<std::collections::HashMap<String, Transport>, Box<dyn std::error::Error>> {
+            pub async fn form_map() -> Result<std::collections::HashMap<String, mango_orm::widgets::Transport>, Box<dyn std::error::Error>> {
                 let (store, key) = Self::form_cache().await?;
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
-                    let clean_attrs: std::collections::HashMap<String, Transport> = cache.unwrap().attrs_map.clone();
+                    let clean_attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = cache.unwrap().attrs_map.clone();
                     Ok(clean_attrs)
                 } else {
                     Err(format!("Model: `{}` -> Method: `form_map()` : \
@@ -123,7 +123,7 @@ macro_rules! model {
                     if cache.attrs_json.is_empty() {
                         // Create Json-string
                         let mut form_cache: FormCache = cache.clone();
-                        let attrs: std::collections::HashMap<String, Transport> = form_cache.attrs_map.clone();
+                        let attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = form_cache.attrs_map.clone();
                         let mut json_text = String::new();
                         for (field, trans) in attrs {
                             let tmp = serde_json::to_string(&trans).unwrap();
@@ -155,7 +155,7 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let mut build_controls = false;
-                let mut attrs: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
+                let mut attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 //
                 let cache: Option<&FormCache> = store.get(&key);
                 if cache.is_some() {
@@ -223,7 +223,7 @@ macro_rules! model {
             }
 
             // Accumulation of errors
-            fn accumula_err(attrs: &Transport, err: &String) ->
+            fn accumula_err(attrs: &mango_orm::widgets::Transport, err: &String) ->
                 Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut tmp = attrs.error.clone();
@@ -308,15 +308,15 @@ macro_rules! model {
             }
 
             // Validation of Form
-            pub async fn check(&self, client: &mongodb::Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn std::error::Error>> {
+            pub async fn check(&self, client: &mongodb::Client, output_format: mango_orm::forms::OutputType) ->
+                Result<mango_orm::forms::OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 static MODEL_NAME: &str = stringify!($sname);
                 let (mut store, key) = Self::form_cache().await?;
                 let meta: Meta = Self::metadata()?;
                 let mut global_err = false;
                 let is_update: bool = !self.hash.is_empty();
-                let mut attrs_map: std::collections::HashMap<String, Transport> = std::collections::HashMap::new();
+                let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 let ignore_fields: Vec<&str> = meta.ignore_fields;
                 let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
                 // Get preliminary data from the model
@@ -346,7 +346,7 @@ macro_rules! model {
                         let error_map: std::collections::HashMap<&str, &str> = self.custom_check()?;
                         if !error_map.is_empty() { global_err = true; }
                         for (field_name, err_msg) in error_map {
-                            let attrs: &mut Transport = attrs_map.get_mut(field_name).unwrap();
+                            let attrs: &mut mango_orm::widgets::Transport = attrs_map.get_mut(field_name).unwrap();
                             attrs.error = Self::accumula_err(&attrs, &err_msg.to_string()).unwrap();
                         }
                     }
@@ -366,7 +366,7 @@ macro_rules! model {
                         let value_bson_pre: &mongodb::bson::Bson = value_bson_pre.unwrap();
                         let field_type: &str =
                             widget_map.get(&field_name.to_string()).unwrap();
-                        let attrs: &mut Transport =
+                        let attrs: &mut mango_orm::widgets::Transport =
                                 attrs_map.get_mut(&field_name.to_string()).unwrap();
                         // For each iteration of the loop
                         let mut local_err = false;
@@ -777,23 +777,23 @@ macro_rules! model {
 
                 // Post processing
                 // ---------------------------------------------------------------------------------
-                let result: OutputData = match output_format {
+                let result: mango_orm::forms::OutputData = match output_format {
                     // Get Hash-line
-                    OutputType::Hash => {
+                    mango_orm::forms::OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Hash((data, !global_err, doc_res))
                     }
                     // Get Attribute Map
-                    OutputType::Map => OutputData::Map((attrs_map, !global_err, doc_res)),
+                    mango_orm::forms::OutputType::Map => mango_orm::forms::OutputData::Map((attrs_map, !global_err, doc_res)),
                     // Get Json-line
-                    OutputType::Json => {
+                    mango_orm::forms::OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Json((data, !global_err, doc_res))
                     }
                     // Get Html-line
-                    OutputType::Html => {
+                    mango_orm::forms::OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, !global_err, doc_res))
+                        mango_orm::forms::OutputData::Html((data, !global_err, doc_res))
                     }
                 };
 
@@ -803,7 +803,7 @@ macro_rules! model {
             // Post processing database queries
             // *************************************************************************************
             // Get Hash-line
-            pub fn to_hash(attrs_map: &std::collections::HashMap<String, Transport>) ->
+            pub fn to_hash(attrs_map: &std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
                 Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut errors = String::new();
@@ -829,7 +829,7 @@ macro_rules! model {
             }
 
             // Get Json-line
-            pub fn to_json(attrs_map: &std::collections::HashMap<String, Transport>) ->
+            pub fn to_json(attrs_map: &std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
                 Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let mut json_text = String::new();
@@ -845,7 +845,7 @@ macro_rules! model {
             }
 
             // Get Html-line
-            pub fn to_html(attrs_map: std::collections::HashMap<String, Transport>) ->
+            pub fn to_html(attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport>) ->
                 Result<String, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
                 let controls = Self::html(
@@ -861,11 +861,11 @@ macro_rules! model {
             // Save to database as a new document or
             // update an existing document.
             // (Returns the hash-line of the identifier)
-            pub async fn save(& mut self, client: &mongodb::Client, output_format: OutputType) ->
-                Result<OutputData, Box<dyn std::error::Error>> {
+            pub async fn save(& mut self, client: &mongodb::Client, output_format: mango_orm::forms::OutputType) ->
+                Result<mango_orm::forms::OutputData, Box<dyn std::error::Error>> {
                 // ---------------------------------------------------------------------------------
-                let verified_data: OutputData = self.check(client, OutputType::Map).await?;
-                let mut attrs_map: std::collections::HashMap<String, Transport> = verified_data.map();
+                let verified_data: mango_orm::forms::OutputData = self.check(client, mango_orm::forms::OutputType::Map).await?;
+                let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = verified_data.map();
                 let meta: Meta = Self::metadata()?;
                 let is_update: bool = !self.hash.is_empty();
                 let coll: mongodb::Collection = client.database(&meta.database).collection(&meta.collection);
@@ -891,25 +891,25 @@ macro_rules! model {
 
                 // Post processing
                 // ---------------------------------------------------------------------------------
-                let result: OutputData = match output_format {
+                let result: mango_orm::forms::OutputData = match output_format {
                     // Get Hash-line
-                    OutputType::Hash => {
+                    mango_orm::forms::OutputType::Hash => {
                         let data: String = Self::to_hash(&attrs_map)?;
-                        OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Attribute Map
-                    OutputType::Map => {
-                        OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc()))
+                    mango_orm::forms::OutputType::Map => {
+                        mango_orm::forms::OutputData::Map((attrs_map, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Json-line
-                    OutputType::Json => {
+                    mango_orm::forms::OutputType::Json => {
                         let data: String = Self::to_json(&attrs_map)?;
-                        OutputData::Json((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Json((data, verified_data.bool(), verified_data.doc()))
                     }
                     // Get Html-line
-                    OutputType::Html => {
+                    mango_orm::forms::OutputType::Html => {
                         let data: String = Self::to_html(attrs_map)?;
-                        OutputData::Html((data, verified_data.bool(), verified_data.doc()))
+                        mango_orm::forms::OutputData::Html((data, verified_data.bool(), verified_data.doc()))
                     }
                 };
 
