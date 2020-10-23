@@ -155,7 +155,7 @@ macro_rules! model {
                 let (mut store, key) = Self::form_cache().await?;
                 let model_name: &str = &stringify!($sname).to_lowercase();
                 let mut build_controls = false;
-                let mut attrs: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
+                let mut attrs_map: std::collections::HashMap<String, mango_orm::widgets::Transport> = std::collections::HashMap::new();
                 //
                 let cache: Option<&mango_orm::store::FormCache> = store.get(&key);
                 if cache.is_some() {
@@ -163,10 +163,10 @@ macro_rules! model {
                     let is_cached: bool = cache.form_html.is_empty();
                     if is_cached {
                         build_controls = true;
-                        attrs = cache.attrs_map.clone();
+                        attrs_map = cache.attrs_map.clone();
                     }
                     let controls = Self::html(
-                        attrs,
+                        attrs_map,
                         model_name,
                         build_controls
                     )?;
