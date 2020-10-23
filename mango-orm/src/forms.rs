@@ -20,7 +20,7 @@ pub trait Form {
     // *********************************************************************************************
     // Call the method as Struct::form_html()
     fn html(
-        attrs: HashMap<String, Transport>,
+        attrs_map: HashMap<String, Transport>,
         model_name: &str,
         build_controls: bool,
     ) -> Result<String, Box<dyn Error>> {
@@ -28,33 +28,33 @@ pub trait Form {
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         if build_controls {
-            for (_, trans) in attrs {
-                let id_field = format!("{}--{}", model_name, trans.id);
-                let label = if trans.field_type != "hidden" {
+            for (_, attrs) in attrs_map {
+                let id_field = format!("{}--{}", model_name, attrs.id);
+                let label = if attrs.field_type != "hidden" {
                     format!(
                         "<p><label for=\"{}\">{}:</label><br>",
-                        id_field, trans.label
+                        id_field, attrs.label
                     )
                 } else {
                     String::new()
                 };
-                match trans.field_type.as_str() {
+                match attrs.field_type.as_str() {
                     "text" | "url" | "tel" | "password" | "email" | "color" => {
                         controls = format!(
                             "{}{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}{}>{}{}{}</p>",
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.maxlength > 0 { format!(" maxlength=\"{}\" ", trans.maxlength) } else { String::new() },
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                            if !trans.other_attrs.is_empty() { format!(" {}", trans.other_attrs) } else { String::new()},
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.maxlength > 0 { format!(" maxlength=\"{}\" ", attrs.maxlength) } else { String::new() },
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() { format!(" class=\"{}\" ", attrs.some_classes) } else { String::new() },
+                            if !attrs.other_attrs.is_empty() { format!(" {}", attrs.other_attrs) } else { String::new()},
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "checkbox" => {
@@ -63,49 +63,49 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.checked { " checked " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.checked { " checked " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "radio" => {
                         let mut tags = String::new();
-                        for item in trans.select {
+                        for item in attrs.select {
                             tags = format!(
                                 "{}<input id=\"{}\" type=\"{}\" name=\"{}\" value=\"{}\"{}{}{}>{}{}{}",
                                 label,
                                 id_field,
-                                trans.field_type,
-                                trans.name,
+                                attrs.field_type,
+                                attrs.name,
                                 item.1,
-                                if trans.checked { " checked " } else { "" },
-                                if !trans.some_classes.is_empty() {
-                                    format!(" class=\"{}\" ", trans.some_classes)
+                                if attrs.checked { " checked " } else { "" },
+                                if !attrs.some_classes.is_empty() {
+                                    format!(" class=\"{}\" ", attrs.some_classes)
                                 } else {
                                     String::new()
                                 },
-                                if !trans.other_attrs.is_empty() {
-                                    format!(" {}", trans.other_attrs)
+                                if !attrs.other_attrs.is_empty() {
+                                    format!(" {}", attrs.other_attrs)
                                 } else {
                                     String::new()
                                 },
-                                if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                                if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                                if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                                if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                                if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                                if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                             );
                         }
                         controls = format!("{}{}</p>", controls, tags);
@@ -116,23 +116,23 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "file" => {
@@ -141,31 +141,31 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() {
-                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            if !attrs.hint.is_empty() {
+                                format!("<br><small class=\"hint\">{}</small>", attrs.hint)
                             } else {
                                 String::new()
                             },
-                            if !trans.warning.is_empty() {
-                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
+                            if !attrs.warning.is_empty() {
+                                format!("<br><small class=\"warning\">{}</small>", attrs.warning)
                             } else {
                                 String::new()
                             },
-                            if !trans.error.is_empty() {
-                                format!("<br><small class=\"error\">{}</small>", trans.error)
+                            if !attrs.error.is_empty() {
+                                format!("<br><small class=\"error\">{}</small>", attrs.error)
                             } else {
                                 String::new()
                             }
@@ -177,31 +177,31 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() {
-                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            if !attrs.hint.is_empty() {
+                                format!("<br><small class=\"hint\">{}</small>", attrs.hint)
                             } else {
                                 String::new()
                             },
-                            if !trans.warning.is_empty() {
-                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
+                            if !attrs.warning.is_empty() {
+                                format!("<br><small class=\"warning\">{}</small>", attrs.warning)
                             } else {
                                 String::new()
                             },
-                            if !trans.error.is_empty() {
-                                format!("<br><small class=\"error\">{}</small>", trans.error)
+                            if !attrs.error.is_empty() {
+                                format!("<br><small class=\"error\">{}</small>", attrs.error)
                             } else {
                                 String::new()
                             }
@@ -214,26 +214,26 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.required { " required " } else { "" },
-                            if trans.step != "0" { format!(" step=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.min != "0" { format!(" min=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.max != "0" { format!(" max=\"{}\" ", trans.step) } else { String::new() },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.required { " required " } else { "" },
+                            if attrs.step != "0" { format!(" step=\"{}\" ", attrs.step) } else { String::new() },
+                            if attrs.min != "0" { format!(" min=\"{}\" ", attrs.step) } else { String::new() },
+                            if attrs.max != "0" { format!(" max=\"{}\" ", attrs.step) } else { String::new() },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "range" => {
@@ -242,26 +242,26 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.required { " required " } else { "" },
-                            if trans.step != "0" { format!(" step=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.min != "0" { format!(" min=\"{}\" ", trans.step) } else { String::new() },
-                            if trans.max != "0" { format!(" max=\"{}\" ", trans.step) } else { String::new() },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.required { " required " } else { "" },
+                            if attrs.step != "0" { format!(" step=\"{}\" ", attrs.step) } else { String::new() },
+                            if attrs.min != "0" { format!(" min=\"{}\" ", attrs.step) } else { String::new() },
+                            if attrs.max != "0" { format!(" max=\"{}\" ", attrs.step) } else { String::new() },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "textarea" => {
@@ -270,24 +270,24 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.name,
-                            trans.maxlength,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() { format!(" class=\"{}\" ", trans.some_classes) } else { String::new() },
-                            if !trans.other_attrs.is_empty() { format!(" {}", trans.other_attrs) } else { String::new()},
-                            trans.value,
-                            if !trans.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", trans.hint) } else { String::new() },
-                            if !trans.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", trans.warning) } else { String::new() },
-                            if !trans.error.is_empty() { format!("<br><small class=\"error\">{}</small>", trans.error) } else { String::new() }
+                            attrs.name,
+                            attrs.maxlength,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() { format!(" class=\"{}\" ", attrs.some_classes) } else { String::new() },
+                            if !attrs.other_attrs.is_empty() { format!(" {}", attrs.other_attrs) } else { String::new()},
+                            attrs.value,
+                            if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
+                            if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
+                            if !attrs.error.is_empty() { format!("<br><small class=\"error\">{}</small>", attrs.error) } else { String::new() }
                         );
                     }
                     "select" => {
                         let mut options = String::new();
-                        for item in trans.select {
+                        for item in attrs.select {
                             options = format!(
                                 "{}<option{}value=\"{}\">{}</option>",
                                 options,
-                                if trans.value == item.1 {
+                                if attrs.value == item.1 {
                                     " selected "
                                 } else {
                                     " "
@@ -301,31 +301,31 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.name,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.name,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             },
                             options,
-                            if !trans.hint.is_empty() {
-                                format!("<br><small class=\"hint\">{}</small>", trans.hint)
+                            if !attrs.hint.is_empty() {
+                                format!("<br><small class=\"hint\">{}</small>", attrs.hint)
                             } else {
                                 String::new()
                             },
-                            if !trans.warning.is_empty() {
-                                format!("<br><small class=\"warning\">{}</small>", trans.warning)
+                            if !attrs.warning.is_empty() {
+                                format!("<br><small class=\"warning\">{}</small>", attrs.warning)
                             } else {
                                 String::new()
                             },
-                            if !trans.error.is_empty() {
-                                format!("<br><small class=\"error\">{}</small>", trans.error)
+                            if !attrs.error.is_empty() {
+                                format!("<br><small class=\"error\">{}</small>", attrs.error)
                             } else {
                                 String::new()
                             }
@@ -337,17 +337,17 @@ pub trait Form {
                             controls,
                             label,
                             id_field,
-                            trans.field_type,
-                            trans.name,
-                            trans.value,
-                            if trans.required { " required " } else { "" },
-                            if !trans.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", trans.some_classes)
+                            attrs.field_type,
+                            attrs.name,
+                            attrs.value,
+                            if attrs.required { " required " } else { "" },
+                            if !attrs.some_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.some_classes)
                             } else {
                                 String::new()
                             },
-                            if !trans.other_attrs.is_empty() {
-                                format!(" {}", trans.other_attrs)
+                            if !attrs.other_attrs.is_empty() {
+                                format!(" {}", attrs.other_attrs)
                             } else {
                                 String::new()
                             }
