@@ -2,7 +2,7 @@
 authors = ["Gennady Kostunin <kebasyaty@gmail.com>", "Aurelien Foucault <aurelien.foucault@epitech.eu>"]
 description = "ORM-like API MongoDB for Rust"
 edition = "2018"
-keywords = ["mongodb", "mongo", "nosql", "database", "orm"]
+keywords = ["mongodb", "mango", "nosql", "database", "orm"]
 license = "MIT OR Apache-2.0"
 name = "mango-orm"
 readme = "README.md"
