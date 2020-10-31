@@ -1,3 +1,5 @@
+![Logo](https://raw.githubusercontent.com/kebasyaty/mango-orm/master/images/logo.svg)
+
 # mango-orm
 
 ORM-like API MongoDB for Rust
