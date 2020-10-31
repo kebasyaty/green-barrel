@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/kebasyaty/mango-orm/master/images/logo.svg)
+![Logo](https://github.com/kebasyaty/mango-orm/raw/master/images/logo.svg)
 
 # mango-orm
 
