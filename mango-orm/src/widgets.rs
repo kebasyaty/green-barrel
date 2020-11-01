@@ -1,6 +1,11 @@
 //! # Widgets
 //!
-//! Widgets for form elements.
+//! Types of widgets for html-Form.
+//!
+//! `FieldType` - Field types for Widgets.
+//! `DataType` - Data Types for Attributes in Controls.
+//! `Transport` - Mediator for transporting widget attributes.
+//! `Widget` - Raw attributes for the widget.
 
 use serde::Serialize;
 
@@ -249,9 +254,8 @@ impl FieldType {
     }
 }
 
-// Data types for the `select` attribute
+// Data Types for Attributes in Controls
 // *************************************************************************************************
-/// Data types for the `select` attribute
 #[derive(Clone, Debug)]
 pub enum DataType {
     Text(String),
@@ -324,7 +328,7 @@ pub struct Transport {
     pub error: String,
 }
 
-/// Attributes for the widget
+/// Raw attributes for the widget
 // *************************************************************************************************
 /// For standard widgets:
 /// <input type="checkbox">
