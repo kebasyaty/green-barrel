@@ -749,20 +749,20 @@ macro_rules! model {
                             }
                         }
 
-                        // Insert or update fields for timestamps `created` and `updated`
+                        // Insert or update fields for timestamps `created_at` and `updated_at`
                         // -------------------------------------------------------------------------
                         if !global_err {
                             let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                             if !is_update {
-                                doc_res.insert("created".to_string(), mongodb::bson::Bson::DateTime(dt));
-                                doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
+                                doc_res.insert("created_at".to_string(), mongodb::bson::Bson::DateTime(dt));
+                                doc_res.insert("updated_at".to_string(), mongodb::bson::Bson::DateTime(dt));
                             } else {
-                                let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get("created");
+                                let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get("created_at");
                                 if value_from_db.is_some() {
-                                    doc_res.insert("created".to_string(), value_from_db.unwrap());
-                                    doc_res.insert("updated".to_string(), mongodb::bson::Bson::DateTime(dt));
+                                    doc_res.insert("created_at".to_string(), value_from_db.unwrap());
+                                    doc_res.insert("updated_at".to_string(), mongodb::bson::Bson::DateTime(dt));
                                 } else {
-                                    Err(format!("Model: `{}` -> Field: `created` -> Method: \
+                                    Err(format!("Model: `{}` -> Field: `created_at` -> Method: \
                                                 `check()` : Can't get field value from database.",
                                     MODEL_NAME))?
                                 }
@@ -941,18 +941,18 @@ macro_rules! model {
                         meta.service, MODEL_NAME
                     )
                 }
-                // Reserved field `created`
-                if FIELD_NAMES.contains(&"created") {
+                // Reserved field `created_at`
+                if FIELD_NAMES.contains(&"created_at") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` -> Field: `created` : \
+                        "Service: `{}` -> Model: `{}` -> Field: `created_at` : \
                         This field is reserved. Solution - Replace with a different name",
                         meta.service, MODEL_NAME
                     )
                 }
-                // Reserved field `updated`
-                if FIELD_NAMES.contains(&"updated") {
+                // Reserved field `updated_at`
+                if FIELD_NAMES.contains(&"updated_at") {
                     panic!(
-                        "Service: `{}` -> Model: `{}` -> Field: `updated` : \
+                        "Service: `{}` -> Model: `{}` -> Field: `updated_at` : \
                         This field is reserved. Solution - Replace with a different name",
                         meta.service, MODEL_NAME
                     )
@@ -2003,8 +2003,8 @@ macro_rules! model {
                                     });
                                 }
                             }
-                            // Insert fields for timestamps `created` and `updated`
-                            for field in vec!["created", "updated"] {
+                            // Insert fields for timestamps `created_at` and `updated_at`
+                            for field in vec!["created_at", "updated_at"] {
                                 if doc_from_db.contains_key(field) {
                                     let value_from_db: Option<&mongodb::bson::Bson> = doc_from_db.get(field);
                                     if value_from_db.is_some() {
