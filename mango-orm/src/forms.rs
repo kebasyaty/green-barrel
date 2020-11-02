@@ -50,7 +50,7 @@ pub trait Form {
                             attrs.value,
                             if attrs.maxlength > 0 { format!(" maxlength=\"{}\" ", attrs.maxlength) } else { String::new() },
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() { format!(" class=\"{}\" ", attrs.some_classes) } else { String::new() },
+                            if !attrs.css_classes.is_empty() { format!(" class=\"{}\" ", attrs.css_classes) } else { String::new() },
                             if !attrs.other_attrs.is_empty() { format!(" {}", attrs.other_attrs) } else { String::new()},
                             if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
                             if !attrs.warning.is_empty() { format!("<br><small class=\"warning\">{}</small>", attrs.warning) } else { String::new() },
@@ -67,8 +67,8 @@ pub trait Form {
                             attrs.name,
                             attrs.value,
                             if attrs.checked { " checked " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -93,8 +93,8 @@ pub trait Form {
                                 attrs.name,
                                 item.1,
                                 if attrs.checked { " checked " } else { "" },
-                                if !attrs.some_classes.is_empty() {
-                                    format!(" class=\"{}\" ", attrs.some_classes)
+                                if !attrs.css_classes.is_empty() {
+                                    format!(" class=\"{}\" ", attrs.css_classes)
                                 } else {
                                     String::new()
                                 },
@@ -120,8 +120,8 @@ pub trait Form {
                             attrs.name,
                             attrs.value,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -144,8 +144,8 @@ pub trait Form {
                             attrs.field_type,
                             attrs.name,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -180,8 +180,8 @@ pub trait Form {
                             attrs.field_type,
                             attrs.name,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -221,8 +221,8 @@ pub trait Form {
                             if attrs.step != "0" { format!(" step=\"{}\" ", attrs.step) } else { String::new() },
                             if attrs.min != "0" { format!(" min=\"{}\" ", attrs.step) } else { String::new() },
                             if attrs.max != "0" { format!(" max=\"{}\" ", attrs.step) } else { String::new() },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -249,8 +249,8 @@ pub trait Form {
                             if attrs.step != "0" { format!(" step=\"{}\" ", attrs.step) } else { String::new() },
                             if attrs.min != "0" { format!(" min=\"{}\" ", attrs.step) } else { String::new() },
                             if attrs.max != "0" { format!(" max=\"{}\" ", attrs.step) } else { String::new() },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -273,7 +273,7 @@ pub trait Form {
                             attrs.name,
                             attrs.maxlength,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() { format!(" class=\"{}\" ", attrs.some_classes) } else { String::new() },
+                            if !attrs.css_classes.is_empty() { format!(" class=\"{}\" ", attrs.css_classes) } else { String::new() },
                             if !attrs.other_attrs.is_empty() { format!(" {}", attrs.other_attrs) } else { String::new()},
                             attrs.value,
                             if !attrs.hint.is_empty() { format!("<br><small class=\"hint\">{}</small>", attrs.hint) } else { String::new() },
@@ -303,8 +303,8 @@ pub trait Form {
                             id_field,
                             attrs.name,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },
@@ -341,8 +341,8 @@ pub trait Form {
                             attrs.name,
                             attrs.value,
                             if attrs.required { " required " } else { "" },
-                            if !attrs.some_classes.is_empty() {
-                                format!(" class=\"{}\" ", attrs.some_classes)
+                            if !attrs.css_classes.is_empty() {
+                                format!(" class=\"{}\" ", attrs.css_classes)
                             } else {
                                 String::new()
                             },

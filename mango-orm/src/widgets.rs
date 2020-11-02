@@ -307,7 +307,7 @@ impl DataType {
 // *************************************************************************************************
 #[derive(Serialize, Default, Clone, Debug)]
 pub struct Transport {
-    pub id: String, // "id-name" or auto
+    pub id: String, // "collection-name--field-name" or auto
     pub label: String,
     pub field_type: String,
     pub name: String,
@@ -321,8 +321,8 @@ pub struct Transport {
     pub step: String,
     pub min: String,
     pub max: String,
-    pub other_attrs: String,  // "autofocus size=\"some number\" ..."
-    pub some_classes: String, // "class-name class-name ..."
+    pub other_attrs: String, // "autofocus size=\"some number\" ..."
+    pub css_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, String)>,
     pub warning: String,
     pub error: String,
@@ -362,8 +362,8 @@ pub struct Widget {
     pub step: DataType,
     pub min: DataType,
     pub max: DataType,
-    pub other_attrs: String,  // "autofocus size=\"some number\" ..."
-    pub some_classes: String, // "class-name class-name ..."
+    pub other_attrs: String, // "autofocus size=\"some number\" ..."
+    pub css_classes: String, // "class-name class-name ..."
     pub select: Vec<(String, DataType)>,
 }
 
@@ -383,7 +383,7 @@ impl Default for Widget {
             min: DataType::default(),
             max: DataType::default(),
             other_attrs: String::new(),
-            some_classes: String::new(),
+            css_classes: String::new(),
             select: vec![],
         }
     }
@@ -420,7 +420,7 @@ impl Widget {
             min: self.min.get_raw_data(),
             max: self.max.get_raw_data(),
             other_attrs,
-            some_classes: self.some_classes.clone(),
+            css_classes: self.css_classes.clone(),
             select: self
                 .select
                 .iter()
@@ -889,7 +889,7 @@ mod tests {
         assert_eq!(trans.min, String::new());
         assert_eq!(trans.max, String::new());
         assert_eq!(trans.other_attrs, String::new());
-        assert_eq!(trans.some_classes, String::new());
+        assert_eq!(trans.css_classes, String::new());
         assert_eq!(trans.select, vec![]);
         assert_eq!(trans.warning, String::new());
         assert_eq!(trans.error, String::new());
@@ -927,7 +927,7 @@ mod tests {
             DataType::default().get_data_type()
         );
         assert_eq!(widget.other_attrs, String::new());
-        assert_eq!(widget.some_classes, String::new());
+        assert_eq!(widget.css_classes, String::new());
         assert_eq!(widget.select[0].0, String::new());
         assert_eq!(widget.select[0].1.get_raw_data(), String::new());
 
@@ -951,7 +951,7 @@ mod tests {
         assert_eq!(attrs.min, "0".to_string());
         assert_eq!(attrs.max, "0".to_string());
         assert_eq!(attrs.other_attrs, String::new());
-        assert_eq!(attrs.some_classes, String::new());
+        assert_eq!(attrs.css_classes, String::new());
         assert_eq!(attrs.select[0].0, String::new());
         assert_eq!(attrs.select[0].1, String::new());
         assert_eq!(attrs.warning, String::new());
