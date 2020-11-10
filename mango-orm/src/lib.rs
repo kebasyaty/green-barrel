@@ -90,7 +90,7 @@ mod tests {
         assert!(re.is_match("rgba(#fff, .5)"));
         assert!(re.is_match("rgba(#FFF, .5)"));
         assert!(re.is_match("hsl(120, 100%, 50%)"));
-        assert!(re.is_match("hsla(170, 23%, 25%, 0.2 )"));
+        assert!(re.is_match("hsla(170, 23%, 25%, 0.2)"));
         assert!(re.is_match("0x00ffff"));
         assert!(re.is_match("0x00FFFF"));
         // invalids
