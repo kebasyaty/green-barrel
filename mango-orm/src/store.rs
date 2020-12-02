@@ -1,43 +1,43 @@
 //! # Global storage
 //!
-//! `FormCache` - Structure for caching From (map, json) attributes and Html.
+//! `FormCache` - Structure for caching map of widgets, json and html, for mango models.
+//! `FORM_CACHE` - Storage of settings for mango models.
+//! `DB_MAP_CLIENT_NAMES` - Storage for Clients of MongoDB.
 
-use crate::widgets::Transport;
-use async_mutex::Mutex;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
-use std::collections::HashMap;
+use std::sync::Mutex;
 
 // GLOBAL STORAGE
 // #################################################################################################
-/// Structure for caching From (map, json) attributes and Html
+// Structure for caching map of widgets, json and html, for mango models
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
-    pub attrs_map: HashMap<String, Transport>,
+    pub meta: crate::models::Meta,
+    pub map_widgets: std::collections::HashMap<String, crate::forms::Widget>,
     pub attrs_json: String,
-    pub form_html: String,
-    pub widget_map: HashMap<String, String>,
+    pub controls_html: String,
 }
 
 // Store
 lazy_static! {
-    // FORM_CACHE - For caching Form (map, json) attributes and Html
+    // Storage of settings for mango models
     // ---------------------------------------------------------------------------------------------
-    pub static ref FORM_CACHE: Mutex<HashMap<String, FormCache>> = {
-        let mut _map = HashMap::new();
+    pub static ref FORM_CACHE: Mutex<std::collections::HashMap<String, FormCache>> = {
+        let _map = std::collections::HashMap::new();
+        Mutex::new(_map)
+    };
+    // Caching clients MongoDB
+    // ---------------------------------------------------------------------------------------------
+    pub static ref DB_MAP_CLIENT_NAMES: Mutex<std::collections::HashMap<String, mongodb::sync::Client>> = {
+        let _map = std::collections::HashMap::new();
         Mutex::new(_map)
     };
     // Regular expressions
     // ---------------------------------------------------------------------------------------------
-    pub static ref REGEX_IS_PASSWORD: Regex = RegexBuilder::new(r"^[a-z0-9@#$%^&+=*!~)(]{8,}$").case_insensitive(true).build().unwrap();
     pub static ref REGEX_IS_COLOR_CODE: Regex = RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$").case_insensitive(true).build().unwrap();
     pub static ref REGEX_IS_DATE: Regex = Regex::new(r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$").unwrap();
     pub static ref REGEX_IS_DATETIME: Regex = Regex::new(r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$").unwrap();
-}
-
-// TESTS
-// #################################################################################################
-#[cfg(test)]
-mod tests {
-    //
+    pub static ref REGEX_IS_PASSWORD: Regex = RegexBuilder::new(r"^[a-z0-9@#$%^&+=*!~)(]{8,}$").case_insensitive(true).build().unwrap();
+    pub static ref REGEX_IS_TIME: Regex = Regex::new(r"^(?:[01]\d|2[0-3]):[0-5]\d$").unwrap();
 }

@@ -3,4 +3,5 @@
 members = [
   "test-drive",
   "mango-orm",
+  "metamorphose",
 ]

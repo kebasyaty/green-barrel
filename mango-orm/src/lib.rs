@@ -2,41 +2,33 @@
 //!
 //! ORM-like API MongoDB for Rust.
 
+pub use crate::{
+    forms::{HtmlControls, OutputData, OutputType, TransMapWidgets, Widget},
+    models::{AdditionalValidation, Meta, ToModel},
+    store::{FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE},
+};
+
+pub use crate::test_tool::*;
+
 pub mod forms;
-pub mod macros;
 pub mod migration;
 pub mod models;
 pub mod store;
-pub mod widgets;
+pub mod test_tool;
 
 // TESTS
 // #################################################################################################
 #[cfg(test)]
 mod tests {
-    use mongodb::{
-        options::{ClientOptions, StreamAddress},
-        Client,
-    };
     use regex::RegexBuilder;
 
     // Testing of Client
     // *********************************************************************************************
     // cargo test test_client -- --nocapture
-    #[tokio::test]
-    async fn test_client() -> Result<(), Box<dyn std::error::Error>> {
-        let client_options = ClientOptions::builder()
-            .hosts(vec![StreamAddress {
-                hostname: "localhost".into(),
-                port: Some(27017),
-            }])
-            .build();
-
-        let client: Client = Client::with_options(client_options)?;
-
-        for db_name in client.list_database_names(None, None).await? {
-            println!("{}", db_name);
-        }
-
+    #[test]
+    fn test_client() -> Result<(), Box<dyn std::error::Error>> {
+        let client = mongodb::sync::Client::with_uri_str("mongodb://localhost:27017/")?;
+        assert!(!client.list_database_names(None, None)?.is_empty());
         Ok(())
     }
 
@@ -65,6 +57,7 @@ mod tests {
         assert!(!re.is_match(&"?".repeat(8)));
         assert!(!re.is_match(&"/".repeat(8)));
         assert!(!re.is_match(&"  ".repeat(8)));
+        assert!(!re.is_match(""));
         // valids
         assert!(re.is_match(&"zeDKs9LtfrB7Xm2"));
         assert!(re.is_match(&"@#$%^&+=*!~)("));
@@ -80,6 +73,9 @@ mod tests {
                 .case_insensitive(true)
                 .build()
                 .unwrap();
+        // invalids
+        assert!(!re.is_match("#f2ewq"));
+        assert!(!re.is_match(""));
         // valids
         assert!(re.is_match("#f2f2f2"));
         assert!(re.is_match("#F2F2F2"));
@@ -88,13 +84,39 @@ mod tests {
         assert!(re.is_match("rgb(255, 0, 24)"));
         assert!(re.is_match("rgba(255, 0, 24, .5)"));
         assert!(re.is_match("rgba(#fff, .5)"));
+        assert!(re.is_match("rgba(#fff,.5)"));
         assert!(re.is_match("rgba(#FFF, .5)"));
         assert!(re.is_match("hsl(120, 100%, 50%)"));
+        assert!(re.is_match("hsl(120,100%,50%)"));
         assert!(re.is_match("hsla(170, 23%, 25%, 0.2)"));
+        assert!(re.is_match("hsla(170,23%,25%,0.2)"));
         assert!(re.is_match("0x00ffff"));
         assert!(re.is_match("0x00FFFF"));
+    }
+
+    #[test]
+    fn regex_validate_time() {
+        let re = RegexBuilder::new(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+            .build()
+            .unwrap();
         // invalids
-        assert!(!re.is_match("#f2ewq"));
+        assert!(!re.is_match("00:00:00"));
+        assert!(!re.is_match("0:00"));
+        assert!(!re.is_match("00:0"));
+        assert!(!re.is_match("0:0"));
+        assert!(!re.is_match("0:"));
+        assert!(!re.is_match(":0"));
+        assert!(!re.is_match(":"));
+        assert!(!re.is_match("0"));
+        assert!(!re.is_match(""));
+        assert!(!re.is_match("24:00"));
+        assert!(!re.is_match("23:60"));
+        assert!(!re.is_match("-1:00"));
+        assert!(!re.is_match("00:-1"));
+        assert!(!re.is_match(""));
+        // valids
+        assert!(re.is_match("00:00"));
+        assert!(re.is_match("23:59"));
     }
 
     #[test]
@@ -155,6 +177,7 @@ mod tests {
         assert!(!re.is_match("1900-06-31T00:00"));
         assert!(!re.is_match("1900-09-31T00:00"));
         assert!(!re.is_match("1900-11-31T00:00"));
+        assert!(!re.is_match(""));
         // valids
         assert!(re.is_match("1900-01-31T00:00"));
         assert!(re.is_match("1904-02-29T00:00"));
@@ -243,6 +266,7 @@ mod tests {
         assert!(!re.is_match("1900-06-31"));
         assert!(!re.is_match("1900-09-31"));
         assert!(!re.is_match("1900-11-31"));
+        assert!(!re.is_match(""));
         // valids
         assert!(re.is_match("1900-01-31"));
         assert!(re.is_match("1904-02-29"));

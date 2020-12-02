@@ -1,56 +1,64 @@
-use mango_orm::{forms::OutputType, migration::Monitor};
-use mongodb::Client;
+use mango_orm::{
+    forms::OutputType, migration::Monitor, models::ToModel, store::DB_MAP_CLIENT_NAMES,
+};
 
 mod mango_models;
 
 // Migration Service `Mango`
-async fn mango_migration() {
-    // KEYWORD - It is recommended not to change within the boundaries of one project.
-    // ( Valid characters: _ a-z A-Z 0-9 ; Size: 8-16 )
-    static KEYWORD: &str = "7rzg_cfqQB3B7q7T";
-    let client: Client = Client::with_uri_str("mongodb://localhost:27017")
-        .await
-        .unwrap();
+fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
+    // Caching MongoDB clients;
+    DB_MAP_CLIENT_NAMES.lock()?.insert(
+        "default".to_string(),
+        mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+    );
+    DB_MAP_CLIENT_NAMES.lock()?.insert(
+        "default_2".to_string(),
+        mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+    );
+    // KEYWORD it is recommended not to change.
+    // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
+    // Example: "PROJECT_NAME_7rzg_cfqQB3B7q7T"
+    static KEYWORD: &str = "PROJECT_NAME_7rzg_cfqQB3B7q7T";
     let monitor = Monitor {
         keyword: KEYWORD,
-        client: &client,
+        // Register models
+        models: vec![
+            mango_models::User::meta()?,
+            mango_models::UserProfile::meta()?,
+        ],
     };
-    // Refresh models state
-    monitor.refresh().await;
-    // Register models
-    mango_models::User::migrat(&client, KEYWORD).await;
-    // Reorganize databases state
-    // (full delete of orphaned collections and databases)
-    monitor.napalm().await;
+    monitor.migrat();
+    Ok(())
 }
 
-#[tokio::main]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration
-    mango_migration().await;
+    mango_migration()?;
 
-    // println!("{:?}", mango_models::User::form_map().await.unwrap());
-    // println!("\n{}", mango_models::User::form_json().await.unwrap());
-    // println!("\n{}", mango_models::User::form_html().await.unwrap());
+    // println!("{:?}\n\n", mango_models::UserProfile::form_wig().unwrap());
+    // println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
+    // println!("{}\n\n", mango_models::UserProfile::form_html().unwrap());
 
-    let mut user = mango_models::User {
-        username: "Rust".to_string(),
-        email: "test_11_@test.test".to_string(),
-        password: "12345678".to_string(),
-        password_confirm: "12345678".to_string(),
-        datetime: "2020-10-19T12:52".to_string(),
-        date: "2020-10-21".to_string(),
+    let mut user = mango_models::UserProfile {
+        username: Some("Rust".to_string()),
+        email: Some("test_15_@test.test".to_string()),
+        confirm_email: Some("test_15_@test.test".to_string()),
+        password: Some("12345678".to_string()),
+        confirm_password: Some("12345678".to_string()),
         ..Default::default()
     };
-    let client: Client = Client::with_uri_str("mongodb://localhost:27017")
-        .await
-        .unwrap();
 
-    let result = user.save(&client, OutputType::Hash).await.unwrap();
-    println!("\n{}", result.hash());
+    // Create doc
+    let result = user.save(OutputType::Hash)?;
     println!("{}", result.bool());
+    println!("\n{:?}", result.hash());
 
-    let result = user.save(&client, OutputType::Hash).await.unwrap();
-    println!("\n{}", result.hash());
-    println!("{}", result.bool());
+    // Update doc
+    // ( Wig - Widgets )
+    user.username = Some(String::new());
+    let result = user.save(OutputType::Wig)?;
+    println!("\n\n{}", result.bool());
+    println!("\n{:?}", result.wig());
+
+    Ok(())
 }
