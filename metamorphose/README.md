@@ -1,4 +1,4 @@
-![Logo](https://github.com/kebasyaty/metamorphose/blob/main/images/logo.svg?raw=true)
+![Logo](https://github.com/kebasyaty/mango-orm/raw/master/metamorphose/images/logo.svg)
 
 # metamorphose
 
