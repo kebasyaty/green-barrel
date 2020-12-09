@@ -2,12 +2,42 @@
 //!
 //! `ToForm` - Define form settings for models (widgets, html).
 //! `Widget` - Form controls parameters.
-//! `OutputType` - Output types for the `save()` method.
+//! `OutputData` - Output data for the `check()` and `save()` methods.
 //! `TransMapWidgetType` - For transporting of Widget types map to implementation of methods.
 //! `TransMapWidgets` - For transporting of Widgets map to implementation of methods.
 
 // FORMS
 // #################################################################################################
+// Data structures for `inputFile` and `inputImage` widgets
+// *************************************************************************************************
+#[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
+pub struct FileData {
+    #[serde(default)]
+    pub path: String,
+    #[serde(default)]
+    pub url: String,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default, with = "mongodb::bson::compat::u2f")]
+    pub size: u32, // in bytes
+}
+
+#[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
+pub struct ImageData {
+    #[serde(default)]
+    pub path: String,
+    #[serde(default)]
+    pub url: String,
+    #[serde(default)]
+    pub name: String,
+    #[serde(default, with = "mongodb::bson::compat::u2f")]
+    pub size: u32, // in bytes
+    #[serde(default, with = "mongodb::bson::compat::u2f")]
+    pub width: u32, // in pixels
+    #[serde(default, with = "mongodb::bson::compat::u2f")]
+    pub height: u32, // in pixels
+}
+
 // Widget
 // ( Form controls parameters )
 // *************************************************************************************************
@@ -623,80 +653,131 @@ pub trait HtmlControls {
 
         Ok(controls)
     }
+
+    // Get Hash-line for `OutputData`
+    // *********************************************************************************************
+    fn html(&self) -> Result<String, Box<dyn std::error::Error>> {
+        Ok(String::new())
+    }
 }
 
-// OUTPUT TYPES FOR THE `SAVE()` METHOD
+// OUTPUT DATA FOR THE `check()` AND `save()` METHODS
 // #################################################################################################
-// Output type
-pub enum OutputType {
-    Hash,
-    Wig,
-    Json,
-    Html,
-}
-
 // Output data
 // ( Wig - Widgets )
 #[derive(Debug)]
 pub enum OutputData {
-    Hash((String, bool, mongodb::bson::document::Document)),
-    Wig(
+    Check(
         (
-            std::collections::HashMap<String, Widget>,
             bool,
+            Vec<String>,
+            std::collections::HashMap<String, Widget>,
             mongodb::bson::document::Document,
         ),
     ),
-    Json((String, bool, mongodb::bson::document::Document)),
-    Html((String, bool, mongodb::bson::document::Document)),
+    Save(
+        (
+            bool,
+            String,
+            Vec<String>,
+            std::collections::HashMap<String, Widget>,
+        ),
+    ),
+}
+
+impl HtmlControls for OutputData {
+    // Get Html-line
+    fn html(&self) -> Result<String, Box<dyn std::error::Error>> {
+        match self {
+            Self::Check(data) => Ok(Self::to_html(&data.1, data.2.clone())?),
+            Self::Save(data) => Ok(Self::to_html(&data.2, data.3.clone())?),
+        }
+    }
 }
 
 impl OutputData {
     // Get Hash-line
-    pub fn hash(&self) -> &str {
+    // ---------------------------------------------------------------------------------------------
+    fn to_hash(
+        map_widgets: &std::collections::HashMap<String, Widget>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let mut errors = String::new();
+        for (field_name, widget) in map_widgets {
+            let tmp = if !errors.is_empty() {
+                format!("{} ; ", errors)
+            } else {
+                String::new()
+            };
+            if !widget.error.is_empty() {
+                errors = format!("{}Field: `{}` - {}", tmp, field_name, widget.error);
+            }
+        }
+        if !errors.is_empty() {
+            Err(errors.replace("<br>", " | "))?
+        }
+        Ok(map_widgets.get(&"hash".to_owned()).unwrap().value.clone())
+    }
+    // Get Hash-line
+    pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
-            Self::Hash(data) => &data.0,
-            _ => panic!("`hash()` : Doesn't match the output type."),
+            Self::Check(data) => Ok(Self::to_hash(&data.2)?),
+            Self::Save(data) => Ok(Self::to_hash(&data.3)?),
         }
     }
+
     // Get Map of Widgets
     // ( Wig - Widgets )
-    pub fn wig(&self) -> std::collections::HashMap<String, Widget> {
+    // ---------------------------------------------------------------------------------------------
+    pub fn wig(
+        &self,
+    ) -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         match self {
-            Self::Wig(data) => data.0.clone(),
-            _ => panic!("`wig()` : Doesn't match the output type."),
+            Self::Check(data) => Ok(data.2.clone()),
+            Self::Save(data) => Ok(data.3.clone()),
         }
     }
+
     // Get Json-line
-    pub fn json(&self) -> &str {
+    // ---------------------------------------------------------------------------------------------
+    fn to_json(
+        map_widgets: &std::collections::HashMap<String, Widget>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let mut json_text = String::new();
+        for (field_name, widget) in map_widgets {
+            let widget_json = serde_json::to_string(&widget).unwrap();
+            if !json_text.is_empty() {
+                json_text = format!("{},\"{}\":{}", json_text, field_name, widget_json);
+            } else {
+                json_text = format!("\"{}\":{}", field_name, widget_json);
+            }
+        }
+        Ok(format!("{{{}}}", json_text))
+    }
+
+    // Get Json-line
+    // ---------------------------------------------------------------------------------------------
+    pub fn json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
-            Self::Json(data) => &data.0,
-            _ => panic!("`json()` : Doesn't match the output type."),
+            Self::Check(data) => Ok(Self::to_json(&data.2)?),
+            Self::Save(data) => Ok(Self::to_json(&data.3)?),
         }
     }
-    // Get Html-line
-    pub fn html(&self) -> &str {
-        match self {
-            Self::Html(data) => &data.0,
-            _ => panic!("`html()` : Doesn't match the output type."),
-        }
-    }
+
     // Get Boolean
-    pub fn bool(&self) -> bool {
+    // ---------------------------------------------------------------------------------------------
+    pub fn bool(&self) -> Result<bool, Box<dyn std::error::Error>> {
         match self {
-            Self::Hash(data) => data.1,
-            Self::Wig(data) => data.1,
-            Self::Json(data) => data.1,
-            Self::Html(data) => data.1,
+            Self::Check(data) => Ok(data.0),
+            Self::Save(data) => Ok(data.0),
         }
     }
+
     // Get Document
-    pub fn doc(&self) -> mongodb::bson::document::Document {
+    // ---------------------------------------------------------------------------------------------
+    pub fn doc(&self) -> Result<mongodb::bson::document::Document, Box<dyn std::error::Error>> {
         match self {
-            Self::Hash(data) => data.2.clone(),
-            Self::Wig(data) => data.2.clone(),
-            Self::Json(data) => data.2.clone(),
-            Self::Html(data) => data.2.clone(),
+            Self::Check(data) => Ok(data.3.clone()),
+            _ => panic!("Invalid output type."),
         }
     }
 }

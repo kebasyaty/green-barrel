@@ -4,7 +4,7 @@
 //! `ToModel` - Model options and widget map for Form.
 
 use crate::{
-    forms::{OutputData, OutputType, Widget},
+    forms::{FileData, ImageData, OutputData, Widget},
     store::{
         FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE, REGEX_IS_COLOR_CODE, REGEX_IS_DATE,
         REGEX_IS_DATETIME, REGEX_IS_PASSWORD,
@@ -376,23 +376,6 @@ pub trait ToModel {
         Ok(map_widgets.get(&"hash".to_owned()).unwrap().value.clone())
     }
 
-    // Get Json-line
-    // ---------------------------------------------------------------------------------------------
-    fn to_json(
-        map_widgets: &std::collections::HashMap<String, Widget>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
-        let mut json_text = String::new();
-        for (field_name, widget) in map_widgets {
-            let widget_json = serde_json::to_string(&widget).unwrap();
-            if !json_text.is_empty() {
-                json_text = format!("{},\"{}\":{}", json_text, field_name, widget_json);
-            } else {
-                json_text = format!("\"{}\":{}", field_name, widget_json);
-            }
-        }
-        Ok(format!("{{{}}}", json_text))
-    }
-
     // Rendering HTML-controls code for Form
     // ( Intermediary between `check()` and `HtmlControls::to_html()` )
     // ---------------------------------------------------------------------------------------------
@@ -407,7 +390,7 @@ pub trait ToModel {
     // update an existing document.
     // (Returns the hash-line of the identifier)
     // ---------------------------------------------------------------------------------------------
-    fn check(&self, output_format: OutputType) -> Result<OutputData, Box<dyn std::error::Error>> {
+    fn check(&self) -> Result<OutputData, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache
         let key: String = Self::key_store()?;
         //
@@ -442,7 +425,7 @@ pub trait ToModel {
         // Get model name
         let model_name: &str = meta.model_name.as_str();
         // User input error detection symptom
-        let mut err_symptom = false;
+        let mut is_err_symptom = false;
         // Determines the mode of accessing the database (insert or update)
         let hash = self.get_hash().unwrap_or_default();
         let hash = hash.as_str();
@@ -465,13 +448,13 @@ pub trait ToModel {
         // Validation of field by attributes (maxlength, unique, min, max, etc...)
         // -----------------------------------------------------------------------------------------
         let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
-        let mut map_widgets: std::collections::HashMap<String, Widget> =
+        let mut final_map_widgets: std::collections::HashMap<String, Widget> =
             form_cache.map_widgets.clone();
         // Apply additional validation
         {
             let error_map = self.medium_add_validation()?;
             if !error_map.is_empty() {
-                err_symptom = true;
+                is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
                         Err(format!(
@@ -480,7 +463,7 @@ pub trait ToModel {
                             model_name, field_name
                         ))?
                     }
-                    if let Some(widget) = map_widgets.get_mut(&field_name.to_owned()) {
+                    if let Some(widget) = final_map_widgets.get_mut(&field_name.to_owned()) {
                         widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
                     }
                 }
@@ -503,8 +486,8 @@ pub trait ToModel {
             }
             //
             let pre_json_value: &serde_json::value::Value = pre_json_value.unwrap();
-            let widget: &mut Widget = map_widgets.get_mut(field_name).unwrap();
-            let widget_type: &str = &widget.widget.clone()[..];
+            let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
+            let widget_type: &str = &final_widget.widget.clone()[..];
             // Field validation
             match widget_type {
                 // Validation of text type fields
@@ -519,40 +502,42 @@ pub trait ToModel {
                         // In case of an error, return the current
                         // state of the field to the user (client)
                         if widget_type != "inputPassword" {
-                            widget.value = clean_data.clone();
+                            final_widget.value = clean_data.clone();
                         } else {
-                            widget.value = String::new();
+                            final_widget.value = String::new();
                         }
                         clean_data
                     } else {
                         String::new()
                     };
                     // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if field_value.is_empty() {
-                        if widget.required {
-                            err_symptom = true;
-                            widget.error =
-                                Self::accumula_err(&widget, &"Required field.".to_owned()).unwrap();
-                            widget.value = String::new();
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            final_widget.value = String::new();
                             continue;
                         } else {
                             // Trying to apply the value default
                             if !is_update && widget_type != "inputPassword" {
-                                if !widget.value.is_empty() {
-                                    field_value = widget.value.trim().to_string();
-                                    widget.value = String::new();
-                                } else if !err_symptom && !ignore_fields.contains(&field_name) {
+                                if !final_widget.value.is_empty() {
+                                    field_value = final_widget.value.trim().to_string();
+                                    final_widget.value = String::new();
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc
                                         .insert(field_name.to_string(), mongodb::bson::Bson::Null);
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 } else {
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 }
                             } else {
-                                widget.value = String::new();
+                                final_widget.value = String::new();
                                 continue;
                             }
                         }
@@ -568,20 +553,26 @@ pub trait ToModel {
                     // Validation in regular expression
                     // Checking `minlength`, `maxlength`, `min length`, `max length`
                     // -----------------------------------------------------------------------------
-                    Self::check_minlength(widget.minlength, field_value).unwrap_or_else(|err| {
-                        err_symptom = true;
-                        widget.error = Self::accumula_err(&widget, &err.to_string()).unwrap();
-                    });
-                    Self::check_maxlength(widget.maxlength, field_value).unwrap_or_else(|err| {
-                        err_symptom = true;
-                        widget.error = Self::accumula_err(&widget, &err.to_string()).unwrap();
-                    });
+                    Self::check_minlength(final_widget.minlength, field_value).unwrap_or_else(
+                        |err| {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                        },
+                    );
+                    Self::check_maxlength(final_widget.maxlength, field_value).unwrap_or_else(
+                        |err| {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                        },
+                    );
                     // Validation of range (`min` <> `max`)
                     // ( Hint: The `validate_length()` method did not
                     // provide the desired result )
                     // -----------------------------------------------------------------------------
-                    let min: f64 = widget.minlength.clone() as f64;
-                    let max: f64 = widget.maxlength.clone() as f64;
+                    let min: f64 = final_widget.minlength.clone() as f64;
+                    let max: f64 = final_widget.maxlength.clone() as f64;
                     let len: f64 = field_value.encode_utf16().count() as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -592,32 +583,33 @@ pub trait ToModel {
                             len,
                         )
                     {
-                        err_symptom = true;
+                        is_err_symptom = true;
                         let msg = format!(
                             "Length {} is out of range (min={} <> max={}).",
                             len, min, max
                         );
-                        widget.error = Self::accumula_err(&widget, &msg).unwrap();
+                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if widget_type != "inputPassword" && widget.unique {
+                    if widget_type != "inputPassword" && final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
                     // Validation in regular expression (email, password, etc...)
                     // -----------------------------------------------------------------------------
                     Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
-                        err_symptom = true;
-                        widget.error = Self::accumula_err(&widget, &err.to_string()).unwrap();
+                        is_err_symptom = true;
+                        final_widget.error =
+                            Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                     });
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         match widget_type {
                             "inputPassword" => {
                                 if !is_update && !field_value.is_empty() {
@@ -636,44 +628,186 @@ pub trait ToModel {
                         }
                     }
                 }
+                "inputFile" => {
+                    // Get field value for validation
+                    let mut field_value: FileData = if !pre_json_value.is_null() {
+                        let clean_data: FileData =
+                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
+                        clean_data
+                    } else {
+                        FileData::default()
+                    };
+                    // Define flags to check
+                    let is_emty_path = field_value.path.is_empty();
+                    let is_emty_url = field_value.url.is_empty();
+                    // Primary `FileData` validation
+                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Method: \
+                            `check()` : Check the `path` and `url` attributes in the `default` field parameter.",
+                            model_name, field_name
+                        );
+                    }
+                    // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
+                    if is_emty_path && is_emty_url {
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            continue;
+                        } else {
+                            if !is_update {
+                                // Trying to apply the value default
+                                if !final_widget.value.is_empty() {
+                                    field_value = serde_json::from_str(final_widget.value.trim())?;
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                                    final_doc
+                                        .insert(field_name.to_string(), mongodb::bson::Bson::Null);
+                                    continue;
+                                } else {
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    // Create path for validation of file
+                    let path: String = field_value.path.clone();
+                    let f_path = std::path::Path::new(path.as_str());
+                    if !f_path.exists() || !f_path.is_file() {
+                        Err(format!(
+                            "Model: `{}` > Field: `{}` > Method: \
+                                `check()` : File is missing - {}",
+                            model_name, field_name, path
+                        ))?
+                    }
+                    // Get file metadata
+                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    // Get file size in bytes
+                    field_value.size = metadata.len() as u32;
+                    // Get file name
+                    field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    // Insert result
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
+                        final_doc.insert(field_name.to_string(), bson_field_value);
+                    }
+                }
+                "inputImage" => {
+                    // Get field value for validation
+                    let mut field_value: ImageData = if !pre_json_value.is_null() {
+                        let clean_data: ImageData =
+                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
+                        clean_data
+                    } else {
+                        ImageData::default()
+                    };
+                    // Define flags to check
+                    let is_emty_path = field_value.path.is_empty();
+                    let is_emty_url = field_value.url.is_empty();
+                    // Primary `FileData` validation
+                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Method: \
+                            `check()` : Check the `path` and `url` attributes in the `default` field parameter.",
+                            model_name, field_name
+                        );
+                    }
+                    // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
+                    if is_emty_path && is_emty_url {
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            continue;
+                        } else {
+                            if !is_update {
+                                // Trying to apply the value default
+                                if !final_widget.value.is_empty() {
+                                    field_value = serde_json::from_str(final_widget.value.trim())?;
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                                    final_doc
+                                        .insert(field_name.to_string(), mongodb::bson::Bson::Null);
+                                    continue;
+                                } else {
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    // Create path for validation of file
+                    let path: String = field_value.path.clone();
+                    let f_path = std::path::Path::new(path.as_str());
+                    if !f_path.exists() || !f_path.is_file() {
+                        Err(format!(
+                            "Model: `{}` > Field: `{}` > Method: \
+                                `check()` : File is missing - {}",
+                            model_name, field_name, path
+                        ))?
+                    }
+                    // Get file metadata
+                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    // Get file size in bytes
+                    field_value.size = metadata.len() as u32;
+                    // Get file name
+                    field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    // Get image width and height
+                    let dimensions: (u32, u32) = image::image_dimensions(path)?;
+                    field_value.width = dimensions.0;
+                    field_value.height = dimensions.1;
+                    // Insert result
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
+                        final_doc.insert(field_name.to_string(), bson_field_value);
+                    }
+                }
                 "inputDate" | "inputDateTime" => {
                     // Get field value for validation
-                    let mut field_value: String = if pre_json_value.is_null() {
+                    let mut field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
                         // state of the field to the user (client)
-                        widget.value = clean_data.clone();
+                        final_widget.value = clean_data.clone();
                         clean_data
                     } else {
                         String::new()
                     };
                     // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if field_value.is_empty() {
-                        if widget.required {
-                            err_symptom = true;
-                            widget.error =
-                                Self::accumula_err(&widget, &"Required field.".to_owned()).unwrap();
-                            widget.value = String::new();
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            final_widget.value = String::new();
                             continue;
                         } else {
                             if !is_update {
                                 // Trying to apply the value default
-                                if !widget.value.is_empty() {
-                                    field_value = widget.value.trim().to_string();
-                                    widget.value = String::new();
-                                } else if !err_symptom && !ignore_fields.contains(&field_name) {
+                                if !final_widget.value.is_empty() {
+                                    field_value = final_widget.value.trim().to_string();
+                                    final_widget.value = String::new();
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc
                                         .insert(field_name.to_string(), mongodb::bson::Bson::Null);
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 } else {
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 }
                             } else {
-                                widget.value = String::new();
+                                final_widget.value = String::new();
                                 continue;
                             }
                         }
@@ -683,14 +817,16 @@ pub trait ToModel {
                     // Validation in regular expression
                     // -----------------------------------------------------------------------------
                     Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
-                        err_symptom = true;
-                        widget.error = Self::accumula_err(&widget, &err.to_string()).unwrap();
+                        is_err_symptom = true;
+                        final_widget.error =
+                            Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                     });
-                    if err_symptom {
+                    if is_err_symptom {
                         continue;
                     }
                     // Create Date and Time Object
                     // -----------------------------------------------------------------------------
+                    // Date to DateTime
                     let dt_value: chrono::DateTime<chrono::Utc> = {
                         let field_value: String = if widget_type == "inputDate" {
                             format!("{}T00:00", field_value.to_string())
@@ -705,12 +841,30 @@ pub trait ToModel {
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates
-                    if !widget.min.is_empty() && !widget.max.is_empty() {
+                    if final_widget.min != "0".to_string() && final_widget.max != "0".to_string() {
+                        // Validation in regular expression (min)
+                        Self::regex_validation(widget_type, final_widget.min.as_str())
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            });
+                        // Validation in regular expression (max)
+                        Self::regex_validation(widget_type, final_widget.max.as_str())
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            });
+                        if is_err_symptom {
+                            continue;
+                        }
+                        // Date to DateTime (min)
                         let dt_min: chrono::DateTime<chrono::Utc> = {
                             let min_value: String = if widget_type == "inputDate" {
-                                format!("{}T00:00", widget.min.clone())
+                                format!("{}T00:00", final_widget.min.clone())
                             } else {
-                                widget.min.clone()
+                                final_widget.min.clone()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
                                 chrono::NaiveDateTime::parse_from_str(
@@ -720,11 +874,12 @@ pub trait ToModel {
                                 chrono::Utc,
                             )
                         };
+                        // Date to DateTime (max)
                         let dt_max: chrono::DateTime<chrono::Utc> = {
                             let max_value: String = if widget_type == "inputDate" {
-                                format!("{}T00:00", widget.max.clone())
+                                format!("{}T00:00", final_widget.max.clone())
                             } else {
-                                widget.max.clone()
+                                final_widget.max.clone()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
                                 chrono::NaiveDateTime::parse_from_str(
@@ -734,10 +889,11 @@ pub trait ToModel {
                                 chrono::Utc,
                             )
                         };
+                        // Check hit in range (min <> max)
                         if dt_value < dt_min || dt_value > dt_max {
-                            err_symptom = true;
-                            widget.error = Self::accumula_err(
-                                &widget,
+                            is_err_symptom = true;
+                            final_widget.error = Self::accumula_err(
+                                &final_widget,
                                 &"Date out of range between `min` and` max`.".to_owned(),
                             )
                             .unwrap();
@@ -749,18 +905,18 @@ pub trait ToModel {
                     let dt_value_bson = mongodb::bson::Bson::DateTime(dt_value);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if widget.unique {
+                    if final_widget.unique {
                         Self::check_unique(hash, field_name, &dt_value_bson, &coll).unwrap_or_else(
                             |err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             },
                         );
                     }
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         final_doc.insert(field_name.to_string(), dt_value_bson);
                     }
                 }
@@ -770,30 +926,33 @@ pub trait ToModel {
                     // Define field state flag
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if is_null_value {
-                        if widget.required {
-                            err_symptom = true;
-                            widget.error =
-                                Self::accumula_err(&widget, &"Required field.".to_owned()).unwrap();
-                            widget.value = String::new();
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            final_widget.value = String::new();
                             continue;
                         } else if is_null_value {
                             if !is_update {
-                                if !widget.value.is_empty() {
-                                    field_value = Some(widget.value.trim().parse::<i64>().unwrap());
-                                    widget.value = String::new();
-                                } else if !err_symptom && !ignore_fields.contains(&field_name) {
+                                if !final_widget.value.is_empty() {
+                                    field_value =
+                                        Some(final_widget.value.trim().parse::<i64>().unwrap());
+                                    final_widget.value = String::new();
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc
                                         .insert(field_name.to_string(), mongodb::bson::Bson::Null);
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 } else {
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 }
                             } else {
-                                widget.value = String::new();
+                                final_widget.value = String::new();
                                 continue;
                             }
                         }
@@ -803,24 +962,24 @@ pub trait ToModel {
                     if !is_null_value {
                         // In case of an error, return the current
                         // state of the field to the user (client)
-                        widget.value = field_value.to_string();
+                        final_widget.value = field_value.to_string();
                     }
                     // Used to validation uniqueness and in the final result
                     let bson_field_value = mongodb::bson::Bson::Int32(field_value);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if widget.unique {
+                    if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
                     // Validation of range (`min` <> `max`)
                     // -----------------------------------------------------------------------------
-                    let min: f64 = widget.min.parse().unwrap();
-                    let max: f64 = widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -831,16 +990,16 @@ pub trait ToModel {
                             num,
                         )
                     {
-                        err_symptom = true;
+                        is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
                             num, min, max
                         );
-                        widget.error = Self::accumula_err(&widget, &msg).unwrap();
+                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         final_doc.insert(field_name.to_string(), bson_field_value);
                     }
                 }
@@ -851,30 +1010,33 @@ pub trait ToModel {
                     // Define field state flag
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if is_null_value {
-                        if widget.required {
-                            err_symptom = true;
-                            widget.error =
-                                Self::accumula_err(&widget, &"Required field.".to_owned()).unwrap();
-                            widget.value = String::new();
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            final_widget.value = String::new();
                             continue;
                         } else if is_null_value {
                             if !is_update {
-                                if !widget.value.is_empty() {
-                                    field_value = Some(widget.value.trim().parse::<i64>().unwrap());
-                                    widget.value = String::new();
-                                } else if !err_symptom && !ignore_fields.contains(&field_name) {
+                                if !final_widget.value.is_empty() {
+                                    field_value =
+                                        Some(final_widget.value.trim().parse::<i64>().unwrap());
+                                    final_widget.value = String::new();
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc
                                         .insert(field_name.to_string(), mongodb::bson::Bson::Null);
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 } else {
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 }
                             } else {
-                                widget.value = String::new();
+                                final_widget.value = String::new();
                                 continue;
                             }
                         }
@@ -884,24 +1046,24 @@ pub trait ToModel {
                     if !is_null_value {
                         // In case of an error, return the current
                         // state of the field to the user (client)
-                        widget.value = field_value.to_string();
+                        final_widget.value = field_value.to_string();
                     }
                     // Used to validation uniqueness and in the final result
                     let bson_field_value = mongodb::bson::Bson::Int64(field_value);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if widget.unique {
+                    if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
                     // Validation of range (`min` <> `max`)
                     // -----------------------------------------------------------------------------
-                    let min: f64 = widget.min.parse().unwrap();
-                    let max: f64 = widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -912,16 +1074,16 @@ pub trait ToModel {
                             num,
                         )
                     {
-                        err_symptom = true;
+                        is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
                             num, min, max
                         );
-                        widget.error = Self::accumula_err(&widget, &msg).unwrap();
+                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         final_doc.insert(field_name.to_string(), bson_field_value);
                     }
                 }
@@ -931,30 +1093,33 @@ pub trait ToModel {
                     // Define field state flag
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if is_null_value {
-                        if widget.required {
-                            err_symptom = true;
-                            widget.error =
-                                Self::accumula_err(&widget, &"Required field.".to_owned()).unwrap();
-                            widget.value = String::new();
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                            final_widget.value = String::new();
                             continue;
                         } else if is_null_value {
                             if !is_update {
-                                if !widget.value.is_empty() {
-                                    field_value = Some(widget.value.trim().parse::<f64>().unwrap());
-                                    widget.value = String::new();
-                                } else if !err_symptom && !ignore_fields.contains(&field_name) {
+                                if !final_widget.value.is_empty() {
+                                    field_value =
+                                        Some(final_widget.value.trim().parse::<f64>().unwrap());
+                                    final_widget.value = String::new();
+                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc
                                         .insert(field_name.to_string(), mongodb::bson::Bson::Null);
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 } else {
-                                    widget.value = String::new();
+                                    final_widget.value = String::new();
                                     continue;
                                 }
                             } else {
-                                widget.value = String::new();
+                                final_widget.value = String::new();
                                 continue;
                             }
                         }
@@ -964,24 +1129,24 @@ pub trait ToModel {
                     if !is_null_value {
                         // In case of an error, return the current
                         // state of the field to the user (client)
-                        widget.value = field_value.to_string();
+                        final_widget.value = field_value.to_string();
                     }
                     // Used to validation uniqueness and in the final result
                     let bson_field_value = mongodb::bson::Bson::Double(field_value);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if widget.unique {
+                    if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
                     // Validation of range (`min` <> `max`)
                     // -----------------------------------------------------------------------------
-                    let min: f64 = widget.min.parse().unwrap();
-                    let max: f64 = widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value.clone();
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -992,16 +1157,16 @@ pub trait ToModel {
                             num,
                         )
                     {
-                        err_symptom = true;
+                        is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
                             num, min, max
                         );
-                        widget.error = Self::accumula_err(&widget, &msg).unwrap();
+                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         final_doc.insert(field_name.to_string(), bson_field_value);
                     }
                 }
@@ -1015,23 +1180,23 @@ pub trait ToModel {
                     };
                     // In case of an error, return the current
                     // state of the field to the user (client)
-                    widget.checked = field_value.clone();
+                    final_widget.checked = field_value.clone();
                     // Used to validation uniqueness and in the final result
                     let bson_field_value = mongodb::bson::Bson::Boolean(field_value);
                     // Validation of `unique`
                     // ( For a particularly exceptional case )
                     // -----------------------------------------------------------------------------
-                    if widget.unique {
+                    if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
-                                err_symptom = true;
-                                widget.error =
-                                    Self::accumula_err(&widget, &err.to_string()).unwrap();
+                                is_err_symptom = true;
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
                     // Insert result
                     // -----------------------------------------------------------------------------
-                    if !err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         final_doc.insert(field_name.to_string(), bson_field_value);
                     }
                 }
@@ -1044,7 +1209,7 @@ pub trait ToModel {
 
             // Insert or update fields for timestamps `created_at` and `updated_at`
             // -------------------------------------------------------------------------------------
-            if !err_symptom {
+            if !is_err_symptom {
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 if !is_update {
                     final_doc.insert("created_at".to_string(), mongodb::bson::Bson::DateTime(dt));
@@ -1055,63 +1220,47 @@ pub trait ToModel {
             }
         }
 
-        // Post processing
+        // Return result
         // -----------------------------------------------------------------------------------------
-        let result: OutputData = match output_format {
-            // Get Hash-line
-            OutputType::Hash => {
-                let data: String = Self::to_hash(&map_widgets)?;
-                OutputData::Hash((data, !err_symptom, final_doc))
-            }
-            // Get Attribute Map
-            OutputType::Wig => OutputData::Wig((map_widgets, !err_symptom, final_doc)),
-            // Get Json-line
-            OutputType::Json => {
-                let data: String = Self::to_json(&map_widgets)?;
-                OutputData::Json((data, !err_symptom, final_doc))
-            }
-            // Get Html-line
-            OutputType::Html => {
-                let data: String = Self::medium_to_html(&meta.fields_name, map_widgets)?;
-                OutputData::Html((data, !err_symptom, final_doc))
-            }
-        };
-
-        Ok(result)
+        Ok(OutputData::Check((
+            !is_err_symptom,
+            meta.fields_name.clone(),
+            final_map_widgets,
+            final_doc,
+        )))
     }
 
     // Checking the Model before queries the database
     // ---------------------------------------------------------------------------------------------
-    fn save(
-        &mut self,
-        output_format: OutputType,
-    ) -> Result<OutputData, Box<dyn std::error::Error>> {
-        //
-        let verified_data: OutputData = self.check(OutputType::Wig)?;
-        //
+    fn save(&mut self) -> Result<OutputData, Box<dyn std::error::Error>> {
+        // Get checked data from the `check()` method
+        let verified_data: OutputData = self.check()?;
+        let is_no_error: bool = verified_data.bool()?;
+        // Get access to the cache
         let key: String = Self::key_store()?;
         let form_store: std::sync::MutexGuard<'_, std::collections::HashMap<String, FormCache>> =
             FORM_CACHE.lock().unwrap();
         let form_cache: Option<&FormCache> = form_store.get(&key[..]);
         let form_cache: &FormCache = form_cache.unwrap();
-        //
+        // Get metadata from cache
         let meta: &Meta = &form_cache.meta;
-        //
+        // Get MongoDB client from cache
         let client_store: std::sync::MutexGuard<
             '_,
             std::collections::HashMap<String, mongodb::sync::Client>,
         > = DB_MAP_CLIENT_NAMES.lock().unwrap();
         let client_cache: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
-        //
-        let mut map_widgets: std::collections::HashMap<String, Widget> = verified_data.wig();
+        // Get widget map
+        let mut final_map_widgets: std::collections::HashMap<String, Widget> =
+            verified_data.wig()?;
         let is_update: bool = !self.get_hash().unwrap_or_default().is_empty();
         let coll: mongodb::sync::Collection = client_cache
             .database(&meta.database_name)
             .collection(&meta.collection_name);
 
         // Save to database
-        if verified_data.bool() {
-            let final_doc = verified_data.doc();
+        if is_no_error {
+            let final_doc = verified_data.doc()?;
             if !is_update {
                 let result: mongodb::results::InsertOneResult = coll.insert_one(final_doc, None)?;
                 self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
@@ -1130,36 +1279,19 @@ pub trait ToModel {
             }
         }
 
-        // Add hash-line
-        if self.get_hash().is_some() {
-            map_widgets.get_mut(&"hash".to_owned()).unwrap().value =
-                self.get_hash().unwrap_or_default();
+        // Add hash-line (for document identification)
+        let hash = self.get_hash().unwrap_or_default();
+        if !hash.is_empty() {
+            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value = hash.clone();
         }
 
-        // Post processing
-        let result: OutputData = match output_format {
-            // Get Hash-line
-            OutputType::Hash => {
-                let data: String = Self::to_hash(&map_widgets)?;
-                OutputData::Hash((data, verified_data.bool(), verified_data.doc()))
-            }
-            // Get Attribute Map
-            OutputType::Wig => {
-                OutputData::Wig((map_widgets, verified_data.bool(), verified_data.doc()))
-            }
-            // Get Json-line
-            OutputType::Json => {
-                let data: String = Self::to_json(&map_widgets)?;
-                OutputData::Json((data, verified_data.bool(), verified_data.doc()))
-            }
-            // Get Html-line
-            OutputType::Html => {
-                let data: String = Self::medium_to_html(&meta.fields_name, map_widgets)?;
-                OutputData::Html((data, verified_data.bool(), verified_data.doc()))
-            }
-        };
-
-        Ok(result)
+        // Return result
+        Ok(OutputData::Save((
+            is_no_error,
+            hash,
+            meta.fields_name.clone(),
+            final_map_widgets,
+        )))
     }
 }
 

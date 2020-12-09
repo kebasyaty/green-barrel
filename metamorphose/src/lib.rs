@@ -310,6 +310,75 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .map_related_models
                         .insert(field_name.clone(), map_parameters_related_model);
                 }
+                // Validation the `min` and` max` parameters for date and time
+                if widget.widget == "inputDate".to_string() {
+                    let re_valid_date = regex::RegexBuilder::new(
+                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
+                        )
+                        .build()
+                        .unwrap();
+                    if !widget.value.is_empty() {
+                        if !re_valid_date.is_match(widget.value.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `default` : \
+                                Incorrect date format. Example: \"1970-02-28\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                    if widget.min != "0".to_string() {
+                        if !re_valid_date.is_match(widget.min.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `min` : \
+                                Incorrect date format. Example: \"1970-02-28\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                    if widget.max != "0".to_string() {
+                        if !re_valid_date.is_match(widget.max.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `max` : \
+                                Incorrect date format. Example: \"1970-02-28\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                }
+                if widget.widget == "inputDateTime".to_string() {
+                    let re_valid_datetime = regex::RegexBuilder::new(
+                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
+                        )
+                        .build()
+                        .unwrap();
+                    if !widget.value.is_empty() {
+                        if !re_valid_datetime.is_match(widget.value.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `default` : \
+                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                    if widget.min != "0".to_string() {
+                        if !re_valid_datetime.is_match(widget.min.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `min` : \
+                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                    if widget.max != "0".to_string() {
+                        if !re_valid_datetime.is_match(widget.max.as_str()) {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Parameter: `max` : \
+                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
+                                model_name, field_name
+                            )
+                        }
+                    }
+                }
                 // Add field name and widget name to the map
                 trans_meta
                     .map_widget_type
@@ -919,8 +988,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `default`. \
-                    Example: 10",
+                        Could not determine value for parameter `default`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -931,8 +1000,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `default`. \
-                    Example: 10",
+                        Could not determine value for parameter `default`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -943,8 +1012,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `default`. \
-                    Example: 10",
+                        Could not determine value for parameter `default`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -955,8 +1024,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `default`. \
-                    Example: 10.2",
+                        Could not determine value for parameter `default`. \
+                        Example: 10.2",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -967,8 +1036,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `default`. \
-                    Example: \"Some text\"",
+                        Could not determine value for parameter `default`. \
+                        Example: \"Some text\"",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1097,8 +1166,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `step`. \
-                    Example: 10",
+                        Could not determine value for parameter `step`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1109,8 +1178,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `step`. \
-                    Example: 10",
+                        Could not determine value for parameter `step`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1121,8 +1190,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `step`. \
-                    Example: 10",
+                        Could not determine value for parameter `step`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1133,8 +1202,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `step`. \
-                    Example: 10.2",
+                        Could not determine value for parameter `step`. \
+                        Example: 10.2",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1145,8 +1214,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `step`.
-                    Example: not supported.",
+                        Could not determine value for parameter `step`.
+                        Example: not supported.",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1164,8 +1233,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `min`. \
-                    Example: 10",
+                        Could not determine value for parameter `min`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1176,8 +1245,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `min`. \
-                    Example: 10",
+                        Could not determine value for parameter `min`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1188,8 +1257,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `min`. \
-                    Example: 10",
+                        Could not determine value for parameter `min`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1200,8 +1269,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `min`. \
-                    Example: 10.2",
+                        Could not determine value for parameter `min`. \
+                        Example: 10.2",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1212,8 +1281,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `min`. \
-                    Example: \"1970-02-28\"",
+                        Could not determine value for parameter `min`. \
+                        Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1231,8 +1300,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `max`. \
-                    Example: 10",
+                        Could not determine value for parameter `max`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1243,8 +1312,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `max`. \
-                    Example: 10",
+                        Could not determine value for parameter `max`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1255,8 +1324,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `max`. \
-                    Example: 10",
+                        Could not determine value for parameter `max`. \
+                        Example: 10",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1267,8 +1336,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `max`. \
-                    Example: 10.2",
+                        Could not determine value for parameter `max`. \
+                        Example: 10.2",
                         model_or_form, model_name, field_name, field_type,
                     )
                 }
@@ -1279,8 +1348,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `max`. \
-                    Example: \"1970-02-28\"",
+                        Could not determine value for parameter `max`. \
+                        Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1328,8 +1397,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `select`. \
-                    Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1346,8 +1415,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `select`. \
-                    Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1364,8 +1433,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `select`. \
-                    Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1382,8 +1451,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `select`. \
-                    Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...]",
+                        Could not determine value for parameter `select`. \
+                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
@@ -1394,8 +1463,8 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                    Could not determine value for parameter `select`. \
-                    Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...]",
+                        Could not determine value for parameter `select`. \
+                        Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }

@@ -1,8 +1,8 @@
 use mango_orm::*;
-use mango_orm::{migration::Monitor, test_tool::del_test_base};
+use mango_orm::{forms::ImageData, migration::Monitor, test_tool::del_test_base};
 use metamorphose::Model;
 use mongodb::{
-    bson::{doc, oid::ObjectId},
+    bson::{de::from_document, doc, oid::ObjectId},
     sync::Client,
 };
 use serde::{Deserialize, Serialize};
@@ -14,12 +14,12 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const SERVICE_NAME: &str = "TEST_FwCYN7pb6XT_8ZRz";
-    pub const DATABASE_NAME: &str = "TEST_4TwTzJgL_q8HzPB8";
-    pub const DB_CLIENT_NAME: &str = "TEST_default_EYzBv9swfkk3PYr_";
+    pub const SERVICE_NAME: &str = "TEST_hC_6tGGxnAHU1HhQ";
+    pub const DATABASE_NAME: &str = "TEST_J4LQH8t_ttshB7nH";
+    pub const DB_CLIENT_NAME: &str = "TEST_default_2dQycNc2bDtFk8_T";
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
-    pub static KEYWORD: &str = "TEST_dE8x7bCw6_hGZEjB";
+    pub static KEYWORD: &str = "TEST_pd4e5_CjNGBaesYy";
 
     // Create models
     // *********************************************************************************************
@@ -27,24 +27,11 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxU32", default = 0, unique = true)]
-        pub checkbox: Option<u32>,
-        #[serde(default)]
-        #[field_attrs(widget = "radioU32", default = 1)]
-        pub radio: Option<u32>,
-        #[serde(default)]
-        #[field_attrs(widget = "numberU32")]
-        pub number: Option<u32>,
-        #[serde(default)]
-        #[field_attrs(widget = "rangeU32", default = 5, min = 1, max = 12)]
-        pub range: Option<u32>,
-        #[serde(default)]
         #[field_attrs(
-            widget = "selectU32",
-            default = 1,
-            select = "[[1, \"Volvo\"], [2, \"Saab\"], [3, \"Mercedes\"], [4, \"Audi\"]]"
+            widget = "inputImage",
+            default = "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}"
         )]
-        pub select: Option<u32>,
+        pub image: Option<String>,
     }
 
     // Test migration
@@ -57,7 +44,7 @@ mod app_name {
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
         DB_MAP_CLIENT_NAMES.lock()?.insert(
-            "TEST_default_EYzBv9swfkk3PYr_".to_string(),
+            "TEST_default_2dQycNc2bDtFk8_T".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
         // Remove test databases
@@ -84,62 +71,41 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        ..Default::default()
-    };
-    let mut test_model_2 = app_name::TestModel {
+        image: Some(
+            "{\"path\":\"./media/beautiful-mountains.jpg\",\"url\":\"/media/beautiful-mountains.jpg\"}"
+                .to_string(),
+        ),
         ..Default::default()
     };
 
     // Create
     // ---------------------------------------------------------------------------------------------
+    let image_data = ImageData {
+        path: "./media/beautiful-mountains.jpg".to_string(),
+        url: "/media/beautiful-mountains.jpg".to_string(),
+        name: "beautiful-mountains.jpg".to_string(),
+        size: 241138_u32,
+        width: 1024_u32,
+        height: 748_u32,
+    };
     let result = test_model.save()?;
-    let result_2 = test_model_2.save()?;
     // Validating create
     assert!(result.bool()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
-    // Validation of `unique`
-    assert!(!result_2.bool()?);
-    // Validation of `hash`
-    assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
+    assert_eq!(
+        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
+        map_wigets.get("image").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        0_i64,
-        map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
+        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
+        map_wigets.get("image").unwrap().value
     );
-    let map_wigets = result_2.wig()?;
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
-    // radio
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
-    // number
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    // range
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
-    // select
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_i64,
-        map_wigets.get("select").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert!(map_wigets.get("select").unwrap().value.is_empty());
 
     // Validating values in database
     {
@@ -155,13 +121,13 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_i64, doc.get_i64("checkbox")?);
-        assert_eq!(1_i64, doc.get_i64("radio")?);
-        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
-        assert_eq!(5_i64, doc.get_i64("range")?);
-        assert_eq!(1_i64, doc.get_i64("select")?);
+        let doc = coll.find_one(filter, None)?.unwrap();
+        assert!(!doc.is_null("image"));
+        assert_eq!(
+            image_data,
+            from_document::<ImageData>(doc.get_document("image")?.clone())?
+        );
     }
 
     // Update
@@ -177,44 +143,14 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // checkbox
     let result = test_model.save()?;
     let map_wigets = result.wig()?;
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        0_i64,
-        map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
+        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
+        map_wigets.get("image").unwrap().value
     );
-    // radio
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        1_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
-    );
-    // number
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    // range
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    // select
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert!(map_wigets.get("select").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_i64,
-        map_wigets.get("select").unwrap().value.parse::<i64>()?
+        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
+        map_wigets.get("image").unwrap().value
     );
 
     // Validating values in database
@@ -231,13 +167,13 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_i64, doc.get_i64("checkbox")?);
-        assert_eq!(1_i64, doc.get_i64("radio")?);
-        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
-        assert_eq!(5_i64, doc.get_i64("range")?);
-        assert_eq!(1_i64, doc.get_i64("select")?);
+        let doc = coll.find_one(filter, None)?.unwrap();
+        assert!(!doc.is_null("image"));
+        assert_eq!(
+            image_data,
+            from_document::<ImageData>(doc.get_document("image")?.clone())?
+        );
     }
 
     // ---------------------------------------------------------------------------------------------

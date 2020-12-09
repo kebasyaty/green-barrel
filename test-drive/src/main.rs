@@ -1,6 +1,4 @@
-use mango_orm::{
-    forms::OutputType, migration::Monitor, models::ToModel, store::DB_MAP_CLIENT_NAMES,
-};
+use mango_orm::*;
 
 mod mango_models;
 
@@ -41,24 +39,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_15_@test.test".to_string()),
-        confirm_email: Some("test_15_@test.test".to_string()),
+        email: Some("test_14_@test.test".to_string()),
+        confirm_email: Some("test_14_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         ..Default::default()
     };
 
     // Create doc
-    let result = user.save(OutputType::Hash)?;
-    println!("{}", result.bool());
-    println!("\n{:?}", result.hash());
+    let result = user.save()?;
+    println!("Bool: {}", result.bool()?);
+    println!("Hash: {:?}", result.hash()?);
+    println!("\n\nWidget map:\n{:?}", result.wig()?);
+    println!("\n\nJson:\n{:?}", result.json()?);
+    println!("\n\nHtml:\n{:?}", result.html()?);
 
     // Update doc
-    // ( Wig - Widgets )
     user.username = Some(String::new());
-    let result = user.save(OutputType::Wig)?;
-    println!("\n\n{}", result.bool());
-    println!("\n{:?}", result.wig());
+    let result = user.save()?;
+    println!("\n\n\nBool: {}", result.bool()?);
+    println!("Hash: {:?}", result.hash()?);
+    println!("\n\nWidget map:\n{:?}", result.wig()?);
+    println!("\n\nJson:\n{:?}", result.json()?);
+    println!("\n\nHtml:\n{:?}", result.html()?);
 
     Ok(())
 }

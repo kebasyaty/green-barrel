@@ -79,7 +79,9 @@ mod app_name {
 // #################################################################################################
 #[test]
 fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+    // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
+    // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
         ..Default::default()
@@ -90,14 +92,14 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(OutputType::Hash)?;
-    let result_2 = test_model_2.save(OutputType::Wig)?;
+    let result = test_model.save()?;
+    let result_2 = test_model_2.save()?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash());
+    assert!(result.bool()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.bool());
+    assert!(!result_2.bool()?);
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
@@ -107,7 +109,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         0_i64,
         map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -115,12 +117,12 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         1_i64,
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert!(map_wigets.get("radio").unwrap().value.is_empty());
     // number
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -128,7 +130,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         5_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert!(map_wigets.get("range").unwrap().value.is_empty());
     // select
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -136,7 +138,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         1_i64,
         map_wigets.get("select").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert!(map_wigets.get("select").unwrap().value.is_empty());
 
     // Validating values in database
@@ -165,16 +167,16 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(OutputType::Hash)?;
+    let result = test_model.save()?;
     // Validating update
-    assert!(result.bool(), "{}", result.hash());
+    assert!(result.bool()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -182,8 +184,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
     );
     // radio
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert!(map_wigets.get("radio").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -191,14 +193,14 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     // number
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert!(map_wigets.get("range").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -206,8 +208,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     // select
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert!(map_wigets.get("select").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -238,6 +240,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(1_i64, doc.get_i64("select")?);
     }
 
+    // ---------------------------------------------------------------------------------------------
     del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

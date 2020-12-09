@@ -14,12 +14,12 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const SERVICE_NAME: &str = "TEST_2GhzT_pa5HyVsEwL";
-    pub const DATABASE_NAME: &str = "TEST_2G9YHXu7KGhXvX_z";
-    pub const DB_CLIENT_NAME: &str = "TEST_default_Y5tp3rXZ_1pgF7HR";
+    pub const SERVICE_NAME: &str = "TEST_bbgEYEt8QB8_aMC1";
+    pub const DATABASE_NAME: &str = "TEST_T2SC_ZC3V2HvRQdP";
+    pub const DB_CLIENT_NAME: &str = "TEST_default_UBT_La2NNPxtHuq3";
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
-    pub static KEYWORD: &str = "TEST__f1s1bnGCbSn5fdT";
+    pub static KEYWORD: &str = "TEST_x9ykutPTbEhqFe8_";
 
     // Create models
     // *********************************************************************************************
@@ -27,24 +27,14 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxF64", default = 0.0, unique = true)]
-        pub checkbox: Option<f64>,
-        #[serde(default)]
-        #[field_attrs(widget = "radioF64", default = 1.0)]
-        pub radio: Option<f64>,
-        #[serde(default)]
-        #[field_attrs(widget = "numberF64")]
-        pub number: Option<f64>,
-        #[serde(default)]
-        #[field_attrs(widget = "rangeF64", default = 5.0, min = 1.0, max = 12.0)]
-        pub range: Option<f64>,
-        #[serde(default)]
         #[field_attrs(
-            widget = "selectF64",
-            default = 1.0,
-            select = "[[1.0, \"Volvo\"], [2.0, \"Saab\"], [3.0, \"Mercedes\"], [4.0, \"Audi\"]]"
+            widget = "inputDate",
+            default = "1970-02-28",
+            min = "1970-01-01",
+            max = "1970-03-01",
+            unique = true
         )]
-        pub select: Option<f64>,
+        pub date: Option<String>,
     }
 
     // Test migration
@@ -57,7 +47,7 @@ mod app_name {
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
         DB_MAP_CLIENT_NAMES.lock()?.insert(
-            "TEST_default_Y5tp3rXZ_1pgF7HR".to_string(),
+            "TEST_default_UBT_La2NNPxtHuq3".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
         // Remove test databases
@@ -84,19 +74,11 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        checkbox: Some(12_f64),
-        radio: Some(20_f64),
-        number: Some(105_f64),
-        range: Some(9_f64),
-        select: Some(4_f64),
+        date: Some("1970-02-27".to_string()),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
-        checkbox: Some(12_f64),
-        radio: Some(20_f64),
-        number: Some(105_f64),
-        range: Some(9_f64),
-        select: Some(4_f64),
+        date: Some("1970-02-27".to_string()),
         ..Default::default()
     };
 
@@ -114,56 +96,21 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
+    assert_eq!(
+        "1970-02-27".to_string(),
+        map_wigets.get("date").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
+        "1970-02-28".to_string(),
+        map_wigets.get("date").unwrap().value
     );
     let map_wigets = result_2.wig()?;
     assert_eq!(
-        12_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    // radio
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert_eq!(
-        20_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
-    );
-    // number
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig()?;
-    assert_eq!(
-        105_f64,
-        map_wigets.get("number").unwrap().value.parse::<f64>()?
-    );
-    // range
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert_eq!(
-        9_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
-    );
-    // select
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_f64,
-        map_wigets.get("select").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result_2.wig()?;
-    assert_eq!(
-        4_f64,
-        map_wigets.get("select").unwrap().value.parse::<f64>()?
+        "1970-02-27".to_string(),
+        map_wigets.get("date").unwrap().value
     );
 
     // Validating values in database
@@ -182,11 +129,14 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(12_f64, doc.get_f64("checkbox")?);
-        assert_eq!(20_f64, doc.get_f64("radio")?);
-        assert_eq!(105_f64, doc.get_f64("number")?);
-        assert_eq!(9_f64, doc.get_f64("range")?);
-        assert_eq!(4_f64, doc.get_f64("select")?);
+        let dt_value: chrono::DateTime<chrono::Utc> = chrono::DateTime::<chrono::Utc>::from_utc(
+            chrono::NaiveDateTime::parse_from_str(
+                &format!("{}T00:00", "1970-02-27".to_string()),
+                "%Y-%m-%dT%H:%M",
+            )?,
+            chrono::Utc,
+        );
+        assert_eq!(&dt_value, doc.get_datetime("date")?);
     }
 
     // Update
@@ -203,58 +153,13 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_model.save()?;
     let map_wigets = result.wig()?;
     assert_eq!(
-        12_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
+        "1970-02-27".to_string(),
+        map_wigets.get("date").unwrap().value
     );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    // radio
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert_eq!(
-        20_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
-    );
-    // number
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert_eq!(
-        105_f64,
-        map_wigets.get("number").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    // range
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert_eq!(
-        9_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
-    );
-    // select
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
-    assert_eq!(
-        4_f64,
-        map_wigets.get("select").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_f64,
-        map_wigets.get("select").unwrap().value.parse::<f64>()?
+        "1970-02-28".to_string(),
+        map_wigets.get("date").unwrap().value
     );
 
     // Validating values in database
@@ -273,11 +178,14 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(12_f64, doc.get_f64("checkbox")?);
-        assert_eq!(20_f64, doc.get_f64("radio")?);
-        assert_eq!(105_f64, doc.get_f64("number")?);
-        assert_eq!(9_f64, doc.get_f64("range")?);
-        assert_eq!(4_f64, doc.get_f64("select")?);
+        let dt_value: chrono::DateTime<chrono::Utc> = chrono::DateTime::<chrono::Utc>::from_utc(
+            chrono::NaiveDateTime::parse_from_str(
+                &format!("{}T00:00", "1970-02-27".to_string()),
+                "%Y-%m-%dT%H:%M",
+            )?,
+            chrono::Utc,
+        );
+        assert_eq!(&dt_value, doc.get_datetime("date")?);
     }
 
     // ---------------------------------------------------------------------------------------------

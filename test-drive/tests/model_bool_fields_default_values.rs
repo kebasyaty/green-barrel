@@ -63,7 +63,9 @@ mod app_name {
 // #################################################################################################
 #[test]
 fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+    // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
+    // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
         ..Default::default()
@@ -74,24 +76,24 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(OutputType::Hash)?;
-    let result_2 = test_model_2.save(OutputType::Wig)?;
+    let result = test_model.save()?;
+    let result_2 = test_model_2.save()?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash());
+    assert!(result.bool()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.bool());
+    assert!(!result_2.bool()?);
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = result_2.wig();
+    let map_wigets = result_2.wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
@@ -116,16 +118,16 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(OutputType::Hash)?;
+    let result = test_model.save()?;
     // Validating update
-    assert!(result.bool(), "{}", result.hash());
+    assert!(result.bool()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save(OutputType::Wig)?;
-    let map_wigets = result.wig();
+    let result = test_model.save()?;
+    let map_wigets = result.wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
@@ -149,6 +151,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(false, doc.get_bool("checkbox")?);
     }
 
+    // ---------------------------------------------------------------------------------------------
     del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

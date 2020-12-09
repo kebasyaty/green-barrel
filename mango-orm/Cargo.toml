@@ -11,6 +11,7 @@ version = "0.1.1-pre-alpha.12"
 
 [dependencies]
 chrono = "0.4"
+image = "0.23"
 lazy_static = "1.4"
 rand = "0.7"
 regex = "1.3"
