@@ -4,7 +4,7 @@
 //! `ToModel` - Model options and widget map for Form.
 
 use crate::{
-    forms::{FileData, ImageData, OutputData, Widget},
+    forms::{output_data::OutputData, FileData, ImageData, Widget},
     store::{
         FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE, REGEX_IS_COLOR_CODE, REGEX_IS_DATE,
         REGEX_IS_DATETIME, REGEX_IS_PASSWORD,
@@ -70,7 +70,7 @@ pub trait ToModel {
     fn get_hash(&self) -> Option<String>;
     fn set_hash(&mut self, value: String);
 
-    // Converting `Self` to Document
+    // Serialize model to json-line
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<serde_json::value::Value, Box<dyn std::error::Error>>;
 
@@ -95,7 +95,8 @@ pub trait ToModel {
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>>;
 
-    // Form caching
+    // Form caching and getting
+    // (Caching form elements and their attributes to speed up work.)
     // *********************************************************************************************
     // Get an widgets map for page template
     // ---------------------------------------------------------------------------------------------
@@ -215,7 +216,7 @@ pub trait ToModel {
         Ok(form_cache.controls_html.clone())
     }
 
-    // Validation of database queries
+    // Validating Model fields as Forms
     // *********************************************************************************************
     // Validation of `minlength`
     // ---------------------------------------------------------------------------------------------
@@ -425,7 +426,11 @@ pub trait ToModel {
         // Get model name
         let model_name: &str = meta.model_name.as_str();
         // User input error detection symptom
-        let mut is_err_symptom = false;
+        let mut is_err_symptom = if !meta.is_add_docs || !meta.is_up_docs {
+            true
+        } else {
+            false
+        };
         // Determines the mode of accessing the database (insert or update)
         let hash = self.get_hash().unwrap_or_default();
         let hash = hash.as_str();
@@ -473,6 +478,14 @@ pub trait ToModel {
         for field_name in fields_name {
             // Don't check the `hash` field
             if field_name == "hash" {
+                if is_err_symptom {
+                    let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
+                    if !meta.is_add_docs {
+                        final_widget.common_msg = "It is forbidden to perform saves.".to_string();
+                    } else if !meta.is_up_docs {
+                        final_widget.common_msg = "It is forbidden to perform updates.".to_string();
+                    }
+                }
                 continue;
             }
             // Get field value for validation

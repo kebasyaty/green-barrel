@@ -3,7 +3,7 @@
 //! ORM-like API MongoDB for Rust.
 
 pub use crate::{
-    forms::{HtmlControls, OutputData, TransMapWidgets, Widget},
+    forms::{html_controls::HtmlControls, output_data::OutputData, TransMapWidgets, Widget},
     migration::Monitor,
     models::{AdditionalValidation, Meta, ToModel},
     store::{FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE},

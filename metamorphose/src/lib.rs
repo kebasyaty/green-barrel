@@ -421,13 +421,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         );
     }
     trans_meta.map_default_values = map_default_values;
-    // trans_meta to Json-string
+    // trans_meta to Json-line
     // ---------------------------------------------------------------------------------------------
     let trans_meta: String = match serde_json::to_string(&trans_meta) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{}` : {}", model_name.to_string(), err),
     };
-    // TransMapWidgets to Json-string
+    // TransMapWidgets to Json-line
     let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{}` : {}", model_name.to_string(), err.to_string()),
@@ -441,7 +441,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // All methods that directly depend on the macro
         // *****************************************************************************************
         impl ToModel for #model_name {
-            // Converting `Self` to Document
+            // Serialize model to json-line
             // -------------------------------------------------------------------------------------
             fn self_to_json(&self)
                 -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
@@ -828,8 +828,9 @@ struct Widget {
     pub css_classes: String, // "class-name class-name ..."
     pub options: Vec<(String, String)>, // <value, Title>
     pub hint: String,
-    pub warning: String, // The value is determined automatically
-    pub error: String,   // The value is determined automatically
+    pub warning: String,    // The value is determined automatically
+    pub error: String,      // The value is determined automatically
+    pub common_msg: String, // Messages common to the entire Form
 }
 
 impl Default for Widget {
@@ -859,6 +860,7 @@ impl Default for Widget {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
+            common_msg: String::new(),
         }
     }
 }
