@@ -13,12 +13,18 @@ pub trait HtmlControls {
     fn to_html(
         fields_name: &Vec<String>,
         map_widgets: std::collections::HashMap<String, Widget>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> String {
         // Controls of Form
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         for field_name in fields_name {
             let attrs = map_widgets.get(field_name).unwrap();
+            // Messages common to the entire Form - Is required.
+            // Passing with a `hash` field.
+            // (alternatively use in popup)
+            if !attrs.common_msg.is_empty() {
+                controls = format!("<p class=\"warning\">{}</p>{}", attrs.common_msg, controls);
+            }
             match attrs.input_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
                     controls = format!(
@@ -511,7 +517,7 @@ pub trait HtmlControls {
                 }
                 "hidden" => {
                     controls = format!(
-                        "{}<input{}{}{}{}{}{}{}>{}",
+                        "{}<input{}{}{}{}{}{}{}>",
                         controls,
                         format!(" id=\"{}\"", attrs.id),
                         format!(" type=\"{}\"", attrs.input_type),
@@ -527,30 +533,21 @@ pub trait HtmlControls {
                             format!(" {}", attrs.other_attrs)
                         } else {
                             String::new()
-                        },
-                        // Messages common to the entire Form - Is required.
-                        // Passing with a `hash` field.
-                        // (Alternatively, use for pop-up messages)
-                        if !attrs.common_msg.is_empty() {
-                            format!("<br><p class=\"warning\">{}</p>", attrs.common_msg)
-                        } else {
-                            String::new()
                         }
                     );
                 }
                 _ => panic!("Invalid input type."),
             }
         }
-        // Add buttons
+        // Add buttons and Return
         // -----------------------------------------------------------------------------------------
-        controls = format!("{}<p><input type=\"submit\" value=\"Save\"></p>", controls);
-
-        Ok(controls)
+        format!("{}<p><input type=\"submit\" value=\"Save\"></p>", controls)
     }
 
-    // Get Hash-line for `OutputData`
+    // Get Html-line for `OutputDataForm`
     // *********************************************************************************************
-    fn html(&self) -> Result<String, Box<dyn std::error::Error>> {
-        Ok(String::new())
+    fn html(&self) -> String {
+        // Stub
+        String::new()
     }
 }

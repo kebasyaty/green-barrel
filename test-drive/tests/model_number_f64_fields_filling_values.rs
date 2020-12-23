@@ -17,6 +17,7 @@ mod app_name {
     pub const SERVICE_NAME: &str = "TEST_2GhzT_pa5HyVsEwL";
     pub const DATABASE_NAME: &str = "TEST_2G9YHXu7KGhXvX_z";
     pub const DB_CLIENT_NAME: &str = "TEST_default_Y5tp3rXZ_1pgF7HR";
+    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
     pub static KEYWORD: &str = "TEST__f1s1bnGCbSn5fdT";
@@ -102,14 +103,14 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save()?;
-    let result_2 = test_model_2.save()?;
+    let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.bool()?);
+    assert!(!result_2.bool());
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
@@ -119,7 +120,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         0_f64,
         map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
     );
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         12_f64,
         map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
@@ -130,7 +131,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         1_f64,
         map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         20_f64,
         map_wigets.get("radio").unwrap().value.parse::<f64>()?
@@ -138,7 +139,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // number
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         105_f64,
         map_wigets.get("number").unwrap().value.parse::<f64>()?
@@ -149,7 +150,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         5_f64,
         map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         9_f64,
         map_wigets.get("range").unwrap().value.parse::<f64>()?
@@ -160,7 +161,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         1_f64,
         map_wigets.get("select").unwrap().value.parse::<f64>()?
     );
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         4_f64,
         map_wigets.get("select").unwrap().value.parse::<f64>()?
@@ -192,16 +193,16 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save()?;
+    let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         12_f64,
         map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
@@ -212,8 +213,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
     );
     // radio
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         20_f64,
         map_wigets.get("radio").unwrap().value.parse::<f64>()?
@@ -224,8 +225,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
     // number
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         105_f64,
         map_wigets.get("number").unwrap().value.parse::<f64>()?
@@ -233,8 +234,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         9_f64,
         map_wigets.get("range").unwrap().value.parse::<f64>()?
@@ -245,8 +246,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
     // select
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         4_f64,
         map_wigets.get("select").unwrap().value.parse::<f64>()?

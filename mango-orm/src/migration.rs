@@ -3,7 +3,10 @@
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 //! `ModelState` - Creation and updating of a technical database for monitoring the state of models.
 
-use crate::store::DB_MAP_CLIENT_NAMES;
+use crate::{
+    forms::{FileData, ImageData},
+    store::DB_MAP_CLIENT_NAMES,
+};
 use mongodb::{
     bson, bson::document::Document, options::UpdateModifications, sync::Client, sync::Collection,
     sync::Cursor, sync::Database,
@@ -243,12 +246,17 @@ impl<'a> Monitor<'a> {
                                 let value = map_default_values.get(*field).unwrap();
                                 tmp_doc.insert(
                                     field.to_string(),
-                                    match &value.0[..] {
+                                    match value.0.as_str() {
                                         "checkBoxText" | "radioText" | "inputColor"
                                         | "inputEmail" | "inputPassword" | "inputPhone"
                                         | "inputText" | "inputUrl" | "inputIP" | "inputIPv4"
                                         | "inputIPv6" | "textArea" | "selectText" => {
-                                            mongodb::bson::Bson::String(value.1.clone())
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                mongodb::bson::Bson::String(val)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
                                         }
                                         "inputDate" => {
                                             // Example: "1970-02-28"
@@ -304,24 +312,134 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "checkBoxI32" | "inputRadioI32" | "inputNumberI32"
-                                        | "rangeI32" | "selectI32" => mongodb::bson::Bson::Int32(
-                                            value.1.parse::<i32>().unwrap(),
-                                        ),
+                                        "checkBoxI32" | "inputRadioI32" | "numberI32"
+                                        | "rangeI32" | "selectI32" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                mongodb::bson::Bson::Int32(
+                                                    val.parse::<i32>().unwrap(),
+                                                )
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
                                         "checkBoxU32" | "radioU32" | "numberU32" | "rangeU32"
                                         | "selectU32" | "checkBoxI64" | "radioI64"
                                         | "numberI64" | "rangeI64" | "selectI64" => {
-                                            mongodb::bson::Bson::Int64(
-                                                value.1.parse::<i64>().unwrap(),
-                                            )
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                mongodb::bson::Bson::Int64(
+                                                    val.parse::<i64>().unwrap(),
+                                                )
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
                                         }
                                         "checkBoxF64" | "radioF64" | "numberF64" | "rangeF64"
-                                        | "selectF64" => mongodb::bson::Bson::Double(
-                                            value.1.parse::<f64>().unwrap(),
-                                        ),
-                                        "checkBoxBool" => mongodb::bson::Bson::Boolean(
-                                            value.1.parse::<bool>().unwrap(),
-                                        ),
+                                        | "selectF64" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                mongodb::bson::Bson::Double(
+                                                    val.parse::<f64>().unwrap(),
+                                                )
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
+                                        "checkBoxBool" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                mongodb::bson::Bson::Boolean(
+                                                    val.parse::<bool>().unwrap(),
+                                                )
+                                            } else {
+                                                mongodb::bson::Bson::Boolean(false)
+                                            }
+                                        }
+                                        "inputFile" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let mut file_data = 
+                                                    serde_json::from_str::<FileData>(val.as_str()).unwrap();
+                                                // Define flags to check
+                                                let is_emty_path = file_data.path.is_empty();
+                                                let is_emty_url = file_data.url.is_empty();
+                                                if (!is_emty_path && is_emty_url)
+                                                    || (is_emty_path && !is_emty_url) {
+                                                    panic!(
+                                                        "Model: `{}` > Field: `{}` > Method: \
+                                                        `migrat()` : Check the `path` and `url` \
+                                                        attributes in the `default` field parameter.",
+                                                        meta.model_name, field
+                                                    );
+                                                }
+                                                // Create path for validation of file
+                                                let path: String = file_data.path.clone();
+                                                let f_path = std::path::Path::new(path.as_str());
+                                                if !f_path.exists() || !f_path.is_file() {
+                                                    panic!(
+                                                        "Model: `{}` > Field: `{}` > Method: \
+                                                        `migrat()` : File is missing - {}",
+                                                        meta.model_name, field, path
+                                                    )
+                                                }
+                                                // Get file metadata
+                                                let metadata: std::fs::Metadata = f_path.metadata().unwrap();
+                                                // Get file size in bytes
+                                                file_data.size = metadata.len() as u32;
+                                                // Get file name
+                                                file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                                                // Create doc
+                                                let result = mongodb::bson::ser::to_document(&file_data).unwrap();
+                                                mongodb::bson::Bson::Document(result)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
+                                        "inputImage" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let mut file_data = 
+                                                    serde_json::from_str::<ImageData>(val.as_str()).unwrap();
+                                                // Define flags to check
+                                                let is_emty_path = file_data.path.is_empty();
+                                                let is_emty_url = file_data.url.is_empty();
+                                                if (!is_emty_path && is_emty_url)
+                                                    || (is_emty_path && !is_emty_url) {
+                                                    panic!(
+                                                        "Model: `{}` > Field: `{}` > Method: \
+                                                        `migrat()` : Check the `path` and `url` \
+                                                        attributes in the `default` field parameter.",
+                                                        meta.model_name, field
+                                                    );
+                                                }
+                                                // Create path for validation of file
+                                                let path: String = file_data.path.clone();
+                                                let f_path = std::path::Path::new(path.as_str());
+                                                if !f_path.exists() || !f_path.is_file() {
+                                                    panic!(
+                                                        "Model: `{}` > Field: `{}` > Method: \
+                                                        `migrat()` : File is missing - {}",
+                                                        meta.model_name, field, path
+                                                    )
+                                                }
+                                                // Get file metadata
+                                                let metadata: std::fs::Metadata = f_path.metadata().unwrap();
+                                                // Get file size in bytes
+                                                file_data.size = metadata.len() as u32;
+                                                // Get file name
+                                                file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                                                // Get image width and height
+                                                let dimensions: (u32, u32) = image::image_dimensions(path).unwrap();
+                                                file_data.width = dimensions.0;
+                                                file_data.height = dimensions.1;
+                                                // Create doc
+                                                let result = mongodb::bson::ser::to_document(&file_data).unwrap();
+                                                mongodb::bson::Bson::Document(result)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
                                         _ => panic!(
                                             "Service: `{}` > Model: `{}` > Method: \
                                             `migrat()` : Invalid Widget type.",

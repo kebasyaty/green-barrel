@@ -17,6 +17,7 @@ mod app_name {
     pub const SERVICE_NAME: &str = "TEST_uw_ahfkh7JcVF3Xa";
     pub const DATABASE_NAME: &str = "TEST_gDaAa_9VzneKy5L2";
     pub const DB_CLIENT_NAME: &str = "TEST_default__9GGmeMAHfuG6qek";
+    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
     pub static KEYWORD: &str = "TEST_JZa6_ypKL1frp6pH";
@@ -78,24 +79,24 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save()?;
-    let result_2 = test_model_2.save()?;
+    let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.bool()?);
+    assert!(!result_2.bool());
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
@@ -120,16 +121,16 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save()?;
+    let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);

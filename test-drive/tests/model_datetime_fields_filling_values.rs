@@ -17,6 +17,7 @@ mod app_name {
     pub const SERVICE_NAME: &str = "TEST_3_7xtBe3LL8x2Fkf";
     pub const DATABASE_NAME: &str = "TEST_mQE_3Tx8aNU7WHfN";
     pub const DB_CLIENT_NAME: &str = "TEST_default_uSH2VyyYNqAn_X9v";
+    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
     pub static KEYWORD: &str = "TEST_6C3fXXhY8_zXyfNG";
@@ -84,20 +85,20 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save()?;
-    let result_2 = test_model_2.save()?;
+    let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.bool()?);
+    assert!(!result_2.bool());
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
@@ -107,7 +108,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
-    let map_wigets = result_2.wig()?;
+    let map_wigets = result_2.wig();
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
@@ -139,16 +140,16 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save()?;
+    let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value

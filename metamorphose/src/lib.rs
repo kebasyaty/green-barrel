@@ -19,7 +19,7 @@ pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {
     impl_create_model(&args, &mut ast)
 }
 
-// Parsing fields and attributes of a structure, creating implementation of methods
+// Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
 fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
     // Clear the field type from `Option <>`
@@ -38,7 +38,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         std::collections::HashMap::new();
     let mut add_trait_custom = quote! {impl AdditionalValidation for #model_name {}};
 
-    // Get Model attributes
+    // Get Model attributes.
     // *********************************************************************************************
     for nested_meta in args {
         if let NestedMeta::Meta(meta) = nested_meta {
@@ -56,6 +56,16 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 } else if mnv.path.is_ident("db_client_name") {
                     if let syn::Lit::Str(lit_str) = &mnv.lit {
                         trans_meta.db_client_name = lit_str.value().trim().to_string();
+                    } else {
+                        panic!(
+                            "Model: `{}` : Could not determine value for \
+                            parameter `db_client_name`. Use the `&str` type.",
+                            model_name.to_string(),
+                        )
+                    }
+                } else if mnv.path.is_ident("db_query_docs_limit") {
+                    if let syn::Lit::Int(lit_int) = &mnv.lit {
+                        trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
                     } else {
                         panic!(
                             "Model: `{}` : Could not determine value for \
@@ -127,23 +137,23 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         }
     }
 
-    // Get Model fields
+    // Get fields of Model.
     // *********************************************************************************************
     if let syn::Data::Struct(ref mut data) = &mut ast.data {
         if let syn::Fields::Named(ref mut fields) = &mut data.fields {
             let fields = &mut fields.named;
 
-            // Add new field `hash`
+            // Add new field `hash`.
             let field_hash: syn::FieldsNamed =
                 syn::parse2(quote! { {#[serde(default)] #[field_attrs(widget = "inputHidden")] pub hash: Option<String>} })
                     .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let field_hash = field_hash.named.first().unwrap().to_owned();
             &fields.push(field_hash);
 
-            // Get the number of fields
+            // Get the number of fields.
             trans_meta.fields_count = fields.len();
 
-            // Loop over fields
+            // Loop over fields.
             // -------------------------------------------------------------------------------------
             for field in fields {
                 let mut field_name = String::new();
@@ -151,11 +161,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let mut map_parameters_related_model: std::collections::HashMap<String, String> =
                     std::collections::HashMap::new();
 
-                // Get field name
+                // Get field name.
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
 
-                    // Check for fields with reserved names - `created_at`, `updated_at`
+                    // Check for fields with reserved names - `created_at`, `updated_at`.
                     if field_name == "created_at".to_string() {
                         panic!(
                             "Model: `{}` : The field named `created_at` is reserved.",
@@ -170,7 +180,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Get field type
+                // Get field type.
                 if let syn::Type::Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let cap = &re_clear_field_type
@@ -191,7 +201,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .insert(field_name.clone(), field_type.clone());
                 }
 
-                // Get the attribute of the field `field_attrs`
+                // Get the attribute of the field `field_attrs`.
                 let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs")
                     .unwrap_or_else(|err| panic!(err.to_string()));
                 let mut widget = Widget {
@@ -199,10 +209,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     name: field_name.clone(),
                     ..Default::default()
                 };
-                // Allow Validation - Whether the Widget supports the current field type
+                // Allow Validation - Whether the Widget supports the current field type.
                 let mut check_field_type = true;
 
-                // Get field attributes
+                // Get field attributes.
                 if attrs.is_some() {
                     match attrs.unwrap().parse_meta() {
                         Ok(meta) => {
@@ -232,7 +242,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 }
 
-                // Match widget type and field type
+                // Match widget type and field type.
                 if check_field_type {
                     let widget_name = widget.widget.clone();
                     let widget_info = get_widget_info(&widget_name).unwrap_or_else(|err| {
@@ -256,7 +266,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 }
                 // Check for the presence of the `related_name` parameter for
-                // fields with widgets like `foreignKey`,`manyToMany`, `oneToOne`
+                // fields with widgets like `foreignKey`,`manyToMany`, `oneToOne`.
                 if (widget.widget == "foreignKey".to_string()
                     || widget.widget == "manyToMany".to_string()
                     || widget.widget == "oneToOne".to_string())
@@ -272,7 +282,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     )
                 }
                 // Check for the presence of the required field parameter ʻon_delete` for
-                // the `foreignKey` widget and disable for `manyToMany`, ʻoneToOne`
+                // the `foreignKey` widget and disable for `manyToMany`, ʻoneToOne`.
                 if widget.widget == "foreignKey".to_string()
                     && map_parameters_related_model.get("is_cascade_del").is_none()
                 {
@@ -296,13 +306,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         widget.widget
                     )
                 }
-                // Add `multiple` attribute if necessary
+                // Add `multiple` attribute if necessary.
                 if widget.widget == "manyToMany".to_string() {
                     if !widget.other_attrs.contains("multiple") {
                         widget.other_attrs = format!("{} {}", "multiple", widget.other_attrs);
                     }
                 }
-                // Add relatedal model parameter map
+                // Add relatedal model parameter map.
                 if map_parameters_related_model.get("related_model").is_some() {
                     map_parameters_related_model
                         .insert("related_type".to_string(), widget.widget.clone());
@@ -310,7 +320,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .map_related_models
                         .insert(field_name.clone(), map_parameters_related_model);
                 }
-                // Validation the `min` and` max` parameters for date and time
+                // Validation the `min` and` max` parameters for date and time.
                 if widget.widget == "inputDate".to_string() {
                     let re_valid_date = regex::RegexBuilder::new(
                     r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
@@ -379,16 +389,16 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     }
                 }
-                // Add field name and widget name to the map
+                // Add field name and widget name to the map.
                 trans_meta
                     .map_widget_type
                     .insert(field_name.clone(), widget.widget.clone());
-                // Add widget to map
+                // Add widget to map.
                 trans_map_widgets
                     .map_widgets
                     .insert(field_name.clone(), widget);
 
-                // Delete field attributes
+                // Delete field attributes.
                 // ( To avoid conflicts with the compiler )
                 field.attrs = Vec::new();
             }
@@ -400,9 +410,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         }
     }
 
-    // Post processing
+    // Post processing.
     // *********************************************************************************************
-    // Checking the name of ignored fields
+    // Checking the name of ignored fields.
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
@@ -412,7 +422,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             )
         }
     }
-    // Collect `map_default_values` and add to `trans_meta`
+    // Collect `map_default_values` and add to `trans_meta`.
     for field_name in trans_meta.fields_name.iter() {
         let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
         map_default_values.insert(
@@ -421,43 +431,27 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         );
     }
     trans_meta.map_default_values = map_default_values;
-    // trans_meta to Json-line
+    // trans_meta to Json-line.
     // ---------------------------------------------------------------------------------------------
     let trans_meta: String = match serde_json::to_string(&trans_meta) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{}` : {}", model_name.to_string(), err),
     };
-    // TransMapWidgets to Json-line
+    // TransMapWidgets to Json-line.
     let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{}` : {}", model_name.to_string(), err.to_string()),
     };
 
-    // Implementation of methods
+    // Implementation of methods.
     // *********************************************************************************************
     let output = quote! {
         #ast
 
-        // All methods that directly depend on the macro
+        // All methods that directly depend on the macro.
         // *****************************************************************************************
         impl ToModel for #model_name {
-            // Serialize model to json-line
-            // -------------------------------------------------------------------------------------
-            fn self_to_json(&self)
-                -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
-                Ok(serde_json::to_value(self)?)
-            }
-
-            // Getter and Setter for field `hash`
-            // -------------------------------------------------------------------------------------
-            fn get_hash(&self) -> Option<String> {
-                self.hash.clone()
-            }
-            fn set_hash(&mut self, value: String) {
-                self.hash = Some(value);
-            }
-
-            // Get collection name
+            // Get collection name.
             // ( key = collection name, alternatively, not to call `meta()` )
             // -------------------------------------------------------------------------------------
             fn key_store() -> Result<String, Box<dyn std::error::Error>> {
@@ -470,23 +464,27 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 .to_lowercase())
             }
 
-            // Get metadata of Model
+            // Get metadata of Model.
             // -------------------------------------------------------------------------------------
             fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 let mut meta = serde_json::from_str::<Meta>(&#trans_meta)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
-                // Add service name
+                // Add service name.
                 meta.service_name = service_name.clone();
-                // Add database name
+                // Add database name.
                 if meta.database_name.is_empty() {
                     meta.database_name = DATABASE_NAME.trim().to_string();
                 }
-                // Add database client name
+                // Add database client name.
                 if meta.db_client_name.is_empty() {
                     meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
                 }
-                // Add collection name
+                // Add database client name.
+                if meta.db_query_docs_limit == 0 {
+                    meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
+                }
+                // Add collection name.
                 meta.collection_name = format!(
                     "{}_{}",
                     service_name,
@@ -509,44 +507,60 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(meta)
             }
 
-            // Get map of widgets for model fields
-            // <field name, Widget>
+            // Get map of widgets for model fields.
+            // Hint: <field name, Widget>
             // -------------------------------------------------------------------------------------
             fn widgets() -> Result<std::collections::HashMap<String, Widget>,
                 Box<dyn std::error::Error>> {
                 Ok(serde_json::from_str::<TransMapWidgets>(&#trans_map_widgets)?.map_widgets)
             }
 
-            // Additional validation for model fields.
-            // ( Intermediary between `check()` and `AdditionalValidation::add_validation()` )
+            // Getter and Setter for field `hash`.
             // -------------------------------------------------------------------------------------
-            fn medium_add_validation<'a>(
-                &self
-            ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-                Ok(self.add_validation()?)
+            fn get_hash(&self) -> Option<String> {
+                self.hash.clone()
+            }
+            fn set_hash(&mut self, value: String) {
+                self.hash = Some(value);
             }
 
-            // Rendering HTML-controls code for Form
-            // ( Intermediary between `check()` and `HtmlControls::to_html()` )
+            // Serialize model to json-line.
             // -------------------------------------------------------------------------------------
-            fn medium_to_html(
-                fields_name: &Vec<String>,
-                map_widgets: std::collections::HashMap<String, Widget>,
-            ) -> Result<String, Box<dyn std::error::Error>> {
-                Ok(Self::to_html(fields_name, map_widgets)?)
+            fn self_to_json(&self)
+                -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
+                Ok(serde_json::to_value(self)?)
             }
         }
 
-        // A set of methods for custom validation
+        // Caching information about Models and Forms for speed up work.
+        // *****************************************************************************************
+        impl Caching for #model_name {}
+
+        // Validating Model fields for save and update.
+        // *****************************************************************************************
+        impl Validation for #model_name {}
+
+        // Operations with passwords.
+        // *****************************************************************************************
+        impl Password for #model_name {}
+
+        // A set of methods for custom validation.
         // *****************************************************************************************
         #add_trait_custom
 
-        // Rendering HTML-controls code for Form
+        // Database Query API
+        // *****************************************************************************************
+        // Database query methods directly related to the Model instance.
+        impl QPaladin for #model_name {}
+        // Common database query methods.
+        impl QCommon for #model_name {}
+
+        // Rendering HTML-controls code for Form.
         // *****************************************************************************************
         impl HtmlControls for #model_name {}
     };
 
-    // Hand the output tokens back to the compiler
+    // Hand the output tokens back to the compiler.
     TokenStream::from(output)
 }
 
@@ -559,10 +573,10 @@ pub fn Form(_args: TokenStream, input: TokenStream) -> TokenStream {
     impl_create_form(&mut ast)
 }
 
-// Parsing fields and attributes of a structure, creating implementation of methods
+// Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
 fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
-    // Clear the field type from `Option <>`
+    // Clear the field type from `Option <>`.
     let re_clear_field_type = regex::RegexBuilder::new(r"^Option < ([a-z\d\s<>]+) >$")
         .case_insensitive(true)
         .build()
@@ -570,24 +584,24 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
     let form_name: &Ident = &ast.ident;
     let mut trans_map_widgets: TransMapWidgets = Default::default();
 
-    // Get Model fields
+    // Get Model fields.
     // *********************************************************************************************
     if let syn::Data::Struct(ref mut data) = &mut ast.data {
         if let syn::Fields::Named(ref mut fields) = &mut data.fields {
             let fields = &mut fields.named;
 
-            // Loop over fields
+            // Loop over fields.
             // -------------------------------------------------------------------------------------
             for field in fields {
                 let mut field_name = String::new();
                 let mut field_type = String::new();
 
-                // Get field name
+                // Get field name.
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
                 }
 
-                // Get field type
+                // Get field type.
                 if let syn::Type::Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let cap = &re_clear_field_type
@@ -605,7 +619,7 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                     }
                 }
 
-                // Get the attribute of the field `field_attrs`
+                // Get the attribute of the field `field_attrs`.
                 let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs")
                     .unwrap_or_else(|err| panic!(err.to_string()));
                 let mut widget = Widget {
@@ -613,10 +627,10 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                     name: field_name.clone(),
                     ..Default::default()
                 };
-                // Allow Validation - Whether the Widget supports the current field type
+                // Allow Validation - Whether the Widget supports the current field type.
                 let mut check_field_type = true;
 
-                // Get field attributes
+                // Get field attributes.
                 if attrs.is_some() {
                     match attrs.unwrap().parse_meta() {
                         Ok(meta) => {
@@ -645,7 +659,7 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                         Err(err) => panic!("{}", err.to_string()),
                     }
                 }
-                // Match widget type and field type
+                // Match widget type and field type.
                 if check_field_type {
                     let widget_name = widget.widget.clone();
                     let widget_info = get_widget_info(&widget_name).unwrap_or_else(|err| {
@@ -668,11 +682,11 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                         )
                     }
                 }
-                // Add widget to map
+                // Add widget to map.
                 trans_map_widgets
                     .map_widgets
                     .insert(field_name.clone(), widget);
-                // Delete field attributes
+                // Delete field attributes.
                 // ( To avoid conflicts with the compiler )
                 field.attrs = Vec::new();
             }
@@ -684,7 +698,7 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
         }
     }
 
-    // Post processing
+    // Post processing.
     // *********************************************************************************************
     // TransMapWidgets to Json-string
     let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
@@ -692,13 +706,13 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
         Err(err) => panic!("Form: `{}` : {}", form_name.to_string(), err),
     };
 
-    // Implementation of methods
+    // Implementation of methods.
     // *********************************************************************************************
     let output = quote! {
         #ast
 
         impl ToForm for #form_name {
-            // Get a store key
+            // Get a store key.
             // ( key = collection name, used in forms exclusively for store access )
             // -------------------------------------------------------------------------------------
             fn key_store() -> Result<String, Box<dyn std::error::Error>> {
@@ -711,8 +725,8 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                 .to_lowercase())
             }
 
-            // Get map of widgets for model fields
-            // <field name, Widget>
+            // Get map of widgets for model fields.
+            // Hint: <field name, Widget>
             // -------------------------------------------------------------------------------------
             fn widgets() -> Result<std::collections::HashMap<String, Widget>,
                 Box<dyn std::error::Error>> {
@@ -720,17 +734,17 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
             }
         }
 
-        // Rendering HTML-controls code for Form
+        // Rendering HTML-controls code for Form.
         // *****************************************************************************************
         impl HtmlControls for #form_name {}
     };
-    // Hand the output tokens back to the compiler
+    // Hand the output tokens back to the compiler.
     TokenStream::from(output)
 }
 
 // AUXILIARY STRUCTURES AND FUNCTIONS
 // #################################################################################################
-// Get field attribute
+// Get field attribute.
 // *************************************************************************************************
 fn get_field_attr<'a>(
     field: &'a syn::Field,
@@ -743,7 +757,7 @@ fn get_field_attr<'a>(
     Ok(attr)
 }
 
-// Get ID for Widget
+// Get ID for Widget.
 // *************************************************************************************************
 fn get_id(model_name: String, field_name: String) -> String {
     let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
@@ -755,7 +769,7 @@ fn get_id(model_name: String, field_name: String) -> String {
         .to_lowercase()
 }
 
-// Transporting of metadate to implementation of methods
+// Transporting of metadate to implementation of methods.
 // *************************************************************************************************
 #[derive(Serialize)]
 struct Meta {
@@ -763,6 +777,7 @@ struct Meta {
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
+    pub db_query_docs_limit: u32,
     pub collection_name: String,
     pub fields_count: usize,
     pub fields_name: Vec<String>,
@@ -775,7 +790,7 @@ struct Meta {
     pub map_default_values: std::collections::HashMap<String, (String, String)>,
     pub map_related_models:
         std::collections::HashMap<String, std::collections::HashMap<String, String>>,
-    // List of field names that will not be saved to the database
+    // List of field names that will not be saved to the database.
     pub ignore_fields: Vec<String>,
 }
 
@@ -786,6 +801,7 @@ impl Default for Meta {
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),
+            db_query_docs_limit: 0_u32,
             collection_name: String::new(),
             fields_count: 0_usize,
             fields_name: Vec::new(),
@@ -802,7 +818,7 @@ impl Default for Meta {
     }
 }
 
-// Widget attributes
+// Widget attributes.
 // *************************************************************************************************
 #[derive(Serialize)]
 struct Widget {
@@ -865,15 +881,15 @@ impl Default for Widget {
     }
 }
 
-// For transporting of Widgets map to implementation of methods
-// <field name, Widget>
+// For transporting of Widgets map to implementation of methods.
+// Hint: <field name, Widget>
 // *************************************************************************************************
 #[derive(Default, Serialize)]
 struct TransMapWidgets {
     pub map_widgets: std::collections::HashMap<String, Widget>,
 }
 
-// Get widget info
+// Get widget info.
 // *************************************************************************************************
 fn get_widget_info<'a>(
     widget_name: &'a str,
@@ -926,7 +942,7 @@ fn get_widget_info<'a>(
     Ok(info)
 }
 
-// Get parameter value from model field attribute
+// Get parameter value from model field attribute.
 // *************************************************************************************************
 fn get_param_value<'a>(
     attr_name: &'a str,

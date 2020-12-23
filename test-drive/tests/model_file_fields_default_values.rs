@@ -17,6 +17,7 @@ mod app_name {
     pub const SERVICE_NAME: &str = "TEST_4wSJvbMCRjn1_sxM";
     pub const DATABASE_NAME: &str = "TEST_G7LdwKB8pmLsgxh_";
     pub const DB_CLIENT_NAME: &str = "TEST_default_DtexZCY2RrPqN_6z";
+    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
     // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
     pub static KEYWORD: &str = "TEST_1Sy_yXJK7vShs7QC";
@@ -82,15 +83,15 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         name: "hello_world.odt".to_string(),
         size: 9741_u32,
     };
-    let result = test_model.save()?;
+    let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values in widgets
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         "{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}",
         map_wigets.get("file").unwrap().value
@@ -127,16 +128,16 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save()?;
+    let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool()?, "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save()?;
-    let map_wigets = result.wig()?;
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
     assert_eq!(
         "{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}",
         map_wigets.get("file").unwrap().value

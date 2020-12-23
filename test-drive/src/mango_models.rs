@@ -6,9 +6,10 @@ use serde::{Deserialize, Serialize};
 const SERVICE_NAME: &str = "service_name";
 const DATABASE_NAME: &str = "database_name";
 const DB_CLIENT_NAME: &str = "default";
+const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 
 #[Model]
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
     #[serde(default)]
     #[field_attrs(
@@ -29,7 +30,7 @@ pub struct User {
     db_client_name = "default_2",
     ignore_fields = "confirm_email, confirm_password"
 )]
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct UserProfile {
     #[serde(default)]
     #[field_attrs(
@@ -52,6 +53,36 @@ pub struct UserProfile {
     #[serde(default)]
     #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
     pub confirm_password: Option<String>,
+    #[serde(default)]
+    #[field_attrs(widget = "inputDate")]
+    pub date: Option<String>,
+    #[serde(default)]
+    #[field_attrs(widget = "inputDateTime")]
+    pub datetime: Option<String>,
+    #[serde(default)]
+    #[field_attrs(widget = "numberI32")]
+    pub num_i32: Option<i32>,
+    #[serde(default)]
+    #[field_attrs(widget = "numberU32")]
+    pub num_u32: Option<u32>,
+    #[serde(default)]
+    #[field_attrs(widget = "numberI64")]
+    pub num_i64: Option<i64>,
+    #[serde(default)]
+    #[field_attrs(widget = "numberF64")]
+    pub num_f64: Option<f64>,
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputFile",
+        default = "{\"path\":\"./test-drive/media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}"
+    )]
+    pub file: Option<String>,
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputImage",
+        default = "{\"path\":\"./test-drive/media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}"
+    )]
+    pub image: Option<String>,
 }
 
 // Methods for additional validation.
