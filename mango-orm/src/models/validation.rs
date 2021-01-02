@@ -22,7 +22,7 @@ use crate::{
 
 // Validating Model fields for save and update.
 // *************************************************************************************************
-pub trait Validation {
+pub trait ValidationModel {
     // Validation of `minlength`.
     // ---------------------------------------------------------------------------------------------
     fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -121,7 +121,7 @@ pub trait Validation {
         let object_id = mongodb::bson::oid::ObjectId::with_string(hash);
         let mut filter = mongodb::bson::doc! { field_name: bson_field_value };
         if let Ok(id) = object_id {
-            // If the document is will updated
+            // If the document is will updated.
             filter = mongodb::bson::doc! {
                 "$and": [
                     { "_id": { "$ne": id } },
@@ -138,11 +138,11 @@ pub trait Validation {
 }
 
 // Methods for additional validation.
-// **For custom use, add the Model attribute `is_use_add_valid = true`.
-// ( Remember to use for validate of ignored fields )
+// Hint: For custom use, add the Model/Form attribute `is_use_add_valid = true`.
+// Hint (for models): Remember to use for validate of ignored fields.
 // *************************************************************************************************
 pub trait AdditionalValidation {
-    // Default implementation as a stub
+    // Default implementation as a stub.
     fn add_validation<'a>(
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {

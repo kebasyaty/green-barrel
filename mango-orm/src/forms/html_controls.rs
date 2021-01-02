@@ -7,21 +7,20 @@
 use crate::forms::Widget;
 
 pub trait HtmlControls {
-    // Rendering HTML-controls code for Form
+    // Rendering HTML-controls code for Form.
     // ( If necessary, customize the code generation yourself using html and css from
     // Bootstrap, Material Design, etc. )
     fn to_html(
         fields_name: &Vec<String>,
         map_widgets: std::collections::HashMap<String, Widget>,
     ) -> String {
-        // Controls of Form
+        // Controls of Form.
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         for field_name in fields_name {
             let attrs = map_widgets.get(field_name).unwrap();
             // Messages common to the entire Form - Is required.
-            // Passing with a `hash` field.
-            // (alternatively use in popup)
+            // Hint: alternatively use in popup.
             if !attrs.common_msg.is_empty() {
                 controls = format!("<p class=\"warning\">{}</p>{}", attrs.common_msg, controls);
             }
@@ -483,7 +482,10 @@ pub trait HtmlControls {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" name=\"{}\"", attrs.name),
+                        match attrs.widget.contains("Mult") {
+                            true => format!(" name=\"{}[]\" multiple", attrs.name),
+                            false => format!(" name=\"{}\"", attrs.name),
+                        },
                         if attrs.required { " required" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
@@ -539,15 +541,15 @@ pub trait HtmlControls {
                 _ => panic!("Invalid input type."),
             }
         }
-        // Add buttons and Return
+        // Add buttons and Return.
         // -----------------------------------------------------------------------------------------
         format!("{}<p><input type=\"submit\" value=\"Save\"></p>", controls)
     }
 
-    // Get Html-line for `OutputDataForm`
+    // Get Html-line for `OutputDataForm`.
     // *********************************************************************************************
     fn html(&self) -> String {
-        // Stub
+        // Stub.
         String::new()
     }
 }

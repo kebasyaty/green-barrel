@@ -1,4 +1,5 @@
-//! # Forms
+//! # Forms.
+//! To create form of search, form of recover password, combine multiple models, etc.
 //!
 //! `ToForm` - Define form settings for models (widgets, html).
 //! `Widget` - Form controls parameters.
@@ -9,12 +10,14 @@
 //! ( If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc. )
 //!
 
+pub mod caching;
 pub mod html_controls;
 pub mod output_data;
+pub mod validation;
 
 // FORMS
 // #################################################################################################
-// Data structures for `inputFile` and `inputImage` widgets
+// Data structures for `inputFile` and `inputImage` widgets.
 // *************************************************************************************************
 #[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
@@ -44,19 +47,19 @@ pub struct ImageData {
     pub height: u32, // in pixels
 }
 
-// Widget
+// Widget.
 // ( Form controls parameters )
 // *************************************************************************************************
 #[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {
-    pub id: String, // "model-name--field-name" ( The value is determined automatically )
+    pub id: String, // Example: "model-name--field-name" ( The value is determined automatically )
     pub label: String,
     pub widget: String,
-    pub input_type: String, // The value is determined automatically
-    pub name: String,       // The value is determined automatically
+    pub input_type: String, // The value is determined automatically.
+    pub name: String,       // The value is determined automatically.
     pub value: String,
     pub placeholder: String,
-    pub pattern: String, // Validating a field using a client-side regex
+    pub pattern: String, // Validating a field using a client-side regex.
     pub minlength: usize,
     pub maxlength: usize,
     pub required: bool,
@@ -67,13 +70,13 @@ pub struct Widget {
     pub step: String,
     pub min: String,
     pub max: String,
-    pub other_attrs: String, // "autofocus multiple size=\"some number\" ..."
-    pub css_classes: String, // "class-name class-name ..."
-    pub options: Vec<(String, String)>, // <value, Title>
+    pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
+    pub css_classes: String, // Hint: "class-name class-name ..."
+    pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
     pub hint: String,
-    pub warning: String,    // The value is determined automatically
-    pub error: String,      // The value is determined automatically
-    pub common_msg: String, // Messages common to the entire Form
+    pub warning: String,    // The value is determined automatically.
+    pub error: String,      // The value is determined automatically.
+    pub common_msg: String, // Messages common to the entire Form.
 }
 
 impl Default for Widget {
@@ -108,22 +111,35 @@ impl Default for Widget {
     }
 }
 
-// For transporting of Widgets map to implementation of methods
-// <field name, Widget>
+// For transporting of Widgets map to implementation of methods.
+// Hint: <field name, Widget>
 #[derive(serde::Deserialize)]
 pub struct TransMapWidgets {
     pub map_widgets: std::collections::HashMap<String, Widget>,
 }
 
-// Form settings
+// Form settings.
 // *************************************************************************************************
 pub trait ToForm {
-    // Get a store key
-    // ( key = collection name, used in forms exclusively for store access )
+    // Get form key.
+    // (To access data in the cache)
     // ---------------------------------------------------------------------------------------------
-    fn key_store() -> Result<String, Box<dyn std::error::Error>>;
+    fn form_key() -> String;
 
-    // Get map of widgets for Form fields
-    // <field name, Widget>
+    // Get form name
+    // ---------------------------------------------------------------------------------------------
+    fn form_name() -> String;
+
+    // Get fields name list.
+    // ---------------------------------------------------------------------------------------------
+    fn fields_name() -> Result<Vec<String>, Box<dyn std::error::Error>>;
+
+    // Get map of widgets for Form fields.
+    // Hint: <field name, Widget>
+    // ---------------------------------------------------------------------------------------------
     fn widgets() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>>;
+
+    // Serialize Form to json-line.
+    // -------------------------------------------------------------------------------------
+    fn self_to_json(&self) -> Result<serde_json::value::Value, Box<dyn std::error::Error>>;
 }

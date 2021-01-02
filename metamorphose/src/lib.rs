@@ -36,7 +36,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     // <field_name, (widget_type, value)>
     let mut map_default_values: std::collections::HashMap<String, (String, String)> =
         std::collections::HashMap::new();
-    let mut add_trait_custom = quote! {impl AdditionalValidation for #model_name {}};
+    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -123,7 +123,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 } else if mnv.path.is_ident("is_use_add_valid") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
                         if lit_bool.value {
-                            add_trait_custom = quote! {};
+                            add_trait_custom_valid = quote! {};
                         }
                     } else {
                         panic!(
@@ -144,11 +144,36 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             let fields = &mut fields.named;
 
             // Add new field `hash`.
-            let field_hash: syn::FieldsNamed =
-                syn::parse2(quote! { {#[serde(default)] #[field_attrs(widget = "inputHidden")] pub hash: Option<String>} })
-                    .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let field_hash = field_hash.named.first().unwrap().to_owned();
-            &fields.push(field_hash);
+            let new_field: syn::FieldsNamed = syn::parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub hash: Option<String>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_field = new_field.named.first().unwrap().to_owned();
+            &fields.push(new_field);
+
+            // Add new field `parent_relation`.
+            let new_field: syn::FieldsNamed = syn::parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "selectTextMult")] pub parent_relation: Option<Vec<String>>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_field = new_field.named.first().unwrap().to_owned();
+            &fields.push(new_field);
+
+            // Add new field `child_relation`.
+            let new_field: syn::FieldsNamed = syn::parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "selectTextMult")] pub child_relation: Option<Vec<String>>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_field = new_field.named.first().unwrap().to_owned();
+            &fields.push(new_field);
+
+            // Add new field `subdocs`.
+            let new_field: syn::FieldsNamed = syn::parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub subdocs: Option<String>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_field = new_field.named.first().unwrap().to_owned();
+            &fields.push(new_field);
 
             // Get the number of fields.
             trans_meta.fields_count = fields.len();
@@ -158,8 +183,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             for field in fields {
                 let mut field_name = String::new();
                 let mut field_type = String::new();
-                let mut map_parameters_related_model: std::collections::HashMap<String, String> =
-                    std::collections::HashMap::new();
 
                 // Get field name.
                 if let Some(ident) = &field.ident {
@@ -202,8 +225,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 }
 
                 // Get the attribute of the field `field_attrs`.
-                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs")
-                    .unwrap_or_else(|err| panic!(err.to_string()));
+                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs");
                 let mut widget = Widget {
                     id: get_id(model_name.to_string(), field_name.clone()),
                     name: field_name.clone(),
@@ -230,7 +252,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                                                 field_name.as_ref(),
                                                 field_type.as_ref(),
                                                 &mut check_field_type,
-                                                Some(&mut map_parameters_related_model),
                                                 "Model",
                                             );
                                         }
@@ -264,61 +285,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             widget_info.0
                         )
                     }
-                }
-                // Check for the presence of the `related_name` parameter for
-                // fields with widgets like `foreignKey`,`manyToMany`, `oneToOne`.
-                if (widget.widget == "foreignKey".to_string()
-                    || widget.widget == "manyToMany".to_string()
-                    || widget.widget == "oneToOne".to_string())
-                    && (map_parameters_related_model.get("related_model").is_none()
-                        || map_parameters_related_model.get("related_name").is_none())
-                {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Widget: `{}` : \
-                        Define the required field parameters `related_model` and` related_name`.",
-                        model_name.to_string(),
-                        field_name,
-                        widget.widget
-                    )
-                }
-                // Check for the presence of the required field parameter ʻon_delete` for
-                // the `foreignKey` widget and disable for `manyToMany`, ʻoneToOne`.
-                if widget.widget == "foreignKey".to_string()
-                    && map_parameters_related_model.get("is_cascade_del").is_none()
-                {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Widget: `{}` : \
-                        Define the required field parameter `is_cascade_del`. \
-                        Valid values: true or false.",
-                        model_name.to_string(),
-                        field_name,
-                        widget.widget
-                    )
-                } else if (widget.widget == "manyToMany".to_string()
-                    || widget.widget == "oneToOne".to_string())
-                    && map_parameters_related_model.get("is_cascade_del").is_some()
-                {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Widget: `{}` : \
-                        The `is_cascade_del` parameter is not required for this widget type.",
-                        model_name.to_string(),
-                        field_name,
-                        widget.widget
-                    )
-                }
-                // Add `multiple` attribute if necessary.
-                if widget.widget == "manyToMany".to_string() {
-                    if !widget.other_attrs.contains("multiple") {
-                        widget.other_attrs = format!("{} {}", "multiple", widget.other_attrs);
-                    }
-                }
-                // Add relatedal model parameter map.
-                if map_parameters_related_model.get("related_model").is_some() {
-                    map_parameters_related_model
-                        .insert("related_type".to_string(), widget.widget.clone());
-                    trans_meta
-                        .map_related_models
-                        .insert(field_name.clone(), map_parameters_related_model);
                 }
                 // Validation the `min` and` max` parameters for date and time.
                 if widget.widget == "inputDate".to_string() {
@@ -425,6 +391,35 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     // Collect `map_default_values` and add to `trans_meta`.
     for field_name in trans_meta.fields_name.iter() {
         let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
+        // For dynamic widgets, the default is invalid.
+        if widget.widget.contains("Dyn") && !widget.value.is_empty() {
+            panic!(
+                "Model: `{}` > Field: `{}` : \
+                For dynamic widgets, it is unacceptable to use default values.",
+                model_name.to_string(),
+                field_name,
+            )
+        }
+        // For widgets of the `select` type,
+        // the default value must correspond to one of the proposed options.
+        if widget.widget.contains("select") {
+            if !widget.value.is_empty()
+                && widget
+                    .options
+                    .iter()
+                    .filter(|item| item.0 == widget.value)
+                    .count()
+                    == 0
+            {
+                panic!(
+                    "Model: `{}` > Field: `{}` : \
+                    There is no default value in the `options` parameter.",
+                    model_name.to_string(),
+                    field_name,
+                )
+            }
+        }
+        // Add default values in the map.
         map_default_values.insert(
             field_name.clone(),
             (widget.widget.clone(), widget.value.clone()),
@@ -451,17 +446,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // All methods that directly depend on the macro.
         // *****************************************************************************************
         impl ToModel for #model_name {
-            // Get collection name.
-            // ( key = collection name, alternatively, not to call `meta()` )
+            // Get model key.
+            // Hint: key = collection name
+            // (To access data in the cache)
             // -------------------------------------------------------------------------------------
-            fn key_store() -> Result<String, Box<dyn std::error::Error>> {
+            fn model_key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                Ok(format!(
+                format!(
                     "{}_{}",
                     SERVICE_NAME.trim(),
                     re.replace_all(stringify!(#model_name), "_$upper_chr")
                 )
-                .to_lowercase())
+                .to_lowercase()
             }
 
             // Get metadata of Model.
@@ -491,19 +487,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     re.replace_all(&meta.model_name[..], "_$upper_chr")
                 )
                 .to_lowercase();
-                // Update the name of the related model,
-                // formatted as <service_name__related_model_name>
-                if !meta.map_related_models.is_empty() {
-                    for (_, params) in meta.map_related_models.iter_mut() {
-                        let mut related_model_name = params.get_mut("related_model").unwrap();
-                            *related_model_name = format!(
-                                "{}_{}",
-                                service_name,
-                                re.replace_all(related_model_name, "_$upper_chr")
-                                .to_lowercase()
-                        );
-                    }
-                }
+
                 Ok(meta)
             }
 
@@ -532,13 +516,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             }
         }
 
-        // Caching information about Models and Forms for speed up work.
+        // Caching information about Models for speed up work.
         // *****************************************************************************************
-        impl Caching for #model_name {}
+        impl CachingModel for #model_name {}
 
         // Validating Model fields for save and update.
         // *****************************************************************************************
-        impl Validation for #model_name {}
+        impl ValidationModel for #model_name {}
 
         // Operations with passwords.
         // *****************************************************************************************
@@ -546,14 +530,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         // A set of methods for custom validation.
         // *****************************************************************************************
-        #add_trait_custom
+        #add_trait_custom_valid
 
         // Database Query API
         // *****************************************************************************************
-        // Database query methods directly related to the Model instance.
-        impl QPaladin for #model_name {}
         // Common database query methods.
         impl QCommon for #model_name {}
+        // Query methods for a Model instance.
+        impl QPaladins for #model_name {}
 
         // Rendering HTML-controls code for Form.
         // *****************************************************************************************
@@ -568,14 +552,15 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 // #################################################################################################
 #[allow(non_snake_case)]
 #[proc_macro_attribute]
-pub fn Form(_args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn Form(args: TokenStream, input: TokenStream) -> TokenStream {
+    let args = parse_macro_input!(args as AttributeArgs);
     let mut ast = parse_macro_input!(input as DeriveInput);
-    impl_create_form(&mut ast)
+    impl_create_form(&args, &mut ast)
 }
 
 // Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
-fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
+fn impl_create_form(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
     // Clear the field type from `Option <>`.
     let re_clear_field_type = regex::RegexBuilder::new(r"^Option < ([a-z\d\s<>]+) >$")
         .case_insensitive(true)
@@ -583,8 +568,32 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
         .unwrap();
     let form_name: &Ident = &ast.ident;
     let mut trans_map_widgets: TransMapWidgets = Default::default();
+    let mut fields_name: Vec<String> = Vec::new();
+    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #form_name {}};
 
-    // Get Model fields.
+    // Get Form attributes.
+    // *********************************************************************************************
+    for nested_meta in args {
+        if let NestedMeta::Meta(meta) = nested_meta {
+            if let syn::Meta::NameValue(mnv) = meta {
+                if mnv.path.is_ident("is_use_add_valid") {
+                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        if lit_bool.value {
+                            add_trait_custom_valid = quote! {};
+                        }
+                    } else {
+                        panic!(
+                            "Form: `{}` : Could not determine value for \
+                            parameter `is_use_add_valid`. Use the `bool` type.",
+                            form_name.to_string(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // Get Form fields.
     // *********************************************************************************************
     if let syn::Data::Struct(ref mut data) = &mut ast.data {
         if let syn::Fields::Named(ref mut fields) = &mut data.fields {
@@ -600,6 +609,9 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
                 }
+
+                // Add field name to list.
+                fields_name.push(field_name.clone());
 
                 // Get field type.
                 if let syn::Type::Path(ty) = &field.ty {
@@ -620,8 +632,7 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                 }
 
                 // Get the attribute of the field `field_attrs`.
-                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs")
-                    .unwrap_or_else(|err| panic!(err.to_string()));
+                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs");
                 let mut widget = Widget {
                     id: get_id(form_name.to_string(), field_name.clone()),
                     name: field_name.clone(),
@@ -648,7 +659,6 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                                                 field_name.as_ref(),
                                                 field_type.as_ref(),
                                                 &mut check_field_type,
-                                                None,
                                                 "Form",
                                             );
                                         }
@@ -700,8 +710,25 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
 
     // Post processing.
     // *********************************************************************************************
+    // Checking default values.
+    for field_name in fields_name.clone() {
+        let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
+        if widget.widget.contains("Dyn") && !widget.value.is_empty() {
+            panic!(
+                "Model: `{}` > Field: `{}` : \
+                For dynamic widgets, it is unacceptable to use default values.",
+                form_name.to_string(),
+                field_name,
+            )
+        }
+    }
     // TransMapWidgets to Json-string
     let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
+        Ok(json_string) => json_string,
+        Err(err) => panic!("Form: `{}` : {}", form_name.to_string(), err),
+    };
+    // fields_name to Json-string
+    let fields_name: String = match serde_json::to_string(&fields_name) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Form: `{}` : {}", form_name.to_string(), err),
     };
@@ -712,17 +739,29 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
         #ast
 
         impl ToForm for #form_name {
-            // Get a store key.
-            // ( key = collection name, used in forms exclusively for store access )
+            // Get form key.
+            // (To access data in the cache)
             // -------------------------------------------------------------------------------------
-            fn key_store() -> Result<String, Box<dyn std::error::Error>> {
+            fn form_key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                Ok(format!(
+                format!(
                     "{}_{}",
                     SERVICE_NAME.trim(),
                     re.replace_all(stringify!(#form_name), "_$upper_chr")
                 )
-                .to_lowercase())
+                .to_lowercase()
+            }
+
+            // Get form name
+            // -------------------------------------------------------------------------------------
+            fn form_name() -> String {
+                stringify!(#form_name).to_string()
+            }
+
+            // Get fields name list.
+            // -------------------------------------------------------------------------------------
+            fn fields_name() -> Result<Vec<String>, Box<dyn std::error::Error>> {
+                Ok(serde_json::from_str::<Vec<String>>(#fields_name)?)
             }
 
             // Get map of widgets for model fields.
@@ -732,7 +771,26 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
                 Box<dyn std::error::Error>> {
                 Ok(serde_json::from_str::<TransMapWidgets>(&#trans_map_widgets)?.map_widgets)
             }
+
+            // Serialize Form to json-line.
+            // -------------------------------------------------------------------------------------
+            fn self_to_json(&self)
+                -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
+                Ok(serde_json::to_value(self)?)
+            }
         }
+
+        // Caching information about Models and Forms for speed up work.
+        // *****************************************************************************************
+        impl CachingForm for #form_name {}
+
+        // Validating Form fields for save and update.
+        // *****************************************************************************************
+        impl ValidationForm for #form_name {}
+
+        // A set of methods for custom validation.
+        // *****************************************************************************************
+        #add_trait_custom_valid
 
         // Rendering HTML-controls code for Form.
         // *****************************************************************************************
@@ -746,15 +804,12 @@ fn impl_create_form(ast: &mut DeriveInput) -> TokenStream {
 // #################################################################################################
 // Get field attribute.
 // *************************************************************************************************
-fn get_field_attr<'a>(
-    field: &'a syn::Field,
-    attr_name: &'a str,
-) -> Result<Option<&'a Attribute>, Box<dyn std::error::Error>> {
+fn get_field_attr<'a>(field: &'a syn::Field, attr_name: &'a str) -> Option<&'a Attribute> {
     let attr: Option<&Attribute> = field
         .attrs
         .iter()
         .find(|attr| attr.path.is_ident(attr_name));
-    Ok(attr)
+    attr
 }
 
 // Get ID for Widget.
@@ -788,8 +843,6 @@ struct Meta {
     pub map_widget_type: std::collections::HashMap<String, String>,
     // <field_name, (widget_type, value)>
     pub map_default_values: std::collections::HashMap<String, (String, String)>,
-    pub map_related_models:
-        std::collections::HashMap<String, std::collections::HashMap<String, String>>,
     // List of field names that will not be saved to the database.
     pub ignore_fields: Vec<String>,
 }
@@ -811,7 +864,6 @@ impl Default for Meta {
             map_field_type: std::collections::HashMap::new(),
             map_widget_type: std::collections::HashMap::new(),
             map_default_values: std::collections::HashMap::new(),
-            map_related_models: std::collections::HashMap::new(),
             // List of field names that will not be saved to the database
             ignore_fields: Vec::new(),
         }
@@ -840,9 +892,9 @@ struct Widget {
     pub step: String,
     pub min: String,
     pub max: String,
-    pub other_attrs: String, // "autofocus multiple size=\"some number\" ..."
+    pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
     pub css_classes: String, // "class-name class-name ..."
-    pub options: Vec<(String, String)>, // <value, Title>
+    pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
     pub hint: String,
     pub warning: String,    // The value is determined automatically
     pub error: String,      // The value is determined automatically
@@ -929,14 +981,30 @@ fn get_widget_info<'a>(
         "inputIPv6" => ("String", "text"),
         "textArea" => ("String", "textarea"),
         "selectText" => ("String", "select"),
+        "selectTextDyn" => ("String", "select"),
+        "selectTextMult" => ("Vec < String >", "select"),
+        "selectTextMultDyn" => ("Vec < String >", "select"),
         "selectI32" => ("i32", "select"),
+        "selectI32Dyn" => ("i32", "select"),
+        "selectI32Mult" => ("Vec < i32 >", "select"),
+        "selectI32MultDyn" => ("Vec < i32 >", "select"),
         "selectU32" => ("u32", "select"),
+        "selectU32Dyn" => ("u32", "select"),
+        "selectU32Mult" => ("Vec < u32 >", "select"),
+        "selectU32MultDyn" => ("Vec < u32 >", "select"),
         "selectI64" => ("i64", "select"),
+        "selectI64Dyn" => ("i64", "select"),
+        "selectI64Mult" => ("Vec < i64 >", "select"),
+        "selectI64MultDyn" => ("Vec < i64 >", "select"),
         "selectF64" => ("f64", "select"),
-        "foreignKey" => ("String", "select"),
-        "manyToMany" => ("Vec < String >", "select"),
-        "oneToOne" => ("String", "hidden"),
-        "inputHidden" => ("String", "hidden"),
+        "selectF64Dyn" => ("f64", "select"),
+        "selectF64Mult" => ("Vec < f64 >", "select"),
+        "selectF64MultDyn" => ("Vec < f64 >", "select"),
+        "hiddenText" => ("String", "hidden"),
+        "hiddenI32" => ("i32", "hidden"),
+        "hiddenU32" => ("u32", "hidden"),
+        "hiddenI64" => ("i64", "hidden"),
+        "hiddenF64" => ("f64", "hidden"),
         _ => Err("Invalid widget type.")?,
     };
     Ok(info)
@@ -952,7 +1020,6 @@ fn get_param_value<'a>(
     field_name: &'a str,
     field_type: &'a str,
     check_field_type: &mut bool,
-    map_parameters_related_model: Option<&mut std::collections::HashMap<String, String>>,
     model_or_form: &'a str,
 ) {
     match attr_name {
@@ -1378,6 +1445,97 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
+        "select" => match field_type.as_ref() {
+            "i32" | "Vec < i32 >" => {
+                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                    let raw_options: Vec<(i32, String)> =
+                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let mut ready_options: Vec<(String, String)> = Vec::new();
+                    for item in raw_options {
+                        ready_options.push((item.0.to_string(), item.1));
+                    }
+                    widget.options = ready_options;
+                } else {
+                    panic!(
+                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        model_or_form, model_name, field_name, field_type
+                    )
+                }
+            }
+            "u32" | "Vec < u32 >" => {
+                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                    let raw_options: Vec<(u32, String)> =
+                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let mut ready_options: Vec<(String, String)> = Vec::new();
+                    for item in raw_options {
+                        ready_options.push((item.0.to_string(), item.1));
+                    }
+                    widget.options = ready_options;
+                } else {
+                    panic!(
+                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        model_or_form, model_name, field_name, field_type
+                    )
+                }
+            }
+            "i64" | "Vec < i64 >" => {
+                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                    let raw_options: Vec<(i64, String)> =
+                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let mut ready_options: Vec<(String, String)> = Vec::new();
+                    for item in raw_options {
+                        ready_options.push((item.0.to_string(), item.1));
+                    }
+                    widget.options = ready_options;
+                } else {
+                    panic!(
+                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        Could not determine value for parameter `select`. \
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        model_or_form, model_name, field_name, field_type
+                    )
+                }
+            }
+            "f64" | "Vec < f64 >" => {
+                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                    let raw_options: Vec<(f64, String)> =
+                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let mut ready_options: Vec<(String, String)> = Vec::new();
+                    for item in raw_options {
+                        ready_options.push((item.0.to_string(), item.1));
+                    }
+                    widget.options = ready_options;
+                } else {
+                    panic!(
+                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        Could not determine value for parameter `select`. \
+                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...]",
+                        model_or_form, model_name, field_name, field_type
+                    )
+                }
+            }
+            "String" | "Vec < String >" => {
+                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                    widget.options = serde_json::from_str(lit_str.value().as_str()).unwrap();
+                } else {
+                    panic!(
+                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        Could not determine value for parameter `select`. \
+                        Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...]",
+                        model_or_form, model_name, field_name, field_type
+                    )
+                }
+            }
+            _ => panic!(
+                "{}: `{}` > Field: `{}` > Type: {} : \
+                Unsupported field type for `select` parameter.",
+                model_or_form, model_name, field_name, field_type
+            ),
+        },
         "other_attrs" => {
             if let syn::Lit::Str(lit_str) = &mnv.lit {
                 widget.other_attrs = lit_str.value().trim().to_string();
@@ -1402,97 +1560,6 @@ fn get_param_value<'a>(
                 )
             }
         }
-        "select" => match field_type.as_ref() {
-            "i32" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(i32, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_ref()).unwrap();
-                    let mut ready_options: Vec<(String, String)> = Vec::new();
-                    for item in raw_options {
-                        ready_options.push((item.0.to_string(), item.1));
-                    }
-                    widget.options = ready_options;
-                } else {
-                    panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
-                        model_or_form, model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(u32, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_ref()).unwrap();
-                    let mut ready_options: Vec<(String, String)> = Vec::new();
-                    for item in raw_options {
-                        ready_options.push((item.0.to_string(), item.1));
-                    }
-                    widget.options = ready_options;
-                } else {
-                    panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
-                        model_or_form, model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(i64, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_ref()).unwrap();
-                    let mut ready_options: Vec<(String, String)> = Vec::new();
-                    for item in raw_options {
-                        ready_options.push((item.0.to_string(), item.1));
-                    }
-                    widget.options = ready_options;
-                } else {
-                    panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
-                        model_or_form, model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(f64, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_ref()).unwrap();
-                    let mut ready_options: Vec<(String, String)> = Vec::new();
-                    for item in raw_options {
-                        ready_options.push((item.0.to_string(), item.1));
-                    }
-                    widget.options = ready_options;
-                } else {
-                    panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
-                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...]",
-                        model_or_form, model_name, field_name, field_type
-                    )
-                }
-            }
-            "String" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    widget.options = serde_json::from_str(lit_str.value().as_ref()).unwrap();
-                } else {
-                    panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
-                        Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...]",
-                        model_or_form, model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
-                Unsupported field type for `select` parameter.",
-                model_or_form, model_name, field_name, field_type
-            ),
-        },
         "hint" => {
             if let syn::Lit::Str(lit_str) = &mnv.lit {
                 widget.hint = lit_str.value().trim().to_string();
@@ -1501,50 +1568,6 @@ fn get_param_value<'a>(
                     "{}: `{}` > Field: `{}` : \
                     Could not determine value for parameter `hint`. \
                     Example: \"Some text\".",
-                    model_or_form, model_name, field_name
-                )
-            }
-        }
-        "related_model" if model_or_form == "Model" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
-                map_parameters_related_model.unwrap().insert(
-                    "related_model".to_string(),
-                    lit_str.value().trim().to_string(),
-                );
-            } else {
-                panic!(
-                    "{}: `{}` > Field: `{}` : \
-                    Could not determine value for parameter `related_model`. \
-                    Example: \"CategoryName\".",
-                    model_or_form, model_name, field_name
-                )
-            }
-        }
-        "related_name" if model_or_form == "Model" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
-                map_parameters_related_model.unwrap().insert(
-                    "related_name".to_string(),
-                    lit_str.value().trim().to_string(),
-                );
-            } else {
-                panic!(
-                    "{}: `{}` > Field: `{}` : \
-                    Could not determine value for parameter `related_name`. \
-                    Example: \"category_name\".",
-                    model_or_form, model_name, field_name
-                )
-            }
-        }
-        "is_cascade_del" if model_or_form == "Model" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                map_parameters_related_model
-                    .unwrap()
-                    .insert("is_cascade_del".to_string(), lit_bool.value.to_string());
-            } else {
-                panic!(
-                    "{}: `{}` > Field: `{}` : \
-                    Could not determine value for parameter `is_cascade_del`. \
-                    Example: false. Default = true",
                     model_or_form, model_name, field_name
                 )
             }

@@ -1,4 +1,4 @@
-//! # Password
+//! # Operations with passwords.
 //!
 //! Trait:
 //! `Password` - Operations with passwords.

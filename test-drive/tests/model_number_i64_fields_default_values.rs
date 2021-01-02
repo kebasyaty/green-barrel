@@ -39,13 +39,6 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12)]
         pub range: Option<i64>,
-        #[serde(default)]
-        #[field_attrs(
-            widget = "selectI64",
-            default = 1,
-            select = "[[1, \"Volvo\"], [2, \"Saab\"], [3, \"Mercedes\"], [4, \"Audi\"]]"
-        )]
-        pub select: Option<i64>,
     }
 
     // Test migration
@@ -133,21 +126,13 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result_2.wig();
     assert!(map_wigets.get("range").unwrap().value.is_empty());
-    // select
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_i64,
-        map_wigets.get("select").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert!(map_wigets.get("select").unwrap().value.is_empty());
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -162,7 +147,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(1_i64, doc.get_i64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_i64, doc.get_i64("range")?);
-        assert_eq!(1_i64, doc.get_i64("select")?);
     }
 
     // Update
@@ -208,22 +192,13 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         5_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
-    // select
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("select").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        1_i64,
-        map_wigets.get("select").unwrap().value.parse::<i64>()?
-    );
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -238,7 +213,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(1_i64, doc.get_i64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_i64, doc.get_i64("range")?);
-        assert_eq!(1_i64, doc.get_i64("select")?);
     }
 
     // ---------------------------------------------------------------------------------------------

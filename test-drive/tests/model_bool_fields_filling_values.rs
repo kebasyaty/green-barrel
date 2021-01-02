@@ -28,7 +28,7 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxBool", unique = true)]
+        #[field_attrs(widget = "checkBoxBool")]
         pub checkbox: Option<bool>,
     }
 
@@ -72,39 +72,27 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         checkbox: Some(true),
         ..Default::default()
     };
-    let mut test_model_2 = app_name::TestModel {
-        checkbox: Some(true),
-        ..Default::default()
-    };
 
     // Create
     // ---------------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
-    // Validation of `unique`
-    assert!(!result_2.bool());
-    // Validation of `hash`
-    assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // checkbox
-    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = result_2.wig();
-    assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -129,7 +117,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -140,7 +127,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();

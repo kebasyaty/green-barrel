@@ -30,7 +30,10 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "inputImage",
-            default = "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}"
+            default = r#"{
+                "path":"./media/no-image-found.png",
+                "url":"/media/no-image-found.png"
+            }"#
         )]
         pub image: Option<String>,
     }
@@ -73,7 +76,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut test_model = app_name::TestModel {
         image: Some(
-            "{\"path\":\"./media/beautiful-mountains.jpg\",\"url\":\"/media/beautiful-mountains.jpg\"}"
+            r#"{"path":"./media/beautiful-mountains.jpg","url":"/media/beautiful-mountains.jpg"}"#
                 .to_string(),
         ),
         ..Default::default()
@@ -95,17 +98,17 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values in widgets
-    // checkbox
-    let result = test_model.save(None, None)?;
+    // image
     let map_wigets = result.wig();
-    assert_eq!(
-        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
-        map_wigets.get("image").unwrap().value
-    );
+    assert!(map_wigets.get("image").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
-        map_wigets.get("image").unwrap().value
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
+        )?,
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            map_wigets.get("image").unwrap().value.as_str()
+        )?
     );
 
     // Validating values in database
@@ -113,7 +116,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -141,17 +144,17 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // checkbox
-    let result = test_model.save(None, None)?;
+    // image
     let map_wigets = result.wig();
-    assert_eq!(
-        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
-        map_wigets.get("image").unwrap().value
-    );
+    assert!(map_wigets.get("image").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        "{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}",
-        map_wigets.get("image").unwrap().value
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
+        )?,
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            map_wigets.get("image").unwrap().value.as_str()
+        )?
     );
 
     // Validating values in database
@@ -159,7 +162,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();

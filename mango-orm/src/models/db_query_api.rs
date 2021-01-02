@@ -2,4 +2,4 @@
 //!
 
 pub mod common;
-pub mod paladin;
+pub mod paladins;

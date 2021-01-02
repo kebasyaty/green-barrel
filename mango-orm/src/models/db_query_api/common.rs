@@ -1,4 +1,4 @@
-//! # Common database query methods.
+//! # Common query methods.
 //!
 //! Trait:
 //! `QCommon` - Common database query methods.
@@ -17,12 +17,16 @@
 //! `namespace` - Gets the namespace of the Collection.
 //!
 
-use crate::models::{
-    output_data::{OutputDataMany, OutputDataOne},
-    Meta, ToModel,
+use crate::{
+    forms::output_data::OutputDataForm,
+    models::{
+        caching::CachingModel,
+        output_data::{OutputDataMany, OutputDataOne},
+        Meta, ToModel,
+    },
 };
 
-pub trait QCommon: ToModel {
+pub trait QCommon: ToModel + CachingModel {
     // Runs an aggregation operation.
     // https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.aggregate
     // ---------------------------------------------------------------------------------------------
@@ -30,14 +34,14 @@ pub trait QCommon: ToModel {
         pipeline: Vec<mongodb::bson::document::Document>,
         options: Option<mongodb::options::AggregateOptions>,
     ) -> Result<Vec<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll
             .aggregate(pipeline, options)?
             .map(|item| item.unwrap())
@@ -51,14 +55,14 @@ pub trait QCommon: ToModel {
         filter: Option<mongodb::bson::document::Document>,
         options: Option<mongodb::options::CountOptions>,
     ) -> Result<i64, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll.count_documents(filter, options)?)
     }
 
@@ -68,16 +72,31 @@ pub trait QCommon: ToModel {
     fn delete_many(
         query: mongodb::bson::document::Document,
         options: Option<mongodb::options::DeleteOptions>,
-    ) -> Result<mongodb::results::DeleteResult, Box<dyn std::error::Error>> {
-        // Get cached Model data
+    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
-        let coll: mongodb::sync::Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Database Query
-        Ok(coll.delete_many(query, options)?)
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        // Error message for the client.
+        // (Main use for admin panel.)
+        let err_msg = if is_permission_delete {
+            String::new()
+        } else {
+            "It is forbidden to perform delete.".to_string()
+        };
+        // Get a logical result.
+        let result_bool = if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Execute query.
+            coll.delete_many(query, options).is_ok()
+        } else {
+            false
+        };
+        Ok(OutputDataForm::Delete((result_bool, err_msg)))
     }
 
     // Deletes up to one document found matching query.
@@ -86,16 +105,31 @@ pub trait QCommon: ToModel {
     fn delete_one(
         query: mongodb::bson::document::Document,
         options: Option<mongodb::options::DeleteOptions>,
-    ) -> Result<mongodb::results::DeleteResult, Box<dyn std::error::Error>> {
-        // Get cached Model data
+    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
-        let coll: mongodb::sync::Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Database Query
-        Ok(coll.delete_one(query, options)?)
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        // Error message for the client.
+        // (Main use for admin panel.)
+        let err_msg = if is_permission_delete {
+            String::new()
+        } else {
+            "It is forbidden to perform delete.".to_string()
+        };
+        // Get a logical result.
+        let result_bool = if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Execute query.
+            coll.delete_one(query, options).is_ok()
+        } else {
+            false
+        };
+        Ok(OutputDataForm::Delete((result_bool, err_msg)))
     }
 
     // Finds the distinct values of the field specified by field_name across the collection.
@@ -106,14 +140,14 @@ pub trait QCommon: ToModel {
         filter: Option<mongodb::bson::document::Document>,
         options: Option<mongodb::options::DistinctOptions>,
     ) -> Result<Vec<mongodb::bson::Bson>, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll.distinct(field_name, filter, options)?)
     }
 
@@ -122,16 +156,31 @@ pub trait QCommon: ToModel {
     // ---------------------------------------------------------------------------------------------
     fn drop(
         options: Option<mongodb::options::DropCollectionOptions>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        // Get cached Model data
+    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
-        let coll: mongodb::sync::Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Database Query
-        Ok(coll.drop(options)?)
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        // Error message for the client.
+        // (Main use for admin panel.)
+        let err_msg = if is_permission_delete {
+            String::new()
+        } else {
+            "It is forbidden to perform delete.".to_string()
+        };
+        // Get a logical result.
+        let result_bool = if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Execute query.
+            coll.drop(options).is_ok()
+        } else {
+            false
+        };
+        Ok(OutputDataForm::Delete((result_bool, err_msg)))
     }
 
     // Estimates the number of documents in the collection using collection metadata.
@@ -140,14 +189,14 @@ pub trait QCommon: ToModel {
     fn estimated_document_count(
         options: Option<mongodb::options::EstimatedDocumentCountOptions>,
     ) -> Result<i64, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll.estimated_document_count(options)?)
     }
 
@@ -158,7 +207,7 @@ pub trait QCommon: ToModel {
         filter: Option<mongodb::bson::document::Document>,
         options: Option<mongodb::options::FindOptions>,
     ) -> Result<OutputDataMany, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection
@@ -166,15 +215,22 @@ pub trait QCommon: ToModel {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
-        let mut options_mod = mongodb::options::FindOptions::default();
-        if options.is_some() {
-            options_mod = options.unwrap();
+        // (if necessary)
+        let options = if options.is_some() {
+            let mut options = options.unwrap();
+            if options.limit == Some(0_i64) {
+                options.limit = Some(meta.db_query_docs_limit as i64);
+            }
+            options
+        } else {
+            mongodb::options::FindOptions::builder()
+                .limit(Some(meta.db_query_docs_limit as i64))
+                .build()
         };
-        options_mod.limit = Some(meta.db_query_docs_limit as i64);
-        // Database Query
+        // Execute query.
         Ok(OutputDataMany::Data((
             filter,
-            Some(options_mod),
+            Some(options),
             coll,
             meta.ignore_fields.clone(),
             meta.map_widget_type.clone(),
@@ -189,19 +245,21 @@ pub trait QCommon: ToModel {
         filter: Option<mongodb::bson::document::Document>,
         options: Option<mongodb::options::FindOneOptions>,
     ) -> Result<OutputDataOne, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
-        Ok(if let Some(doc) = coll.find_one(filter, options)? {
-            Self::to_prepared_doc(doc, &meta)?
-        } else {
-            OutputDataOne::default()
-        })
+        // Execute query.
+        Ok(OutputDataOne::Doc((
+            coll.find_one(filter, options)?,
+            meta.ignore_fields.clone(),
+            meta.map_widget_type.clone(),
+            meta.model_name.clone(),
+            String::new(),
+        )))
     }
 
     // Atomically finds up to one document in the collection matching filter and deletes it.
@@ -211,35 +269,56 @@ pub trait QCommon: ToModel {
         filter: mongodb::bson::document::Document,
         options: Option<mongodb::options::FindOneAndDeleteOptions>,
     ) -> Result<OutputDataOne, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
-        let coll: mongodb::sync::Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Database Query
-        Ok(
-            if let Some(doc) = coll.find_one_and_delete(filter, options)? {
-                Self::to_prepared_doc(doc, &meta)?
-            } else {
-                OutputDataOne::default()
-            },
-        )
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        // Error message for the client.
+        // (Main use for admin panel.)
+        let err_msg = if is_permission_delete {
+            String::new()
+        } else {
+            "It is forbidden to perform delete.".to_string()
+        };
+        //
+        if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Execute query.
+            Ok(OutputDataOne::Doc((
+                coll.find_one_and_delete(filter, options)?,
+                meta.ignore_fields.clone(),
+                meta.map_widget_type.clone(),
+                meta.model_name.clone(),
+                String::new(),
+            )))
+        } else {
+            // Execute query.
+            Ok(OutputDataOne::Doc((
+                Some(mongodb::bson::document::Document::new()),
+                Vec::new(),
+                std::collections::HashMap::new(),
+                String::new(),
+                err_msg.clone(),
+            )))
+        }
     }
 
     // Gets the name of the Collection.
     // https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.name
     // ---------------------------------------------------------------------------------------------
     fn name() -> Result<String, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll.name().to_string())
     }
 
@@ -247,90 +326,14 @@ pub trait QCommon: ToModel {
     // https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.namespace
     // ---------------------------------------------------------------------------------------------
     fn namespace() -> Result<mongodb::Namespace, Box<dyn std::error::Error>> {
-        // Get cached Model data
+        // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
-        // Access collection
+        // Access collection.
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Database Query
+        // Execute query.
         Ok(coll.namespace())
-    }
-
-    // Prepared doc for `OutputDataOne`.
-    // (Convert data types to a convenient format.)
-    // ---------------------------------------------------------------------------------------------
-    fn to_prepared_doc(
-        doc: mongodb::bson::document::Document,
-        meta: &Meta,
-    ) -> Result<OutputDataOne, Box<dyn std::error::Error>> {
-        let map_widget_type = meta.map_widget_type.clone();
-        let ignore_fields = meta.ignore_fields.clone();
-        let bson_null = &mongodb::bson::Bson::Null;
-        let mut prepared_doc = mongodb::bson::document::Document::new();
-        for (field_name, widget_type) in map_widget_type {
-            if ignore_fields.contains(&field_name) {
-                continue;
-            }
-            if field_name == "hash" {
-                let bson_val = doc.get("_id").unwrap();
-                prepared_doc.insert(
-                    field_name,
-                    if bson_val != bson_null {
-                        mongodb::bson::Bson::String(bson_val.as_object_id().unwrap().to_hex())
-                    } else {
-                        Err(format!(
-                            "Model: `{}` > Field: `hash` > Method: `find_one()` : \
-                                Missing document identifier `_id`.",
-                            meta.model_name.clone()
-                        ))?
-                    },
-                );
-            } else if widget_type == "inputPassword" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
-                prepared_doc.insert(
-                    field_name,
-                    if bson_val != bson_null {
-                        mongodb::bson::Bson::String(String::new())
-                    } else {
-                        mongodb::bson::Bson::Null
-                    },
-                );
-            } else if widget_type == "inputDate" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
-                prepared_doc.insert(
-                    field_name,
-                    if bson_val != bson_null {
-                        mongodb::bson::Bson::String(
-                            bson_val.as_datetime().unwrap().to_rfc3339()[..10].into(),
-                        )
-                    } else {
-                        mongodb::bson::Bson::Null
-                    },
-                );
-            } else if widget_type == "inputDateTime" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
-                prepared_doc.insert(
-                    field_name,
-                    if bson_val != bson_null {
-                        mongodb::bson::Bson::String(
-                            bson_val.as_datetime().unwrap().to_rfc3339()[..16].into(),
-                        )
-                    } else {
-                        mongodb::bson::Bson::Null
-                    },
-                );
-            } else {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
-                prepared_doc.insert(field_name, bson_val);
-            }
-        }
-
-        Ok(OutputDataOne::Doc((
-            prepared_doc,
-            meta.ignore_fields.clone(),
-            meta.map_widget_type.clone(),
-        )))
     }
 }

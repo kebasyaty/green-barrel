@@ -69,14 +69,6 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "textArea", default = "Lorem ipsum")]
         pub textarea: Option<String>,
-        #[serde(default)]
-        #[field_attrs(
-            widget = "selectText",
-            label = "Choose a car:",
-            default = "mercedes",
-            select = "[[\"volvo\",\"Volvo\"], [\"saab\",\"Saab\"], [\"mercedes\",\"Mercedes\"], [\"audi\",\"Audi\"]]"
-        )]
-        pub select: Option<String>,
     }
 
     // Test migration
@@ -128,7 +120,6 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         ipv4: Some("172.217.14.196".to_string()),
         ipv6: Some("::ffff:acd9:ec4".to_string()),
         textarea: Some("Lorem ipsum dolor sit amet".to_string()),
-        select: Some("audi".to_string()),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
@@ -144,7 +135,6 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         ipv4: Some("172.217.14.196".to_string()),
         ipv6: Some("::ffff:acd9:ec4".to_string()),
         textarea: Some("Lorem ipsum dolor sit amet".to_string()),
-        select: Some("audi".to_string()),
         ..Default::default()
     };
 
@@ -275,21 +265,13 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum dolor sit amet".to_string(),
         map_wigets.get("textarea").unwrap().value
     );
-    // select
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        "mercedes".to_string(),
-        map_wigets.get("select").unwrap().value
-    );
-    let map_wigets = result_2.wig();
-    assert_eq!("audi".to_string(), map_wigets.get("select").unwrap().value);
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -316,7 +298,6 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!("172.217.14.196", doc.get_str("ipv4")?);
         assert_eq!("::ffff:acd9:ec4", doc.get_str("ipv6")?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("textarea")?);
-        assert_eq!("audi", doc.get_str("select")?);
     }
 
     // Update
@@ -453,22 +434,13 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_wigets.get("textarea").unwrap().value
     );
-    // select
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!("audi".to_string(), map_wigets.get("select").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        "mercedes".to_string(),
-        map_wigets.get("select").unwrap().value
-    );
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key_store()?[..])
+            .get(&app_name::TestModel::model_key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -495,7 +467,6 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!("172.217.14.196", doc.get_str("ipv4")?);
         assert_eq!("::ffff:acd9:ec4", doc.get_str("ipv6")?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("textarea")?);
-        assert_eq!("audi", doc.get_str("select")?);
     }
 
     // ---------------------------------------------------------------------------------------------
