@@ -28,6 +28,9 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeF64", default = 5.0, min = 1.0, max = 12.0)]
         pub range: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(widget = "hiddenF64", default = 3.0, min = 1.0, max = 12.0)]
+        pub hidden: Option<f64>,
     }
 }
 
@@ -40,6 +43,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         radio: Some(20_f64),
         number: Some(105_f64),
         range: Some(9_f64),
+        hidden: Some(11_f64),
         ..Default::default()
     };
 
@@ -89,12 +93,23 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         9_f64,
         map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
+    // hidden
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     // Update
@@ -147,12 +162,24 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         5_f64,
         map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
+    // hidden
+    let result = test_form.check()?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     Ok(())

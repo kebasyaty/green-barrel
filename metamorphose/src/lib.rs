@@ -151,30 +151,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             let new_field = new_field.named.first().unwrap().to_owned();
             &fields.push(new_field);
 
-            // Add new field `parent_relation`.
-            let new_field: syn::FieldsNamed = syn::parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "selectTextMult")] pub parent_relation: Option<Vec<String>>}
-            })
-            .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let new_field = new_field.named.first().unwrap().to_owned();
-            &fields.push(new_field);
-
-            // Add new field `child_relation`.
-            let new_field: syn::FieldsNamed = syn::parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "selectTextMult")] pub child_relation: Option<Vec<String>>}
-            })
-            .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let new_field = new_field.named.first().unwrap().to_owned();
-            &fields.push(new_field);
-
-            // Add new field `subdocs`.
-            let new_field: syn::FieldsNamed = syn::parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub subdocs: Option<String>}
-            })
-            .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let new_field = new_field.named.first().unwrap().to_owned();
-            &fields.push(new_field);
-
             // Get the number of fields.
             trans_meta.fields_count = fields.len();
 
@@ -392,13 +368,22 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.fields_name.iter() {
         let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
         // For dynamic widgets, the default is invalid.
-        if widget.widget.contains("Dyn") && !widget.value.is_empty() {
-            panic!(
-                "Model: `{}` > Field: `{}` : \
+        if widget.widget.contains("Dyn") {
+            if !widget.value.is_empty() {
+                panic!(
+                    "Model: `{}` > Field: `{}` : \
                 For dynamic widgets, it is unacceptable to use default values.",
-                model_name.to_string(),
-                field_name,
-            )
+                    model_name.to_string(),
+                    field_name,
+                )
+            } else if !widget.options.is_empty() {
+                panic!(
+                    "Model: `{}` > Field: `{}` : \
+                    For dynamic widgets, it is unacceptable to use `select` parameter.",
+                    model_name.to_string(),
+                    field_name,
+                )
+            }
         }
         // For widgets of the `select` type,
         // the default value must correspond to one of the proposed options.
@@ -450,7 +435,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             // Hint: key = collection name
             // (To access data in the cache)
             // -------------------------------------------------------------------------------------
-            fn model_key() -> String {
+            fn key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 format!(
                     "{}_{}",
@@ -466,6 +451,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 let mut meta = serde_json::from_str::<Meta>(&#trans_meta)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
+                // Add keyword.
+                meta.keyword = KEYWORD.trim().to_string();
                 // Add service name.
                 meta.service_name = service_name.clone();
                 // Add database name.
@@ -713,10 +700,10 @@ fn impl_create_form(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStrea
     // Checking default values.
     for field_name in fields_name.clone() {
         let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
-        if widget.widget.contains("Dyn") && !widget.value.is_empty() {
+        if widget.widget.contains("Dyn") {
             panic!(
-                "Model: `{}` > Field: `{}` : \
-                For dynamic widgets, it is unacceptable to use default values.",
+                "Form: `{}` > Field: `{}` : \
+                Forms are not supported by dynamic widgets.",
                 form_name.to_string(),
                 field_name,
             )
@@ -742,7 +729,7 @@ fn impl_create_form(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStrea
             // Get form key.
             // (To access data in the cache)
             // -------------------------------------------------------------------------------------
-            fn form_key() -> String {
+            fn key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 format!(
                     "{}_{}",
@@ -829,6 +816,7 @@ fn get_id(model_name: String, field_name: String) -> String {
 #[derive(Serialize)]
 struct Meta {
     pub model_name: String,
+    pub keyword: String,
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
@@ -851,6 +839,7 @@ impl Default for Meta {
     fn default() -> Self {
         Meta {
             model_name: String::new(),
+            keyword: String::new(),
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),

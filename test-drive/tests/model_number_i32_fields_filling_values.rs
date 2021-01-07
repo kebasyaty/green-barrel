@@ -19,7 +19,8 @@ mod app_name {
     pub const DB_CLIENT_NAME: &str = "TEST_default_W3jN_YQvQ1etzZSV";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
-    // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
+    // Valid characters: _ a-z A-Z 0-9
+    // Size: 6-52
     pub static KEYWORD: &str = "TEST_H7U_Mdv8tdJ3Xa1M";
 
     // Create models
@@ -39,6 +40,8 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeI32", default = 5, min = 1, max = 12)]
         pub range: Option<i32>,
+        #[field_attrs(widget = "hiddenI32", default = 3, min = 1, max = 12)]
+        pub hidden: Option<i32>,
     }
 
     // Test migration
@@ -82,6 +85,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         radio: Some(-20),
         number: Some(105),
         range: Some(9),
+        hidden: Some(11),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
@@ -89,6 +93,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         radio: Some(-20),
         number: Some(105),
         range: Some(9),
+        hidden: Some(11),
         ..Default::default()
     };
 
@@ -146,14 +151,23 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         9_i32,
         map_wigets.get("range").unwrap().value.parse::<i32>()?
     );
+    // hidden
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_i32,
+        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+    );
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        11_i32,
+        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+    );
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -167,6 +181,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(-20_i32, doc.get_i32("radio")?);
         assert_eq!(105_i32, doc.get_i32("number")?);
         assert_eq!(9_i32, doc.get_i32("range")?);
+        assert_eq!(11_i32, doc.get_i32("hidden")?);
     }
 
     // Update
@@ -224,14 +239,24 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         5_i32,
         map_wigets.get("range").unwrap().value.parse::<i32>()?
     );
+    // hidden
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_i32,
+        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+    );
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_i32,
+        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+    );
 
     // Validating values in database
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -245,6 +270,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(-20_i32, doc.get_i32("radio")?);
         assert_eq!(105_i32, doc.get_i32("number")?);
         assert_eq!(9_i32, doc.get_i32("range")?);
+        assert_eq!(11_i32, doc.get_i32("hidden")?);
     }
 
     // ---------------------------------------------------------------------------------------------

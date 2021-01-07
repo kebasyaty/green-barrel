@@ -28,6 +28,9 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeU32", default = 5, min = 1, max = 12)]
         pub range: Option<u32>,
+        #[serde(default)]
+        #[field_attrs(widget = "hiddenU32", default = 3, min = 1, max = 12)]
+        pub hidden: Option<u32>,
     }
 }
 
@@ -40,6 +43,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         radio: Some(20_u32),
         number: Some(105_u32),
         range: Some(9_u32),
+        hidden: Some(11_u32),
         ..Default::default()
     };
 
@@ -89,12 +93,23 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         9_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
+    // hidden
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     // Update
@@ -143,12 +158,23 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         5_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
+    // hidden
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     Ok(())

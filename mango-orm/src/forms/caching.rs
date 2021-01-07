@@ -21,7 +21,7 @@ pub trait CachingForm: ToForm + HtmlControls {
     // ---------------------------------------------------------------------------------------------
     fn form_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::form_key();
+        let key: String = Self::key();
         // Get access to the cache.
         let mut form_store: std::sync::MutexGuard<
             '_,
@@ -47,7 +47,7 @@ pub trait CachingForm: ToForm + HtmlControls {
     // ---------------------------------------------------------------------------------------------
     fn form_json() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::form_key();
+        let key: String = Self::key();
         // Get access to the cache.
         let mut form_store: std::sync::MutexGuard<
             '_,
@@ -87,7 +87,7 @@ pub trait CachingForm: ToForm + HtmlControls {
     // ---------------------------------------------------------------------------------------------
     fn form_html() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::form_key();
+        let key: String = Self::key();
         // Get access to the cache.
         let mut form_store: std::sync::MutexGuard<
             '_,
@@ -124,7 +124,7 @@ pub trait CachingForm: ToForm + HtmlControls {
     // ---------------------------------------------------------------------------------------------
     fn get_cache_data() -> Result<FormCache, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::form_key();
+        let key: String = Self::key();
         //
         let mut form_store: std::sync::MutexGuard<
             '_,

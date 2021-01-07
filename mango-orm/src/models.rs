@@ -26,6 +26,7 @@ pub mod validation;
 #[derive(serde::Deserialize, Clone, Debug)]
 pub struct Meta {
     pub model_name: String,
+    pub keyword: String,
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
@@ -48,6 +49,7 @@ impl Default for Meta {
     fn default() -> Self {
         Meta {
             model_name: String::new(),
+            keyword: String::new(),
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),
@@ -74,7 +76,7 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel + Passw
     // Hint:  key = collection name
     // (To access data in the cache)
     // ---------------------------------------------------------------------------------------------
-    fn model_key() -> String;
+    fn key() -> String;
 
     // Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
@@ -104,5 +106,55 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel + Passw
     // ---------------------------------------------------------------------------------------------
     fn id_to_hash(id: mongodb::bson::oid::ObjectId) -> String {
         id.to_hex()
+    }
+
+    // Enrich the widget map with values for dynamic widgets.
+    // ---------------------------------------------------------------------------------------------
+    fn vitaminize(
+        keyword: &str,
+        collection_name: &str,
+        client: &mongodb::sync::Client,
+        map_widgets: &mut std::collections::HashMap<String, Widget>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // Init the name of the project's technical database.
+        let mango_tech_keyword: String = format!("mango_tech__{}", keyword);
+        // Access to the collection with values for dynamic widgets.
+        let collection = client
+            .database(&mango_tech_keyword)
+            .collection("dynamic_widgets");
+        // Filter for searching a document.
+        let filter = mongodb::bson::doc! {
+            "collection": collection_name
+        };
+        // Get a document with values for dynamic widgets.
+        if let Some(doc) = collection.find_one(filter, None)? {
+            let doc_dyn_values = doc.get_document("fields")?;
+            // Updating the `options` parameter for fields with a dynamic widget.
+            for (field_name, widget) in map_widgets {
+                let widget_type = widget.widget.clone();
+                if widget_type.contains("Dyn") {
+                    let arr = doc_dyn_values.get_array(field_name)?;
+                    let options: Vec<(String, String)> = arr
+                        .iter()
+                        .map(|item| {
+                            let arr = item.as_array().unwrap();
+                            (
+                                arr[0].as_str().unwrap().to_string(),
+                                arr[1].as_str().unwrap().to_string(),
+                            )
+                        })
+                        .collect();
+                    widget.options = options;
+                }
+            }
+        } else {
+            Err(format!(
+                "Model: {} > Method: `vitaminize()` : \
+                Document with values for dynamic widgets not found.",
+                Self::meta()?.model_name
+            ))?
+        }
+
+        Ok(())
     }
 }

@@ -26,6 +26,15 @@ mod app_name {
         )]
         pub text: Option<String>,
         #[serde(default)]
+        #[field_attrs(
+            widget = "hiddenText",
+            default = "Lorem ipsum",
+            minlength = 2,
+            maxlength = 60,
+            unique = true
+        )]
+        pub hidden: Option<String>,
+        #[serde(default)]
         #[field_attrs(widget = "checkBoxText", default = "Lorem ipsum")]
         pub checkbox: Option<String>,
         #[serde(default)]
@@ -82,6 +91,14 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result.wig();
     assert_eq!(String::new(), map_wigets.get("text").unwrap().value);
+    // hidden
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        "Lorem ipsum".to_string(),
+        map_wigets.get("hidden").unwrap().value
+    );
+    let map_wigets = result.wig();
+    assert_eq!(String::new(), map_wigets.get("hidden").unwrap().value);
     // checkbox
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
@@ -160,7 +177,7 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     // Update
@@ -176,6 +193,14 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_wigets.get("text").unwrap().value
     );
+    // hidden
+    let map_wigets = result.wig();
+    assert_eq!(String::new(), map_wigets.get("hidden").unwrap().value);
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        "Lorem ipsum".to_string(),
+        map_wigets.get("hidden").unwrap().value
+    );
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(String::new(), map_wigets.get("checkbox").unwrap().value);
@@ -254,7 +279,7 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     Ok(())

@@ -2,11 +2,51 @@ use mango_orm::*;
 use metamorphose::{Form, Model};
 use serde::{Deserialize, Serialize};
 
-// Simulate forwarding from application settings
-const SERVICE_NAME: &str = "service_name";
-const DATABASE_NAME: &str = "database_name";
-const DB_CLIENT_NAME: &str = "default";
-const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+// Get settings (service) of the application.
+use crate::settings::{
+    app_name::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
+    KEYWORD,
+};
+
+#[Model]
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct Dynamic {
+    // text
+    #[serde(default)]
+    #[field_attrs(widget = "selectTextDyn")]
+    pub select_text_dyn: Option<String>,
+    #[serde(default)]
+    #[field_attrs(widget = "selectTextMultDyn")]
+    pub select_text_mult_dyn: Option<Vec<String>>,
+    // i32
+    #[serde(default)]
+    #[field_attrs(widget = "selectI32Dyn")]
+    pub select_i32_dyn: Option<i32>,
+    #[serde(default)]
+    #[field_attrs(widget = "selectI32MultDyn")]
+    pub select_i32_mult_dyn: Option<Vec<i32>>,
+    // u32
+    #[serde(default)]
+    #[field_attrs(widget = "selectU32Dyn")]
+    pub select_u32_dyn: Option<u32>,
+    #[serde(default)]
+    #[field_attrs(widget = "selectU32MultDyn")]
+    pub select_u32_mult_dyn: Option<Vec<u32>>,
+    // i64
+    #[serde(default)]
+    #[field_attrs(widget = "selectI64Dyn")]
+    pub select_i64_dyn: Option<i64>,
+    #[serde(default)]
+    #[field_attrs(widget = "selectI64MultDyn")]
+    pub select_i64_mult_dyn: Option<Vec<i64>>,
+    // f64
+    #[serde(default)]
+    #[field_attrs(widget = "selectF64Dyn")]
+    pub select_f64_dyn: Option<f64>,
+    #[serde(default)]
+    #[field_attrs(widget = "selectF64MultDyn")]
+    pub select_f64_mult_dyn: Option<Vec<f64>>,
+}
 
 #[Model]
 #[derive(Serialize, Deserialize, Default, Debug)]

@@ -19,6 +19,7 @@ pub trait QPaladins: ToModel + CachingModel {
     fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
@@ -1027,6 +1028,14 @@ pub trait QPaladins: ToModel + CachingModel {
             }
         }
 
+        // Enrich the widget map with values for dynamic widgets.
+        Self::vitaminize(
+            meta.keyword.as_str(),
+            meta.collection_name.as_str(),
+            &client_cache,
+            &mut final_map_widgets,
+        )?;
+
         // Return result.
         // -----------------------------------------------------------------------------------------
         Ok(OutputDataForm::CheckModel((
@@ -1049,6 +1058,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let is_no_error: bool = verified_data.bool();
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Get widget map.
         let mut final_map_widgets: std::collections::HashMap<String, Widget> = verified_data.wig();
@@ -1079,8 +1089,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 let query: mongodb::bson::document::Document =
                     mongodb::bson::doc! {"_id": object_id};
                 let update: mongodb::bson::document::Document = mongodb::bson::doc! {
-                    "$set".to_string() :
-                    mongodb::bson::Bson::Document(final_doc),
+                    "$set": mongodb::bson::Bson::Document(final_doc),
                 };
                 coll.update_one(query, update, options_update)?;
             }
@@ -1111,6 +1120,7 @@ pub trait QPaladins: ToModel + CachingModel {
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;

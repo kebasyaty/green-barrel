@@ -28,6 +28,9 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeF64", default = 5.0, min = 1.0, max = 12.0)]
         pub range: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(widget = "hiddenF64", default = 3.0, min = 1.0, max = 12.0)]
+        pub hidden: Option<f64>,
     }
 }
 
@@ -73,12 +76,20 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result.wig();
     assert!(map_wigets.get("range").unwrap().value.is_empty());
+    // hidden
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result.wig();
+    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     // Update
@@ -115,12 +126,20 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result.wig();
     assert!(map_wigets.get("range").unwrap().value.is_empty());
+    // hidden
+    let map_wigets = app_name::TestForm::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result.wig();
+    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
 
     // Validating cache
     {
         let form_store = FORM_CACHE.lock()?;
         let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::form_key()[..]).unwrap();
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     Ok(())

@@ -19,7 +19,8 @@ mod app_name {
     pub const DB_CLIENT_NAME: &str = "TEST_default_PgkpehXG3GK_XY4T";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
-    // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
+    // Valid characters: _ a-z A-Z 0-9
+    // Size: 6-52
     pub static KEYWORD: &str = "TEST_j2zgL7sj6wVmv_Mg";
 
     // Create models
@@ -36,6 +37,15 @@ mod app_name {
             unique = true
         )]
         pub text: Option<String>,
+        #[serde(default)]
+        #[field_attrs(
+            widget = "hiddenText",
+            default = "Hidden lorem ipsum",
+            minlength = 2,
+            maxlength = 60,
+            unique = true
+        )]
+        pub hidden_text: Option<String>,
         #[serde(default)]
         #[field_attrs(widget = "checkBoxText", default = "Lorem ipsum")]
         pub checkbox: Option<String>,
@@ -109,6 +119,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut test_model = app_name::TestModel {
         text: Some("Lorem ipsum dolor sit amet".to_string()),
+        hidden_text: Some("Hidden lorem ipsum dolor sit amet".to_string()),
         checkbox: Some("Lorem ipsum dolor sit amet".to_string()),
         radio: Some("Lorem ipsum dolor sit amet".to_string()),
         color: Some("#ffffff".to_string()),
@@ -124,6 +135,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     };
     let mut test_model_2 = app_name::TestModel {
         text: Some("Lorem ipsum dolor sit amet".to_string()),
+        hidden_text: Some("Hidden lorem ipsum dolor sit amet".to_string()),
         checkbox: Some("Lorem ipsum dolor sit amet".to_string()),
         radio: Some("Lorem ipsum dolor sit amet".to_string()),
         color: Some("#ffffff".to_string()),
@@ -162,6 +174,17 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum dolor sit amet".to_string(),
         map_wigets.get("text").unwrap().value
     );
+    // hidden_text
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        "Hidden lorem ipsum".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        "Hidden lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
     // checkbox
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -271,7 +294,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
+            .get(&app_name::TestModel::key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -283,6 +306,10 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("text")?);
+        assert_eq!(
+            "Hidden lorem ipsum dolor sit amet",
+            doc.get_str("hidden_text")?
+        );
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("checkbox")?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("radio")?);
         assert_eq!("#ffffff", doc.get_str("color")?);
@@ -320,6 +347,18 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_wigets.get("text").unwrap().value
     );
+    // hidden_text
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        "Hidden lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        "Hidden lorem ipsum".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
     // checkbox
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
@@ -440,7 +479,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
         let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
+            .get(&app_name::TestModel::key()[..])
             .unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -452,6 +491,10 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("text")?);
+        assert_eq!(
+            "Hidden lorem ipsum dolor sit amet",
+            doc.get_str("hidden_text")?
+        );
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("checkbox")?);
         assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("radio")?);
         assert_eq!("#ffffff", doc.get_str("color")?);

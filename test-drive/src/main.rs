@@ -2,6 +2,7 @@ use mango_orm::*;
 //use mongodb::bson::doc;
 
 mod mango_models;
+mod settings;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -14,14 +15,11 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         "default_2".to_string(),
         mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
     );
-    // KEYWORD it is recommended not to change.
-    // Valid characters: _ a-z A-Z 0-9 ; Size: 6-48
-    // Example: "PROJECT_NAME_7rzg_cfqQB3B7q7T"
-    static KEYWORD: &str = "PROJECT_NAME_7rzg_cfqQB3B7q7T";
     let monitor = Monitor {
-        keyword: KEYWORD,
+        keyword: settings::KEYWORD,
         // Register models.
         models: vec![
+            mango_models::Dynamic::meta()?,
             mango_models::User::meta()?,
             mango_models::UserProfile::meta()?,
         ],
@@ -33,6 +31,46 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration.
     mango_migration()?;
+
+    // Test dynamic widgets.
+    // *********************************************************************************************
+    /*
+    println!(
+        "{:?}",
+        mango_models::Dynamic::db_update_dyn_widgets(
+            r#"{
+            "select_text_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+            "select_text_mult_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+            "select_i32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+            "select_i32_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+            "select_u32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+            "select_u32_mult_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+            "select_i64_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+            "select_i64_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+            "select_f64_dyn":[["1.1","Volvo"],["2.2","Saab"],["3.3","Mercedes"],["4.4","Audi"]],
+            "select_f64_mult_dyn":[["-1.1","Volvo"],["-2.2","Saab"],["-3.3","Mercedes"],["-4.4","Audi"]]
+        }"#
+        )
+        .is_ok()
+    );
+    */
+
+    //println!("{:?}\n\n", mango_models::Dynamic::form_wig().unwrap());
+    //println!("{}\n\n", mango_models::Dynamic::form_json().unwrap());
+    //println!("{}\n\n", mango_models::Dynamic::form_html().unwrap());
+
+    /*
+    let mut dynamic = mango_models::Dynamic {
+        ..Default::default()
+    };
+    let result = dynamic.save(None, None)?;
+    println!("Boolean: {}", result.bool());
+    println!("Hash: {}", result.hash()?);
+    println!("ID: {:?}", result.id()?);
+    //println!("\n\nWidget map:\n{:?}", result.wig());
+    //println!("\n\nJson:\n{}", result.json()?);
+    //println!("\n\nHtml:\n{}", result.html());
+    */
 
     // Test Model.
     // *********************************************************************************************
@@ -60,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     // Get json-line.
     println!(
-        "Json-linw:\n{}\n\n",
+        "Json-line:\n{}\n\n",
         mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.json()?
     );
     // Get Model instance.
@@ -92,7 +130,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     // Get json-line.
     println!(
-        "Json-linw:\n{}\n\n",
+        "Json-line:\n{}\n\n",
         mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.json()?
     );
     */
@@ -143,6 +181,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
+    /*
     // Test Form.
     // *********************************************************************************************
     // println!("{:?}\n\n", mango_models::UserForm::form_wig().unwrap());
@@ -174,6 +213,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Form instance:\n{:?}\n",
         result.form::<mango_models::UserForm>()
     );
+    */
 
     Ok(())
 }

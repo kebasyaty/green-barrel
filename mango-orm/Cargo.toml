@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 name = "mango-orm"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/mango-orm"
-version = "0.1.5-pre-alpha.12"
+version = "0.1.6-pre-alpha.12"
 
 [dependencies]
 chrono = "0.4"

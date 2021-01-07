@@ -274,4 +274,90 @@ mod tests {
         assert!(re.is_match("9999-12-31"));
         assert!(re.is_match("2020-10-15"));
     }
+
+    /*
+    // Regular expressions
+    // *********************************************************************************************
+    #[test]
+    fn regex_validate_json_dyn_widgets() {
+        let re = RegexBuilder::new(
+            r#"^\{"(?:[a-z][a-z\d]*(?:_[a-z\d]+)*":\[\[".+",".+"\](?:,\[".+",".+"\])*\])+}$"#,
+        )
+        .case_insensitive(true)
+        .build()
+        .unwrap();
+        // invalids
+        assert!(!re.is_match(r#""#));
+        assert!(!re.is_match(r#"{}"#));
+        assert!(!re.is_match(r#"{""}"#));
+        assert!(!re.is_match(r#"{:}"#));
+        assert!(!re.is_match(r#"{[]}"#));
+        assert!(!re.is_match(r#"{[[]]}"#));
+        assert!(!re.is_match(r#"{":}"#));
+        assert!(!re.is_match(r#"{"":}"#));
+        assert!(!re.is_match(r#"{:[}"#));
+        assert!(!re.is_match(r#"{:]}"#));
+        assert!(!re.is_match(r#"{:[[}"#));
+        assert!(!re.is_match(r#"{"":[]}"#));
+        assert!(!re.is_match(r#"{"":[[]]}"#));
+        assert!(!re.is_match(r#"{"2":[[]]}"#));
+        assert!(!re.is_match(r#"{"2abc":[[]]}"#));
+        assert!(!re.is_match(r#"{"2abc_def":[[]]}"#));
+        assert!(!re.is_match(r#"{"_abc":[[]]}"#));
+        assert!(!re.is_match(r#"{"2abc":[[]]}"#));
+        assert!(!re.is_match(r#"{"abc def":[[]]}"#));
+        assert!(!re.is_match(r#"{"abc_def"}"#));
+        assert!(!re.is_match(r#"{"abc_def":}"#));
+        assert!(!re.is_match(r#"{"abc_def":[}"#));
+        assert!(!re.is_match(r#"{"abc_def":[]}"#));
+        assert!(!re.is_match(r#"{"abc_def":[[}"#));
+        assert!(!re.is_match(r#"{"abc_def":]}"#));
+        assert!(!re.is_match(r#"{"abc_def":]]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["",""]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value"]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value",]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value",""]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value","Title"]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value","Title",]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value","Title"],}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value","Title",],}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value","Title"]}"#));
+        assert!(!re.is_match(r#"{"abc_def":["value","Title"]]}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value","Title"],]}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value","Title"]],}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value","Title"]],,}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value" "Title"]]}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value""Title"]]}"#));
+        assert!(!re.is_match(r#"{"abc_def":[["value","Title"],],}"#));
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]]"field_name":[["value","Title"]]}"#)
+        );
+        // valids
+        assert!(re.is_match(r#"{"field":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field_name":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field_name2":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field_name_2":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]]}"#));
+        assert!(re
+            .is_match(r#"{"field_name":[["value","Title"],["value","Title"],["value","Title"]]}"#));
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"],["value","Title"]]}"#)
+        );
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"],["value","Title"]]}"#)
+        );
+        assert!(
+            re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"],["value","Title"]]}"#)
+        );
+    }
+    */
 }

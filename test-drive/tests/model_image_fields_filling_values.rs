@@ -19,7 +19,8 @@ mod app_name {
     pub const DB_CLIENT_NAME: &str = "TEST_default_2dQycNc2bDtFk8_T";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     // Test keyword for for test technical database
-    // ( Valid characters: _ a-z A-Z 0-9 ; Size: 6-48 )
+    // Valid characters: _ a-z A-Z 0-9
+    // Size: 6-52
     pub static KEYWORD: &str = "TEST_pd4e5_CjNGBaesYy";
 
     // Create models
@@ -115,9 +116,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -161,9 +160,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::model_key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
