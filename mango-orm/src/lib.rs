@@ -14,7 +14,6 @@ pub use crate::{
         db_query_api::{common::QCommon, paladins::QPaladins},
         output_data::OutputDataMany,
         output_data::OutputDataOne,
-        password::Password,
         validation::{AdditionalValidation, ValidationModel},
         Meta, ToModel,
     },

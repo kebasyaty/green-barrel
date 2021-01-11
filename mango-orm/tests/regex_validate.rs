@@ -275,17 +275,14 @@ mod tests {
         assert!(re.is_match("2020-10-15"));
     }
 
-    /*
     // Regular expressions
     // *********************************************************************************************
     #[test]
     fn regex_validate_json_dyn_widgets() {
-        let re = RegexBuilder::new(
-            r#"^\{"(?:[a-z][a-z\d]*(?:_[a-z\d]+)*":\[\[".+",".+"\](?:,\[".+",".+"\])*\])+}$"#,
-        )
-        .case_insensitive(true)
-        .build()
-        .unwrap();
+        let re = RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))*[\s]*\}$"#)
+            .case_insensitive(true)
+            .build()
+            .unwrap();
         // invalids
         assert!(!re.is_match(r#""#));
         assert!(!re.is_match(r#"{}"#));
@@ -332,8 +329,83 @@ mod tests {
         assert!(
             !re.is_match(r#"{"field_name":[["value","Title"]]"field_name":[["value","Title"]]}"#)
         );
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]]"field_name":[["value","Title"]]"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]]"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]]"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            !re.is_match(r#"{"field_name":["value"],"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]],"field_name":["Title"],"field_name":[["value","Title"]]}"#)
+        );
+        assert!(
+            !re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]],"field_name":["value"]}"#)
+        );
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]]
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]]
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]]
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]],
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]],
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]]
+                "field_name":[["value","Title"],["value","Title"]],
+            }"#
+        ));
+        assert!(!re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]],
+            }"#
+        ));
         // valids
         assert!(re.is_match(r#"{"field":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["2","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["-2","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["2.2","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["-2.2","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["2","Title 2"]]}"#));
+        assert!(re.is_match(r#"{"field":[["-2","Title 2"]]}"#));
+        assert!(re.is_match(r#"{"field":[["2.2","Title 2"]]}"#));
+        assert!(re.is_match(r#"{"field":[["-2.2","Title 2"]]}"#));
         assert!(re.is_match(r#"{"field_name":[["value","Title"]]}"#));
         assert!(re.is_match(r#"{"field_name2":[["value","Title"]]}"#));
         assert!(re.is_match(r#"{"field_name_2":[["value","Title"]]}"#));
@@ -358,6 +430,33 @@ mod tests {
         assert!(
             re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"],["value","Title"]],"field_name":[["value","Title"],["value","Title"]]}"#)
         );
+        assert!(re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]],
+                "field_name":[["value","Title"],["value","Title"]]
+            }"#
+        ));
+        assert!(re.is_match(
+            r#"{
+                "field_name":[["value","Title"],["value2","Title 2"]],
+                "field_name":[["value","Title"],["value2","Title 2"]],
+                "field_name":[["value","Title"],["value2","Title 2"]]
+            }"#
+        ));
+        assert!(re.is_match(
+            r#"{
+                "select_text_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+                "select_text_mult_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+                "select_i32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i32_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+                "select_u32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_u32_mult_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i64_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i64_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+                "select_f64_dyn":[["1.1","Volvo"],["2.2","Saab"],["3.3","Mercedes"],["4.4","Audi"]],
+                "select_f64_mult_dyn":[["-1.1","Volvo"],["-2.2","Saab"],["-3.3","Mercedes"],["-4.4","Audi"]]
+            }"#
+        ));
     }
-    */
 }

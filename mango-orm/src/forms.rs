@@ -140,6 +140,6 @@ pub trait ToForm {
     fn widgets() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>>;
 
     // Serialize Form to json-line.
-    // -------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<serde_json::value::Value, Box<dyn std::error::Error>>;
 }

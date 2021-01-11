@@ -6,16 +6,12 @@
 
 use crate::{
     forms::{html_controls::HtmlControls, Widget},
-    models::{
-        password::Password,
-        validation::{AdditionalValidation, ValidationModel},
-    },
+    models::validation::{AdditionalValidation, ValidationModel},
 };
 
 pub mod caching;
 pub mod db_query_api;
 pub mod output_data;
-pub mod password;
 pub mod validation;
 
 // MODEL
@@ -71,7 +67,7 @@ impl Default for Meta {
 
 // Model options and widget map for Form.
 // *************************************************************************************************
-pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel + Password {
+pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     // Get model key.
     // Hint:  key = collection name
     // (To access data in the cache)

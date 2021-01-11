@@ -100,8 +100,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
+    let result_2 = test_model_2.save(None, None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -168,9 +168,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -190,7 +188,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -198,7 +196,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         12_i64,
@@ -210,7 +208,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
     );
     // radio
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         20_i64,
@@ -222,7 +220,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     // number
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         105_i64,
@@ -231,7 +229,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         9_i64,
@@ -243,7 +241,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     // hidden
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         11_i64,
@@ -259,9 +257,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;

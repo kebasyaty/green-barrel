@@ -2,12 +2,13 @@
 authors = ["Gennady Kostunin <kebasyaty@gmail.com>", "Aurelien Foucault <aurelien.foucault@epitech.eu>"]
 description = "ORM-like API MongoDB for Rust."
 edition = "2018"
+homepage = "https://github.com/kebasyaty/mango-orm"
 keywords = ["mongodb", "mango", "nosql", "database", "orm"]
 license = "MIT OR Apache-2.0"
 name = "mango-orm"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/mango-orm"
-version = "0.1.6-pre-alpha.12"
+version = "0.1.7-pre-alpha.12"
 
 [dependencies]
 chrono = "0.4"

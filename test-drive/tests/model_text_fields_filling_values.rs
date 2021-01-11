@@ -152,8 +152,8 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // -----------------------------------------------------------------------------------------
-    let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
+    let result_2 = test_model_2.save(None, None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -293,9 +293,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -329,14 +327,14 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Update
     // -----------------------------------------------------------------------------------------
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values
     // text
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
@@ -348,7 +346,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("text").unwrap().value
     );
     // hidden_text
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "Hidden lorem ipsum dolor sit amet".to_string(),
@@ -360,7 +358,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("hidden_text").unwrap().value
     );
     // checkbox
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
@@ -372,7 +370,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("checkbox").unwrap().value
     );
     // radio
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
@@ -384,7 +382,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value
     );
     // color
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "#ffffff".to_string(),
@@ -396,7 +394,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("color").unwrap().value
     );
     // email
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "no_reply@email.net".to_string(),
@@ -405,13 +403,13 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
     // password
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
     // phone
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "+00000000000".to_string(),
@@ -420,7 +418,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
     // url
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "https://www.google.com/".to_string(),
@@ -429,7 +427,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
     // ip
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "172.217.14.196".to_string(),
@@ -438,7 +436,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!("127.0.0.1".to_string(), map_wigets.get("ip").unwrap().value);
     // ipv4
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "172.217.14.196".to_string(),
@@ -450,7 +448,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("ipv4").unwrap().value
     );
     // ipv6
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "::ffff:acd9:ec4".to_string(),
@@ -462,7 +460,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("ipv6").unwrap().value
     );
     // textarea
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
@@ -478,9 +476,7 @@ fn test_model_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;

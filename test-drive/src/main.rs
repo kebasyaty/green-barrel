@@ -34,6 +34,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test dynamic widgets.
     // *********************************************************************************************
+
     /*
     println!(
         "{:?}",
@@ -61,9 +62,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     /*
     let mut dynamic = mango_models::Dynamic {
+        select_text_dyn: Some("saab".to_string()),
+        select_text_mult_dyn: Some(vec![
+            "volvo".to_string(),
+            "saab".to_string(),
+            "audi".to_string(),
+        ]),
         ..Default::default()
     };
-    let result = dynamic.save(None, None)?;
+    let result = dynamic.save(None, None, None)?;
     println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     println!("ID: {:?}", result.id()?);
@@ -135,7 +142,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    /*
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
@@ -153,24 +159,49 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // Create doc.
-    let result = user.save(None, None)?;
+    let result = user.save(None, None, None)?;
     println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
+    println!(
+        "Verify password (false): {}",
+        user.verify_password("123456789", None)?
+    );
+    println!(
+        "Verify password (true): {}",
+        user.verify_password("12345678", None)?
+    );
 
     // Update doc.
-    user.username = Some(String::new());
-    let result = user.save(None, None)?;
+    user.username = Some("New Name".to_string());
+    let result = user.save(None, None, None)?;
     println!("\n\n\nBoolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
+    println!(
+        "Update password (false): {}",
+        user.update_password("123456789", "123456789", None, None)?
+    );
+    println!(
+        "Update password (true): {}",
+        user.update_password("12345678", "123456789", None, None)?
+    );
+    println!(
+        "Verify password (true): {}",
+        user.verify_password("123456789", None)?
+    );
+    println!(
+        "Verify password (false): {}",
+        user.verify_password("12345678", None)?
+    );
 
+    /*
     // Remove document.
     println!("Remove document: {:?}", user.delete(None)?);
 

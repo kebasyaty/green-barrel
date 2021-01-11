@@ -87,7 +87,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         name: "hello_world.odt".to_string(),
         size: 9741_u32,
     };
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -110,9 +110,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -132,7 +130,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -156,9 +154,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_CACHE.lock()?;
         let client_store = DB_MAP_CLIENT_NAMES.lock()?;
-        let form_cache: &FormCache = form_store
-            .get(&app_name::TestModel::key()[..])
-            .unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;

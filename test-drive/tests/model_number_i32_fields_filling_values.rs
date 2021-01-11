@@ -99,8 +99,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
+    let result_2 = test_model_2.save(None, None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -187,7 +187,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -195,7 +195,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         12_i32,
@@ -207,7 +207,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("checkbox").unwrap().value.parse::<i32>()?
     );
     // radio
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         -20_i32,
@@ -219,7 +219,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
     // number
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         105_i32,
@@ -228,7 +228,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         9_i32,
@@ -240,7 +240,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<i32>()?
     );
     // hidden
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
     assert_eq!(
         11_i32,

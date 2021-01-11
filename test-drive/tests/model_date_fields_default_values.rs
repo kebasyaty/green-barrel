@@ -84,8 +84,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
+    let result_2 = test_model_2.save(None, None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -133,7 +133,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None)?;
+    let result = test_model.save(None, None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
