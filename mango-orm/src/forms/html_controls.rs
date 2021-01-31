@@ -140,15 +140,15 @@ pub trait HtmlControls {
                 }
                 "radio" => {
                     let mut inputs = String::new();
-                    for item in attrs.options.iter() {
+                    for (idx, item) in attrs.options.iter().enumerate() {
                         inputs = format!(
                             "{}<p><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                             inputs,
-                            format!(" id=\"{}\"", attrs.id),
+                            format!(" id=\"{}\"-{}", attrs.id, idx),
                             format!(" type=\"{}\"", attrs.input_type),
                             format!(" name=\"{}\"", attrs.name),
                             format!(" value=\"{}\"", item.0),
-                            if attrs.checked { " checked " } else { "" },
+                            if item.0 === attrs.value { " checked" } else { "" },
                             if attrs.disabled { " disabled" } else { "" },
                             if attrs.readonly { " readonly" } else { "" },
                             if !attrs.css_classes.is_empty() {
