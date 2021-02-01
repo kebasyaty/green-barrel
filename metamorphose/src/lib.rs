@@ -870,6 +870,7 @@ struct Widget {
     pub input_type: String, // The value is determined automatically
     pub name: String,
     pub value: String,
+    pub accept: String, // Hint: accept="image/jpeg,image/png,image/gif"
     pub placeholder: String,
     pub pattern: String, // Validating a field using a client-side regex
     pub minlength: usize,
@@ -900,6 +901,7 @@ impl Default for Widget {
             input_type: String::from("text"),
             name: String::new(),
             value: String::new(),
+            accept: String::new(),
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0_usize,
@@ -937,12 +939,7 @@ fn get_widget_info<'a>(
     widget_name: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match widget_name {
-        "checkBoxBool" => ("bool", "checkbox"),
-        "checkBoxText" => ("String", "checkbox"),
-        "checkBoxI32" => ("i32", "checkbox"),
-        "checkBoxU32" => ("u32", "checkbox"),
-        "checkBoxI64" => ("i64", "checkbox"),
-        "checkBoxF64" => ("f64", "checkbox"),
+        "checkBox" => ("bool", "checkbox"),
         "inputColor" => ("String", "color"),
         "inputDate" => ("String", "date"),
         "inputDateTime" => ("String", "datetime"),
@@ -1021,6 +1018,18 @@ fn get_param_value<'a>(
                     "{}: `{}` > Field: `{}` : \
                     Could not determine value for parameter `label`. \
                     Example: \"Some text\"",
+                    model_or_form, model_name, field_name
+                )
+            }
+        }
+        "accept" => {
+            if let syn::Lit::Str(lit_str) = &mnv.lit {
+                widget.accept = lit_str.value().trim().to_string();
+            } else {
+                panic!(
+                    "{}: `{}` > Field: `{}` : \
+                    Could not determine value for parameter `accept`. \
+                    Example: \"image/jpeg,image/png\"",
                     model_or_form, model_name, field_name
                 )
             }

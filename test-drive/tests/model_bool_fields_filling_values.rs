@@ -29,7 +29,7 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxBool")]
+        #[field_attrs(widget = "checkBox")]
         pub checkbox: Option<bool>,
     }
 

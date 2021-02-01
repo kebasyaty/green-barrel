@@ -58,12 +58,13 @@ pub struct Widget {
     pub input_type: String, // The value is determined automatically.
     pub name: String,       // The value is determined automatically.
     pub value: String,
+    pub accept: String, // Hint: accept="image/jpeg,image/png,image/gif"
     pub placeholder: String,
     pub pattern: String, // Validating a field using a client-side regex.
     pub minlength: usize,
     pub maxlength: usize,
     pub required: bool,
-    pub checked: bool, // For <input type="checkbox|radio">
+    pub checked: bool, // For <input type="checkbox">
     pub unique: bool,
     pub disabled: bool,
     pub readonly: bool,
@@ -88,6 +89,7 @@ impl Default for Widget {
             input_type: String::from("text"),
             name: String::new(),
             value: String::new(),
+            accept: String::new(),
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0_usize,

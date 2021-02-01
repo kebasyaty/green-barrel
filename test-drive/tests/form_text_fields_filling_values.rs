@@ -35,9 +35,6 @@ mod app_name {
         )]
         pub hidden: Option<String>,
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxText", default = "Lorem ipsum")]
-        pub checkbox: Option<String>,
-        #[serde(default)]
         #[field_attrs(widget = "radioText", default = "Lorem ipsum")]
         pub radio: Option<String>,
         #[serde(default)]
@@ -77,7 +74,6 @@ fn test_form_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
         text: Some("Lorem ipsum dolor sit amet".to_string()),
         hidden: Some("Lorem ipsum dolor sit amet".to_string()),
-        checkbox: Some("Lorem ipsum dolor sit amet".to_string()),
         radio: Some("Lorem ipsum dolor sit amet".to_string()),
         color: Some("#ffffff".to_string()),
         email: Some("no_reply@email.net".to_string()),
@@ -117,12 +113,6 @@ fn test_form_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_wigets.get("hidden").unwrap().value
-    );
-    // checkbox
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(
-        "Lorem ipsum".to_string(),
-        map_wigets.get("checkbox").unwrap().value
     );
     let map_wigets = result.wig();
     assert_eq!(
@@ -255,12 +245,6 @@ fn test_form_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         "Lorem ipsum".to_string(),
         map_wigets.get("hidden").unwrap().value
-    );
-    // checkbox
-    let map_wigets = result.wig();
-    assert_eq!(
-        "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("checkbox").unwrap().value
     );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(

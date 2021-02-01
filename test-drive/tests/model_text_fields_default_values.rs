@@ -47,9 +47,6 @@ mod app_name {
         )]
         pub hidden_text: Option<String>,
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxText", default = "Lorem ipsum")]
-        pub checkbox: Option<String>,
-        #[serde(default)]
         #[field_attrs(widget = "radioText", default = "Lorem ipsum")]
         pub radio: Option<String>,
         #[serde(default)]
@@ -153,14 +150,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result_2.wig();
     assert_eq!(String::new(), map_wigets.get("hidden_text").unwrap().value);
-    // checkbox
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        "Lorem ipsum".to_string(),
-        map_wigets.get("checkbox").unwrap().value
-    );
-    let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("checkbox").unwrap().value);
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -243,7 +232,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         assert_eq!("Lorem ipsum", doc.get_str("text")?);
         assert_eq!("Hidden lorem ipsum", doc.get_str("hidden_text")?);
-        assert_eq!("Lorem ipsum", doc.get_str("checkbox")?);
         assert_eq!("Lorem ipsum", doc.get_str("radio")?);
         assert_eq!("#000000", doc.get_str("color")?);
         assert_eq!(Some(()), doc.get("email").unwrap().as_null());
@@ -284,15 +272,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         "Hidden lorem ipsum".to_string(),
         map_wigets.get("hidden_text").unwrap().value
     );
-    // checkbox
-    let result = test_model.save(None, None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("checkbox").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        "Lorem ipsum".to_string(),
-        map_wigets.get("checkbox").unwrap().value
-    );
     // radio
     let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
@@ -385,7 +364,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         assert_eq!("Lorem ipsum", doc.get_str("text")?);
         assert_eq!("Hidden lorem ipsum", doc.get_str("hidden_text")?);
-        assert_eq!("Lorem ipsum", doc.get_str("checkbox")?);
         assert_eq!("Lorem ipsum", doc.get_str("radio")?);
         assert_eq!("#000000", doc.get_str("color")?);
         assert_eq!(Some(()), doc.get("email").unwrap().as_null());

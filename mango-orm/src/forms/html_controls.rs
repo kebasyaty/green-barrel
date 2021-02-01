@@ -89,21 +89,15 @@ pub trait HtmlControls {
                     );
                 }
                 "checkbox" => {
+                    let checked = attrs.value == "true".to_string();
                     controls = format!(
                         "{}<p><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                         controls,
                         format!(" id=\"{}\"", attrs.id),
                         format!(" type=\"{}\"", attrs.input_type),
                         format!(" name=\"{}\"", attrs.name),
-                        format!(
-                            " value=\"{}\"",
-                            if attrs.widget == "checkBoxBool".to_string() {
-                                true.to_string()
-                            } else {
-                                attrs.value.clone()
-                            }
-                        ),
-                        if attrs.checked { " checked" } else { "" },
+                        format!(" value=\"{}\"", checked),
+                        if checked { " checked" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
                         if !attrs.css_classes.is_empty() {
@@ -148,7 +142,11 @@ pub trait HtmlControls {
                             format!(" type=\"{}\"", attrs.input_type),
                             format!(" name=\"{}\"", attrs.name),
                             format!(" value=\"{}\"", item.0),
-                            if item.0 === attrs.value { " checked" } else { "" },
+                            if item.0 == attrs.value {
+                                " checked"
+                            } else {
+                                ""
+                            },
                             if attrs.disabled { " disabled" } else { "" },
                             if attrs.readonly { " readonly" } else { "" },
                             if !attrs.css_classes.is_empty() {

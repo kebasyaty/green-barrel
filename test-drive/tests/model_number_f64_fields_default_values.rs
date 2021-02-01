@@ -29,9 +29,6 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxF64", default = 0.0, unique = true)]
-        pub checkbox: Option<f64>,
-        #[serde(default)]
         #[field_attrs(widget = "radioF64", default = 1.0)]
         pub radio: Option<f64>,
         #[serde(default)]
@@ -101,14 +98,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // checkbox
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -153,7 +142,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_f64, doc.get_f64("checkbox")?);
         assert_eq!(1_f64, doc.get_f64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_f64, doc.get_f64("range")?);
@@ -170,15 +158,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // checkbox
-    let result = test_model.save(None, None, None)?;
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
     // radio
     let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
@@ -227,7 +206,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_f64, doc.get_f64("checkbox")?);
         assert_eq!(1_f64, doc.get_f64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_f64, doc.get_f64("range")?);

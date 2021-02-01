@@ -29,9 +29,6 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxF64", default = 0.0, unique = true)]
-        pub checkbox: Option<f64>,
-        #[serde(default)]
         #[field_attrs(widget = "radioF64", default = 1.0)]
         pub radio: Option<f64>,
         #[serde(default)]
@@ -82,7 +79,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        checkbox: Some(12_f64),
         radio: Some(20_f64),
         number: Some(105_f64),
         range: Some(9_f64),
@@ -90,7 +86,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
-        checkbox: Some(12_f64),
         radio: Some(20_f64),
         number: Some(105_f64),
         range: Some(9_f64),
@@ -111,17 +106,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // checkbox
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        12_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -178,7 +162,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(12_f64, doc.get_f64("checkbox")?);
         assert_eq!(20_f64, doc.get_f64("radio")?);
         assert_eq!(105_f64, doc.get_f64("number")?);
         assert_eq!(9_f64, doc.get_f64("range")?);
@@ -195,18 +178,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // checkbox
-    let result = test_model.save(None, None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(
-        12_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
     // radio
     let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
@@ -267,7 +238,6 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(12_f64, doc.get_f64("checkbox")?);
         assert_eq!(20_f64, doc.get_f64("radio")?);
         assert_eq!(105_f64, doc.get_f64("number")?);
         assert_eq!(9_f64, doc.get_f64("range")?);

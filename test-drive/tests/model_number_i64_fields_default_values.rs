@@ -29,9 +29,6 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxI64", default = 0, unique = true)]
-        pub checkbox: Option<i64>,
-        #[serde(default)]
         #[field_attrs(widget = "radioI64", default = 1)]
         pub radio: Option<i64>,
         #[serde(default)]

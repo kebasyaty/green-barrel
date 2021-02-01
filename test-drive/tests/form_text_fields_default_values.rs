@@ -35,9 +35,6 @@ mod app_name {
         )]
         pub hidden: Option<String>,
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxText", default = "Lorem ipsum")]
-        pub checkbox: Option<String>,
-        #[serde(default)]
         #[field_attrs(widget = "radioText", default = "Lorem ipsum")]
         pub radio: Option<String>,
         #[serde(default)]
@@ -99,14 +96,6 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     );
     let map_wigets = result.wig();
     assert_eq!(String::new(), map_wigets.get("hidden").unwrap().value);
-    // checkbox
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(
-        "Lorem ipsum".to_string(),
-        map_wigets.get("checkbox").unwrap().value
-    );
-    let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("checkbox").unwrap().value);
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
@@ -200,14 +189,6 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         "Lorem ipsum".to_string(),
         map_wigets.get("hidden").unwrap().value
-    );
-    // checkbox
-    let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("checkbox").unwrap().value);
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(
-        "Lorem ipsum".to_string(),
-        map_wigets.get("checkbox").unwrap().value
     );
     // radio
     let map_wigets = result.wig();

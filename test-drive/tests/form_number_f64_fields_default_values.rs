@@ -17,9 +17,6 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestForm {
         #[serde(default)]
-        #[field_attrs(widget = "checkBoxF64", default = 0.0, unique = true)]
-        pub checkbox: Option<f64>,
-        #[serde(default)]
         #[field_attrs(widget = "radioF64", default = 1.0)]
         pub radio: Option<f64>,
         #[serde(default)]
@@ -47,14 +44,6 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_form.check()?;
     // Validating
     assert!(result.bool());
-    // checkbox
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
@@ -97,14 +86,6 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_form.check()?;
     // Validating
     assert!(result.bool());
-    // checkbox
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(
-        0_f64,
-        map_wigets.get("checkbox").unwrap().value.parse::<f64>()?
-    );
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
