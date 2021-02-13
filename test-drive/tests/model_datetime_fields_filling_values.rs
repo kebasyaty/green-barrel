@@ -14,14 +14,12 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
+    pub const PROJECT_NAME: &str = "project_name";
+    pub const UNIQUE_PROJECT_KEY: &str = "37xtBe3LL8x2Fkf";
     pub const SERVICE_NAME: &str = "TEST_3_7xtBe3LL8x2Fkf";
     pub const DATABASE_NAME: &str = "TEST_mQE_3Tx8aNU7WHfN";
     pub const DB_CLIENT_NAME: &str = "TEST_default_uSH2VyyYNqAn_X9v";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
-    // Test keyword for for test technical database
-    // Valid characters: _ a-z A-Z 0-9
-    // Size: 6-52
-    pub static KEYWORD: &str = "TEST_6C3fXXhY8_zXyfNG";
 
     // Create models
     // *********************************************************************************************
@@ -54,10 +52,11 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_base(KEYWORD, &model_list()?)?;
+        del_test_base(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
         // Migration
         let monitor = Monitor {
-            keyword: KEYWORD,
+            project_name: PROJECT_NAME,
+            unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
             models: model_list()?,
         };
@@ -179,7 +178,11 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    del_test_base(
+        app_name::PROJECT_NAME,
+        app_name::UNIQUE_PROJECT_KEY,
+        &app_name::model_list()?,
+    )?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

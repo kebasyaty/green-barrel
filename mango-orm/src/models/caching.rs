@@ -47,7 +47,8 @@ pub trait CachingModel: ToModel {
             let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
             // Enrich the widget map with values for dynamic widgets.
             Self::vitaminize(
-                meta.keyword.as_str(),
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
                 &client_cache,
                 &mut map_widgets,
@@ -93,7 +94,8 @@ pub trait CachingModel: ToModel {
             let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
             // Enrich the widget map with values for dynamic widgets.
             Self::vitaminize(
-                meta.keyword.as_str(),
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
                 &client_cache,
                 &mut map_widgets,
@@ -153,7 +155,8 @@ pub trait CachingModel: ToModel {
             let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
             // Enrich the widget map with values for dynamic widgets.
             Self::vitaminize(
-                meta.keyword.as_str(),
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
                 &client_cache,
                 &mut map_widgets,
@@ -211,7 +214,8 @@ pub trait CachingModel: ToModel {
             let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
             // Enrich the widget map with values for dynamic widgets.
             Self::vitaminize(
-                meta.keyword.as_str(),
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
                 &client_cache,
                 &mut map_widgets,
@@ -266,7 +270,7 @@ pub trait CachingModel: ToModel {
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
-        let mango_tech_keyword = format!("mango_tech__{}", meta.keyword.clone());
+        let mango_tech_keyword = format!("mango_tech__{}", meta.unique_project_key.clone());
         let db = client_cache.database(&mango_tech_keyword);
         let coll = db.collection("dynamic_widgets");
         let query = mongodb::bson::doc! {

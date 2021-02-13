@@ -146,7 +146,7 @@ pub trait AdditionalValidation {
     fn add_validation<'a>(
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-        // .insert("field_name", "Error message")
+        // error_map.insert("field_name", "Error message.")
         let error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         Ok(error_map)

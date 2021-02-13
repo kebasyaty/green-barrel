@@ -14,14 +14,12 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
+    pub const PROJECT_NAME: &str = "project_name";
+    pub const UNIQUE_PROJECT_KEY: &str = "FqVs5rA2PPCEWt4";
     pub const SERVICE_NAME: &str = "TEST_Fq_Vs5rA2PPCEWt4";
     pub const DATABASE_NAME: &str = "TEST_bxw_5K3KvCL7HL6d";
     pub const DB_CLIENT_NAME: &str = "TEST_default_b_4XMZJU1rdTUf5k";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
-    // Test keyword for for test technical database
-    // Valid characters: _ a-z A-Z 0-9
-    // Size: 6-52
-    pub static KEYWORD: &str = "TEST_5myhW5X_UAXGsHMz";
 
     // Create models
     // *********************************************************************************************
@@ -29,16 +27,16 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "radioI64", default = 1)]
+        #[field_attrs(widget = "radioI64", default = 1, unique = true)]
         pub radio: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "numberI64")]
+        #[field_attrs(widget = "numberI64", unique = true)]
         pub number: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12)]
+        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12, unique = true)]
         pub range: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12, unique = true)]
         pub hidden: Option<i64>,
     }
 
@@ -57,10 +55,11 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_base(KEYWORD, &model_list()?)?;
+        del_test_base(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
         // Migration
         let monitor = Monitor {
-            keyword: KEYWORD,
+            project_name: PROJECT_NAME,
+            unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
             models: model_list()?,
         };
@@ -245,7 +244,11 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    del_test_base(
+        app_name::PROJECT_NAME,
+        app_name::UNIQUE_PROJECT_KEY,
+        &app_name::model_list()?,
+    )?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

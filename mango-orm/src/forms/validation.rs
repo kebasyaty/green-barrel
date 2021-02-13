@@ -164,9 +164,9 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
             match widget_type {
                 // Validation of text type fields.
                 // *********************************************************************************
-                "checkBoxText" | "radioText" | "inputColor" | "inputEmail" | "inputPassword"
-                | "inputPhone" | "inputText" | "inputUrl" | "inputIP" | "inputIPv4"
-                | "inputIPv6" | "textArea" | "hiddenText" => {
+                "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
+                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
+                | "hiddenText" => {
                     // Get field value for validation.
                     let mut field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
@@ -569,7 +569,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "checkBoxI32" | "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
+                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
                     let mut field_value: Option<i64> = pre_json_value.as_i64();
                     // Define field state flag.
@@ -627,8 +627,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "checkBoxU32" | "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64"
-                | "radioI64" | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
+                | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
                     let mut field_value: Option<i64> = pre_json_value.as_i64();
                     // Define field state flag.
@@ -686,7 +686,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "checkBoxF64" | "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
+                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
                     let mut field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
@@ -746,7 +746,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                "checkBoxBool" => {
+                "checkBox" => {
                     // Get field value for validation.
                     // -----------------------------------------------------------------------------
                     let field_value: bool = if pre_json_value.is_null() {

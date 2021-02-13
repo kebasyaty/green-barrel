@@ -2,10 +2,10 @@ use mango_orm::*;
 use metamorphose::{Form, Model};
 use serde::{Deserialize, Serialize};
 
-// Get settings (service) of the application.
+// Get settings of service/sub-application.
 use crate::settings::{
-    app_name::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
-    KEYWORD,
+    service_name::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
+    PROJECT_NAME, UNIQUE_PROJECT_KEY,
 };
 
 #[Model]
@@ -140,7 +140,7 @@ impl AdditionalValidation for UserProfile {
     fn add_validation<'a>(
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-        // .insert("field_name", "Error message")
+        // Hint: error_map.insert("field_name", "Error message.")
         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         // Get clean data
@@ -196,7 +196,7 @@ impl AdditionalValidation for UserForm {
     fn add_validation<'a>(
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-        // .insert("field_name", "Error message")
+        // error_map.insert("field_name", "Error message.")
         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         // Get clean data

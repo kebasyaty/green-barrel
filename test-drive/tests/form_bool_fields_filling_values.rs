@@ -53,7 +53,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool(), "{}");
+    assert!(result.bool());
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);

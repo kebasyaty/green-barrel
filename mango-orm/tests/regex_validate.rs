@@ -1,11 +1,9 @@
-// TESTS
+// REGULAR EXPRESSIONS
 // #################################################################################################
 #[cfg(test)]
 mod tests {
     use regex::RegexBuilder;
 
-    // Regular expressions
-    // *********************************************************************************************
     #[test]
     fn regex_validate_password() {
         let re = RegexBuilder::new(r"^[a-z0-9@#$%^&+=*!~)(]{8,}$")

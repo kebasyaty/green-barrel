@@ -6,11 +6,13 @@ use crate::store::DB_MAP_CLIENT_NAMES;
 
 // Remove test databases
 pub fn del_test_base(
-    keyword: &str,
+    project_name: &str,
+    unique_project_key: &str,
     models: &Vec<crate::models::Meta>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Name of the technical database for testing
-    let mango_tech_keyword: String = format!("mango_tech__{}", keyword);
+    let mango_tech_keyword: String =
+        format!("mango_tech__{}__{}", project_name, unique_project_key);
     let client_store = DB_MAP_CLIENT_NAMES.lock()?;
     // Removing databases
     for meta in models {

@@ -28,6 +28,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         .build()
         .unwrap();
     let model_name = &ast.ident;
+    if model_name.to_string().len() > 31 {
+        panic!(
+            "Model: `{}` : Model name - Max size: 31 characters.",
+            model_name.to_string()
+        )
+    }
     let mut trans_meta = Meta {
         model_name: ast.ident.to_string(),
         ..Default::default()
@@ -50,7 +56,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         panic!(
                             "Model: `{}` : Could not determine value for \
                             parameter `database`. Use the `&str` type.",
-                            model_name.to_string(),
+                            model_name.to_string()
                         )
                     }
                 } else if mnv.path.is_ident("db_client_name") {
@@ -456,13 +462,19 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 let mut meta = serde_json::from_str::<Meta>(&#trans_meta)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
-                // Add keyword.
-                meta.keyword = KEYWORD.trim().to_string();
+                // Add project name.
+                meta.project_name = PROJECT_NAME.trim().to_string();
+                // Add unique project key.
+                meta.unique_project_key = UNIQUE_PROJECT_KEY.trim().to_string();
                 // Add service name.
                 meta.service_name = service_name.clone();
                 // Add database name.
                 if meta.database_name.is_empty() {
-                    meta.database_name = DATABASE_NAME.trim().to_string();
+                    meta.database_name = format!(
+                        "{}__{}__{}",
+                        meta.project_name,
+                        DATABASE_NAME.trim().to_string(),
+                        meta.unique_project_key);
                 }
                 // Add database client name.
                 if meta.db_client_name.is_empty() {
@@ -817,7 +829,8 @@ fn get_id(model_name: String, field_name: String) -> String {
 #[derive(Serialize)]
 struct Meta {
     pub model_name: String,
-    pub keyword: String,
+    pub project_name: String,
+    pub unique_project_key: String,
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
@@ -840,7 +853,8 @@ impl Default for Meta {
     fn default() -> Self {
         Meta {
             model_name: String::new(),
-            keyword: String::new(),
+            project_name: String::new(),
+            unique_project_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),

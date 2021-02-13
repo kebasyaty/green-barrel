@@ -16,7 +16,8 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
     );
     let monitor = Monitor {
-        keyword: settings::KEYWORD,
+        project_name: settings::PROJECT_NAME,
+        unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
         models: vec![
             mango_models::Dynamic::meta()?,
@@ -145,8 +146,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_7_@test.test".to_string()),
-        confirm_email: Some("test_7_@test.test".to_string()),
+        email: Some("test_5_@test.test".to_string()),
+        confirm_email: Some("test_5_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -159,6 +160,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // Create doc.
+    /*/
     let result = user.save(None, None, None)?;
     println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
@@ -174,6 +176,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Verify password (true): {}",
         user.verify_password("12345678", None)?
     );
+    */
 
     // Update doc.
     user.username = Some("New Name".to_string());
@@ -184,6 +187,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
+    /*
     println!(
         "Update password (false): {}",
         user.update_password("123456789", "123456789", None, None)?
@@ -200,6 +204,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Verify password (false): {}",
         user.verify_password("12345678", None)?
     );
+    */
 
     /*
     // Remove document.

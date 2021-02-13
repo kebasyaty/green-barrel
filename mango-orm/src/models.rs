@@ -3,6 +3,7 @@
 //!
 //! `Meta` - Metadata of model (database name, collection name, etc).
 //! `ToModel` - Transforms the Structure into a Model.
+//!
 
 use crate::{
     forms::{html_controls::HtmlControls, Widget},
@@ -22,7 +23,8 @@ pub mod validation;
 #[derive(serde::Deserialize, Clone, Debug)]
 pub struct Meta {
     pub model_name: String,
-    pub keyword: String,
+    pub project_name: String,
+    pub unique_project_key: String,
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
@@ -45,7 +47,8 @@ impl Default for Meta {
     fn default() -> Self {
         Meta {
             model_name: String::new(),
-            keyword: String::new(),
+            project_name: String::new(),
+            unique_project_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),
@@ -107,13 +110,15 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     // Enrich the widget map with values for dynamic widgets.
     // ---------------------------------------------------------------------------------------------
     fn vitaminize(
-        keyword: &str,
+        project_name: &str,
+        unique_project_key: &str,
         collection_name: &str,
         client: &mongodb::sync::Client,
         map_widgets: &mut std::collections::HashMap<String, Widget>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // Init the name of the project's technical database.
-        let mango_tech_keyword: String = format!("mango_tech__{}", keyword);
+        let mango_tech_keyword: String =
+            format!("mango_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic widgets.
         let collection = client
             .database(&mango_tech_keyword)

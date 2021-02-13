@@ -14,31 +14,28 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
+    pub const PROJECT_NAME: &str = "project_name";
+    pub const UNIQUE_PROJECT_KEY: &str = "hCyWnTcxuD22uYW";
     pub const SERVICE_NAME: &str = "TEST_hCyWnTcxuD2_2uYW";
     pub const DATABASE_NAME: &str = "TEST_CNMHR7_YZ7tDrq6N";
     pub const DB_CLIENT_NAME: &str = "TEST_default_rrNepVARG6h_CP8T";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
-    // Test keyword for for test technical database
-    // Valid characters: _ a-z A-Z 0-9
-    // Size: 6-52
-    pub static KEYWORD: &str = "TEST_mXzS5j4qHG_jSyFv";
-
     // Create models
     // *********************************************************************************************
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "radioI64", default = 1)]
+        #[field_attrs(widget = "radioI64", default = 1, unique = true)]
         pub radio: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "numberI64")]
+        #[field_attrs(widget = "numberI64", unique = true)]
         pub number: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12)]
+        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12, unique = true)]
         pub range: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12, unique = true)]
         pub hidden: Option<i64>,
     }
 
@@ -57,10 +54,11 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_base(KEYWORD, &model_list()?)?;
+        del_test_base(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
         // Migration
         let monitor = Monitor {
-            keyword: KEYWORD,
+            project_name: PROJECT_NAME,
+            unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
             models: model_list()?,
         };
@@ -98,14 +96,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // checkbox
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_i64,
-        map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -150,7 +140,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_i64, doc.get_i64("checkbox")?);
         assert_eq!(1_i64, doc.get_i64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_i64, doc.get_i64("range")?);
@@ -167,15 +156,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // checkbox
-    let result = test_model.save(None, None, None)?;
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("checkbox").unwrap().value.is_empty());
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        0_i64,
-        map_wigets.get("checkbox").unwrap().value.parse::<i64>()?
-    );
     // radio
     let result = test_model.save(None, None, None)?;
     let map_wigets = result.wig();
@@ -224,7 +204,6 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(0_i64, doc.get_i64("checkbox")?);
         assert_eq!(1_i64, doc.get_i64("radio")?);
         assert_eq!(Some(()), doc.get("number").unwrap().as_null());
         assert_eq!(5_i64, doc.get_i64("range")?);
@@ -232,7 +211,11 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    del_test_base(
+        app_name::PROJECT_NAME,
+        app_name::UNIQUE_PROJECT_KEY,
+        &app_name::model_list()?,
+    )?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

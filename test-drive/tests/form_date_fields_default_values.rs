@@ -61,7 +61,7 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool(), "{}");
+    assert!(result.bool());
     // date
     let map_wigets = result.wig();
     assert_eq!(String::new(), map_wigets.get("date").unwrap().value);

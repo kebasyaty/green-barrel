@@ -3,8 +3,9 @@
 //! Structs:
 //! `ModelState` - Creation and updating of a technical database for monitoring the state of models.
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
+//!
 //! Methods:
-//! `mango_tech_name` - Get mango tech name.
+//! `mango_tech_name` - Get the name of the project's technical database.
 //! `refresh` - Refresh models state.
 //! `napalm` - Reorganize databases state.
 //! `migrat` - Check the changes in the models and (if necessary) apply to the database.
@@ -33,7 +34,8 @@ pub struct ModelState {
 }
 
 pub struct Monitor<'a> {
-    pub keyword: &'a str,
+    pub project_name: &'a str,
+    pub unique_project_key: &'a str,
     pub models: Vec<crate::models::Meta>,
 }
 
@@ -41,16 +43,23 @@ impl<'a> Monitor<'a> {
     // Get mango tech name.
     // *********************************************************************************************
     pub fn mango_tech_name(&self) -> String {
-        // Keyword Validation.
-        // KEYWORD - It is recommended not to change.
+        // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
-        // Size: 6-52
-        // Example: "PROJECT_NAME_7rzg_cfqQB3B7q7T"
-        let re = Regex::new(r"^[_a-zA-Z\d]{6,52}$").unwrap();
-        if !re.is_match(self.keyword) {
-            panic!("Keyword - Valid characters: _ a-z A-Z 0-9 ; Size: 6-52.");
+        // Max size: 22
+        let re = Regex::new(r"^[_a-zA-Z\d]{1,22}$").unwrap();
+        if !re.is_match(self.project_name) {
+            panic!("Project name - Valid characters: _ a-z A-Z 0-9 ; Max size: 22.");
         }
-        format!("mango_tech__{}", self.keyword)
+        // UNIQUE_PROJECT_KEY Validation.
+        // UNIQUE_PROJECT_KEY - It is recommended not to change.
+        // Valid characters: a-z A-Z 0-9
+        // Size: 8-16
+        // Example: "7rzgacfqQB3B7q7T"
+        let re = Regex::new(r"^[a-zA-Z\d]{8,16}$").unwrap();
+        if !re.is_match(self.unique_project_key) {
+            panic!("Unique project key - Valid characters: a-z A-Z 0-9 ; Size: 8-16.");
+        }
+        format!("mango_tech__{}__{}", self.project_name, self.unique_project_key)
     }
 
     // Refresh models state.
@@ -61,7 +70,7 @@ impl<'a> Monitor<'a> {
     ) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            // Establish a connection with the technical database of the project.
+            // Get the name of the project's technical database.
             let mango_tech_keyword: String = self.mango_tech_name();
             // Collection for monitoring the state of Models.
             let collection_models_name: &str = "monitor_models";
@@ -126,7 +135,7 @@ impl<'a> Monitor<'a> {
     ) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            // Establish a connection with the technical database of the project.
+            // Get the name of the project's technical database.
             let mango_tech_keyword: String = self.mango_tech_name();
             let collection_models_name: &str = "monitor_models";
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
@@ -180,6 +189,15 @@ impl<'a> Monitor<'a> {
 
         // Run the migration process for registered models.
         for meta in self.models.iter() {
+            // Service_name validation.
+            if !Regex::new(r"^[_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
+                panic!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 ; Max size: 31.", meta.model_name);
+            }
+            // Database name validation.
+            if !Regex::new(r"^[_a-zA-Z\d]{14,64}$").unwrap().is_match(meta.database_name.as_str()) {
+                panic!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 ; Max size: 22.", meta.model_name);
+            }
+            //
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             let fields_name: Vec<&str> =
                 meta.fields_name.iter().map(|item| item.as_str()).collect();
@@ -194,7 +212,7 @@ impl<'a> Monitor<'a> {
                 .filter(|item| **item != "hash" && !ignore_fields.contains(item))
                 .map(|item| *item)
                 .collect();
-            // Name of the technical database of the project.
+            // Get the name of the project's technical database.
             let mango_tech_keyword: String = self.mango_tech_name();
             let database_names: Vec<String> = client.list_database_names(None, None)
                 .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));

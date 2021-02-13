@@ -14,14 +14,12 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
+    pub const PROJECT_NAME: &str = "project_name";
+    pub const UNIQUE_PROJECT_KEY: &str = "QHZsU5vJ3R3Y7NV";
     pub const SERVICE_NAME: &str = "TEST_QHZsU5vJ3_R3Y7NV";
     pub const DATABASE_NAME: &str = "TEST_3js_mKPQ5CnVxLBr";
     pub const DB_CLIENT_NAME: &str = "TEST_default_W3jN_YQvQ1etzZSV";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
-    // Test keyword for for test technical database
-    // Valid characters: _ a-z A-Z 0-9
-    // Size: 6-52
-    pub static KEYWORD: &str = "TEST_H7U_Mdv8tdJ3Xa1M";
 
     // Create models
     // *********************************************************************************************
@@ -29,15 +27,15 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "radioI32", default = -1)]
+        #[field_attrs(widget = "radioI32", default = -1, unique = true)]
         pub radio: Option<i32>,
         #[serde(default)]
-        #[field_attrs(widget = "numberI32")]
+        #[field_attrs(widget = "numberI32", unique = true)]
         pub number: Option<i32>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeI32", default = 5, min = 1, max = 12)]
+        #[field_attrs(widget = "rangeI32", default = 5, min = 1, max = 12, unique = true)]
         pub range: Option<i32>,
-        #[field_attrs(widget = "hiddenI32", default = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenI32", default = 3, min = 1, max = 12, unique = true)]
         pub hidden: Option<i32>,
     }
 
@@ -56,10 +54,11 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_base(KEYWORD, &model_list()?)?;
+        del_test_base(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
         // Migration
         let monitor = Monitor {
-            keyword: KEYWORD,
+            project_name: PROJECT_NAME,
+            unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
             models: model_list()?,
         };
@@ -244,7 +243,11 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    del_test_base(app_name::KEYWORD, &app_name::model_list()?)?;
+    del_test_base(
+        app_name::PROJECT_NAME,
+        app_name::UNIQUE_PROJECT_KEY,
+        &app_name::model_list()?,
+    )?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
     Ok(())
 }

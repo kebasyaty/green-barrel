@@ -1003,7 +1003,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 }
                 _ => Err(format!(
                     "Model: `{}` > Field: `{}` > Method: `check()` : \
-                    Unsupported widget type - `{}`.",
+                     Unsupported widget type - `{}`.",
                     model_name, field_name, widget_type
                 ))?,
             }
@@ -1029,7 +1029,8 @@ pub trait QPaladins: ToModel + CachingModel {
 
         // Enrich the widget map with values for dynamic widgets.
         Self::vitaminize(
-            meta.keyword.as_str(),
+            meta.project_name.as_str(),
+            meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
             &mut final_map_widgets,
