@@ -3,6 +3,7 @@
 
 // Project name.
 // Valid characters: _ a-z A-Z 0-9
+// Hint: PROJECT_NAM it is recommended not to change.
 // Max size: 21
 // First character: a-z A-Z
 pub const PROJECT_NAME: &str = "project_name";
