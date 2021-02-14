@@ -148,7 +148,7 @@ impl AdditionalValidation for UserProfile {
         let confirm_email = self.confirm_email.clone().unwrap();
         let password = self.password.clone().unwrap();
         let confirm_password = self.confirm_password.clone().unwrap();
-        // Validation of fields
+        // Fields validation
         if email != confirm_email {
             error_map.insert(
                 "confirm_email",
@@ -204,7 +204,7 @@ impl AdditionalValidation for UserForm {
         let confirm_email = self.confirm_email.clone().unwrap();
         let password = self.password.clone().unwrap();
         let confirm_password = self.confirm_password.clone().unwrap();
-        // Validation of fields
+        // Fields validation
         if email != confirm_email {
             error_map.insert(
                 "confirm_email",
