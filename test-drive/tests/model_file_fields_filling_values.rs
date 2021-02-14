@@ -16,9 +16,9 @@ mod app_name {
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
     pub const UNIQUE_PROJECT_KEY: &str = "qhYR6caApSj5Ph1";
-    pub const SERVICE_NAME: &str = "TEST_qhYR6_caApSj5Ph1";
-    pub const DATABASE_NAME: &str = "TEST_M6hPegeYdk_YHP8b";
-    pub const DB_CLIENT_NAME: &str = "TEST_default_Z7xv3yEUV_NMfNUT";
+    pub const SERVICE_NAME: &str = "service_name";
+    pub const DATABASE_NAME: &str = "database_name";
+    pub const DB_CLIENT_NAME: &str = "default";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 
     // Create models
@@ -47,7 +47,7 @@ mod app_name {
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
         DB_MAP_CLIENT_NAMES.lock()?.insert(
-            "TEST_default_Z7xv3yEUV_NMfNUT".to_string(),
+            "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
         // Remove test databases

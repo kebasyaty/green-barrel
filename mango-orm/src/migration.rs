@@ -45,10 +45,10 @@ impl<'a> Monitor<'a> {
     pub fn mango_tech_name(&self) -> String {
         // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
-        // Max size: 22
-        let re = Regex::new(r"^[_a-zA-Z\d]{1,22}$").unwrap();
+        // Max size: 21
+        let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$").unwrap();
         if !re.is_match(self.project_name) {
-            panic!("Project name - Valid characters: _ a-z A-Z 0-9 ; Max size: 22.");
+            panic!("Project name - Valid characters: _ a-z A-Z 0-9 ; Max size: 21 ; First character: a-z A-Z");
         }
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
@@ -190,12 +190,12 @@ impl<'a> Monitor<'a> {
         // Run the migration process for registered models.
         for meta in self.models.iter() {
             // Service_name validation.
-            if !Regex::new(r"^[_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
-                panic!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 ; Max size: 31.", meta.model_name);
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
+                panic!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 ; Max size: 31 ; First character: _ a-z A-Z", meta.model_name);
             }
             // Database name validation.
-            if !Regex::new(r"^[_a-zA-Z\d]{14,64}$").unwrap().is_match(meta.database_name.as_str()) {
-                panic!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 ; Max size: 22.", meta.model_name);
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$").unwrap().is_match(meta.database_name.as_str()) {
+                panic!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 ; Max size: 21 ; First character: _ a-z A-Z", meta.model_name);
             }
             //
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();

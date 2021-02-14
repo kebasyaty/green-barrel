@@ -1,7 +1,14 @@
 //! # Macros
 //!
 //! `Model` - Macro for converting Structure to mango-orm Model.
+//! The model can access the database.
+//! The model can create, update, and delete documents in collections.
+//!
 //! `Form` - Macro for converting Structure to mango-orm Form.
+//! The form does not have access to the database.
+//! Form are needed where it makes no sense to use a model -
+//! To create a search form, to recover a password, to combine models, etc.
+//!
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -480,7 +487,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 if meta.db_client_name.is_empty() {
                     meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
                 }
-                // Add database client name.
+                // Add a limit on the number of documents when querying the database.
                 if meta.db_query_docs_limit == 0 {
                     meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
                 }

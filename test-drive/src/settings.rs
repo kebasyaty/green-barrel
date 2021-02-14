@@ -3,7 +3,8 @@
 
 // Project name.
 // Valid characters: _ a-z A-Z 0-9
-// Max size: 22
+// Max size: 21
+// First character: a-z A-Z
 pub const PROJECT_NAME: &str = "project_name";
 
 // Unique project key.
@@ -15,8 +16,14 @@ pub const UNIQUE_PROJECT_KEY: &str = "7rzgacfqQB3B7q7T";
 
 // For a test service/sub-application.
 pub mod service_name {
-    pub const SERVICE_NAME: &str = "service_name"; // Max size: 31 characters
-    pub const DATABASE_NAME: &str = "database_name"; // Max size: 22 characters
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 31
+    // First character: a-z A-Z
+    pub const SERVICE_NAME: &str = "service_name";
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 21
+    // First character: a-z A-Z
+    pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
     pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 }
