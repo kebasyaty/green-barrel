@@ -6,7 +6,7 @@ mod settings;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
-    // Caching MongoDB clients;
+    // Caching MongoDB clients.
     DB_MAP_CLIENT_NAMES.lock()?.insert(
         "default".to_string(),
         mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
@@ -15,6 +15,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         "default_2".to_string(),
         mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
     );
+    // Monitor initialization.
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
