@@ -2,6 +2,7 @@
 //!
 //! Trait:
 //! `QPaladin` - Database query methods directly related to the Model instance.
+//!
 //! Methods:
 //! `check` - Checking the Model before queries the database.
 //! `save` - Save to database as a new document or update an existing document.
@@ -226,10 +227,21 @@ pub trait QPaladins: ToModel + CachingModel {
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         match widget_type {
                             "inputPassword" => {
-                                if !is_update && !field_value.is_empty() {
-                                    // Generate password hash and add to result document.
-                                    let hash: String = Self::create_password_hash(field_value)?;
-                                    final_doc.insert(field_name, mongodb::bson::Bson::String(hash));
+                                if !field_value.is_empty() {
+                                    if !is_update {
+                                        // Generate password hash and add to result document.
+                                        let hash: String = Self::create_password_hash(field_value)?;
+                                        final_doc
+                                            .insert(field_name, mongodb::bson::Bson::String(hash));
+                                    } else if !self.verify_password(field_value, None)? {
+                                        // Accumulate an error if the password does not match.
+                                        is_err_symptom = true;
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Password does not match".to_string(),
+                                        )
+                                        .unwrap();
+                                    }
                                 }
                             }
                             _ => {

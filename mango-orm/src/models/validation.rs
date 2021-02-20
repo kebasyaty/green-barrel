@@ -90,19 +90,21 @@ pub trait ValidationModel {
             "inputPassword" => {
                 if !REGEX_IS_PASSWORD.is_match(value) {
                     Err(
-                        "Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br> \
-                                 Minimum size 8 characters",
+                        "Allowed characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>\
+                         Minimum size 8 characters",
                     )?
                 }
             }
             "inputDate" => {
                 if !REGEX_IS_DATE.is_match(value) {
-                    Err("Incorrect date format.<br>Example: 1970-02-28")?
+                    Err("Incorrect date format.<br>\
+                         Example: 1970-02-28")?
                 }
             }
             "inputDateTime" => {
                 if !REGEX_IS_DATETIME.is_match(value) {
-                    Err("Incorrect date and time format.<br>Example: 1970-02-28T00:00")?
+                    Err("Incorrect date and time format.<br>\
+                         Example: 1970-02-28T00:00")?
                 }
             }
             _ => return Ok(()),

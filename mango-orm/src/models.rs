@@ -117,11 +117,10 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
         map_widgets: &mut std::collections::HashMap<String, Widget>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         // Init the name of the project's technical database.
-        let mango_tech_keyword: String =
-            format!("mango_tech__{}__{}", project_name, unique_project_key);
+        let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic widgets.
         let collection = client
-            .database(&mango_tech_keyword)
+            .database(&db_mango_tech)
             .collection("dynamic_widgets");
         // Filter for searching a document.
         let filter = mongodb::bson::doc! {

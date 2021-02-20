@@ -5,7 +5,7 @@
 //! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
 //!
 //! Methods:
-//! `mango_tech_name` - Get the name of the project's technical database.
+//! `mango_tech_name` - Get the name of the technical database for a project.
 //! `refresh` - Refresh models state.
 //! `napalm` - Reorganize databases state.
 //! `migrat` - Check the changes in the models and (if necessary) apply to the database.
@@ -40,7 +40,7 @@ pub struct Monitor<'a> {
 }
 
 impl<'a> Monitor<'a> {
-    // Get mango tech name.
+    // Get the name of the technical database for a project.
     // *********************************************************************************************
     pub fn mango_tech_name(&self) -> String {
         // PROJECT_NAME Validation.
@@ -70,8 +70,8 @@ impl<'a> Monitor<'a> {
     ) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            // Get the name of the project's technical database.
-            let mango_tech_keyword: String = self.mango_tech_name();
+            // Get the name of the technical database for a project.
+            let db_mango_tech: String = self.mango_tech_name();
             // Collection for monitoring the state of Models.
             let collection_models_name: &str = "monitor_models";
             // Used to store selection items, for 
@@ -81,21 +81,21 @@ impl<'a> Monitor<'a> {
             let database_names: Vec<String> = client.list_database_names(None, None)
                 .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
             // Create a technical database for the project if it doesn't exist.
-            if !database_names.contains(&mango_tech_keyword) {
+            if !database_names.contains(&db_mango_tech) {
                 // Create a collection for models.
                 client
-                    .database(&mango_tech_keyword)
+                    .database(&db_mango_tech)
                     .create_collection(collection_models_name, None)
                     .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
                 // Create a collection for widget types of `select`.
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
-                    .database(&mango_tech_keyword)
+                    .database(&db_mango_tech)
                     .create_collection(collection_dyn_widgets_name, None)
                     .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
             } else {
                 // Reset models state information.
-                let mango_tech_db: Database = client.database(&mango_tech_keyword);
+                let mango_tech_db: Database = client.database(&db_mango_tech);
                 let collection_models: Collection = mango_tech_db.collection(collection_models_name);
                 let mut cursor: Cursor = collection_models.find(None, None)
                     .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
@@ -135,11 +135,11 @@ impl<'a> Monitor<'a> {
     ) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            // Get the name of the project's technical database.
-            let mango_tech_keyword: String = self.mango_tech_name();
+            // Get the name of the technical database for a project.
+            let db_mango_tech: String = self.mango_tech_name();
             let collection_models_name: &str = "monitor_models";
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
-            let mango_tech_db: Database = client.database(&mango_tech_keyword);
+            let mango_tech_db: Database = client.database(&db_mango_tech);
             let collection_models: Collection = mango_tech_db.collection(collection_models_name);
             let collection_dyn_widgets: Collection = mango_tech_db.collection(collection_dyn_widgets_name);
             // Delete orphaned Collections.
@@ -212,8 +212,8 @@ impl<'a> Monitor<'a> {
                 .filter(|item| **item != "hash" && !ignore_fields.contains(item))
                 .map(|item| *item)
                 .collect();
-            // Get the name of the project's technical database.
-            let mango_tech_keyword: String = self.mango_tech_name();
+            // Get the name of the technical database for a project.
+            let db_mango_tech: String = self.mango_tech_name();
             let database_names: Vec<String> = client.list_database_names(None, None)
                 .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
             // Map of default values and value types from `value (default)` attribute -
@@ -231,7 +231,7 @@ impl<'a> Monitor<'a> {
                 "collection": &meta.collection_name
             };
             let model: Option<Document> = client
-                .database(&mango_tech_keyword)
+                .database(&db_mango_tech)
                 .collection("monitor_models")
                 .find_one(filter, None)
                 .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
@@ -563,14 +563,14 @@ impl<'a> Monitor<'a> {
                 .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
             }
 
-            // Get the technical database `mango_tech_keyword` for the current model.
+            // Get the technical database `db_mango_tech` for the current model.
             // -------------------------------------------------------------------------------------
-            let db: Database = client.database(&mango_tech_keyword);
+            let db: Database = client.database(&db_mango_tech);
 
             // Update the state of models for `models::Monitor`.
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
-            if !database_names.contains(&mango_tech_keyword)
+            if !database_names.contains(&db_mango_tech)
                 || !db
                     .list_collection_names(None)
                     .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
@@ -608,7 +608,7 @@ impl<'a> Monitor<'a> {
             // Document management to support model fields with dynamic widgets.
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
-            if !database_names.contains(&mango_tech_keyword)
+            if !database_names.contains(&db_mango_tech)
                 || !db
                     .list_collection_names(None)
                     .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
