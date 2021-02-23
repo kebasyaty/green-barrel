@@ -48,7 +48,9 @@ impl<'a> Monitor<'a> {
         // Max size: 21
         let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$").unwrap();
         if !re.is_match(self.project_name) {
-            panic!("Project name - Valid characters: _ a-z A-Z 0-9 ; Max size: 21 ; First character: a-z A-Z");
+            panic!("PROJECT_NAME - Valid characters: _ a-z A-Z 0-9 ; \
+                    Max size: 21 ; \
+                    First character: a-z A-Z");
         }
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
@@ -57,7 +59,8 @@ impl<'a> Monitor<'a> {
         // Example: "7rzgacfqQB3B7q7T"
         let re = Regex::new(r"^[a-zA-Z\d]{8,16}$").unwrap();
         if !re.is_match(self.unique_project_key) {
-            panic!("Unique project key - Valid characters: a-z A-Z 0-9 ; Size: 8-16.");
+            panic!("UNIQUE_PROJECT_KEY - Valid characters: a-z A-Z 0-9 ; \
+                    Size: 8-16.");
         }
         format!("mango_tech__{}__{}", self.project_name, self.unique_project_key)
     }
