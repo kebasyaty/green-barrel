@@ -7,14 +7,18 @@ mod settings;
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
     // Caching MongoDB clients.
-    DB_MAP_CLIENT_NAMES.lock()?.insert(
-        "default".to_string(),
-        mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-    );
-    DB_MAP_CLIENT_NAMES.lock()?.insert(
-        "default_2".to_string(),
-        mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-    );
+    {
+        let mut client_store = DB_MAP_CLIENT_NAMES.write()?;
+        client_store.insert(
+            "default".to_string(),
+            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+        );
+        client_store.insert(
+            "default_2".to_string(),
+            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+        );
+    }
+
     // Monitor initialization.
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
@@ -27,6 +31,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         ],
     };
     monitor.migrat();
+
     Ok(())
 }
 
@@ -147,8 +152,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_2_@test.test".to_string()),
-        confirm_email: Some("test_2_@test.test".to_string()),
+        email: Some("test_10_@test.test".to_string()),
+        confirm_email: Some("test_10_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -161,7 +166,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // Create doc.
-    /*/
     let result = user.save(None, None, None)?;
     println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
@@ -169,6 +173,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
+    /*
     println!(
         "Verify password (false): {}",
         user.verify_password("123456789", None)?

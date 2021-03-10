@@ -3,10 +3,12 @@
 //!
 //! Trait:
 //! `Caching` - Methods caching information about Forms for speed up work.
+//!
 //! Methods:
 //! `form_wig` - Get an widgets map for page template.
 //! `form_json` - Get Form attributes in Json format for page templates.
 //! `form_html` - Get Html Form of Model for page templates.
+//! `get_cache_data` - Get cached Form data.
 //!
 
 use crate::{
@@ -17,30 +19,50 @@ use crate::{
 // Caching information about Forms for speed up work.
 // *************************************************************************************************
 pub trait CachingForm: ToForm + HtmlControls {
+    // Add map of widgets to cache.
+    // ---------------------------------------------------------------------------------------------
+    fn widgets_to_cache() -> Result<(), Box<dyn std::error::Error>> {
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key();
+        // Get write access in cache.
+        let mut form_store = FORM_CACHE.write()?;
+        // Create `FormCache` default and add map of widgets.
+        let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
+        let new_form_cache = FormCache {
+            map_widgets,
+            ..Default::default()
+        };
+        // Save structure `FormCache` to store.
+        form_store.insert(key, new_form_cache);
+        //
+        Ok(())
+    }
+
     // Get an widgets map for page template.
     // ---------------------------------------------------------------------------------------------
     fn form_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets.
-            let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            let new_form_cache = FormCache {
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Form in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add map of widgets to cache.
+            Self::widgets_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        Ok(form_cache.unwrap().map_widgets.clone())
+        // Get data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(form_cache.map_widgets.clone())
+        } else {
+            Err(format!(
+                "Form: `{}` -> Method: `form_wig()` : Failed to get data from cache.",
+                Self::form_name()
+            ))?
+        }
     }
 
     // Get Form attributes in Json format for page templates.
@@ -48,39 +70,26 @@ pub trait CachingForm: ToForm + HtmlControls {
     fn form_json() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets.
-            let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            let new_form_cache = FormCache {
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Form in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add map of widgets to cache.
+            Self::widgets_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        // Add attributes in json format to cache if they are not there.
-        if form_cache.attrs_json.is_empty() {
-            let map_widgets: std::collections::HashMap<String, Widget> =
-                form_cache.map_widgets.clone();
-            let json_line = serde_json::to_string(&map_widgets)?;
-            let mut form_cache: FormCache = form_cache.clone();
-            // Update data.
-            form_cache.attrs_json = json_line.clone();
-            // Save data to cache
-            form_store.insert(key, form_cache.clone());
-            // Return result.
-            return Ok(json_line);
+        // Get data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(serde_json::to_string(&form_cache.map_widgets.clone())?)
+        } else {
+            Err(format!(
+                "Form: `{}` -> Method: `form_json()` : Failed to get data from cache.",
+                Self::form_name()
+            ))?
         }
-        Ok(form_cache.attrs_json.clone())
     }
 
     // Get Html Form of Model for page templates.
@@ -88,36 +97,29 @@ pub trait CachingForm: ToForm + HtmlControls {
     fn form_html() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets.
-            let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            let new_form_cache = FormCache {
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Form in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add map of widgets to cache.
+            Self::widgets_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        // Add attributes in json format to cache if they are not there.
-        if form_cache.controls_html.is_empty() {
-            let map_widgets: std::collections::HashMap<String, Widget> =
-                form_cache.map_widgets.clone();
-            let controls: String = Self::to_html(&Self::fields_name()?, map_widgets);
-            let mut form_cache: FormCache = form_cache.clone();
-            form_cache.controls_html = controls.clone();
-            form_store.insert(key, form_cache.clone());
-            return Ok(controls);
+        // Get data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(Self::to_html(
+                &Self::fields_name()?,
+                form_cache.map_widgets.clone(),
+            ))
+        } else {
+            Err(format!(
+                "Form: `{}` -> Method: `form_html()` : Failed to get data from cache.",
+                Self::form_name()
+            ))?
         }
-        Ok(form_cache.controls_html.clone())
     }
 
     // Get cached Form data.
@@ -125,25 +127,25 @@ pub trait CachingForm: ToForm + HtmlControls {
     fn get_cache_data() -> Result<FormCache, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        //
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock()?;
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add the `FormCache` structure to the cache for the current Form if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets.
-            let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            let new_form_cache = FormCache {
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Form in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add map of widgets to cache.
+            Self::widgets_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        Ok(form_cache.clone())
+        // Get data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(form_cache.clone())
+        } else {
+            Err(format!(
+                "Form: `{}` -> Method: `get_cache_data()` : Failed to get data from cache.",
+                Self::form_name()
+            ))?
+        }
     }
 }

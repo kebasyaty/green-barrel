@@ -76,8 +76,7 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_CACHE.lock()?;
-        let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
@@ -118,8 +117,7 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_CACHE.lock()?;
-        let _client_store = DB_MAP_CLIENT_NAMES.lock()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 

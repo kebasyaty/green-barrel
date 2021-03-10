@@ -21,6 +21,7 @@ use mongodb::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 // MIGRATION
 // #################################################################################################
@@ -67,10 +68,7 @@ impl<'a> Monitor<'a> {
 
     // Refresh models state.
     // *********************************************************************************************
-    fn refresh(
-        &self,
-        client_store: &std::sync::MutexGuard<'_, std::collections::HashMap<String, Client>>,
-    ) {
+    fn refresh(&self, client_store: &std::sync::RwLockReadGuard<HashMap<String, Client>>) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
@@ -132,10 +130,7 @@ impl<'a> Monitor<'a> {
     // Reorganize databases state.
     // (full delete of orphaned collections and databases)
     // *********************************************************************************************
-    fn napalm(
-        &self,
-        client_store: &std::sync::MutexGuard<'_, std::collections::HashMap<String, Client>>,
-    ) {
+    fn napalm(&self, client_store: &std::sync::RwLockReadGuard<HashMap<String, Client>>) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
@@ -184,21 +179,23 @@ impl<'a> Monitor<'a> {
     // Check the changes in the models and (if necessary) apply to the database.
     pub fn migrat(&self) {
         // Get cache MongoDB clients.
-        let client_store: std::sync::MutexGuard<'_, std::collections::HashMap<String, Client>> =
-            DB_MAP_CLIENT_NAMES.lock()
+        let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
+            DB_MAP_CLIENT_NAMES.read()
             .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
         // Run refresh models state.
         self.refresh(&client_store);
 
-        // Run the migration process for registered models.
+        // Get model metadata
         for meta in self.models.iter() {
             // Service_name validation.
             if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
-                panic!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 ; Max size: 31 ; First character: _ a-z A-Z", meta.model_name);
+                panic!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 \
+                        ; Max size: 31 ; First character: _ a-z A-Z", meta.model_name);
             }
             // Database name validation.
             if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$").unwrap().is_match(meta.database_name.as_str()) {
-                panic!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 ; Max size: 21 ; First character: _ a-z A-Z", meta.model_name);
+                panic!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 \
+                        ; Max size: 21 ; First character: _ a-z A-Z", meta.model_name);
             }
             //
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();

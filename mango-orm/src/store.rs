@@ -6,7 +6,7 @@
 
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
-use std::sync::Mutex;
+use std::sync::RwLock;
 
 // GLOBAL STORAGE
 // #################################################################################################
@@ -15,23 +15,19 @@ use std::sync::Mutex;
 pub struct FormCache {
     pub meta: crate::models::Meta,
     pub map_widgets: std::collections::HashMap<String, crate::forms::Widget>,
-    pub attrs_json: String,
-    pub controls_html: String,
 }
 
 // Store
 lazy_static! {
     // Storage of settings for mango models
     // ---------------------------------------------------------------------------------------------
-    pub static ref FORM_CACHE: Mutex<std::collections::HashMap<String, FormCache>> = {
-        let _map = std::collections::HashMap::new();
-        Mutex::new(_map)
+    pub static ref FORM_CACHE: RwLock<std::collections::HashMap<String, FormCache>> = {
+        RwLock::new(std::collections::HashMap::new())
     };
     // Caching clients MongoDB
     // ---------------------------------------------------------------------------------------------
-    pub static ref DB_MAP_CLIENT_NAMES: Mutex<std::collections::HashMap<String, mongodb::sync::Client>> = {
-        let _map = std::collections::HashMap::new();
-        Mutex::new(_map)
+    pub static ref DB_MAP_CLIENT_NAMES: RwLock<std::collections::HashMap<String, mongodb::sync::Client>> = {
+        RwLock::new(std::collections::HashMap::new())
     };
     // Regular expressions
     // ---------------------------------------------------------------------------------------------

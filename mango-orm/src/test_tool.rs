@@ -12,7 +12,8 @@ pub fn del_test_base(
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Name of the technical database for testing
     let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
-    let client_store = DB_MAP_CLIENT_NAMES.lock()?;
+    //
+    let client_store = DB_MAP_CLIENT_NAMES.read()?;
     // Removing databases
     for meta in models {
         let client: &mongodb::sync::Client =

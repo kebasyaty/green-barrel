@@ -20,51 +20,66 @@ use crate::{
 // Caching information about Models for speed up work.
 // #################################################################################################
 pub trait CachingModel: ToModel {
+    // Add Model metadata to cache.
+    // *********************************************************************************************
+    fn meta_to_cache() -> Result<(), Box<dyn std::error::Error>> {
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key();
+        // Get write access in cache.
+        let mut form_store = FORM_CACHE.write()?;
+        // Create `FormCache` default and add map of widgets and metadata of model.
+        let meta: Meta = Self::meta()?;
+        // Get MongoDB client for current model.
+        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let client_cache: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
+        // Get a widget map.
+        let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
+        // Enrich the widget map with values for dynamic widgets.
+        Self::vitaminize(
+            meta.project_name.as_str(),
+            meta.unique_project_key.as_str(),
+            meta.collection_name.as_str(),
+            &client_cache,
+            &mut map_widgets,
+        )?;
+        // Init new FormCache.
+        let new_form_cache = FormCache {
+            meta,
+            map_widgets,
+            ..Default::default()
+        };
+        // Save structure `FormCache` to store.
+        form_store.insert(key, new_form_cache);
+        //
+        Ok(())
+    }
+
     // Get an widgets map for page template.
     // *********************************************************************************************
     fn form_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets and metadata of model.
-            let meta: Meta = Self::meta()?;
-            // Accessing cached MongoDB clients.
-            let client_store: std::sync::MutexGuard<
-                '_,
-                std::collections::HashMap<String, mongodb::sync::Client>,
-            > = DB_MAP_CLIENT_NAMES.lock()?;
-            // Get MongoDB client for current model.
-            let client_cache: &mongodb::sync::Client =
-                client_store.get(&meta.db_client_name).unwrap();
-            // Get a widget map.
-            let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            // Enrich the widget map with values for dynamic widgets.
-            Self::vitaminize(
-                meta.project_name.as_str(),
-                meta.unique_project_key.as_str(),
-                meta.collection_name.as_str(),
-                &client_cache,
-                &mut map_widgets,
-            )?;
-            // Init new FormCache.
-            let new_form_cache = FormCache {
-                meta,
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            // Update the state of a variable.
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Model in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add Model metadata to cache.
+            Self::meta_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        Ok(form_cache.unwrap().map_widgets.clone())
+        // Get data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(form_cache.map_widgets.clone())
+        } else {
+            let meta = Self::meta()?;
+            Err(format!(
+                "Model: `{}` -> Method: `form_wig()` : Failed to get data from cache.",
+                meta.model_name
+            ))?
+        }
     }
 
     // Get Form attributes in Json format for page templates.
@@ -72,60 +87,27 @@ pub trait CachingModel: ToModel {
     fn form_json() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets and metadata of model.
-            let meta: Meta = Self::meta()?;
-            // Accessing cached MongoDB clients.
-            let client_store: std::sync::MutexGuard<
-                '_,
-                std::collections::HashMap<String, mongodb::sync::Client>,
-            > = DB_MAP_CLIENT_NAMES.lock()?;
-            // Get MongoDB client for current model.
-            let client_cache: &mongodb::sync::Client =
-                client_store.get(&meta.db_client_name).unwrap();
-            // Get a widget map.
-            let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            // Enrich the widget map with values for dynamic widgets.
-            Self::vitaminize(
-                meta.project_name.as_str(),
-                meta.unique_project_key.as_str(),
-                meta.collection_name.as_str(),
-                &client_cache,
-                &mut map_widgets,
-            )?;
-            // Init new FormCache.
-            let new_form_cache = FormCache {
-                meta,
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            // Update the state of a variable.
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Model in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add Model metadata to cache.
+            Self::meta_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        // Add attributes in json format to cache if they are not there.
-        if form_cache.attrs_json.is_empty() {
-            let map_widgets: std::collections::HashMap<String, Widget> =
-                form_cache.map_widgets.clone();
-            let json_line = serde_json::to_string(&map_widgets)?;
-            let mut form_cache: FormCache = form_cache.clone();
-            // Update data.
-            form_cache.attrs_json = json_line.clone();
-            // Save data to cache.
-            form_store.insert(key, form_cache.clone());
-            // Return result.
-            return Ok(json_line);
+        // Generate data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(serde_json::to_string(&form_cache.map_widgets.clone())?)
+        } else {
+            let meta = Self::meta()?;
+            Err(format!(
+                "Model: `{}` -> Method: `form_json()` : Failed to get data from cache.",
+                meta.model_name
+            ))?
         }
-        Ok(form_cache.attrs_json.clone())
     }
 
     // Get Html Form of Model for page templates.
@@ -133,57 +115,30 @@ pub trait CachingModel: ToModel {
     fn form_html() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Get access to the cache.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock().unwrap();
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Add an empty `FormCache` structure to the cache if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets and metadata of model.
-            let meta: Meta = Self::meta()?;
-            // Accessing cached MongoDB clients.
-            let client_store: std::sync::MutexGuard<
-                '_,
-                std::collections::HashMap<String, mongodb::sync::Client>,
-            > = DB_MAP_CLIENT_NAMES.lock()?;
-            // Get MongoDB client for current model.
-            let client_cache: &mongodb::sync::Client =
-                client_store.get(&meta.db_client_name).unwrap();
-            // Get a widget map.
-            let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            // Enrich the widget map with values for dynamic widgets.
-            Self::vitaminize(
-                meta.project_name.as_str(),
-                meta.unique_project_key.as_str(),
-                meta.collection_name.as_str(),
-                &client_cache,
-                &mut map_widgets,
-            )?;
-            // Init new FormCache.
-            let new_form_cache = FormCache {
-                meta,
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            // Update the state of a variable.
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Model in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add Model metadata to cache.
+            Self::meta_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        // Add attributes in json format to cache if they are not there.
-        if form_cache.controls_html.is_empty() {
-            let map_widgets: std::collections::HashMap<String, Widget> =
-                form_cache.map_widgets.clone();
-            let controls: String = Self::to_html(&form_cache.meta.fields_name, map_widgets);
-            let mut form_cache: FormCache = form_cache.clone();
-            form_cache.controls_html = controls.clone();
-            form_store.insert(key, form_cache.clone());
-            return Ok(controls);
+        // Generate data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            Ok(Self::to_html(
+                &form_cache.meta.fields_name,
+                form_cache.map_widgets.clone(),
+            ))
+        } else {
+            let meta = Self::meta()?;
+            Err(format!(
+                "Model: `{}` -> Method: `form_html()` : Failed to get data from cache.",
+                meta.model_name
+            ))?
         }
-        Ok(form_cache.controls_html.clone())
     }
 
     // Get cached Model data.
@@ -192,52 +147,33 @@ pub trait CachingModel: ToModel {
     ) -> Result<(FormCache, mongodb::sync::Client), Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
-        // Access to the cached model data.
-        let mut form_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, FormCache>,
-        > = FORM_CACHE.lock()?;
-        let mut form_cache: Option<&FormCache> = form_store.get(&key[..]);
-        // Accessing cached MongoDB clients.
-        let client_store: std::sync::MutexGuard<
-            '_,
-            std::collections::HashMap<String, mongodb::sync::Client>,
-        > = DB_MAP_CLIENT_NAMES.lock()?;
-        // Add the `FormCache` structure to the cache for the current model if it is not there.
-        if form_cache.is_none() {
-            // Create `FormCache` default and add map of widgets and metadata of model.
-            let meta: Meta = Self::meta()?;
-            // Get MongoDB client for current model.
-            let client_cache: &mongodb::sync::Client =
-                client_store.get(&meta.db_client_name).unwrap();
-            // Get a widget map.
-            let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
-            // Enrich the widget map with values for dynamic widgets.
-            Self::vitaminize(
-                meta.project_name.as_str(),
-                meta.unique_project_key.as_str(),
-                meta.collection_name.as_str(),
-                &client_cache,
-                &mut map_widgets,
-            )?;
-            // Init new FormCache.
-            let new_form_cache = FormCache {
-                meta,
-                map_widgets,
-                ..Default::default()
-            };
-            // Save structure `FormCache` to store.
-            form_store.insert(key.clone(), new_form_cache);
-            // Update the state of a variable.
-            form_cache = form_store.get(&key[..]);
+        // Get read access from cache.
+        let mut form_store = FORM_CACHE.read()?;
+        // Check if there is metadata for the Model in the cache.
+        if !form_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(form_store);
+            // Add Model metadata to cache.
+            Self::meta_to_cache()?;
+            // Reaccess.
+            form_store = FORM_CACHE.read()?;
         }
-        let form_cache: &FormCache = form_cache.unwrap();
-        // Get model metadata from cache.
-        let meta: &Meta = &form_cache.meta;
-        // Get MongoDB client for current model.
-        let client_cache: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
-        // Return result
-        Ok((form_cache.clone(), client_cache.clone()))
+        // Generate data and return the result.
+        if let Some(form_cache) = form_store.get(&key[..]) {
+            // Get model metadata from cache.
+            let meta: &Meta = &form_cache.meta;
+            // Get MongoDB client for current model.
+            let client_store = DB_MAP_CLIENT_NAMES.read()?;
+            let client: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
+            //
+            Ok((form_cache.clone(), client.clone()))
+        } else {
+            let meta = Self::meta()?;
+            Err(format!(
+                "Model: `{}` -> Method: `get_cache_data_for_query()` : Failed to get data from cache.",
+                meta.model_name
+            ))?
+        }
     }
 
     // Accepts json-line to update data, for dynamic widgets.

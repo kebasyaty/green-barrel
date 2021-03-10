@@ -46,7 +46,7 @@ mod app_name {
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
-        DB_MAP_CLIENT_NAMES.lock()?.insert(
+        DB_MAP_CLIENT_NAMES.write()?.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
@@ -115,8 +115,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.lock()?;
-        let client_store = DB_MAP_CLIENT_NAMES.lock()?;
+        let form_store = FORM_CACHE.read()?;
+        let client_store = DB_MAP_CLIENT_NAMES.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -161,8 +161,8 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.lock()?;
-        let client_store = DB_MAP_CLIENT_NAMES.lock()?;
+        let form_store = FORM_CACHE.read()?;
+        let client_store = DB_MAP_CLIENT_NAMES.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
