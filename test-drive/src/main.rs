@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    //println!("{:?}\n\n", mango_models::Dynamic::form_wig().unwrap());
+    println!("{:?}\n\n", mango_models::Dynamic::form_wig().unwrap());
     //println!("{}\n\n", mango_models::Dynamic::form_json().unwrap());
     //println!("{}\n\n", mango_models::Dynamic::form_html().unwrap());
 

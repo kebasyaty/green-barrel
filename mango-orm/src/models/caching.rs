@@ -339,7 +339,9 @@ pub trait CachingModel: ToModel {
         // Get write access in cache.
         let mut form_store = FORM_CACHE.write()?;
         // Remove cache entry
-        form_store.remove(key.as_str());
+        if form_store.contains_key(key.as_str()) {
+            form_store.remove(key.as_str());
+        }
         //
         Ok(())
     }
