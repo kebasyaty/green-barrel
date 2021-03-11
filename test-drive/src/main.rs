@@ -89,6 +89,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // *********************************************************************************************
     // println!("{:?}\n\n", mango_models::UserProfile::form_wig().unwrap());
     // println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
+    println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
+    println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
+    println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
     // println!("{}\n\n", mango_models::UserProfile::form_html().unwrap());
 
     //mango_models::UserProfile::find_one_and_delete(doc! {"username": "Rust"}, None)?;

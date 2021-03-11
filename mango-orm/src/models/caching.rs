@@ -99,8 +99,18 @@ pub trait CachingModel: ToModel {
             form_store = FORM_CACHE.read()?;
         }
         // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
-            Ok(serde_json::to_string(&form_cache.map_widgets.clone())?)
+        if let Some(form_cache) = form_store.get(key.as_str()) {
+            if form_cache.form_json.is_empty() {
+                drop(form_store);
+                let mut form_store = FORM_CACHE.write()?;
+                let form_cache = form_store.get(key.as_str()).unwrap();
+                let json = serde_json::to_string(&form_cache.map_widgets.clone())?;
+                let mut new_form_cache = form_cache.clone();
+                new_form_cache.form_json = json.clone();
+                form_store.insert(key, new_form_cache);
+                return Ok(json);
+            }
+            Ok(form_cache.form_json.clone())
         } else {
             let meta = Self::meta()?;
             Err(format!(
