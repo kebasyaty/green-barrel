@@ -99,8 +99,18 @@ pub trait CachingModel: ToModel {
             form_store = FORM_CACHE.read()?;
         }
         // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
-            Ok(serde_json::to_string(&form_cache.map_widgets.clone())?)
+        if let Some(form_cache) = form_store.get(key.as_str()) {
+            if form_cache.form_json.is_empty() {
+                drop(form_store);
+                let mut form_store = FORM_CACHE.write()?;
+                let form_cache = form_store.get(key.as_str()).unwrap();
+                let json = serde_json::to_string(&form_cache.map_widgets.clone())?;
+                let mut new_form_cache = form_cache.clone();
+                new_form_cache.form_json = json.clone();
+                form_store.insert(key, new_form_cache);
+                return Ok(json);
+            }
+            Ok(form_cache.form_json.clone())
         } else {
             let meta = Self::meta()?;
             Err(format!(
@@ -128,10 +138,18 @@ pub trait CachingModel: ToModel {
         }
         // Generate data and return the result.
         if let Some(form_cache) = form_store.get(&key[..]) {
-            Ok(Self::to_html(
-                &form_cache.meta.fields_name,
-                form_cache.map_widgets.clone(),
-            ))
+            if form_cache.form_html.is_empty() {
+                drop(form_store);
+                let mut form_store = FORM_CACHE.write()?;
+                let form_cache = form_store.get(key.as_str()).unwrap();
+                let html =
+                    Self::to_html(&form_cache.meta.fields_name, form_cache.map_widgets.clone());
+                let mut new_form_cache = form_cache.clone();
+                new_form_cache.form_html = html.clone();
+                form_store.insert(key, new_form_cache);
+                return Ok(html);
+            }
+            Ok(form_cache.form_html.clone())
         } else {
             let meta = Self::meta()?;
             Err(format!(
@@ -202,11 +220,16 @@ pub trait CachingModel: ToModel {
                 Self::meta()?.model_name
             ))?
         }
+
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
-        let mango_tech_keyword = format!("mango_tech__{}", meta.unique_project_key.clone());
+        let mango_tech_keyword = format!(
+            "mango_tech__{}__{}",
+            meta.project_name.clone(),
+            meta.unique_project_key.clone()
+        );
         let db = client_cache.database(&mango_tech_keyword);
         let coll = db.collection("dynamic_widgets");
         let query = mongodb::bson::doc! {
@@ -331,6 +354,17 @@ pub trait CachingModel: ToModel {
             }
         }
 
+        // Clear cache
+        // -----------------------------------------------------------------------------------------
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key();
+        // Get write access in cache.
+        let mut form_store = FORM_CACHE.write()?;
+        // Remove cache entry
+        if form_store.contains_key(key.as_str()) {
+            form_store.remove(key.as_str());
+        }
+        //
         Ok(())
     }
 }

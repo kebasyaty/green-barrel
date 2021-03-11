@@ -18,7 +18,6 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
     }
-
     // Monitor initialization.
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
@@ -31,7 +30,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         ],
     };
     monitor.migrat();
-
+    //
     Ok(())
 }
 
@@ -152,8 +151,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_10_@test.test".to_string()),
-        confirm_email: Some("test_10_@test.test".to_string()),
+        email: Some("test_12_@test.test".to_string()),
+        confirm_email: Some("test_12_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
