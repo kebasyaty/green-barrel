@@ -202,6 +202,7 @@ pub trait CachingModel: ToModel {
                 Self::meta()?.model_name
             ))?
         }
+
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -331,6 +332,15 @@ pub trait CachingModel: ToModel {
             }
         }
 
+        // Clear cache
+        // -----------------------------------------------------------------------------------------
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key();
+        // Get write access in cache.
+        let mut form_store = FORM_CACHE.write()?;
+        // Remove cache entry
+        form_store.remove(key.as_str());
+        //
         Ok(())
     }
 }
