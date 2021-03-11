@@ -207,7 +207,11 @@ pub trait CachingModel: ToModel {
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
-        let mango_tech_keyword = format!("mango_tech__{}", meta.unique_project_key.clone());
+        let mango_tech_keyword = format!(
+            "mango_tech__{}__{}",
+            meta.project_name.clone(),
+            meta.unique_project_key.clone()
+        );
         let db = client_cache.database(&mango_tech_keyword);
         let coll = db.collection("dynamic_widgets");
         let query = mongodb::bson::doc! {
