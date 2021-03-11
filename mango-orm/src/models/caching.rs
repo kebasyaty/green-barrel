@@ -349,20 +349,22 @@ pub trait CachingModel: ToModel {
                 }
             }
             if is_changed {
+                // Update values for dynamic widgets.
+                // ---------------------------------------------------------------------------------
                 let query = mongodb::bson::doc! {"_id": curr_doc.get_object_id("_id")?};
                 coll.update_one(query, curr_doc, None)?;
-            }
-        }
 
-        // Clear cache
-        // -----------------------------------------------------------------------------------------
-        // Get a key to access Model data in the cache.
-        let key: String = Self::key();
-        // Get write access in cache.
-        let mut form_store = FORM_CACHE.write()?;
-        // Remove cache entry
-        if form_store.contains_key(key.as_str()) {
-            form_store.remove(key.as_str());
+                // Clear cache
+                // ---------------------------------------------------------------------------------
+                // Get a key to access Model data in the cache.
+                let key: String = Self::key();
+                // Get write access in cache.
+                let mut form_store = FORM_CACHE.write()?;
+                // Remove cache entry
+                if form_store.contains_key(key.as_str()) {
+                    form_store.remove(key.as_str());
+                }
+            }
         }
         //
         Ok(())
