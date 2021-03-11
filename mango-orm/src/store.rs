@@ -15,6 +15,8 @@ use std::sync::RwLock;
 pub struct FormCache {
     pub meta: crate::models::Meta,
     pub map_widgets: std::collections::HashMap<String, crate::forms::Widget>,
+    pub form_json: String,
+    pub form_html: String,
 }
 
 // Store
