@@ -20,9 +20,9 @@ use crate::{
 // Caching information about Models for speed up work.
 // #################################################################################################
 pub trait CachingModel: ToModel {
-    // Add Model metadata to cache.
+    // Add metadata and widgects map to cache.
     // *********************************************************************************************
-    fn meta_to_cache() -> Result<(), Box<dyn std::error::Error>> {
+    fn to_cache() -> Result<(), Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get write access in cache.
@@ -60,16 +60,7 @@ pub trait CachingModel: ToModel {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(form_store);
-            // Add Model metadata to cache.
-            Self::meta_to_cache()?;
-            // Reaccess.
-            form_store = FORM_CACHE.read()?;
-        }
+        let form_store = FORM_CACHE.read()?;
         // Get data and return the result.
         if let Some(form_cache) = form_store.get(&key[..]) {
             Ok(form_cache.map_widgets.clone())
@@ -88,16 +79,7 @@ pub trait CachingModel: ToModel {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(form_store);
-            // Add Model metadata to cache.
-            Self::meta_to_cache()?;
-            // Reaccess.
-            form_store = FORM_CACHE.read()?;
-        }
+        let form_store = FORM_CACHE.read()?;
         // Generate data and return the result.
         if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_json.is_empty() {
@@ -126,16 +108,7 @@ pub trait CachingModel: ToModel {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(form_store);
-            // Add Model metadata to cache.
-            Self::meta_to_cache()?;
-            // Reaccess.
-            form_store = FORM_CACHE.read()?;
-        }
+        let form_store = FORM_CACHE.read()?;
         // Generate data and return the result.
         if let Some(form_cache) = form_store.get(&key[..]) {
             if form_cache.form_html.is_empty() {
@@ -166,16 +139,7 @@ pub trait CachingModel: ToModel {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(form_store);
-            // Add Model metadata to cache.
-            Self::meta_to_cache()?;
-            // Reaccess.
-            form_store = FORM_CACHE.read()?;
-        }
+        let form_store = FORM_CACHE.read()?;
         // Generate data and return the result.
         if let Some(form_cache) = form_store.get(&key[..]) {
             // Get model metadata from cache.
@@ -354,16 +318,16 @@ pub trait CachingModel: ToModel {
                 let query = mongodb::bson::doc! {"_id": curr_doc.get_object_id("_id")?};
                 coll.update_one(query, curr_doc, None)?;
 
-                // Clear cache
+                // Update cache
                 // ---------------------------------------------------------------------------------
                 // Get a key to access Model data in the cache.
                 let key: String = Self::key();
                 // Get write access in cache.
                 let mut form_store = FORM_CACHE.write()?;
                 // Remove cache entry
-                if form_store.contains_key(key.as_str()) {
-                    form_store.remove(key.as_str());
-                }
+                form_store.remove(key.as_str());
+                // Add metadata and widgects map to cache.
+                Self::to_cache()?;
             }
         }
         //

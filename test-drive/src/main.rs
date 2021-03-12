@@ -30,6 +30,12 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         ],
     };
     monitor.migrat();
+
+    // Add metadata and widgects map to cache.
+    // ---------------------------------------------------------------------------------------------
+    mango_models::Dynamic::to_cache()?;
+    mango_models::User::to_cache()?;
+    mango_models::UserProfile::to_cache()?;
     //
     Ok(())
 }
