@@ -62,7 +62,7 @@ pub trait CachingModel: ToModel {
         // Get read access from cache.
         let form_store = FORM_CACHE.read()?;
         // Get data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             Ok(form_cache.map_widgets.clone())
         } else {
             let meta = Self::meta()?;
@@ -110,7 +110,7 @@ pub trait CachingModel: ToModel {
         // Get read access from cache.
         let form_store = FORM_CACHE.read()?;
         // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_html.is_empty() {
                 drop(form_store);
                 let mut form_store = FORM_CACHE.write()?;
@@ -141,7 +141,7 @@ pub trait CachingModel: ToModel {
         // Get read access from cache.
         let form_store = FORM_CACHE.read()?;
         // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             // Get model metadata from cache.
             let meta: &Meta = &form_cache.meta;
             // Get MongoDB client for current model.
