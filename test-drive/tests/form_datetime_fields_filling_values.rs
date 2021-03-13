@@ -9,7 +9,8 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const SERVICE_NAME: &str = "TEST_PSug_V7hs7XU3ZUq";
+    pub const UNIQUE_PROJECT_KEY: &str = "PSug_V7hs7XU3ZUq";
+    pub const SERVICE_NAME: &str = "service_name";
 
     // Create form
     // *********************************************************************************************

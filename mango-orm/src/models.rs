@@ -72,7 +72,6 @@ impl Default for Meta {
 // *************************************************************************************************
 pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     // Get model key.
-    // Hint:  key = collection name
     // (To access data in the cache)
     // ---------------------------------------------------------------------------------------------
     fn key() -> String;

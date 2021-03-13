@@ -76,6 +76,8 @@ mod app_name {
             models: model_list()?,
         };
         monitor.migrat();
+        // Add metadata and widgects map to cache.
+        TestModel::to_cache()?;
         //
         Ok(())
     }
