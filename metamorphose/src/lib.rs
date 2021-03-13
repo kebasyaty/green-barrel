@@ -450,15 +450,15 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // *****************************************************************************************
         impl ToModel for #model_name {
             // Get model key.
-            // Hint: key = collection name
             // (To access data in the cache)
             // -------------------------------------------------------------------------------------
             fn key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 format!(
-                    "{}_{}",
+                    "{}__{}__{}",
                     SERVICE_NAME.trim(),
-                    re.replace_all(stringify!(#model_name), "_$upper_chr")
+                    re.replace_all(stringify!(#model_name), "_$upper_chr"),
+                    UNIQUE_PROJECT_KEY.trim().to_string()
                 )
                 .to_lowercase()
             }
@@ -752,9 +752,10 @@ fn impl_create_form(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStrea
             fn key() -> String {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 format!(
-                    "{}_{}",
+                    "{}__{}__{}",
                     SERVICE_NAME.trim(),
-                    re.replace_all(stringify!(#form_name), "_$upper_chr")
+                    re.replace_all(stringify!(#form_name), "_$upper_chr"),
+                    UNIQUE_PROJECT_KEY.trim().to_string()
                 )
                 .to_lowercase()
             }
