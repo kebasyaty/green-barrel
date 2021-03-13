@@ -55,7 +55,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             form_store = FORM_CACHE.read()?;
         }
         // Get data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             Ok(form_cache.map_widgets.clone())
         } else {
             Err(format!(
@@ -82,7 +82,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             form_store = FORM_CACHE.read()?;
         }
         // Get data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_json.is_empty() {
                 drop(form_store);
                 let mut form_store = FORM_CACHE.write()?;
@@ -119,7 +119,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             form_store = FORM_CACHE.read()?;
         }
         // Get data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_html.is_empty() {
                 drop(form_store);
                 let mut form_store = FORM_CACHE.write()?;
@@ -157,7 +157,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             form_store = FORM_CACHE.read()?;
         }
         // Get data and return the result.
-        if let Some(form_cache) = form_store.get(&key[..]) {
+        if let Some(form_cache) = form_store.get(key.as_str()) {
             Ok(form_cache.clone())
         } else {
             Err(format!(
