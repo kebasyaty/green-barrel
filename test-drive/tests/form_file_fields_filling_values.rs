@@ -9,7 +9,8 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const SERVICE_NAME: &str = "TEST_Z9WBAV_SYfnL2Zzp";
+    pub const UNIQUE_PROJECT_KEY: &str = "Z9WBAV_SYfnL2Zzp";
+    pub const SERVICE_NAME: &str = "service_name";
 
     // Create models
     // *********************************************************************************************
