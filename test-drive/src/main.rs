@@ -157,8 +157,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_15_@test.test".to_string()),
-        confirm_email: Some("test_15_@test.test".to_string()),
+        email: Some("test_16_@test.test".to_string()),
+        confirm_email: Some("test_16_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -167,6 +167,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         num_u32: Some(32),
         num_i64: Some(-64),
         num_f64: Some(-64.64),
+        is_staff: Some(false),
+        is_active: Some(true),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
