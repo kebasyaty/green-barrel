@@ -50,7 +50,7 @@ pub trait QPaladins: ToModel + CachingModel {
             widget_list.push(widget);
         }
         //
-        Ok(String::new())
+        Ok(serde_json::to_string(&widget_list)?)
     }
 
     // Checking the Model before queries the database.
