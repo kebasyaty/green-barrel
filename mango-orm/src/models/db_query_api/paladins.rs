@@ -19,6 +19,40 @@ use crate::{
 use rand::Rng;
 
 pub trait QPaladins: ToModel + CachingModel {
+    // Json-line for admin panel.
+    // ---------------------------------------------------------------------------------------------
+    fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
+        // Get Model metadata.
+        let meta: Meta = form_cache.meta;
+        let fields_name = meta.fields_name.clone();
+        let map_widgets = form_cache.map_widgets.clone();
+        let model_json = self.self_to_json()?;
+        let mut widget_list: Vec<Widget> = Vec::new();
+        // Get a list of widgets in the order of the model fields.
+        for field_name in fields_name {
+            let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
+            let field_json = model_json[field_name].clone();
+            if field_json.is_string() {
+                widget.value = field_json.as_str().unwrap().to_string();
+            } else if field_json.is_i64() {
+                widget.value = field_json.as_i64().unwrap().to_string();
+            } else if field_json.is_u64() {
+                widget.value = field_json.as_u64().unwrap().to_string();
+            } else if field_json.is_f64() {
+                widget.value = field_json.as_f64().unwrap().to_string();
+            } else if field_json.is_boolean() {
+                widget.value = field_json.as_bool().unwrap().to_string();
+            } else if field_json.is_null() {
+                widget.value = String::new();
+            }
+            widget_list.push(widget);
+        }
+        //
+        Ok(String::new())
+    }
+
     // Checking the Model before queries the database.
     // ---------------------------------------------------------------------------------------------
     fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
