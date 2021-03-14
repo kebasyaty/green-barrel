@@ -167,10 +167,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         num_u32: Some(32),
         num_i64: Some(-64),
         num_f64: Some(-64.64),
+        is_staff: Some(false),
+        is_active: Some(true),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    //println!("{}", user.json_for_admin()?);
+    println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None, None)?;

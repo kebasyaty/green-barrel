@@ -365,7 +365,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "checkBoxI32" | "inputRadioI32" | "numberI32"
+                                        "inputRadioI32" | "numberI32"
                                         | "rangeI32" | "selectI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
@@ -376,7 +376,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "checkBoxU32" | "radioU32" | "numberU32" | "rangeU32"
+                                        "radioU32" | "numberU32" | "rangeU32"
                                         | "selectU32" | "checkBoxI64" | "radioI64"
                                         | "numberI64" | "rangeI64" | "selectI64" => {
                                             let val: String = value.1.clone();
@@ -388,8 +388,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "checkBoxF64" | "radioF64" | "numberF64" | "rangeF64"
-                                        | "selectF64" => {
+                                        "radioF64" | "numberF64" | "rangeF64" | "selectF64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Double(
@@ -399,7 +398,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "checkBoxBool" => {
+                                        "checkBox" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Boolean(
