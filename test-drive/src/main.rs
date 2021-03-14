@@ -1,5 +1,5 @@
 use mango_orm::*;
-use mongodb::bson::doc;
+//use mongodb::bson::doc;
 
 mod mango_models;
 mod settings;
@@ -43,12 +43,6 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration.
     mango_migration()?;
-
-    /*
-    let user = mango_models::UserProfile::find_one(Some(doc! {"username": "New Name"}), None)?
-        .model::<mango_models::UserProfile>()?;
-    println!("Model instance:\n{:?}\n\n", user.check());
-    */
 
     // Test dynamic widgets.
     // *********************************************************************************************
