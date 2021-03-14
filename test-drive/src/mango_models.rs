@@ -132,9 +132,9 @@ impl AdditionalValidation for User {
             std::collections::HashMap::new();
 
         // Get clean data
-        let password = self.password.clone().unwrap();
-        let confirm_password = self.confirm_password.clone().unwrap();
-        let username = self.username.clone().unwrap();
+        let password = self.password.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.clone().unwrap_or_default();
+        let username = self.username.clone().unwrap_or_default();
 
         // Fields validation
         if password != confirm_password {
@@ -236,10 +236,10 @@ impl AdditionalValidation for UserProfile {
         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         // Get clean data
-        let email = self.email.clone().unwrap();
-        let confirm_email = self.confirm_email.clone().unwrap();
-        let password = self.password.clone().unwrap();
-        let confirm_password = self.confirm_password.clone().unwrap();
+        let email = self.email.clone().unwrap_or_default();
+        let confirm_email = self.confirm_email.clone().unwrap_or_default();
+        let password = self.password.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.clone().unwrap_or_default();
         // Fields validation
         if email != confirm_email {
             error_map.insert(
@@ -292,10 +292,10 @@ impl AdditionalValidation for UserForm {
         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         // Get clean data
-        let email = self.email.clone().unwrap();
-        let confirm_email = self.confirm_email.clone().unwrap();
-        let password = self.password.clone().unwrap();
-        let confirm_password = self.confirm_password.clone().unwrap();
+        let email = self.email.clone().unwrap_or_default();
+        let confirm_email = self.confirm_email.clone().unwrap_or_default();
+        let password = self.password.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.clone().unwrap_or_default();
         // Fields validation
         if email != confirm_email {
             error_map.insert(
