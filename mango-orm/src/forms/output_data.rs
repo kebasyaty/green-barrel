@@ -69,6 +69,7 @@ impl OutputDataForm {
         }
         Ok(map_widgets.get(&"hash".to_owned()).unwrap().value.clone())
     }
+
     // Get Hash-line
     pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
@@ -77,6 +78,7 @@ impl OutputDataForm {
             _ => panic!("Invalid output type."),
         }
     }
+
     // Get MongoDB ID from hash-line
     pub fn id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
         match self {
