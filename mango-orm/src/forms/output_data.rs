@@ -117,6 +117,7 @@ impl OutputDataForm {
     }
 
     // Json-line for admin panel.
+    // ( converts a widget map to a list, in the order of the Model fields )
     pub fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         let data = match self {
             Self::Save(data) => data,

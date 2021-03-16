@@ -20,6 +20,7 @@ use rand::Rng;
 
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
+    // ( converts a widget map to a list, in the order of the Model fields )
     // ---------------------------------------------------------------------------------------------
     fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         // Get cached Model data.
