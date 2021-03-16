@@ -157,8 +157,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_18_@test.test".to_string()),
-        confirm_email: Some("test_18_@test.test".to_string()),
+        email: Some("test_22_@test.test".to_string()),
+        confirm_email: Some("test_22_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -202,7 +202,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
-    //println!("{}", result.json_for_admin()?);
+    println!("{}", result.json_for_admin()?);
     //println!("{}", user.json_for_admin()?);
     /*
     println!(

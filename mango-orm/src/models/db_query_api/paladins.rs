@@ -280,7 +280,6 @@ pub trait QPaladins: ToModel + CachingModel {
                                         )
                                         .unwrap();
                                     }
-                                    final_widget.value = String::new();
                                 }
                             }
                             _ => {
@@ -1164,7 +1163,6 @@ pub trait QPaladins: ToModel + CachingModel {
             meta.fields_name.clone(),
             final_map_widgets,
             hash,
-            self.self_to_json()?,
         )))
     }
 
