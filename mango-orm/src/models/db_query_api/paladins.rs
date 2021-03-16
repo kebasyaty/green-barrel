@@ -20,6 +20,7 @@ use rand::Rng;
 
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
+    // ( converts a widget map to a list, in the order of the Model fields )
     // ---------------------------------------------------------------------------------------------
     fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         // Get cached Model data.
@@ -33,19 +34,21 @@ pub trait QPaladins: ToModel + CachingModel {
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
             let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
-            let field_json = model_json[field_name].clone();
-            if field_json.is_string() {
-                widget.value = field_json.as_str().unwrap().to_string();
-            } else if field_json.is_i64() {
-                widget.value = field_json.as_i64().unwrap().to_string();
-            } else if field_json.is_u64() {
-                widget.value = field_json.as_u64().unwrap().to_string();
-            } else if field_json.is_f64() {
-                widget.value = field_json.as_f64().unwrap().to_string();
-            } else if field_json.is_boolean() {
-                widget.checked = field_json.as_bool().unwrap();
-            } else if field_json.is_null() {
-                widget.value = String::new();
+            if !field_name.contains("password") {
+                let field_json = model_json[field_name].clone();
+                if field_json.is_string() {
+                    widget.value = field_json.as_str().unwrap().to_string();
+                } else if field_json.is_i64() {
+                    widget.value = field_json.as_i64().unwrap().to_string();
+                } else if field_json.is_u64() {
+                    widget.value = field_json.as_u64().unwrap().to_string();
+                } else if field_json.is_f64() {
+                    widget.value = field_json.as_f64().unwrap().to_string();
+                } else if field_json.is_boolean() {
+                    widget.checked = field_json.as_bool().unwrap();
+                } else if field_json.is_null() {
+                    widget.value = String::new();
+                }
             }
             widget_list.push(widget);
         }
@@ -264,9 +267,12 @@ pub trait QPaladins: ToModel + CachingModel {
                                 if !field_value.is_empty() {
                                     if !is_update {
                                         // Generate password hash and add to result document.
-                                        let hash: String = Self::create_password_hash(field_value)?;
-                                        final_doc
-                                            .insert(field_name, mongodb::bson::Bson::String(hash));
+                                        let password_hash: String =
+                                            Self::create_password_hash(field_value)?;
+                                        final_doc.insert(
+                                            field_name,
+                                            mongodb::bson::Bson::String(password_hash),
+                                        );
                                     } else if !self.verify_password(field_value, None)? {
                                         // Accumulate an error if the password does not match.
                                         is_err_symptom = true;
@@ -1159,7 +1165,6 @@ pub trait QPaladins: ToModel + CachingModel {
             meta.fields_name.clone(),
             final_map_widgets,
             hash,
-            self.self_to_json()?,
         )))
     }
 
