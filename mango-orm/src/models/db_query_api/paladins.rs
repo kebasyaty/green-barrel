@@ -1159,6 +1159,7 @@ pub trait QPaladins: ToModel + CachingModel {
             meta.fields_name.clone(),
             final_map_widgets,
             hash,
+            self.self_to_json()?,
         )))
     }
 
