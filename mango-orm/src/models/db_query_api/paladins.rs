@@ -1156,9 +1156,10 @@ pub trait QPaladins: ToModel + CachingModel {
         // -----------------------------------------------------------------------------------------
         Ok(OutputDataForm::Save((
             is_no_error,
-            hash,
             meta.fields_name.clone(),
             final_map_widgets,
+            hash,
+            self.self_to_json()?,
         )))
     }
 
