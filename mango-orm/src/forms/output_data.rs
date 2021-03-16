@@ -27,9 +27,9 @@ pub enum OutputDataForm {
     Save(
         (
             bool,
-            String,
             Vec<String>,
             std::collections::HashMap<String, Widget>,
+            String,
         ),
     ),
     Delete((bool, String)),
@@ -41,7 +41,7 @@ impl HtmlControls for OutputDataForm {
         match self {
             Self::CheckForm(data) => Self::to_html(&data.1, data.2.clone()),
             Self::CheckModel(data) => Self::to_html(&data.1, data.2.clone()),
-            Self::Save(data) => Self::to_html(&data.2, data.3.clone()),
+            Self::Save(data) => Self::to_html(&data.1, data.2.clone()),
             _ => panic!("Invalid output type."),
         }
     }
@@ -73,7 +73,7 @@ impl OutputDataForm {
     pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(Self::to_hash(&data.2)?),
-            Self::Save(data) => Ok(Self::to_hash(&data.3)?),
+            Self::Save(data) => Ok(Self::to_hash(&data.2)?),
             _ => panic!("Invalid output type."),
         }
     }
@@ -84,7 +84,7 @@ impl OutputDataForm {
                 Self::to_hash(&data.2)?.as_str(),
             )?),
             Self::Save(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
-                Self::to_hash(&data.3)?.as_str(),
+                Self::to_hash(&data.2)?.as_str(),
             )?),
             _ => panic!("Invalid output type."),
         }
@@ -97,7 +97,7 @@ impl OutputDataForm {
         match self {
             Self::CheckForm(data) => data.2.clone(),
             Self::CheckModel(data) => data.2.clone(),
-            Self::Save(data) => data.3.clone(),
+            Self::Save(data) => data.2.clone(),
             _ => panic!("Invalid output type."),
         }
     }
@@ -108,7 +108,7 @@ impl OutputDataForm {
         match self {
             Self::CheckForm(data) => Ok(serde_json::to_string(&data.2)?),
             Self::CheckModel(data) => Ok(serde_json::to_string(&data.2)?),
-            Self::Save(data) => Ok(serde_json::to_string(&data.3)?),
+            Self::Save(data) => Ok(serde_json::to_string(&data.2)?),
             _ => panic!("Invalid output type."),
         }
     }
