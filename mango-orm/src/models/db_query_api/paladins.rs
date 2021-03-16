@@ -265,9 +265,12 @@ pub trait QPaladins: ToModel + CachingModel {
                                 if !field_value.is_empty() {
                                     if !is_update {
                                         // Generate password hash and add to result document.
-                                        let hash: String = Self::create_password_hash(field_value)?;
-                                        final_doc
-                                            .insert(field_name, mongodb::bson::Bson::String(hash));
+                                        let password_hash: String =
+                                            Self::create_password_hash(field_value)?;
+                                        final_doc.insert(
+                                            field_name,
+                                            mongodb::bson::Bson::String(password_hash),
+                                        );
                                     } else if !self.verify_password(field_value, None)? {
                                         // Accumulate an error if the password does not match.
                                         is_err_symptom = true;
@@ -277,6 +280,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                         )
                                         .unwrap();
                                     }
+                                    final_widget.value = String::new();
                                 }
                             }
                             _ => {
