@@ -31,6 +31,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let map_widgets = form_cache.map_widgets.clone();
         let model_json = self.self_to_json()?;
         let mut widget_list: Vec<Widget> = Vec::new();
+        let hash = self.get_hash().unwrap_or_default();
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
             let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
@@ -49,6 +50,9 @@ pub trait QPaladins: ToModel + CachingModel {
                 } else if field_json.is_null() {
                     widget.value = String::new();
                 }
+            } else if !hash.is_empty() && field_name == "confirm_password" {
+                widget.widget = "hiddenText".to_string();
+                widget.input_type = "hidden".to_string();
             }
             widget_list.push(widget);
         }

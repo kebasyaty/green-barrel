@@ -55,19 +55,17 @@ impl OutputDataForm {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let mut errors = String::new();
         for (field_name, widget) in map_widgets {
-            let tmp = if !errors.is_empty() {
-                format!("{} ; ", errors)
-            } else {
-                String::new()
-            };
+            let tmp = errors.clone();
             if !widget.error.is_empty() {
-                errors = format!("{}Field: `{}` - {}", tmp, field_name, widget.error);
+                errors = format!("{}Field: `{}` : {}", tmp, field_name, widget.error);
             }
         }
         if !errors.is_empty() {
-            Err(errors.replace("<br>", " | "))?
+            errors = errors.replace("<br>", " | ");
+            //Err(errors)?
+            println!("\n{}\n", errors);
         }
-        Ok(map_widgets.get(&"hash".to_owned()).unwrap().value.clone())
+        Ok(map_widgets.get("hash").unwrap().value.clone())
     }
 
     // Get Hash-line
@@ -125,11 +123,20 @@ impl OutputDataForm {
         let fields_name = data.1.clone();
         let map_widgets = data.2.clone();
         let mut widget_list: Vec<Widget> = Vec::new();
+        let hash = map_widgets.get("hash").unwrap().clone().value;
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
             let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
-            if field_name.contains("password") {
-                widget.value = String::new();
+            match field_name.as_str() {
+                "password" => widget.value = String::new(),
+                "confirm_password" => {
+                    if !hash.is_empty() {
+                        widget.widget = "hiddenText".to_string();
+                        widget.input_type = "hidden".to_string();
+                    }
+                    widget.value = String::new();
+                }
+                _ => {}
             }
             widget_list.push(widget);
         }
