@@ -125,14 +125,17 @@ impl OutputDataForm {
         let fields_name = data.1.clone();
         let map_widgets = data.2.clone();
         let mut widget_list: Vec<Widget> = Vec::new();
+        let hash = map_widgets.get("hash").unwrap().clone().value;
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
             let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
             match field_name.as_str() {
                 "password" => widget.value = String::new(),
                 "confirm_password" => {
-                    widget.widget = "hiddenText".to_string();
-                    widget.input_type = "hidden".to_string();
+                    if !hash.is_empty() {
+                        widget.widget = "hiddenText".to_string();
+                        widget.input_type = "hidden".to_string();
+                    }
                     widget.value = String::new();
                 }
                 _ => {}
