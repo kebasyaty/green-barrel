@@ -55,11 +55,7 @@ impl OutputDataForm {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let mut errors = String::new();
         for (field_name, widget) in map_widgets {
-            let tmp = if !errors.is_empty() {
-                format!("{} ; ", errors)
-            } else {
-                String::new()
-            };
+            let tmp = errors.clone();
             if !widget.error.is_empty() {
                 errors = format!("{}Field: `{}` - {}", tmp, field_name, widget.error);
             }
