@@ -57,11 +57,13 @@ impl OutputDataForm {
         for (field_name, widget) in map_widgets {
             let tmp = errors.clone();
             if !widget.error.is_empty() {
-                errors = format!("{}Field: `{}` - {}", tmp, field_name, widget.error);
+                errors = format!("{}Field: `{}` : {}", tmp, field_name, widget.error);
             }
         }
         if !errors.is_empty() {
-            Err(errors.replace("<br>", " | "))?
+            errors = errors.replace("<br>", " | ");
+            //Err(errors)?
+            println!("\n{}\n", errors);
         }
         Ok(map_widgets.get("hash").unwrap().value.clone())
     }
