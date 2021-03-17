@@ -172,7 +172,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    println!("{}", user.json_for_admin()?);
+    //println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None, None)?;
@@ -182,7 +182,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
-    //println!("{}", result.json_for_admin()?);
+    println!("{}", result.json_for_admin()?);
     /*
     println!(
         "Verify password (false): {}",

@@ -67,7 +67,7 @@ impl OutputDataForm {
         if !errors.is_empty() {
             Err(errors.replace("<br>", " | "))?
         }
-        Ok(map_widgets.get(&"hash".to_owned()).unwrap().value.clone())
+        Ok(map_widgets.get("hash").unwrap().value.clone())
     }
 
     // Get Hash-line
