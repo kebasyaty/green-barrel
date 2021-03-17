@@ -31,7 +31,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let map_widgets = form_cache.map_widgets.clone();
         let model_json = self.self_to_json()?;
         let mut widget_list: Vec<Widget> = Vec::new();
-        let hash = map_widgets.get("hash").unwrap().clone().value;
+        let hash = model_json["hash"].clone().as_str().unwrap().to_string();
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
             let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
