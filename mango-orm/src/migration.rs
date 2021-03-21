@@ -251,22 +251,15 @@ impl<'a> Monitor<'a> {
                 };
                 // Check if the set of fields in the collection of
                 // the current Model needs to be updated.
-                let mut run_documents_modification: bool = false;
-                if trunc_list_fields_name.len() != monitor_models_fields_name.len() {
-                    run_documents_modification = true;
-                } else {
-                    for field in trunc_list_fields_name.iter() {
-                        if monitor_models_fields_name.iter().any(|item| {
-                            (item != field) || 
-                            (map_widget_type.get(item).unwrap() != map_widget_type.get(*field).unwrap())
-                        }) {
-                            run_documents_modification = true;
-                            break;
-                        }
+                let mut changed_fields: Vec<&str> = Vec::new();
+                for field in trunc_list_fields_name.iter() {
+                    if !monitor_models_fields_name.contains(&field.to_string()) {
+                        changed_fields.push(field);
                     }
                 }
+                println!("{:?}", changed_fields);
                 // Start (if necessary) updating the set of fields in the current collection.
-                if run_documents_modification {
+                if !changed_fields.is_empty() {
                     // Get the database and collection of the current Model.
                     let db: Database = client.database(&meta.database_name);
                     let collection: mongodb::sync::Collection =
@@ -286,7 +279,7 @@ impl<'a> Monitor<'a> {
                                 continue;
                             }
                             // If the field exists, get its value.
-                            if doc_from_db.contains_key(field) {
+                            if !changed_fields.contains(field) {
                                 let value_from_db: Option<&mongodb::bson::Bson> =
                                     doc_from_db.get(field);
                                 if value_from_db.is_some() {
