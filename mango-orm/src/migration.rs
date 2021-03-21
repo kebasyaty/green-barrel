@@ -253,8 +253,8 @@ impl<'a> Monitor<'a> {
                 if trunc_list_fields_name.len() != monitor_models_fields_name.len() {
                     run_documents_modification = true;
                 } else {
-                    for item in trunc_list_fields_name.iter() {
-                        if monitor_models_fields_name.iter().any(|item2| item2 != item) {
+                    for field in trunc_list_fields_name.iter() {
+                        if monitor_models_fields_name.iter().any(|item| item != field) {
                             run_documents_modification = true;
                             break;
                         }
