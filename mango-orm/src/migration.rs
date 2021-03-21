@@ -276,8 +276,8 @@ impl<'a> Monitor<'a> {
                         // Create temporary blank document.
                         let mut tmp_doc = mongodb::bson::document::Document::new();
                         // Loop over all fields of the model.
-                        for field in fields_name.clone() {
-                            if field == "hash" || ignore_fields.contains(&field) {
+                        for field in fields_name.iter() {
+                            if *field == "hash" || ignore_fields.contains(&field) {
                                 continue;
                             }
                             // If the field exists, get its value.
@@ -296,7 +296,7 @@ impl<'a> Monitor<'a> {
                                 }
                             } else {
                                 // If no field exists, get default value.
-                                let value = map_default_values.get(field).unwrap();
+                                let value = map_default_values.get(*field).unwrap();
                                 tmp_doc.insert(
                                     field.to_string(),
                                     match value.0.as_str() {
