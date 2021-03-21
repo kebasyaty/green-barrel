@@ -257,7 +257,8 @@ impl<'a> Monitor<'a> {
                 } else {
                     for field in trunc_list_fields_name.iter() {
                         if monitor_models_fields_name.iter().any(|item| {
-                            (item != field) || (map_widget_type.get(item).unwrap() != map_widget_type.get(*field).unwrap())
+                            (item != field) || 
+                            (map_widget_type.get(item).unwrap() != map_widget_type.get(*field).unwrap())
                         }) {
                             run_documents_modification = true;
                             break;
