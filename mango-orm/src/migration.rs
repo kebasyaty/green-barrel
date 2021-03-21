@@ -220,6 +220,8 @@ impl<'a> Monitor<'a> {
             // <field_name, (widget_type, value)>
             let map_default_values: std::collections::HashMap<String, (String, String)> =
                 meta.map_default_values.clone();
+            // Get map of widgets types.
+            let map_widget_type = meta.map_widget_type.clone();
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -254,7 +256,9 @@ impl<'a> Monitor<'a> {
                     run_documents_modification = true;
                 } else {
                     for field in trunc_list_fields_name.iter() {
-                        if monitor_models_fields_name.iter().any(|item| item != field) {
+                        if monitor_models_fields_name.iter().any(|item| {
+                            (item != field) || (map_widget_type.get(item).unwrap() != map_widget_type.get(*field).unwrap())
+                        }) {
                             run_documents_modification = true;
                             break;
                         }
@@ -633,7 +637,7 @@ impl<'a> Monitor<'a> {
                     };
                     // Add empty arrays to the new document.
                     let mut fields_doc:  Document = mongodb::bson::document::Document::new();
-                    for (field, widget) in meta.map_widget_type.clone() {
+                    for (field, widget) in map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
                         }
@@ -655,7 +659,7 @@ impl<'a> Monitor<'a> {
                     // Create an empty list for fields with dynamic widget types.
                     let mut dyn_fields_from_model: Vec<String> = Vec::new();
                     // Add new (if any) fields in `fields_doc`.
-                    for (field, widget) in meta.map_widget_type.clone() {
+                    for (field, widget) in map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             dyn_fields_from_model.push(field.clone());
                             if !dyn_fields_from_db.contains(&field) {
