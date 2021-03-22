@@ -231,6 +231,9 @@ impl<'a> Monitor<'a> {
             // Get truncated map of widgets types.
             let trunc_map_widget_type: HashMap<String, String> = map_widget_type.clone();
             trunc_map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+            // Get a map of widgets from the technical database,
+            // from the `monitor_models` collection for current Model.
+            let monitor_map_widget_type: HashMap<String, String>;
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -260,7 +263,7 @@ impl<'a> Monitor<'a> {
                 };
                 // Get a map of widgets from the technical database,
                 // from the `monitor_models` collection for current Model.
-                let monitor_map_widget_type: HashMap<String, String> = {
+                monitor_map_widget_type = {
                     model.get_document("map_widgets")
                         .unwrap().iter()
                         .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
@@ -562,6 +565,8 @@ impl<'a> Monitor<'a> {
                         .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                     }
                 }
+            } else {
+                monitor_map_widget_type = HashMap::new();
             }
 
             // Create a new database (if doesn't exist) and add new collection.
@@ -673,10 +678,11 @@ impl<'a> Monitor<'a> {
                     // Create an empty list for fields with dynamic widget types.
                     let mut dyn_fields_from_model: Vec<String> = Vec::new();
                     // Add new (if any) fields in `fields_doc`.
-                    for (field, widget) in map_widget_type.clone() {
+                    for (field, widget) in trunc_map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             dyn_fields_from_model.push(field.clone());
-                            if !dyn_fields_from_db.contains(&field) {
+                            if !dyn_fields_from_db.contains(&field) || 
+                                (widget != *monitor_map_widget_type.get(field.as_str()).unwrap_or(&String::new())) {
                                 fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
                             }
                         }
