@@ -384,13 +384,16 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     }
     // Collect `map_default_values` and add to `trans_meta`.
     for field_name in trans_meta.fields_name.iter() {
-        let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
+        let widget = trans_map_widgets
+            .map_widgets
+            .get(field_name.as_str())
+            .unwrap();
         // For dynamic widgets, the default is invalid.
         if widget.widget.contains("Dyn") {
             if !widget.value.is_empty() {
                 panic!(
                     "Model: `{}` > Field: `{}` : \
-                For dynamic widgets, it is unacceptable to use default values.",
+                    For dynamic widgets, it is unacceptable to use default values.",
                     model_name.to_string(),
                     field_name,
                 )
@@ -398,6 +401,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 panic!(
                     "Model: `{}` > Field: `{}` : \
                     For dynamic widgets, it is unacceptable to use `select` parameter.",
+                    model_name.to_string(),
+                    field_name,
+                )
+            } else if trans_meta.ignore_fields.contains(&widget.name) {
+                panic!(
+                    "Model: `{}` > Field: `{}` : \
+                    Dynamic widgets for ignored fields are not allowed.",
                     model_name.to_string(),
                     field_name,
                 )
