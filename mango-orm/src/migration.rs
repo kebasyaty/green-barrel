@@ -246,15 +246,22 @@ impl<'a> Monitor<'a> {
                 .find_one(filter, None)
                 .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
             if model.is_some() {
+                let model: Document = model.unwrap();
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
                 let monitor_models_fields_name: Vec<String> = {
-                    let model: Document = model.unwrap();
                     let fields: Vec<mongodb::bson::Bson> =
                         model.get_array("fields").unwrap().to_vec();
                     fields
                         .into_iter()
-                        .map(|item: mongodb::bson::Bson| item.as_str().unwrap().to_string())
+                        .map(|item| item.as_str().unwrap().to_string())
+                        .collect()
+                };
+                //
+                let monitor_map_widget_type: HashMap<String, String> = {
+                    model.get_document("map_widgets")
+                        .unwrap().iter()
+                        .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
                         .collect()
                 };
                 // Check if the set of fields in the collection of
