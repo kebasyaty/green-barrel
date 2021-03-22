@@ -623,9 +623,18 @@ pub trait QPaladins: ToModel + CachingModel {
                 "inputFile" => {
                     // Get field value for validation.
                     let mut field_value: FileData = if !pre_json_value.is_null() {
-                        let clean_data: FileData =
-                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
-                        clean_data
+                        let obj_str = pre_json_value.as_str().unwrap();
+                        let data_val = serde_json::from_str::<
+                            serde_json::map::Map<String, serde_json::Value>,
+                        >(obj_str)
+                        .unwrap();
+                        if data_val.get("is_delete").unwrap().as_bool().unwrap() {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            continue;
+                        } else {
+                            let clean_data: FileData = serde_json::from_str(obj_str)?;
+                            clean_data
+                        }
                     } else {
                         FileData::default()
                     };
