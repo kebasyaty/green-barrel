@@ -31,6 +31,7 @@ pub struct ModelState {
     pub database: String,
     pub collection: String,
     pub fields: Vec<String>,
+    pub map_widgets: HashMap<String, String>,
     pub status: bool,
 }
 
@@ -68,6 +69,13 @@ impl<'a> Monitor<'a> {
 
     // Refresh models state.
     // *********************************************************************************************
+    /*
+        if {
+            If there is no technical database, it will be created.
+        } else {
+            Resets the Model's status to `false`.
+        }
+    */
     fn refresh(&self, client_store: &std::sync::RwLockReadGuard<HashMap<String, Client>>) {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
@@ -80,47 +88,45 @@ impl<'a> Monitor<'a> {
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
             //Get a list of databases.
             let database_names: Vec<String> = client.list_database_names(None, None)
-                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
             // Create a technical database for the project if it doesn't exist.
             if !database_names.contains(&db_mango_tech) {
                 // Create a collection for models.
                 client
                     .database(&db_mango_tech)
                     .create_collection(collection_models_name, None)
-                    .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
                 // Create a collection for widget types of `select`.
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
                     .database(&db_mango_tech)
                     .create_collection(collection_dyn_widgets_name, None)
-                    .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
             } else {
                 // Reset models state information.
                 let mango_tech_db: Database = client.database(&db_mango_tech);
                 let collection_models: Collection = mango_tech_db.collection(collection_models_name);
                 let mut cursor: Cursor = collection_models.find(None, None)
-                    .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
 
                 while let Some(result) = cursor.next() {
                     match result {
                         Ok(document) => {
                             let mut model_state: ModelState =
                                 bson::de::from_document(document)
-                                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
                             model_state.status = false;
                             let query: Document = bson::doc! {
                                 "database": &model_state.database,
                                 "collection": &model_state.collection
                             };
-                            let update: UpdateModifications = UpdateModifications::Document(
-                                bson::ser::to_document(&model_state)
-                                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string())),
-                            );
+                            let update = bson::ser::to_document(&model_state)
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
                             collection_models
                                 .update_one(query, update, None)
-                                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()));
                         }
-                        Err(err) => panic!("Migration `refresh()` : {}", err.to_string()),
+                        Err(err) => panic!("Model: `{}` > Migration method: `refresh()` : {}", meta.model_name, err.to_string()),
                     }
                 }
             }
@@ -142,20 +148,20 @@ impl<'a> Monitor<'a> {
             let collection_dyn_widgets: Collection = mango_tech_db.collection(collection_dyn_widgets_name);
             // Delete orphaned Collections.
             let cursor: Cursor = collection_models.find(None, None)
-                .unwrap_or_else(|err| panic!("Migration `napalm()` : {}", err.to_string()));
+                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()));
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
             for result in results {
                 match result {
                     Ok(document) => {
                         let model_state: ModelState = bson::de::from_document(document)
-                            .unwrap_or_else(|err| panic!("Migration `napalm()` : {}", err.to_string()));
+                            .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()));
                         if !model_state.status {
                             // Delete Collection (left without a model).
                             client
                                 .database(&model_state.database)
                                 .collection(&model_state.collection)
                                 .drop(None)
-                                .unwrap_or_else(|err| panic!("Migration `napalm()` : {}", err.to_string()));
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()));
                             // Delete a document with a record about the state of
                             // the model from the technical base.
                             let query: Document = bson::doc! {
@@ -163,12 +169,12 @@ impl<'a> Monitor<'a> {
                                 "collection": &model_state.collection
                             };
                             collection_models.delete_one(query.clone(), None)
-                                .unwrap_or_else(|err| panic!("Migration `napalm()` : {}", err.to_string()));
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()));
                             collection_dyn_widgets.delete_one(query, None)
-                                .unwrap_or_else(|err| panic!("Migration `napalm()` : {}", err.to_string()));
+                                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()));
                         }
                     }
-                    Err(err) => panic!("Migration `napalm()` : {}", err.to_string()),
+                    Err(err) => panic!("Model: `{}` > Migration method: `napalm()` : {}", meta.model_name, err.to_string()),
                 }
             }
         }
@@ -181,7 +187,7 @@ impl<'a> Monitor<'a> {
         // Get cache MongoDB clients.
         let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
             DB_MAP_CLIENT_NAMES.read()
-            .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+            .unwrap_or_else(|err| panic!("Migration method: `migrat()` : {}", err.to_string()));
         // Run refresh models state.
         self.refresh(&client_store);
 
@@ -215,11 +221,19 @@ impl<'a> Monitor<'a> {
             // Get the name of the technical database for a project.
             let db_mango_tech: String = self.mango_tech_name();
             let database_names: Vec<String> = client.list_database_names(None, None)
-                .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (widget_type, value)>
-            let map_default_values: std::collections::HashMap<String, (String, String)> =
+            let map_default_values: HashMap<String, (String, String)> =
                 meta.map_default_values.clone();
+            // Get map of widgets types.
+            let map_widget_type = meta.map_widget_type.clone();
+            // Get truncated map of widgets types.
+            let trunc_map_widget_type: HashMap<String, String> = map_widget_type.clone();
+            trunc_map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+            // Get a map of widgets from the technical database,
+            // from the `monitor_models` collection for current Model.
+            let monitor_map_widget_type: HashMap<String, String>;
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -234,45 +248,50 @@ impl<'a> Monitor<'a> {
                 .database(&db_mango_tech)
                 .collection("monitor_models")
                 .find_one(filter, None)
-                .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
             if model.is_some() {
+                let model: Document = model.unwrap();
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
                 let monitor_models_fields_name: Vec<String> = {
-                    let model: Document = model.unwrap();
                     let fields: Vec<mongodb::bson::Bson> =
                         model.get_array("fields").unwrap().to_vec();
                     fields
                         .into_iter()
-                        .map(|item: mongodb::bson::Bson| item.as_str().unwrap().to_string())
+                        .map(|item| item.as_str().unwrap().to_string())
+                        .collect()
+                };
+                // Get a map of widgets from the technical database,
+                // from the `monitor_models` collection for current Model.
+                monitor_map_widget_type = {
+                    model.get_document("map_widgets")
+                        .unwrap().iter()
+                        .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
                         .collect()
                 };
                 // Check if the set of fields in the collection of
                 // the current Model needs to be updated.
-                let mut run_documents_modification: bool = false;
-                if trunc_list_fields_name.len() != monitor_models_fields_name.len() {
-                    run_documents_modification = true;
-                } else {
-                    for item in trunc_list_fields_name.iter() {
-                        if monitor_models_fields_name.iter().any(|item2| item2 != item) {
-                            run_documents_modification = true;
-                            break;
-                        }
+                let mut changed_fields: Vec<&str> = Vec::new();
+                for field in trunc_list_fields_name.iter() {
+                    if !monitor_models_fields_name.contains(&field.to_string()) || 
+                        (trunc_map_widget_type.get(*field).unwrap() != 
+                            monitor_map_widget_type.get(*field).unwrap_or(&String::new())) {
+                        changed_fields.push(field);
                     }
                 }
                 // Start (if necessary) updating the set of fields in the current collection.
-                if run_documents_modification {
+                if !changed_fields.is_empty() {
                     // Get the database and collection of the current Model.
                     let db: Database = client.database(&meta.database_name);
                     let collection: mongodb::sync::Collection =
                         db.collection(&meta.collection_name);
                     // Get cursor to all documents of the current Model.
                     let mut cursor: mongodb::sync::Cursor = collection.find(None, None)
-                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                     // Iterate through all documents in a current (model) collection.
                     while let Some(result) = cursor.next() {
                         let doc_from_db: mongodb::bson::document::Document = 
-                            result.unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                            result.unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                         // Create temporary blank document.
                         let mut tmp_doc = mongodb::bson::document::Document::new();
                         // Loop over all fields of the model.
@@ -281,7 +300,7 @@ impl<'a> Monitor<'a> {
                                 continue;
                             }
                             // If the field exists, get its value.
-                            if doc_from_db.contains_key(field) {
+                            if !changed_fields.contains(field) {
                                 let value_from_db: Option<&mongodb::bson::Bson> =
                                     doc_from_db.get(field);
                                 if value_from_db.is_some() {
@@ -330,7 +349,7 @@ impl<'a> Monitor<'a> {
                                                             &val,
                                                             "%Y-%m-%dT%H:%M",
                                                         )
-                                                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                         chrono::Utc,
                                                     );
                                                 mongodb::bson::Bson::DateTime(dt)
@@ -357,7 +376,7 @@ impl<'a> Monitor<'a> {
                                                             &val,
                                                             "%Y-%m-%dT%H:%M",
                                                         )
-                                                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                         chrono::Utc,
                                                     );
                                                 mongodb::bson::Bson::DateTime(dt)
@@ -370,7 +389,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Int32(
-                                                    val.parse::<i32>().unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                    val.parse::<i32>().unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                 )
                                             } else {
                                                 mongodb::bson::Bson::Null
@@ -382,7 +401,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Int64(
-                                                    val.parse::<i64>().unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                    val.parse::<i64>().unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                 )
                                             } else {
                                                 mongodb::bson::Bson::Null
@@ -392,7 +411,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Double(
-                                                    val.parse::<f64>().unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                    val.parse::<f64>().unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                 )
                                             } else {
                                                 mongodb::bson::Bson::Null
@@ -402,7 +421,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Boolean(
-                                                    val.parse::<bool>().unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())),
+                                                    val.parse::<bool>().unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())),
                                                 )
                                             } else {
                                                 mongodb::bson::Bson::Boolean(false)
@@ -413,7 +432,7 @@ impl<'a> Monitor<'a> {
                                             if !val.is_empty() {
                                                 let mut file_data = 
                                                     serde_json::from_str::<FileData>(val.as_str())
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
@@ -438,14 +457,14 @@ impl<'a> Monitor<'a> {
                                                 }
                                                 // Get file metadata.
                                                 let metadata: std::fs::Metadata = f_path.metadata()
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as u32;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Create doc.
                                                 let result = mongodb::bson::ser::to_document(&file_data)
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 mongodb::bson::Bson::Document(result)
                                             } else {
                                                 mongodb::bson::Bson::Null
@@ -456,7 +475,7 @@ impl<'a> Monitor<'a> {
                                             if !val.is_empty() {
                                                 let mut file_data = 
                                                     serde_json::from_str::<ImageData>(val.as_str())
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
@@ -482,19 +501,19 @@ impl<'a> Monitor<'a> {
                                                 // Get file metadata.
                                                 let metadata: std::fs::Metadata = f_path
                                                     .metadata()
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as u32;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.
                                                 let dimensions: (u32, u32) = image::image_dimensions(path)
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 file_data.width = dimensions.0;
                                                 file_data.height = dimensions.1;
                                                 // Create doc.
                                                 let result = mongodb::bson::ser::to_document(&file_data)
-                                                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                                                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                                                 mongodb::bson::Bson::Document(result)
                                             } else {
                                                 mongodb::bson::Bson::Null
@@ -537,14 +556,16 @@ impl<'a> Monitor<'a> {
                         // Save updated document.
                         let query =
                             mongodb::bson::doc! {"_id": doc_from_db.get_object_id("_id")
-                            .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                            .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                         };
                         let mut update: Document = mongodb::bson::document::Document::new();
                         update.insert("$set".to_string(), mongodb::bson::Bson::Document(tmp_doc));
                         collection.update_one(query, update, None)
-                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                     }
                 }
+            } else {
+                monitor_map_widget_type = HashMap::new();
             }
 
             // Create a new database (if doesn't exist) and add new collection.
@@ -555,11 +576,11 @@ impl<'a> Monitor<'a> {
             if !database_names.contains(&meta.database_name)
                 || !db
                     .list_collection_names(None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                     .contains(&meta.collection_name)
             {
                 db.create_collection(&meta.collection_name, None)
-                .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
             }
 
             // Get the technical database `db_mango_tech` for the current model.
@@ -572,7 +593,7 @@ impl<'a> Monitor<'a> {
             if !database_names.contains(&db_mango_tech)
                 || !db
                     .list_collection_names(None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                     .contains(&"monitor_models".to_owned())
             {
                 panic!("In the `refresh()` method, no technical database has been created for the project.");
@@ -587,20 +608,21 @@ impl<'a> Monitor<'a> {
                     "collection": &meta.collection_name,
                     "fields": trunc_list_fields_name.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
+                    "map_widgets": bson::ser::to_bson(&trunc_map_widget_type.clone()).unwrap(),
                     "status": true
                 };
                 // Check if there is model state in the database.
                 if collection.count_documents(filter.clone(), None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                     == 0_i64 {
                     // Add model state information.
                     collection.insert_one(doc, None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                 } else {
                     // Full update model state information.
                     let update = UpdateModifications::Document(doc);
                     collection.update_one(filter, update, None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                 }
             }
 
@@ -610,7 +632,7 @@ impl<'a> Monitor<'a> {
             if !database_names.contains(&db_mango_tech)
                 || !db
                     .list_collection_names(None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                     .contains(&"dynamic_widgets".to_owned())
             {
                 panic!("In the `refresh()` method, no technical database has been created for the project.");
@@ -623,7 +645,7 @@ impl<'a> Monitor<'a> {
                 // Check if there is a document in the database for 
                 // storing the values of dynamic widgets of model.
                 if collection.count_documents(filter.clone(), None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()))
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                     == 0_i64 {
                     // Init new document.
                     let mut new_doc: Document = mongodb::bson::doc! {
@@ -633,7 +655,7 @@ impl<'a> Monitor<'a> {
                     };
                     // Add empty arrays to the new document.
                     let mut fields_doc:  Document = mongodb::bson::document::Document::new();
-                    for (field, widget) in meta.map_widget_type.clone() {
+                    for (field, widget) in map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
                         }
@@ -641,24 +663,27 @@ impl<'a> Monitor<'a> {
                     // Insert new document.
                     new_doc.insert("fields".to_string(), fields_doc);
                     collection.insert_one(new_doc, None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                 } else {
                     // Get an existing document.
                     let mut exist_doc = collection.find_one(filter.clone(), None)
-                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string())).unwrap();
+                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string())).unwrap();
                     // Get a document with `dynamic_widgets` fields.
                     let fields_doc = exist_doc.get_document_mut("fields")
-                        .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                        .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                     // Get a list of fields from the technical database,
                     // from the `dynamic_widgets` collection for current Model.
                     let dyn_fields_from_db: Vec<String> = fields_doc.keys().map(|item| item.into()).collect();
                     // Create an empty list for fields with dynamic widget types.
                     let mut dyn_fields_from_model: Vec<String> = Vec::new();
                     // Add new (if any) fields in `fields_doc`.
-                    for (field, widget) in meta.map_widget_type.clone() {
+                    for (field, widget) in trunc_map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             dyn_fields_from_model.push(field.clone());
-                            if !dyn_fields_from_db.contains(&field) {
+                            // If the new field or widgets do not match,
+                            // initialize with an empty array.
+                            if !dyn_fields_from_db.contains(&field) || 
+                                (widget != *monitor_map_widget_type.get(field.as_str()).unwrap_or(&String::new())) {
                                 fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
                             }
                         }
@@ -670,9 +695,8 @@ impl<'a> Monitor<'a> {
                         }
                     }
                     // Full update existing document.
-                    let update: UpdateModifications = UpdateModifications::Document(exist_doc);
-                    collection.update_one(filter, update, None)
-                    .unwrap_or_else(|err| panic!("Migration `migrat()` : {}", err.to_string()));
+                    collection.update_one(filter, exist_doc, None)
+                    .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                 }
             }
         }

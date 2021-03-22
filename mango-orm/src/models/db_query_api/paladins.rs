@@ -17,6 +17,7 @@ use crate::{
     models::{caching::CachingModel, Meta, ToModel},
 };
 use rand::Rng;
+use std::fs;
 
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
@@ -58,6 +59,38 @@ pub trait QPaladins: ToModel + CachingModel {
         }
         //
         Ok(serde_json::to_string(&widget_list)?)
+    }
+
+    // Delete orphaned file.
+    // ---------------------------------------------------------------------------------------------
+    fn delete_file(
+        &self,
+        coll: &mongodb::sync::Collection,
+        model_name: &str,
+        field_name: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let hash = self.get_hash().unwrap_or_default();
+        if !hash.is_empty() {
+            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
+            let filter = mongodb::bson::doc! {"_id": object_id};
+            if let Some(document) = coll.find_one(filter, None)? {
+                if let Some(field_file) = document.get(field_name).unwrap().as_document() {
+                    let path = field_file.get_str("path")?;
+                    fs::remove_file(path)?;
+                } else {
+                    Err(format!(
+                        "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (file) not found.",
+                        model_name, field_name
+                    ))?
+                }
+            } else {
+                Err(format!(
+                    "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document not found.",
+                    model_name, field_name
+                ))?
+            }
+        }
+        Ok(())
     }
 
     // Checking the Model before queries the database.
@@ -623,9 +656,23 @@ pub trait QPaladins: ToModel + CachingModel {
                 "inputFile" => {
                     // Get field value for validation.
                     let mut field_value: FileData = if !pre_json_value.is_null() {
-                        let clean_data: FileData =
-                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
-                        clean_data
+                        let obj_str = pre_json_value.as_str().unwrap();
+                        let is_delete = serde_json::from_str::<
+                            serde_json::map::Map<String, serde_json::Value>,
+                        >(obj_str)
+                        .unwrap()
+                        .get("is_delete")
+                        .unwrap()
+                        .as_bool()
+                        .unwrap();
+                        if is_delete {
+                            self.delete_file(&coll, model_name, field_name)?;
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            continue;
+                        } else {
+                            let clean_data: FileData = serde_json::from_str(obj_str)?;
+                            clean_data
+                        }
                     } else {
                         FileData::default()
                     };
@@ -696,9 +743,23 @@ pub trait QPaladins: ToModel + CachingModel {
                 "inputImage" => {
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
-                        let clean_data: ImageData =
-                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
-                        clean_data
+                        let obj_str = pre_json_value.as_str().unwrap();
+                        let is_delete = serde_json::from_str::<
+                            serde_json::map::Map<String, serde_json::Value>,
+                        >(obj_str)
+                        .unwrap()
+                        .get("is_delete")
+                        .unwrap()
+                        .as_bool()
+                        .unwrap();
+                        if is_delete {
+                            self.delete_file(&coll, model_name, field_name)?;
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            continue;
+                        } else {
+                            let clean_data: ImageData = serde_json::from_str(obj_str)?;
+                            clean_data
+                        }
                     } else {
                         ImageData::default()
                     };
