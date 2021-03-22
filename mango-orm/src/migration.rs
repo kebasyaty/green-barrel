@@ -228,6 +228,8 @@ impl<'a> Monitor<'a> {
                 meta.map_default_values.clone();
             // Get map of widgets types.
             let map_widget_type = meta.map_widget_type.clone();
+            // Get truncated map of widgets types.
+            let trunc_map_widget_type = map_widget_type.clone().retain(|&k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -591,6 +593,7 @@ impl<'a> Monitor<'a> {
                     "collection": &meta.collection_name,
                     "fields": trunc_list_fields_name.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
+                    "map_widgets": bson::ser::to_bson(&trunc_map_widget_type.clone()).unwrap(),
                     "status": true
                 };
                 // Check if there is model state in the database.
