@@ -659,6 +659,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .as_bool()
                         .unwrap();
                         if is_delete {
+                            self.delete_file(&coll, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
@@ -745,6 +746,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .as_bool()
                         .unwrap();
                         if is_delete {
+                            self.delete_file(&coll, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
