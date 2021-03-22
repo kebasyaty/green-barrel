@@ -681,6 +681,8 @@ impl<'a> Monitor<'a> {
                     for (field, widget) in trunc_map_widget_type.clone() {
                         if widget.contains("Dyn") {
                             dyn_fields_from_model.push(field.clone());
+                            // If the new field or widgets do not match,
+                            // initialize with an empty array.
                             if !dyn_fields_from_db.contains(&field) || 
                                 (widget != *monitor_map_widget_type.get(field.as_str()).unwrap_or(&String::new())) {
                                 fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
