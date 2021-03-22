@@ -688,8 +688,7 @@ impl<'a> Monitor<'a> {
                         }
                     }
                     // Full update existing document.
-                    let update: UpdateModifications = UpdateModifications::Document(exist_doc);
-                    collection.update_one(filter, update, None)
+                    collection.update_one(filter, exist_doc, None)
                     .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                 }
             }
