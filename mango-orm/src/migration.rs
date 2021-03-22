@@ -271,7 +271,7 @@ impl<'a> Monitor<'a> {
                 let mut changed_fields: Vec<&str> = Vec::new();
                 for field in trunc_list_fields_name.iter() {
                     if !monitor_models_fields_name.contains(&field.to_string()) || 
-                        (trunc_map_widget_type.get(*field).unwrap() != monitor_map_widget_type.get(*field).unwrap()) {
+                        (trunc_map_widget_type.get(*field).unwrap() != monitor_map_widget_type.get(*field).unwrap_or(&String::new())) {
                         changed_fields.push(field);
                     }
                 }
