@@ -224,12 +224,13 @@ impl<'a> Monitor<'a> {
                 .unwrap_or_else(|err| panic!("Model: `{}` > Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (widget_type, value)>
-            let map_default_values: std::collections::HashMap<String, (String, String)> =
+            let map_default_values: HashMap<String, (String, String)> =
                 meta.map_default_values.clone();
             // Get map of widgets types.
             let map_widget_type = meta.map_widget_type.clone();
             // Get truncated map of widgets types.
-            let trunc_map_widget_type = map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+            let trunc_map_widget_type: HashMap<String, String> = map_widget_type.clone();
+            trunc_map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -257,7 +258,8 @@ impl<'a> Monitor<'a> {
                         .map(|item| item.as_str().unwrap().to_string())
                         .collect()
                 };
-                //
+                // Get a map of widgets from the technical database,
+                // from the `monitor_models` collection for current Model.
                 let monitor_map_widget_type: HashMap<String, String> = {
                     model.get_document("map_widgets")
                         .unwrap().iter()
@@ -268,7 +270,8 @@ impl<'a> Monitor<'a> {
                 // the current Model needs to be updated.
                 let mut changed_fields: Vec<&str> = Vec::new();
                 for field in trunc_list_fields_name.iter() {
-                    if !monitor_models_fields_name.contains(&field.to_string()) {
+                    if !monitor_models_fields_name.contains(&field.to_string()) || 
+                        (trunc_map_widget_type.get(*field).unwrap() != monitor_map_widget_type.get(*field).unwrap()) {
                         changed_fields.push(field);
                     }
                 }
