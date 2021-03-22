@@ -12,7 +12,7 @@
 //!
 
 use crate::{
-    forms::{FileData, ImageData},
+    forms::{FileData, ImageData, Widget},
     store::DB_MAP_CLIENT_NAMES,
 };
 use mongodb::{
@@ -32,6 +32,7 @@ pub struct ModelState {
     pub collection: String,
     pub fields: Vec<String>,
     pub status: bool,
+    pub map_widgets: HashMap<String, Widget>
 }
 
 pub struct Monitor<'a> {
@@ -112,10 +113,8 @@ impl<'a> Monitor<'a> {
                                 "database": &model_state.database,
                                 "collection": &model_state.collection
                             };
-                            let update: UpdateModifications = UpdateModifications::Document(
-                                bson::ser::to_document(&model_state)
-                                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string())),
-                            );
+                            let update = bson::ser::to_document(&model_state)
+                                .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
                             collection_models
                                 .update_one(query, update, None)
                                 .unwrap_or_else(|err| panic!("Migration `refresh()` : {}", err.to_string()));
