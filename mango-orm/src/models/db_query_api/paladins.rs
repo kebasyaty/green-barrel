@@ -624,11 +624,15 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: FileData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        let data_val = serde_json::from_str::<
+                        let is_delete = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
+                        .unwrap()
+                        .get("is_delete")
+                        .unwrap()
+                        .as_bool()
                         .unwrap();
-                        if data_val.get("is_delete").unwrap().as_bool().unwrap() {
+                        if is_delete {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
@@ -706,11 +710,15 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        let data_val = serde_json::from_str::<
+                        let is_delete = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
+                        .unwrap()
+                        .get("is_delete")
+                        .unwrap()
+                        .as_bool()
                         .unwrap();
-                        if data_val.get("is_delete").unwrap().as_bool().unwrap() {
+                        if is_delete {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
