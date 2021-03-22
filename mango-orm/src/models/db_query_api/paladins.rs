@@ -62,7 +62,26 @@ pub trait QPaladins: ToModel + CachingModel {
 
     // Delete orphaned file.
     // ---------------------------------------------------------------------------------------------
-    fn delete_file() -> Result<(), Box<dyn std::error::Error>> {
+    fn delete_file(
+        &self,
+        coll: &mongodb::sync::Collection,
+        field_name: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let hash = self.get_hash().unwrap_or_default();
+        if !hash.is_empty() {
+            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
+            let filter = mongodb::bson::doc! {"_id": object_id};
+            if let Some(document) = coll.find_one(filter, None)? {
+                let path = document
+                    .get(field_name)
+                    .unwrap()
+                    .as_document()
+                    .unwrap()
+                    .get_str("path")?;
+            } else {
+                Err("Document not found.")?
+            }
+        }
         Ok(())
     }
 
