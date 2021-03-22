@@ -60,6 +60,12 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
+    // Delete orphaned file.
+    // ---------------------------------------------------------------------------------------------
+    fn delete_file() -> Result<(), Box<dyn std::error::Error>> {
+        Ok(())
+    }
+
     // Checking the Model before queries the database.
     // ---------------------------------------------------------------------------------------------
     fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
