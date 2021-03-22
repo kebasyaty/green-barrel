@@ -12,7 +12,7 @@
 //!
 
 use crate::{
-    forms::{FileData, ImageData, Widget},
+    forms::{FileData, ImageData},
     store::DB_MAP_CLIENT_NAMES,
 };
 use mongodb::{
@@ -31,8 +31,8 @@ pub struct ModelState {
     pub database: String,
     pub collection: String,
     pub fields: Vec<String>,
+    pub map_widgets: HashMap<String, String>,
     pub status: bool,
-    pub map_widgets: HashMap<String, Widget>
 }
 
 pub struct Monitor<'a> {
