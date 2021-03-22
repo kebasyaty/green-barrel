@@ -73,13 +73,12 @@ pub trait QPaladins: ToModel + CachingModel {
             let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
             let filter = mongodb::bson::doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
-                let path = document
-                    .get(field_name)
-                    .unwrap()
-                    .as_document()
-                    .unwrap()
-                    .get_str("path")?;
-                fs::remove_file(path)?;
+                if let Some(field_file) = document.get(field_name).unwrap().as_document() {
+                    let path = field_file.get_str("path")?;
+                    fs::remove_file(path)?;
+                } else {
+                    Err("Document (file) not found.")?
+                }
             } else {
                 Err("Document not found.")?
             }
