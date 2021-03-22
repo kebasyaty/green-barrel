@@ -17,6 +17,7 @@ use crate::{
     models::{caching::CachingModel, Meta, ToModel},
 };
 use rand::Rng;
+use std::fs;
 
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
@@ -78,6 +79,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     .as_document()
                     .unwrap()
                     .get_str("path")?;
+                fs::remove_file(path)?;
             } else {
                 Err("Document not found.")?
             }
