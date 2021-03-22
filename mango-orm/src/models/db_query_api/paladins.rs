@@ -66,6 +66,7 @@ pub trait QPaladins: ToModel + CachingModel {
     fn delete_file(
         &self,
         coll: &mongodb::sync::Collection,
+        model_name: &str,
         field_name: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let hash = self.get_hash().unwrap_or_default();
@@ -77,10 +78,16 @@ pub trait QPaladins: ToModel + CachingModel {
                     let path = field_file.get_str("path")?;
                     fs::remove_file(path)?;
                 } else {
-                    Err("Document (file) not found.")?
+                    Err(format!(
+                        "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (file) not found.",
+                        model_name, field_name
+                    ))?
                 }
             } else {
-                Err("Document not found.")?
+                Err(format!(
+                    "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document not found.",
+                    model_name, field_name
+                ))?
             }
         }
         Ok(())
@@ -659,7 +666,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .as_bool()
                         .unwrap();
                         if is_delete {
-                            self.delete_file(&coll, field_name)?;
+                            self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
@@ -746,7 +753,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .as_bool()
                         .unwrap();
                         if is_delete {
-                            self.delete_file(&coll, field_name)?;
+                            self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
