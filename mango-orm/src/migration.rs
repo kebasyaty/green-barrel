@@ -229,7 +229,7 @@ impl<'a> Monitor<'a> {
             // Get map of widgets types.
             let map_widget_type = meta.map_widget_type.clone();
             // Get truncated map of widgets types.
-            let trunc_map_widget_type = map_widget_type.clone().retain(|&k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+            let trunc_map_widget_type = map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
