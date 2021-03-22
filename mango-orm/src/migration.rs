@@ -68,8 +68,11 @@ impl<'a> Monitor<'a> {
     }
 
     // Refresh models state.
-    // 1.If there is no technical database, it will be created.
-    // 2.Resets the Model's status to `false`.
+    // if {
+    //     If there is no technical database, it will be created.
+    // } else {
+    //     Resets the Model's status to `false`.
+    // }
     // *********************************************************************************************
     fn refresh(&self, client_store: &std::sync::RwLockReadGuard<HashMap<String, Client>>) {
         for meta in self.models.iter() {
