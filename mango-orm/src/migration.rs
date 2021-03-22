@@ -279,7 +279,6 @@ impl<'a> Monitor<'a> {
                         changed_fields.push(field);
                     }
                 }
-                println!("{:?}", changed_fields);
                 // Start (if necessary) updating the set of fields in the current collection.
                 if !changed_fields.is_empty() {
                     // Get the database and collection of the current Model.
