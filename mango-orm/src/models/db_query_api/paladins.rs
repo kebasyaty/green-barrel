@@ -735,6 +735,9 @@ pub trait QPaladins: ToModel + CachingModel {
                     field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        // Add file data to widget.
+                        final_widget.value = serde_json::to_string(&field_value)?;
+                        //
                         let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
                         final_doc.insert(field_name, bson_field_value);
                     }
@@ -825,6 +828,9 @@ pub trait QPaladins: ToModel + CachingModel {
                     field_value.height = dimensions.1;
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        // Add image data to widget.
+                        final_widget.value = serde_json::to_string(&field_value)?;
+                        //
                         let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
                         final_doc.insert(field_name, bson_field_value);
                     }
