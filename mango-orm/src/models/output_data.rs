@@ -107,11 +107,10 @@ impl OutputDataOne {
                             prepared_doc.insert(
                                 field_name,
                                 if bson_val != bson_null {
-                                    let file_info = bson_val.as_document().unwrap();
-                                    let path = file_info.get_str("path").unwrap();
-                                    let url = file_info.get_str("url").unwrap();
-                                    let result =
-                                        format!("{{\"path\":\"{}\",\"url\":\"{}\"}}", path, url);
+                                    let result = serde_json::to_string(
+                                        &bson_val.clone().into_relaxed_extjson(),
+                                    )
+                                    .unwrap();
                                     mongodb::bson::Bson::String(result)
                                 } else {
                                     mongodb::bson::Bson::Null
