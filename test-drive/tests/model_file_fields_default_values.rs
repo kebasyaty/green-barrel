@@ -96,7 +96,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values in widgets
     // file
     let map_wigets = result.wig();
-    assert!(map_wigets.get("file").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
+    );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
