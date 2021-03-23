@@ -31,8 +31,7 @@ mod app_name {
             widget = "inputImage",
             default = r#"{
                 "path":"./media/no-image-found.png",
-                "url":"/media/no-image-found.png",
-                "is_delete": false
+                "url":"/media/no-image-found.png"
             }"#
         )]
         pub image: Option<String>,
@@ -104,7 +103,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png","is_delete":false}"#
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("image").unwrap().value.as_str()
@@ -150,7 +149,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png","is_delete":false}"#
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("image").unwrap().value.as_str()

@@ -108,8 +108,8 @@ impl OutputDataOne {
                                 field_name,
                                 if bson_val != bson_null {
                                     let file_info = bson_val.as_document().unwrap();
-                                    let path = file_info.get_str("path").unwrap().to_string();
-                                    let url = file_info.get_str("url").unwrap().to_string();
+                                    let path = file_info.get_str("path").unwrap();
+                                    let url = file_info.get_str("url").unwrap();
                                     let result =
                                         format!("{{\"path\":\"{}\",\"url\":\"{}\"}}", path, url);
                                     mongodb::bson::Bson::String(result)
@@ -285,7 +285,7 @@ impl OutputDataMany {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `hash` > Method: `find_one()` : \
-                                Missing document identifier `_id`.",
+                                        Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
                                 },
@@ -366,7 +366,7 @@ impl OutputDataMany {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `hash` > Method: `find_one()` : \
-                                Missing document identifier `_id`.",
+                                        Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
                                 },
