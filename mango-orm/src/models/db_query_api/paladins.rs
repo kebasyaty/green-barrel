@@ -670,8 +670,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
-                            let clean_data: FileData = serde_json::from_str(obj_str)?;
-                            clean_data
+                            serde_json::from_str(obj_str)?
                         }
                     } else {
                         FileData::default()
@@ -714,7 +713,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example: {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}}",
+                            Example (for default): {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}} \
+                            Example (from client side): {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\",\"is_delete\":false}}",
                             model_name, field_name
                         ))?
                     }
@@ -736,6 +736,9 @@ pub trait QPaladins: ToModel + CachingModel {
                     field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        // Add file data to widget.
+                        final_widget.value = serde_json::to_string(&field_value)?;
+                        //
                         let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
                         final_doc.insert(field_name, bson_field_value);
                     }
@@ -757,8 +760,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
-                            let clean_data: ImageData = serde_json::from_str(obj_str)?;
-                            clean_data
+                            serde_json::from_str(obj_str)?
                         }
                     } else {
                         ImageData::default()
@@ -801,7 +803,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example: {{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}}",
+                            Example (for default): {{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}} \
+                            Example (from client side): {{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\",\"is_delete\":false}}",
                             model_name, field_name
                         ))?
                     }
@@ -827,6 +830,9 @@ pub trait QPaladins: ToModel + CachingModel {
                     field_value.height = dimensions.1;
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        // Add image data to widget.
+                        final_widget.value = serde_json::to_string(&field_value)?;
+                        //
                         let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
                         final_doc.insert(field_name, bson_field_value);
                     }

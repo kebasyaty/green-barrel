@@ -31,8 +31,7 @@ mod app_name {
             widget = "inputFile",
             default = r#"{
                 "path":"./media/hello_world.odt",
-                "url":"/media/hello_world.odt",
-                "is_delete": false
+                "url":"/media/hello_world.odt"
             }"#
         )]
         pub file: Option<String>,
@@ -97,12 +96,15 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values in widgets
     // file
     let map_wigets = result.wig();
-    assert!(map_wigets.get("file").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
+    );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt","is_delete":false}"#
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("file").unwrap().value.as_str()
@@ -148,7 +150,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt","is_delete":false}"#
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("file").unwrap().value.as_str()

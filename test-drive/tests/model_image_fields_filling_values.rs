@@ -31,8 +31,7 @@ mod app_name {
             widget = "inputImage",
             default = r#"{
                 "path":"./media/no-image-found.png",
-                "url":"/media/no-image-found.png",
-                "is_delete": false
+                "url":"/media/no-image-found.png"
             }"#
         )]
         pub image: Option<String>,
@@ -103,12 +102,15 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values in widgets
     // image
     let map_wigets = result.wig();
-    assert!(map_wigets.get("image").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("image").unwrap().value,
+        serde_json::to_string(&image_data)?
+    );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png","is_delete":false}"#
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("image").unwrap().value.as_str()
@@ -149,12 +151,15 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values
     // image
     let map_wigets = result.wig();
-    assert!(map_wigets.get("image").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("image").unwrap().value,
+        serde_json::to_string(&image_data)?
+    );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png","is_delete":false}"#
+            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             map_wigets.get("image").unwrap().value.as_str()

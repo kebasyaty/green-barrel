@@ -157,8 +157,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_2_@test.test".to_string()),
-        confirm_email: Some("test_2_@test.test".to_string()),
+        email: Some("test_4_@test.test".to_string()),
+        confirm_email: Some("test_4_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -191,6 +191,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(
         "Verify password (true): {}",
         user.verify_password("12345678", None)?
+    );
+
+    // Get Model instance.
+    println!(
+        "Model instance:\n{:?}\n\n",
+        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?
+            .model::<mango_models::UserProfile>()?
     );
     */
 

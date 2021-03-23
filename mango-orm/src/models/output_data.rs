@@ -107,11 +107,10 @@ impl OutputDataOne {
                             prepared_doc.insert(
                                 field_name,
                                 if bson_val != bson_null {
-                                    let file_info = bson_val.as_document().unwrap();
-                                    let path = file_info.get_str("path").unwrap().to_string();
-                                    let url = file_info.get_str("url").unwrap().to_string();
-                                    let result =
-                                        format!("{{\"path\":\"{}\",\"url\":\"{}\"}}", path, url);
+                                    let result = serde_json::to_string(
+                                        &bson_val.clone().into_relaxed_extjson(),
+                                    )
+                                    .unwrap();
                                     mongodb::bson::Bson::String(result)
                                 } else {
                                     mongodb::bson::Bson::Null
@@ -285,7 +284,7 @@ impl OutputDataMany {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `hash` > Method: `find_one()` : \
-                                Missing document identifier `_id`.",
+                                        Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
                                 },
@@ -366,7 +365,7 @@ impl OutputDataMany {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `hash` > Method: `find_one()` : \
-                                Missing document identifier `_id`.",
+                                        Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
                                 },
