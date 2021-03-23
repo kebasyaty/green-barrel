@@ -670,8 +670,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
-                            let clean_data: FileData = serde_json::from_str(obj_str)?;
-                            clean_data
+                            serde_json::from_str(obj_str)?
                         }
                     } else {
                         FileData::default()
@@ -757,8 +756,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                             continue;
                         } else {
-                            let clean_data: ImageData = serde_json::from_str(obj_str)?;
-                            clean_data
+                            serde_json::from_str(obj_str)?
                         }
                     } else {
                         ImageData::default()
