@@ -186,7 +186,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
                 | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
                 | "hiddenText" => {
-                    // When updating, we skip fields password type.
+                    // When updating, we skip field password type.
                     if is_update && widget_type == "inputPassword" {
                         final_widget.value = String::new();
                         continue;
