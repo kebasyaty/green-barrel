@@ -51,7 +51,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 } else if field_json.is_null() {
                     widget.value = String::new();
                 }
-            } else if !hash.is_empty() && field_name == "confirm_password" {
+            } else if !hash.is_empty() {
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();
             }
