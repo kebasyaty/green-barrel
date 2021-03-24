@@ -54,6 +54,7 @@ pub trait QPaladins: ToModel + CachingModel {
             } else if !hash.is_empty() {
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();
+                widget.value = String::new();
             }
             widget_list.push(widget);
         }
