@@ -666,10 +666,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         if is_delete {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                            continue;
-                        } else {
-                            serde_json::from_str(obj_str)?
                         }
+                        serde_json::from_str(obj_str)?
                     } else {
                         FileData::default()
                     };
@@ -756,10 +754,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         if is_delete {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                            continue;
-                        } else {
-                            serde_json::from_str(obj_str)?
                         }
+                        serde_json::from_str(obj_str)?
                     } else {
                         ImageData::default()
                     };
