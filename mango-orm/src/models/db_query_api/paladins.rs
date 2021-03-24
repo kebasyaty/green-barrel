@@ -51,9 +51,10 @@ pub trait QPaladins: ToModel + CachingModel {
                 } else if field_json.is_null() {
                     widget.value = String::new();
                 }
-            } else if !hash.is_empty() && field_name == "confirm_password" {
+            } else if !hash.is_empty() {
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();
+                widget.value = String::new();
             }
             widget_list.push(widget);
         }
@@ -61,7 +62,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    // Delete orphaned file.
+    // Deleting orphaned file.
     // ---------------------------------------------------------------------------------------------
     fn delete_file(
         &self,
@@ -185,6 +186,11 @@ pub trait QPaladins: ToModel + CachingModel {
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
                 | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
                 | "hiddenText" => {
+                    // When updating, we skip field password type.
+                    if is_update && widget_type == "inputPassword" {
+                        final_widget.value = String::new();
+                        continue;
+                    }
                     // Get field value for validation.
                     let mut field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
@@ -310,14 +316,6 @@ pub trait QPaladins: ToModel + CachingModel {
                                             field_name,
                                             mongodb::bson::Bson::String(password_hash),
                                         );
-                                    } else if !self.verify_password(field_value, None)? {
-                                        // Accumulate an error if the password does not match.
-                                        is_err_symptom = true;
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Password does not match".to_string(),
-                                        )
-                                        .unwrap();
                                     }
                                 }
                             }
