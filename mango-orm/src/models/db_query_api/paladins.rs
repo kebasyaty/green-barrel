@@ -62,7 +62,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    // Delete orphaned file.
+    // Deleting orphaned file.
     // ---------------------------------------------------------------------------------------------
     fn delete_file(
         &self,
