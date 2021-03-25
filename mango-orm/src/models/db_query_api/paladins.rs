@@ -17,7 +17,7 @@ use crate::{
     models::{caching::CachingModel, Meta, ToModel},
 };
 use rand::Rng;
-use std::fs;
+use std::{fs, path::Path};
 
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
@@ -77,7 +77,10 @@ pub trait QPaladins: ToModel + CachingModel {
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(field_file) = document.get(field_name).unwrap().as_document() {
                     let path = field_file.get_str("path")?;
-                    fs::remove_file(path)?;
+                    let path = Path::new(path);
+                    if path.exists() {
+                        fs::remove_file(path)?;
+                    }
                 } else {
                     Err(format!(
                         "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (file) not found.",
@@ -91,7 +94,30 @@ pub trait QPaladins: ToModel + CachingModel {
                 ))?
             }
         }
+        //
         Ok(())
+    }
+
+    // Get file info from database.
+    // ---------------------------------------------------------------------------------------------
+    fn db_get_file_info(
+        &self,
+        coll: &mongodb::sync::Collection,
+        field_name: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let hash = self.get_hash().unwrap_or_default();
+        let mut result = String::new();
+        if !hash.is_empty() {
+            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
+            let filter = mongodb::bson::doc! {"_id": object_id};
+            if let Some(document) = coll.find_one(filter, None)? {
+                if let Some(file_doc) = document.get(field_name).unwrap().as_document() {
+                    result = serde_json::to_string(file_doc)?;
+                }
+            }
+        }
+        //
+        Ok(result)
     }
 
     // Checking the Model before queries the database.
@@ -655,6 +681,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: FileData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
+                        let data = serde_json::from_str::<FileData>(obj_str)?;
                         let is_delete = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
@@ -663,13 +690,13 @@ pub trait QPaladins: ToModel + CachingModel {
                         .unwrap()
                         .as_bool()
                         .unwrap();
-                        if is_delete {
+                        if is_update
+                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
+                        {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                            continue;
-                        } else {
-                            serde_json::from_str(obj_str)?
                         }
+                        data
                     } else {
                         FileData::default()
                     };
@@ -681,7 +708,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
+                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
                             continue;
                         } else {
                             if !is_update {
@@ -690,19 +717,21 @@ pub trait QPaladins: ToModel + CachingModel {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
                                 } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
                             } else {
-                                final_widget.value = String::new();
+                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
                                 continue;
                             }
                         }
                     }
-                    final_widget.value = String::new();
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
@@ -745,6 +774,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
+                        let data = serde_json::from_str::<ImageData>(obj_str)?;
                         let is_delete = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
@@ -753,13 +783,13 @@ pub trait QPaladins: ToModel + CachingModel {
                         .unwrap()
                         .as_bool()
                         .unwrap();
-                        if is_delete {
+                        if is_update
+                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
+                        {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                            continue;
-                        } else {
-                            serde_json::from_str(obj_str)?
                         }
+                        data
                     } else {
                         ImageData::default()
                     };
@@ -780,19 +810,21 @@ pub trait QPaladins: ToModel + CachingModel {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
                                 } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
                             } else {
-                                final_widget.value = String::new();
+                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
                                 continue;
                             }
                         }
                     }
-                    final_widget.value = String::new();
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
