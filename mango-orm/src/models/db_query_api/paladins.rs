@@ -93,6 +93,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 ))?
             }
         }
+        //
         Ok(())
     }
 
