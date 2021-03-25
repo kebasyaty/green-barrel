@@ -23,6 +23,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
+        // -----------------------------------------------------------------------------------------
         models: vec![
             mango_models::Dynamic::meta()?,
             mango_models::User::meta()?,
@@ -157,8 +158,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_4_@test.test".to_string()),
-        confirm_email: Some("test_4_@test.test".to_string()),
+        email: Some("test_10_@test.test".to_string()),
+        confirm_email: Some("test_10_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -202,7 +203,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
     // Update doc.
-    user.username = Some("New Name".to_string());
+    user.username = Some("Rust 2".to_string());
+    user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+    user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     let result = user.save(None, None, None)?;
     println!("\n\n\nBoolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);

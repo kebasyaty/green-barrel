@@ -681,22 +681,18 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: FileData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        let data = serde_json::from_str::<FileData>(obj_str)?;
-                        let is_delete = serde_json::from_str::<
+                        if let Some(is_delete) = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
                         .unwrap()
                         .get("is_delete")
-                        .unwrap()
-                        .as_bool()
-                        .unwrap();
-                        if is_update
-                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
                         {
-                            self.delete_file(&coll, model_name, field_name)?;
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            if is_update && is_delete.as_bool().unwrap() {
+                                self.delete_file(&coll, model_name, field_name)?;
+                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            }
                         }
-                        data
+                        serde_json::from_str::<FileData>(obj_str)?
                     } else {
                         FileData::default()
                     };
@@ -774,22 +770,18 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        let data = serde_json::from_str::<ImageData>(obj_str)?;
-                        let is_delete = serde_json::from_str::<
+                        if let Some(is_delete) = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
                         .unwrap()
                         .get("is_delete")
-                        .unwrap()
-                        .as_bool()
-                        .unwrap();
-                        if is_update
-                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
                         {
-                            self.delete_file(&coll, model_name, field_name)?;
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            if is_update && is_delete.as_bool().unwrap() {
+                                self.delete_file(&coll, model_name, field_name)?;
+                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            }
                         }
-                        data
+                        serde_json::from_str::<ImageData>(obj_str)?
                     } else {
                         ImageData::default()
                     };
@@ -801,7 +793,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
+                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
                             continue;
                         } else {
                             if !is_update {
