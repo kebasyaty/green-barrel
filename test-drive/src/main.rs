@@ -23,6 +23,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
+        // -----------------------------------------------------------------------------------------
         models: vec![
             mango_models::Dynamic::meta()?,
             mango_models::User::meta()?,
