@@ -708,7 +708,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
+                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
                             continue;
                         } else {
                             if !is_update {
@@ -717,19 +717,21 @@ pub trait QPaladins: ToModel + CachingModel {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
                                 } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
                             } else {
-                                final_widget.value = String::new();
+                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
                                 continue;
                             }
                         }
                     }
-                    final_widget.value = String::new();
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
@@ -808,19 +810,21 @@ pub trait QPaladins: ToModel + CachingModel {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
                                 } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value = String::new();
+                                    final_widget.value =
+                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
                             } else {
-                                final_widget.value = String::new();
+                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
                                 continue;
                             }
                         }
                     }
-                    final_widget.value = String::new();
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
