@@ -690,9 +690,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .unwrap()
                         .as_bool()
                         .unwrap();
-                        if is_update
-                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
-                        {
+                        if is_update && is_delete {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
@@ -783,9 +781,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         .unwrap()
                         .as_bool()
                         .unwrap();
-                        if is_update
-                            && (is_delete || (!data.path.is_empty() && !data.url.is_empty()))
-                        {
+                        if is_update && is_delete {
                             self.delete_file(&coll, model_name, field_name)?;
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
