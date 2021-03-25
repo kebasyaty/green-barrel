@@ -100,14 +100,24 @@ pub trait QPaladins: ToModel + CachingModel {
 
     // Get file info from database.
     // ---------------------------------------------------------------------------------------------
-    fn db_get_file_info() {
+    fn db_get_file_info(
+        &self,
+        coll: &mongodb::sync::Collection,
+        field_name: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let hash = self.get_hash().unwrap_or_default();
+        let mut result = String::new();
+        if !hash.is_empty() {
+            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
+            let filter = mongodb::bson::doc! {"_id": object_id};
+            if let Some(document) = coll.find_one(filter, None)? {
+                if let Some(file_doc) = document.get(field_name).unwrap().as_document() {
+                    result = serde_json::to_string(file_doc)?;
+                }
+            }
+        }
         //
-    }
-
-    // Get image info from database.
-    // ---------------------------------------------------------------------------------------------
-    fn db_get_img_info() {
-        //
+        Ok(result)
     }
 
     // Checking the Model before queries the database.
