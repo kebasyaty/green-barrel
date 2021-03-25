@@ -77,7 +77,8 @@ pub trait QPaladins: ToModel + CachingModel {
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(field_file) = document.get(field_name).unwrap().as_document() {
                     let path = field_file.get_str("path")?;
-                    if Path::new(path).exists() {
+                    let path = Path::new(path);
+                    if path.exists() {
                         fs::remove_file(path)?;
                     }
                 } else {
@@ -95,6 +96,18 @@ pub trait QPaladins: ToModel + CachingModel {
         }
         //
         Ok(())
+    }
+
+    // Get file info from database.
+    // ---------------------------------------------------------------------------------------------
+    fn db_get_file_info() {
+        //
+    }
+
+    // Get image info from database.
+    // ---------------------------------------------------------------------------------------------
+    fn db_get_img_info() {
+        //
     }
 
     // Checking the Model before queries the database.
