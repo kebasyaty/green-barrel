@@ -797,7 +797,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
+                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
                             continue;
                         } else {
                             if !is_update {
