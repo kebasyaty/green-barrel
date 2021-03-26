@@ -62,7 +62,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    // Deleting orphaned file.
+    // Deleting a file in the database and in the file system.
     // ---------------------------------------------------------------------------------------------
     fn delete_file(
         &self,
@@ -74,7 +74,12 @@ pub trait QPaladins: ToModel + CachingModel {
         if !hash.is_empty() {
             let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
             let filter = mongodb::bson::doc! {"_id": object_id};
-            if let Some(document) = coll.find_one(filter, None)? {
+            if let Some(document) = coll.find_one(filter.clone(), None)? {
+                // Delete the file information in the database.
+                let file_doc = mongodb::bson::doc! {field_name: mongodb::bson::Bson::Null};
+                let update = mongodb::bson::doc! { "$set": file_doc };
+                coll.update_one(filter, update, None)?;
+                // Delete the orphaned file.
                 if let Some(field_file) = document.get(field_name).unwrap().as_document() {
                     let path = field_file.get_str("path")?;
                     let path = Path::new(path);
