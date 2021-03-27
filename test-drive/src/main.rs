@@ -211,8 +211,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Update doc.
     user.username = Some("Rust 2".to_string());
-    user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+    //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+    //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     let result = user.save(None, None, None)?;
     println!("\n\n\nBoolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
