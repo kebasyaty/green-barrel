@@ -121,20 +121,18 @@ impl OutputDataForm {
             _ => panic!("Invalid output type."),
         };
         let fields_name = data.1.clone();
-        let map_widgets = data.2.clone();
-        let mut widget_list: Vec<Widget> = Vec::new();
+        let mut map_widgets = data.2.clone();
         let hash = map_widgets.get("hash").unwrap().clone().value;
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
-            let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
             if field_name.contains("password") && !hash.is_empty() {
+                let widget = map_widgets.get_mut(field_name.as_str()).unwrap();
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();
             }
-            widget_list.push(widget);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&map_widgets)?)
     }
 
     // Get Boolean

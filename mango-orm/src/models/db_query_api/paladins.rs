@@ -29,13 +29,12 @@ pub trait QPaladins: ToModel + CachingModel {
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
         let fields_name = meta.fields_name.clone();
-        let map_widgets = form_cache.map_widgets.clone();
+        let mut map_widgets = form_cache.map_widgets.clone();
         let model_json = self.self_to_json()?;
-        let mut widget_list: Vec<Widget> = Vec::new();
         let hash = self.get_hash().unwrap_or_default();
         // Get a list of widgets in the order of the model fields.
         for field_name in fields_name {
-            let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
+            let mut widget = map_widgets.get_mut(field_name.as_str()).unwrap();
             if !field_name.contains("password") {
                 let field_json = model_json[field_name].clone();
                 if field_json.is_string() {
@@ -56,10 +55,9 @@ pub trait QPaladins: ToModel + CachingModel {
                 widget.input_type = "hidden".to_string();
                 widget.value = String::new();
             }
-            widget_list.push(widget);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&map_widgets)?)
     }
 
     // Deleting a file in the database and in the file system.
