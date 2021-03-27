@@ -89,15 +89,13 @@ pub trait HtmlControls {
                     );
                 }
                 "checkbox" => {
-                    let checked = attrs.value == "true".to_string();
                     controls = format!(
-                        "{}<p><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
+                        "{}<p><input{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                         controls,
                         format!(" id=\"{}\"", attrs.id),
                         format!(" type=\"{}\"", attrs.input_type),
                         format!(" name=\"{}\"", attrs.name),
-                        format!(" value=\"{}\"", checked),
-                        if checked { " checked" } else { "" },
+                        if attrs.checked { " checked" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
                         if !attrs.css_classes.is_empty() {
