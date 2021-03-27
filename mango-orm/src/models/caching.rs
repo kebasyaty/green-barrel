@@ -102,6 +102,25 @@ pub trait CachingModel: ToModel {
         }
     }
 
+    // Json-line for admin panel.
+    // ( converts a widget map to a list, in the order of the Model fields )
+    // ---------------------------------------------------------------------------------------------
+    fn form_json_for_admin() -> Result<String, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
+        // Get Model metadata.
+        let meta: Meta = form_cache.meta;
+        let map_widgets = form_cache.map_widgets.clone();
+        let mut widget_list: Vec<Widget> = Vec::new();
+        // Get a list of widgets in the order of the model fields.
+        for field_name in meta.fields_name.iter() {
+            let widget = map_widgets.get(field_name).unwrap().clone();
+            widget_list.push(widget);
+        }
+        //
+        Ok(serde_json::to_string(&widget_list)?)
+    }
+
     // Get Html Form of Model for page templates.
     // *********************************************************************************************
     fn form_html() -> Result<String, Box<dyn std::error::Error>> {
