@@ -120,13 +120,12 @@ impl OutputDataForm {
             Self::Save(data) => data,
             _ => panic!("Invalid output type."),
         };
-        let fields_name = data.1.clone();
         let map_widgets = data.2.clone();
         let mut widget_list: Vec<Widget> = Vec::new();
         let hash = map_widgets.get("hash").unwrap().clone().value;
         // Get a list of widgets in the order of the model fields.
-        for field_name in fields_name {
-            let mut widget = map_widgets.get(field_name.as_str()).unwrap().clone();
+        for field_name in data.1.iter() {
+            let mut widget = map_widgets.get(field_name).unwrap().clone();
             if field_name.contains("password") && !hash.is_empty() {
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();
