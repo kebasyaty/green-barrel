@@ -1173,7 +1173,7 @@ pub trait QPaladins: ToModel + CachingModel {
             // Insert a field for linking a document to a user account.
             // -------------------------------------------------------------------------------------
             if !is_err_symptom && !is_update {
-                final_doc.insert("chain", mongodb::bson::Bson::Null);
+                final_doc.insert("paperclip", mongodb::bson::Bson::Null);
             }
         }
 
@@ -1200,7 +1200,7 @@ pub trait QPaladins: ToModel + CachingModel {
     // *********************************************************************************************
     fn save(
         &mut self,
-        chain: Option<mongodb::bson::Bson>,
+        paperclip: Option<mongodb::bson::Bson>,
         options_insert: Option<mongodb::options::InsertOneOptions>,
         options_update: Option<mongodb::options::UpdateOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
@@ -1222,8 +1222,8 @@ pub trait QPaladins: ToModel + CachingModel {
         // -----------------------------------------------------------------------------------------
         if is_no_error {
             let mut final_doc = verified_data.doc();
-            if chain.is_some() {
-                final_doc.insert("chain", chain.unwrap());
+            if paperclip.is_some() {
+                final_doc.insert("paperclip", paperclip.unwrap());
             }
             if !is_update {
                 let result: mongodb::results::InsertOneResult =
