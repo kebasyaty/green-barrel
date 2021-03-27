@@ -748,12 +748,11 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // *********************************************************************************
                 "checkBox" => {
                     // Get field value for validation.
-                    // -----------------------------------------------------------------------------
-                    let field_value: bool = if pre_json_value.is_null() {
-                        let mut result = false;
+                    let field_value: bool = if !pre_json_value.is_null() {
+                        pre_json_value.as_bool().unwrap()
+                    } else {
                         // Validation, if the field is required and empty, accumulate the error.
                         // ( The default value is used whenever possible )
-                        // -------------------------------------------------------------------------
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error = Self::accumula_err(
@@ -761,22 +760,15 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                 &"You must definitely choose.".to_owned(),
                             )
                             .unwrap();
+                            false
                         } else {
-                            // Trying to apply the value default.
-                            if !final_widget.value.is_empty() {
-                                result = final_widget.value.trim().parse::<bool>().unwrap();
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(result);
-                            }
+                            // Apply the value default.
+                            final_widget.checked
                         }
-                        result
-                    } else {
-                        true
                     };
-                    final_widget.value = String::new();
                     // In case of an error, return the current
                     // state of the field to the user (client).
-                    final_widget.checked = field_value.clone();
+                    final_widget.checked = field_value;
                 }
                 _ => Err(format!(
                     "Form: `{}` > Field: `{}` > Method: `check()` : Unsupported widget type.",
