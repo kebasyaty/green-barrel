@@ -519,6 +519,12 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
+                                        "selectTextDyn" | "selectTextMultDyn" | "selectI32Dyn"
+                                        | "selectI32MultDyn" | "selectU32Dyn" | "selectU32MultDyn"
+                                        | "selectI64Dyn" | "selectI64MultDyn" | "selectF64Dyn"
+                                        | "selectF64MultDyn" => {
+                                            mongodb::bson::Bson::Null
+                                        }
                                         _ => panic!(
                                             "Service: `{}` > Model: `{}` > Method: \
                                             `migrat()` : Invalid Widget type.",

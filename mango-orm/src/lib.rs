@@ -20,7 +20,7 @@ pub use crate::{
     store::{FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE},
 };
 
-pub use crate::test_tool::del_test_base;
+pub use crate::test_tool::del_test_db;
 
 pub mod forms;
 pub mod migration;
