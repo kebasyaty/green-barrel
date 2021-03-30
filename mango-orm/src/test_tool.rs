@@ -5,7 +5,7 @@
 use crate::store::DB_MAP_CLIENT_NAMES;
 
 // Remove test databases
-pub fn del_test_base(
+pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
     models: &Vec<crate::models::Meta>,

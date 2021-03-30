@@ -1,5 +1,5 @@
 use mango_orm::*;
-use mango_orm::{forms::FileData, migration::Monitor, test_tool::del_test_base};
+use mango_orm::{forms::FileData, migration::Monitor, test_tool::del_test_db};
 use metamorphose::Model;
 use mongodb::{
     bson::{de::from_document, doc, oid::ObjectId},
@@ -52,7 +52,7 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_base(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
+        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
         // Migration
         let monitor = Monitor {
             project_name: PROJECT_NAME,
@@ -186,7 +186,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    del_test_base(
+    del_test_db(
         app_name::PROJECT_NAME,
         app_name::UNIQUE_PROJECT_KEY,
         &app_name::model_list()?,
