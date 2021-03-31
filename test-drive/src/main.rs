@@ -48,22 +48,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test dynamic widgets.
     // *********************************************************************************************
 
-    /*
     println!(
         "{:?}",
         mango_models::Dynamic::db_update_dyn_widgets(
             r#"{
-            "select_text_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
-            "select_text_mult_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
-            "select_i32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
-            "select_i32_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
-            "select_u32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
-            "select_u32_mult_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
-            "select_i64_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
-            "select_i64_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
-            "select_f64_dyn":[["1.1","Volvo"],["2.2","Saab"],["3.3","Mercedes"],["4.4","Audi"]],
-            "select_f64_mult_dyn":[["-1.1","Volvo"],["-2.2","Saab"],["-3.3","Mercedes"],["-4.4","Audi"]]
-        }"#
+                "select_text_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]]
+            }"#
+        )
+        .is_ok()
+    );
+
+    /*
+        println!(
+        "{:?}",
+        mango_models::Dynamic::db_update_dyn_widgets(
+            r#"{
+                "select_text_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+                "select_text_mult_dyn":[["volvo","Volvo"],["saab","Saab"],["mercedes","Mercedes"],["audi","Audi"]],
+                "select_i32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i32_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+                "select_u32_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_u32_mult_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i64_dyn":[["1","Volvo"],["2","Saab"],["3","Mercedes"],["4","Audi"]],
+                "select_i64_mult_dyn":[["-1","Volvo"],["-2","Saab"],["-3","Mercedes"],["-4","Audi"]],
+                "select_f64_dyn":[["1.1","Volvo"],["2.2","Saab"],["3.3","Mercedes"],["4.4","Audi"]],
+                "select_f64_mult_dyn":[["-1.1","Volvo"],["-2.2","Saab"],["-3.3","Mercedes"],["-4.4","Audi"]]
+            }"#
         )
         .is_ok()
     );

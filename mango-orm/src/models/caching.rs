@@ -222,7 +222,7 @@ pub trait CachingModel: ToModel {
         let json_data: serde_json::Value = serde_json::from_str(json_line)?;
         let bson_data = serde_json::from_value::<mongodb::bson::Bson>(json_data)?;
         let new_doc = mongodb::bson::doc! {
-            "fields": bson_data.clone()
+            "fields": { "$set": bson_data.clone() }
         };
         let update: mongodb::bson::document::Document = mongodb::bson::doc! {
             "$set": new_doc,
@@ -336,25 +336,24 @@ pub trait CachingModel: ToModel {
                 // ---------------------------------------------------------------------------------
                 let query = mongodb::bson::doc! {"_id": curr_doc.get_object_id("_id")?};
                 coll.update_one(query, curr_doc, None)?;
-
-                // Update cache
-                // ---------------------------------------------------------------------------------
-                // Get a key to access Model data in the cache.
-                let key: String = Self::key();
-                // Get write access in cache.
-                let mut form_store = FORM_CACHE.write()?;
-                // Remove cache entry
-                if form_store.remove(key.as_str()).is_some() {
-                    // Add metadata and widgects map to cache.
-                    Self::to_cache()?;
-                } else {
-                    Err(format!(
-                        "Model: {} > Method: `db_update_dyn_widgets()` : \
-                         Failed to delete old data from cache.",
-                        Self::meta()?.model_name
-                    ))?
-                }
             }
+        }
+        // Update cache
+        // ---------------------------------------------------------------------------------
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key();
+        // Get write access in cache.
+        let mut form_store = FORM_CACHE.write()?;
+        // Remove cache entry
+        if form_store.remove(key.as_str()).is_some() {
+            // Add metadata and widgects map to cache.
+            Self::to_cache()?;
+        } else {
+            Err(format!(
+                "Model: {} > Method: `db_update_dyn_widgets()` : \
+                         Failed to delete old data from cache.",
+                Self::meta()?.model_name
+            ))?
         }
         //
         Ok(())
