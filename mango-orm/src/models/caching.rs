@@ -198,8 +198,8 @@ pub trait CachingModel: ToModel {
         if !re.is_match(json_line) {
             Err(format!(
                 r#"Model: {} > Method: `db_update_dyn_widgets()` : \
-                The `json_line` parameter was not validation. \
-                Example: {{"field_name":[["value","Title"]]}}"#,
+                   The `json_line` parameter was not validation. \
+                   Example: {{"field_name":[["value","Title"]]}}"#,
                 Self::meta()?.model_name
             ))?
         }
@@ -344,9 +344,16 @@ pub trait CachingModel: ToModel {
                 // Get write access in cache.
                 let mut form_store = FORM_CACHE.write()?;
                 // Remove cache entry
-                form_store.remove(key.as_str());
-                // Add metadata and widgects map to cache.
-                Self::to_cache()?;
+                if form_store.remove(key.as_str()).is_some() {
+                    // Add metadata and widgects map to cache.
+                    Self::to_cache()?;
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `db_update_dyn_widgets()` : \
+                         Failed to delete old data from cache.",
+                        Self::meta()?.model_name
+                    ))?
+                }
             }
         }
         //
