@@ -1,5 +1,5 @@
 //! # Testing tools
-//!.
+//!
 //! `del_test_base` - Remove test databases.
 
 use crate::store::DB_MAP_CLIENT_NAMES;
