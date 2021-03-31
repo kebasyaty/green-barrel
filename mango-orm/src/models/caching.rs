@@ -351,7 +351,7 @@ pub trait CachingModel: ToModel {
         } else {
             Err(format!(
                 "Model: {} > Method: `db_update_dyn_widgets()` : \
-                         Failed to delete old data from cache.",
+                 Failed to delete old data from cache.",
                 Self::meta()?.model_name
             ))?
         }
