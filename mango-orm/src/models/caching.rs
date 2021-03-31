@@ -339,7 +339,7 @@ pub trait CachingModel: ToModel {
             }
         }
         // Update cache
-        // ---------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get write access in cache.
