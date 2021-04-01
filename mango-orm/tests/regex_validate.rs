@@ -277,7 +277,7 @@ mod tests {
     // *********************************************************************************************
     #[test]
     fn regex_validate_json_dyn_widgets() {
-        let re = RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))*[\s]*\}$"#)
+        let re = RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*)*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*)*\]))*[\s]*\}$"#)
             .case_insensitive(true)
             .build()
             .unwrap();
@@ -304,7 +304,6 @@ mod tests {
         assert!(!re.is_match(r#"{"abc_def"}"#));
         assert!(!re.is_match(r#"{"abc_def":}"#));
         assert!(!re.is_match(r#"{"abc_def":[}"#));
-        assert!(!re.is_match(r#"{"abc_def":[]}"#));
         assert!(!re.is_match(r#"{"abc_def":[[}"#));
         assert!(!re.is_match(r#"{"abc_def":]}"#));
         assert!(!re.is_match(r#"{"abc_def":]]}"#));
@@ -395,6 +394,9 @@ mod tests {
             }"#
         ));
         // valids
+        assert!(re.is_match(r#"{"field":[]}"#));
+        assert!(re.is_match(r#"{"field_name":[]}"#));
+        assert!(re.is_match(r#"{"field_name_2":[]}"#));
         assert!(re.is_match(r#"{"field":[["value","Title"]]}"#));
         assert!(re.is_match(r#"{"field":[["2","Title"]]}"#));
         assert!(re.is_match(r#"{"field":[["-2","Title"]]}"#));
@@ -410,8 +412,11 @@ mod tests {
         assert!(re.is_match(r#"{"field_name":[["value","Title"],["value","Title"]]}"#));
         assert!(re
             .is_match(r#"{"field_name":[["value","Title"],["value","Title"],["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field_name":[],"field_name_2":[]}"#));
+        assert!(re.is_match(r#"{"field_name":[["value","Title"]],"field_name_2":[]}"#));
+        assert!(re.is_match(r#"{"field_name":[],"field_name_2":[["value","Title"]]}"#));
         assert!(
-            re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
+            re.is_match(r#"{"field_name":[["value","Title"]],"field_name_2":[["value","Title"]]}"#)
         );
         assert!(
             re.is_match(r#"{"field_name":[["value","Title"]],"field_name":[["value","Title"]],"field_name":[["value","Title"]]}"#)
