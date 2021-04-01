@@ -179,7 +179,7 @@ pub trait CachingModel: ToModel {
 
     // Accepts json-line to update data, for dynamic widgets.
     // Hint: Used in conjunction with the admin panel.
-    // Example (json_line): {"field_name":[["value","Title"]]}
+    // Example (json-line): {"field_name":[["value","Title"]]}
     // or
     // r#"{
     //    "field_name":[["value","Title"]],
@@ -191,7 +191,7 @@ pub trait CachingModel: ToModel {
         // Refresh the state in the technical database.
         // -----------------------------------------------------------------------------------------
         // Validation json-line.
-        let re = regex::RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*\]))*[\s]*\}$"#)
+        let re = regex::RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*)*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.\s\w]+","[-_.\s\w]+"\])(?:,\["[-_.\s\w]+","[-_.\s\w]+"\])*)*\]))*[\s]*\}$"#)
             .case_insensitive(true)
             .build()
             .unwrap();
@@ -224,9 +224,11 @@ pub trait CachingModel: ToModel {
             serde_json::from_value::<mongodb::bson::document::Document>(new_dyn_data)?;
         let mut curr_dyn_date = coll.find_one(query.clone(), None)?.unwrap();
         let dyn_date = curr_dyn_date.get_document_mut("fields").unwrap();
+
         for (field_name, bson_val) in new_dyn_data {
             dyn_date.insert(field_name.as_str(), bson_val);
         }
+
         let update = mongodb::bson::doc! {
             "$set": { "fields": dyn_date.clone() }
         };
