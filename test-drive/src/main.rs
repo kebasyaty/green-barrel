@@ -48,6 +48,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test dynamic widgets.
     // *********************************************************************************************
 
+    println!(
+        "\n\ndb_update_dyn_widgets: {:?}\n\n",
+        mango_models::Dynamic::db_update_dyn_widgets(
+            r#"{
+                "select_text_dyn":[]
+            }"#
+        )
+    );
+
     /*
         println!(
         "{:?}",

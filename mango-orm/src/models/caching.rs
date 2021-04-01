@@ -224,9 +224,11 @@ pub trait CachingModel: ToModel {
             serde_json::from_value::<mongodb::bson::document::Document>(new_dyn_data)?;
         let mut curr_dyn_date = coll.find_one(query.clone(), None)?.unwrap();
         let dyn_date = curr_dyn_date.get_document_mut("fields").unwrap();
+
         for (field_name, bson_val) in new_dyn_data {
             dyn_date.insert(field_name.as_str(), bson_val);
         }
+
         let update = mongodb::bson::doc! {
             "$set": { "fields": dyn_date.clone() }
         };
