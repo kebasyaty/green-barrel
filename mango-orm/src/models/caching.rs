@@ -179,7 +179,7 @@ pub trait CachingModel: ToModel {
 
     // Accepts json-line to update data, for dynamic widgets.
     // Hint: Used in conjunction with the admin panel.
-    // Example (json_line): {"field_name":[["value","Title"]]}
+    // Example (json-line): {"field_name":[["value","Title"]]}
     // or
     // r#"{
     //    "field_name":[["value","Title"]],
