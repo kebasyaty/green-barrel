@@ -88,7 +88,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         name: "hello_world.odt".to_string(),
         size: 9741_u32,
     };
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -136,7 +136,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -145,7 +145,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values
     // file
     let map_wigets = result.wig();
-        assert_eq!(
+    assert_eq!(
         map_wigets.get("file").unwrap().value,
         serde_json::to_string(&file_data)?
     );
