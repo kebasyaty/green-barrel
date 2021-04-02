@@ -595,9 +595,7 @@ impl<'a> Monitor<'a> {
                             .unwrap_or_else(|err| panic!("Model: `{}` > \
                                 Migration method: `migrat()` : {}", meta.model_name, err.to_string()))
                         };
-                        let mut update: Document = mongodb::bson::document::Document::new();
-                        update.insert("$set".to_string(), mongodb::bson::Bson::Document(tmp_doc));
-                        collection.update_one(query, update, None)
+                        collection.update_one(query, tmp_doc, None)
                         .unwrap_or_else(|err| panic!("Model: `{}` > \
                             Migration method: `migrat()` : {}", meta.model_name, err.to_string()));
                     }
