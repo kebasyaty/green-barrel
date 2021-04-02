@@ -46,6 +46,9 @@ pub trait QPaladins: ToModel + CachingModel {
                     widget.value = field_json.as_u64().unwrap().to_string();
                 } else if field_json.is_f64() {
                     widget.value = field_json.as_f64().unwrap().to_string();
+                } else if field_json.is_array() {
+                    let array = field_json.as_array().unwrap();
+                    widget.value = serde_json::to_string(array)?;
                 } else if field_json.is_boolean() {
                     widget.checked = field_json.as_bool().unwrap();
                 } else if field_json.is_null() {

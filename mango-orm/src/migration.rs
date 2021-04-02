@@ -549,6 +549,42 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
+                                        "selectTextMult" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let val = serde_json::from_str::<Vec<String>>(val.as_str()).unwrap().iter().map(|item| mongodb::bson::Bson::String(item.clone())).collect::<Vec<mongodb::bson::Bson>>();
+                                                mongodb::bson::Bson::Array(val)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
+                                        "selectI32Mult" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let val = serde_json::from_str::<Vec<i32>>(val.as_str()).unwrap().iter().map(|item| mongodb::bson::Bson::Int32(item.clone())).collect::<Vec<mongodb::bson::Bson>>();
+                                                mongodb::bson::Bson::Array(val)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
+                                         "selectU32Mult" | "selectI64Mult"  => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let val = serde_json::from_str::<Vec<i64>>(val.as_str()).unwrap().iter().map(|item| mongodb::bson::Bson::Int64(item.clone())).collect::<Vec<mongodb::bson::Bson>>();
+                                                mongodb::bson::Bson::Array(val)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
+                                        "selectF64Mult" => {
+                                            let val: String = value.1.clone();
+                                            if !val.is_empty() {
+                                                let val = serde_json::from_str::<Vec<f64>>(val.as_str()).unwrap().iter().map(|item| mongodb::bson::Bson::Double(item.clone())).collect::<Vec<mongodb::bson::Bson>>();
+                                                mongodb::bson::Bson::Array(val)
+                                            } else {
+                                                mongodb::bson::Bson::Null
+                                            }
+                                        }
                                         "selectTextDyn" | "selectTextMultDyn" | "selectI32Dyn"
                                         | "selectI32MultDyn" | "selectU32Dyn" | "selectU32MultDyn"
                                         | "selectI64Dyn" | "selectI64MultDyn" | "selectF64Dyn"
