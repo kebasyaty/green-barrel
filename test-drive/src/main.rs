@@ -180,7 +180,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    //println!("{}", user.json_for_admin()?);
+    println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None)?;

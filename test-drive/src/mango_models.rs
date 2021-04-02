@@ -62,6 +62,7 @@ pub struct User {
         hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
     )]
     pub username: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputText",
@@ -70,6 +71,7 @@ pub struct User {
         maxlength = 150
     )]
     pub first_name: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputText",
@@ -78,6 +80,7 @@ pub struct User {
         maxlength = 150
     )]
     pub last_name: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputEmail",
@@ -89,6 +92,7 @@ pub struct User {
         hint = "Your actual E-mail"
     )]
     pub email: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputPassword",
@@ -99,6 +103,7 @@ pub struct User {
         hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
     )]
     pub password: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputPassword",
@@ -107,6 +112,7 @@ pub struct User {
         hint = "Repeat your password"
     )]
     pub confirm_password: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "checkBox",
@@ -114,6 +120,7 @@ pub struct User {
         hint = "User can access the admin site?"
     )]
     pub is_staff: Option<bool>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "checkBox",
@@ -173,36 +180,47 @@ pub struct UserProfile {
         maxlength = 40
     )]
     pub username: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputEmail", required = true, unique = true, maxlength = 74)]
     pub email: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputEmail", required = true, maxlength = 74)]
     pub confirm_email: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
     pub password: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
     pub confirm_password: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputDate")]
     pub date: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputDateTime")]
     pub datetime: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "numberI32")]
     pub num_i32: Option<i32>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "numberU32")]
     pub num_u32: Option<u32>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "numberI64")]
     pub num_i64: Option<i64>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "numberF64")]
     pub num_f64: Option<f64>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputFile",
@@ -212,6 +230,7 @@ pub struct UserProfile {
         }"#
     )]
     pub file: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "inputImage",
@@ -221,6 +240,7 @@ pub struct UserProfile {
         }"#
     )]
     pub image: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "checkBox",
@@ -228,6 +248,7 @@ pub struct UserProfile {
         hint = "User can access the admin site?"
     )]
     pub is_staff: Option<bool>,
+    //
     #[serde(default)]
     #[field_attrs(
         widget = "checkBox",
@@ -235,6 +256,10 @@ pub struct UserProfile {
         hint = "Is this an active account?"
     )]
     pub is_active: Option<bool>,
+    //
+    #[serde(default)]
+    #[field_attrs(widget = "selectTextMult")]
+    pub select_text_mult: Option<Vec<String>>,
 }
 
 // Methods for additional validation.
@@ -280,15 +305,19 @@ pub struct UserForm {
         maxlength = 40
     )]
     pub username: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputEmail", required = true, unique = true, maxlength = 74)]
     pub email: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputEmail", required = true, maxlength = 74)]
     pub confirm_email: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
     pub password: Option<String>,
+    //
     #[serde(default)]
     #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
     pub confirm_password: Option<String>,
