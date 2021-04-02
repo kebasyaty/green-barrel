@@ -177,10 +177,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         num_f64: Some(-64.64),
         is_staff: Some(false),
         is_active: Some(true),
+        select_text_mult: Some(vec!["1".to_string(), "2".to_string()]),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    println!("{}", user.json_for_admin()?);
+    //println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None)?;
