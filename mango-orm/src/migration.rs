@@ -564,8 +564,8 @@ impl<'a> Monitor<'a> {
                                 );
                             }
                         }
-                        // Insert fields for timestamps `created_at` and `updated_at`.
-                        for field in vec!["created_at", "updated_at"] {
+                        // Insert the reserved fields - `created_at`, `updated_at` and `paperclip`.
+                        for field in vec!["created_at", "updated_at", "paperclip"] {
                             if doc_from_db.contains_key(field) {
                                 let value_from_db: Option<&mongodb::bson::Bson> =
                                     doc_from_db.get(field);
