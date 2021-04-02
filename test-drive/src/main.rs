@@ -183,7 +183,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", user.json_for_admin()?);
 
     // Create doc.
-    let result = user.save(None, None, None)?;
+    let result = user.save(None, None)?;
     println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
@@ -213,7 +213,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     user.username = Some("Rust 2".to_string());
     //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    let result = user.save(None, None, None)?;
+    let result = user.save(None, None)?;
     println!("\n\n\nBoolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);

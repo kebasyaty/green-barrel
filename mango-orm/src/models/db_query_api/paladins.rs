@@ -1195,7 +1195,6 @@ pub trait QPaladins: ToModel + CachingModel {
     // *********************************************************************************************
     fn save(
         &mut self,
-        paperclip: Option<mongodb::bson::Bson>,
         options_insert: Option<mongodb::options::InsertOneOptions>,
         options_update: Option<mongodb::options::UpdateOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
@@ -1216,10 +1215,7 @@ pub trait QPaladins: ToModel + CachingModel {
         // Save to database.
         // -----------------------------------------------------------------------------------------
         if is_no_error {
-            let mut final_doc = verified_data.doc();
-            if paperclip.is_some() {
-                final_doc.insert("paperclip", paperclip.unwrap());
-            }
+            let final_doc = verified_data.doc();
             if !is_update {
                 let result: mongodb::results::InsertOneResult =
                     coll.insert_one(final_doc, options_insert)?;

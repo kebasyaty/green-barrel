@@ -87,8 +87,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let result = test_model.save(None, None, None)?;
-    let result_2 = test_model_2.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -151,7 +151,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Update
     // ---------------------------------------------------------------------------------------------
     let tmp_hash = test_model.hash.clone().unwrap();
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
@@ -159,7 +159,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // radio
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert!(map_wigets.get("radio").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -168,13 +168,13 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     // number
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert!(map_wigets.get("range").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
@@ -183,7 +183,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     // hidden
-    let result = test_model.save(None, None, None)?;
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
     assert!(map_wigets.get("hidden").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;

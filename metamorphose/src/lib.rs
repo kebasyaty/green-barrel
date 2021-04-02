@@ -435,7 +435,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // Add default values in the map.
         map_default_values.insert(
             field_name.clone(),
-            (widget.widget.clone(), widget.value.clone()),
+            (
+                widget.widget.clone(),
+                if widget.widget != "checkBox" {
+                    widget.value.clone()
+                } else {
+                    widget.checked.to_string()
+                },
+            ),
         );
     }
     trans_meta.map_default_values = map_default_values;
