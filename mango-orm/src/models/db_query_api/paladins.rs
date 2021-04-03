@@ -22,7 +22,7 @@ use std::{fs, path::Path};
 pub trait QPaladins: ToModel + CachingModel {
     // Json-line for admin panel.
     // ( converts a widget map to a list, in the order of the Model fields )
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
@@ -66,7 +66,7 @@ pub trait QPaladins: ToModel + CachingModel {
     }
 
     // Deleting a file in the database and in the file system.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     fn delete_file(
         &self,
         coll: &mongodb::sync::Collection,
@@ -107,7 +107,7 @@ pub trait QPaladins: ToModel + CachingModel {
     }
 
     // Get file info from database.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     fn db_get_file_info(
         &self,
         coll: &mongodb::sync::Collection,
@@ -129,7 +129,7 @@ pub trait QPaladins: ToModel + CachingModel {
     }
 
     // Checking the Model before queries the database.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -213,6 +213,7 @@ pub trait QPaladins: ToModel + CachingModel {
             let pre_json_value: &serde_json::value::Value = pre_json_value.unwrap();
             let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
             let widget_type: &str = &final_widget.widget.clone()[..];
+
             // Field validation.
             match widget_type {
                 // Validation of text type fields.
@@ -240,6 +241,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     } else {
                         String::new()
                     };
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
@@ -264,6 +266,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     };
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
+
                     // Validation in regular expression.
                     // Checking `minlength`, `maxlength`, `min length`, `max length`.
                     // -----------------------------------------------------------------------------
@@ -281,6 +284,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         },
                     );
+
                     // Validation of range (`min` <> `max`).
                     // Hint: The `validate_length()` method did not
                     // provide the desired result.
@@ -304,6 +308,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
+
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if widget_type != "inputPassword" && final_widget.unique {
@@ -314,6 +319,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
+
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
                     Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
@@ -321,6 +327,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         final_widget.error =
                             Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                     });
+
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
@@ -359,6 +366,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     } else {
                         String::new()
                     };
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
@@ -377,6 +385,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
+
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
                     Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
@@ -387,6 +396,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     if is_err_symptom {
                         continue;
                     }
+
                     // Create Date and Time Object.
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
@@ -463,6 +473,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             continue;
                         }
                     }
+
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
                     let dt_value_bson = mongodb::bson::Bson::DateTime(dt_value);
@@ -477,6 +488,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             },
                         );
                     }
+
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
