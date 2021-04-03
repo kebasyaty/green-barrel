@@ -11,9 +11,7 @@
 //!
 
 use crate::{
-    forms::{
-        caching::CachingForm, output_data::OutputDataForm, FileData, ImageData, ToForm, Widget,
-    },
+    forms::{caching::CachingForm, output_data::OutputDataForm, ToForm, Widget},
     models::validation::AdditionalValidation,
     store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
 };
@@ -118,7 +116,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
         // User input error detection symptom.
         let mut is_err_symptom = false;
         // Get preliminary data from the model.
-        let mut pre_json: serde_json::value::Value = self.self_to_json()?;
+        let pre_json: serde_json::value::Value = self.self_to_json()?;
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
@@ -415,7 +413,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
+                "radioI32" | "numberI32" | "rangeI32" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -460,8 +458,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
-                | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -506,7 +503,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
+                "radioF64" | "numberF64" | "rangeF64" => {
                     // Get field value for validation.
                     let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
