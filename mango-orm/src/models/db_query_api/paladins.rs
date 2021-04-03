@@ -874,8 +874,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         final_doc.insert(field_name, bson_field_value);
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
-                | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
+                | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
