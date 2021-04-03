@@ -226,7 +226,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         continue;
                     }
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -250,26 +250,11 @@ pub trait QPaladins: ToModel + CachingModel {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                             final_widget.value = String::new();
-                            continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if !is_update && widget_type != "inputPassword" {
-                                if !final_widget.value.is_empty() {
-                                    field_value = final_widget.value.trim().to_string();
-                                    final_widget.value = String::new();
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
-                                    continue;
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = if widget_type != "inputPassword" {
@@ -364,7 +349,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 // *********************************************************************************
                 "inputDate" | "inputDateTime" => {
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -384,26 +369,11 @@ pub trait QPaladins: ToModel + CachingModel {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                             final_widget.value = String::new();
-                            continue;
-                        } else {
-                            if !is_update {
-                                // Trying to apply the value default.
-                                if !final_widget.value.is_empty() {
-                                    field_value = final_widget.value.trim().to_string();
-                                    final_widget.value = String::new();
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
-                                    continue;
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
@@ -557,55 +527,10 @@ pub trait QPaladins: ToModel + CachingModel {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            if !is_update {
-                                // Trying to apply the value default.
-                                if !final_widget.widget.contains("Dyn")
-                                    && !final_widget.value.is_empty()
-                                {
-                                    final_doc.insert(
-                                        field_name,
-                                        match widget_type {
-                                            "selectText" => {
-                                                let val = final_widget.value.trim().to_string();
-                                                mongodb::bson::Bson::String(val)
-                                            }
-                                            "selectI32" => {
-                                                let val = final_widget
-                                                    .value
-                                                    .trim()
-                                                    .parse::<i32>()
-                                                    .unwrap();
-                                                mongodb::bson::Bson::Int32(val)
-                                            }
-                                            "selectU32" | "selectI64" => {
-                                                let val = final_widget
-                                                    .value
-                                                    .trim()
-                                                    .parse::<i64>()
-                                                    .unwrap();
-                                                mongodb::bson::Bson::Int64(val)
-                                            }
-                                            "selectF64" => {
-                                                let val = final_widget
-                                                    .value
-                                                    .trim()
-                                                    .parse::<f64>()
-                                                    .unwrap();
-                                                mongodb::bson::Bson::Double(val)
-                                            }
-                                            _ => Err(format!(
-                                                "Model: `{}` > Field: `{}` > Method: `check()` : \
-                                                Unsupported widget type - `{}`.",
-                                                model_name, field_name, widget_type
-                                            ))?,
-                                        },
-                                    );
-                                } else {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                }
-                            }
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
                         final_widget.value = String::new();
+                        continue;
                     }
                 }
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
@@ -678,10 +603,11 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                        } else if !is_update {
+                        } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
                         final_widget.value = String::new();
+                        continue;
                     }
                 }
                 // Validation of file type fields.
@@ -872,7 +798,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 // *********************************************************************************
                 "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
                     // Define field state flag.
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error.
@@ -884,27 +810,11 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !is_update {
-                                if !final_widget.value.is_empty() {
-                                    field_value =
-                                        Some(final_widget.value.trim().parse::<i64>().unwrap());
-                                    final_widget.value = String::new();
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
-                                    continue;
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i32 = field_value.unwrap() as i32;
