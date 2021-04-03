@@ -362,25 +362,23 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64"
-                | "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
-                | "selectF64Dyn" => {
+                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
                     // Get selected items.
                     if !pre_json_value.is_null() {
                         match widget_type {
-                            "selectText" | "selectTextDyn" => {
+                            "selectText" => {
                                 let val = pre_json_value.as_str().unwrap().to_string();
                                 final_widget.value = val.clone();
                             }
-                            "selectI32" | "selectI32Dyn" => {
+                            "selectI32" => {
                                 let val = pre_json_value.as_i64().unwrap() as i32;
                                 final_widget.value = val.to_string();
                             }
-                            "selectU32" | "selectI64" | "selectU32Dyn" | "selectI64Dyn" => {
+                            "selectU32" | "selectI64" => {
                                 let val = pre_json_value.as_i64().unwrap();
                                 final_widget.value = val.to_string();
                             }
-                            "selectF64" | "selectF64Dyn" => {
+                            "selectF64" => {
                                 let val = pre_json_value.as_f64().unwrap();
                                 final_widget.value = val.to_string();
                             }
@@ -401,8 +399,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                     }
                 }
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
-                | "selectF64Mult" | "selectTextMultDyn" | "selectI32MultDyn"
-                | "selectU32MultDyn" | "selectI64MultDyn" | "selectF64MultDyn" => {
+                | "selectF64Mult" => {
                     // Get selected items.
                     if pre_json_value.is_null() && final_widget.required {
                         is_err_symptom = true;
