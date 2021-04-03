@@ -165,10 +165,9 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // Validation of text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
-                | "hiddenText" => {
+                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea" => {
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -193,23 +192,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                     .unwrap();
                             final_widget.value = String::new();
                             continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if widget_type != "inputPassword" {
-                                if !final_widget.value.is_empty() {
-                                    field_value = final_widget.value.trim().to_string();
-                                    // To deserialize an instance of a form with default values.
-                                    *pre_json.get_mut(field_name).unwrap() =
-                                        serde_json::json!(field_value);
-                                    final_widget.value = String::new();
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
                     }
                     // Convert to &str
@@ -266,7 +248,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // *********************************************************************************
                 "inputDate" | "inputDateTime" => {
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -287,18 +269,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                     .unwrap();
                             final_widget.value = String::new();
                             continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if !final_widget.value.is_empty() {
-                                field_value = final_widget.value.trim().to_string();
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() =
-                                    serde_json::json!(field_value);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
                     }
                     // Convert to &str
@@ -426,35 +396,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                        } else if !final_widget.widget.contains("Dyn")
-                            && !final_widget.value.is_empty()
-                        {
-                            // Trying to apply the value default.
-                            match widget_type {
-                                "selectText" => {
-                                    let val = final_widget.value.trim().to_string();
-                                    // To deserialize an instance of a form with default values.
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectI32" => {
-                                    let val = final_widget.value.trim().parse::<i32>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectU32" | "selectI64" => {
-                                    let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectF64" => {
-                                    let val = final_widget.value.trim().parse::<f64>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
-                                    Unsupported widget type - `{}`.",
-                                    form_name, field_name, widget_type
-                                ))?,
-                            }
                         }
                         final_widget.value = String::new();
                     }
