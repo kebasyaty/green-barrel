@@ -401,13 +401,17 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
                 | "selectF64Mult" => {
                     // Get selected items.
-                    if pre_json_value.is_null() && final_widget.required {
-                        is_err_symptom = true;
-                        final_widget.error =
-                            Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                .unwrap();
+                    if !pre_json_value.is_null() {
+                        final_widget.value = serde_json::to_string(&pre_json_value)?;
+                    } else {
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                                    .unwrap();
+                        }
+                        final_widget.value = String::new();
                     }
-                    final_widget.value = String::new();
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
