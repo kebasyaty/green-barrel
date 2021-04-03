@@ -865,7 +865,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
                 | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
                     // Define field state flag.
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error.
@@ -877,27 +877,11 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !is_update {
-                                if !final_widget.value.is_empty() {
-                                    field_value =
-                                        Some(final_widget.value.trim().parse::<i64>().unwrap());
-                                    final_widget.value = String::new();
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
-                                    continue;
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i64 = field_value.unwrap();
@@ -947,7 +931,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 }
                 "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<f64> = pre_json_value.as_f64();
+                    let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
                     let is_null_value: bool = pre_json_value.is_null();
                     // Validation, if the field is required and empty, accumulate the error
@@ -959,27 +943,11 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !is_update {
-                                if !final_widget.value.is_empty() {
-                                    field_value =
-                                        Some(final_widget.value.trim().parse::<f64>().unwrap());
-                                    final_widget.value = String::new();
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value = String::new();
-                                    continue;
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: f64 = field_value.unwrap();
