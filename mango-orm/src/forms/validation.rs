@@ -688,9 +688,10 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<f64> = pre_json_value.as_f64();
+                    let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
                     let is_null_value: bool = pre_json_value.is_null();
+
                     // Validation, if the field is required and empty, accumulate the error
                     // ( The default value is used whenever possible ).
                     // -----------------------------------------------------------------------------
@@ -700,28 +701,16 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<f64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: f64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -744,6 +733,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
+
                 // Validation of boolean type fields.
                 // *********************************************************************************
                 "checkBox" => {

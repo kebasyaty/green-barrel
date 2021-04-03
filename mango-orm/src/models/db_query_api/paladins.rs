@@ -799,12 +799,11 @@ pub trait QPaladins: ToModel + CachingModel {
                 "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
@@ -818,13 +817,12 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                     // Get clean data.
                     let field_value: i32 = field_value.unwrap() as i32;
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = mongodb::bson::Bson::Int32(field_value);
+
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -835,6 +833,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -856,6 +855,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
+
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
@@ -866,12 +866,11 @@ pub trait QPaladins: ToModel + CachingModel {
                 | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
@@ -885,13 +884,12 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                     // Get clean data.
                     let field_value: i64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = mongodb::bson::Bson::Int64(field_value);
+
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -902,6 +900,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -932,12 +931,11 @@ pub trait QPaladins: ToModel + CachingModel {
                 "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
                     let field_value: Option<f64> = pre_json_value.as_f64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+
                     // Validation, if the field is required and empty, accumulate the error
                     // ( The default value is used whenever possible ).
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
@@ -951,11 +949,10 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                     // Get clean data.
                     let field_value: f64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = mongodb::bson::Bson::Double(field_value);
                     // Validation of `unique`.
