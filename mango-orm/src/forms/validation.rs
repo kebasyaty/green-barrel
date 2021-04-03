@@ -571,40 +571,27 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // *********************************************************************************
                 "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i32 = field_value.unwrap() as i32;
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -630,40 +617,27 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
                 | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
