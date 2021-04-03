@@ -671,6 +671,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 ))?,
                             },
                         );
+                        final_widget.value = serde_json::to_string(&pre_json_value)?;
                     } else {
                         if final_widget.required {
                             is_err_symptom = true;
@@ -680,8 +681,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         } else if !is_update {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
+                        final_widget.value = String::new();
                     }
-                    final_widget.value = String::new();
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
