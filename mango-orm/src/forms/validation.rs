@@ -11,9 +11,7 @@
 //!
 
 use crate::{
-    forms::{
-        caching::CachingForm, output_data::OutputDataForm, FileData, ImageData, ToForm, Widget,
-    },
+    forms::{caching::CachingForm, output_data::OutputDataForm, ToForm, Widget},
     models::validation::AdditionalValidation,
     store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
 };
@@ -118,7 +116,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
         // User input error detection symptom.
         let mut is_err_symptom = false;
         // Get preliminary data from the model.
-        let mut pre_json: serde_json::value::Value = self.self_to_json()?;
+        let pre_json: serde_json::value::Value = self.self_to_json()?;
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
@@ -165,10 +163,9 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // Validation of text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
-                | "hiddenText" => {
+                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea" => {
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -193,23 +190,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                     .unwrap();
                             final_widget.value = String::new();
                             continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if widget_type != "inputPassword" {
-                                if !final_widget.value.is_empty() {
-                                    field_value = final_widget.value.trim().to_string();
-                                    // To deserialize an instance of a form with default values.
-                                    *pre_json.get_mut(field_name).unwrap() =
-                                        serde_json::json!(field_value);
-                                    final_widget.value = String::new();
-                                } else {
-                                    final_widget.value = String::new();
-                                    continue;
-                                }
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
                     }
                     // Convert to &str
@@ -266,7 +246,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // *********************************************************************************
                 "inputDate" | "inputDateTime" => {
                     // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
+                    let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -287,18 +267,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                     .unwrap();
                             final_widget.value = String::new();
                             continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if !final_widget.value.is_empty() {
-                                field_value = final_widget.value.trim().to_string();
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() =
-                                    serde_json::json!(field_value);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
                     }
                     // Convert to &str
@@ -392,25 +360,23 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64"
-                | "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
-                | "selectF64Dyn" => {
+                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
                     // Get selected items.
                     if !pre_json_value.is_null() {
                         match widget_type {
-                            "selectText" | "selectTextDyn" => {
+                            "selectText" => {
                                 let val = pre_json_value.as_str().unwrap().to_string();
                                 final_widget.value = val.clone();
                             }
-                            "selectI32" | "selectI32Dyn" => {
+                            "selectI32" => {
                                 let val = pre_json_value.as_i64().unwrap() as i32;
                                 final_widget.value = val.to_string();
                             }
-                            "selectU32" | "selectI64" | "selectU32Dyn" | "selectI64Dyn" => {
+                            "selectU32" | "selectI64" => {
                                 let val = pre_json_value.as_i64().unwrap();
                                 final_widget.value = val.to_string();
                             }
-                            "selectF64" | "selectF64Dyn" => {
+                            "selectF64" => {
                                 let val = pre_json_value.as_f64().unwrap();
                                 final_widget.value = val.to_string();
                             }
@@ -426,185 +392,50 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                        } else if !final_widget.widget.contains("Dyn")
-                            && !final_widget.value.is_empty()
-                        {
-                            // Trying to apply the value default.
-                            match widget_type {
-                                "selectText" => {
-                                    let val = final_widget.value.trim().to_string();
-                                    // To deserialize an instance of a form with default values.
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectI32" => {
-                                    let val = final_widget.value.trim().parse::<i32>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectU32" | "selectI64" => {
-                                    let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                "selectF64" => {
-                                    let val = final_widget.value.trim().parse::<f64>().unwrap();
-                                    *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                }
-                                _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
-                                    Unsupported widget type - `{}`.",
-                                    form_name, field_name, widget_type
-                                ))?,
-                            }
                         }
                         final_widget.value = String::new();
                     }
                 }
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
-                | "selectF64Mult" | "selectTextMultDyn" | "selectI32MultDyn"
-                | "selectU32MultDyn" | "selectI64MultDyn" | "selectF64MultDyn" => {
+                | "selectF64Mult" => {
                     // Get selected items.
-                    if pre_json_value.is_null() && final_widget.required {
-                        is_err_symptom = true;
-                        final_widget.error =
-                            Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                .unwrap();
-                    }
-                    final_widget.value = String::new();
-                }
-                // Validation of file type fields.
-                // *********************************************************************************
-                "inputFile" => {
-                    // Get field value for validation.
-                    let mut field_value: FileData = if !pre_json_value.is_null() {
-                        let clean_data: FileData =
-                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
-                        clean_data
+                    if !pre_json_value.is_null() {
+                        final_widget.value = serde_json::to_string(&pre_json_value)?;
                     } else {
-                        FileData::default()
-                    };
-                    // Validation, if the field is required and empty, accumulate the error.
-                    // ( The default value is used whenever possible )
-                    if field_value.path.is_empty() && field_value.url.is_empty() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if !final_widget.value.is_empty() {
-                                field_value = serde_json::from_str(final_widget.value.trim())?;
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() =
-                                    serde_json::json!(field_value);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
-                    }
-                    final_widget.value = String::new();
-                    // Flags to check.
-                    let is_emty_path = field_value.path.is_empty();
-                    let is_emty_url = field_value.url.is_empty();
-                    // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
-                            `check()` : Incorrectly filled field. \
-                            Example: {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}}",
-                            form_name, field_name
-                        ))?
-                    }
-                }
-                "inputImage" => {
-                    // Get field value for validation.
-                    let mut field_value: ImageData = if !pre_json_value.is_null() {
-                        let clean_data: ImageData =
-                            serde_json::from_str(pre_json_value.as_str().unwrap())?;
-                        clean_data
-                    } else {
-                        ImageData::default()
-                    };
-                    // Validation, if the field is required and empty, accumulate the error.
-                    // ( The default value is used whenever possible )
-                    if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else {
-                            // Trying to apply the value default.
-                            if !final_widget.value.is_empty() {
-                                field_value = serde_json::from_str(final_widget.value.trim())?;
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() =
-                                    serde_json::json!(field_value);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
-                        }
-                    }
-                    final_widget.value = String::new();
-                    // Flags to check.
-                    let is_emty_path = field_value.path.is_empty();
-                    let is_emty_url = field_value.url.is_empty();
-                    // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
-                            `check()` : Incorrectly filled field. \
-                            Example: {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}}",
-                            form_name, field_name
-                        ))?
+                        final_widget.value = String::new();
                     }
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
+                "radioI32" | "numberI32" | "rangeI32" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i32 = field_value.unwrap() as i32;
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -627,43 +458,29 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "checkBoxI64" | "radioI64"
-                | "numberI64" | "rangeI64" | "hiddenU32" | "hiddenI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-                    // Define field state flag.
-                    let is_null_value: bool = pre_json_value.is_null();
+                    let field_value: Option<i64> = pre_json_value.as_i64();
+
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if is_null_value {
+                    if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<i64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: i64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -686,11 +503,12 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
+                "radioF64" | "numberF64" | "rangeF64" => {
                     // Get field value for validation.
-                    let mut field_value: Option<f64> = pre_json_value.as_f64();
+                    let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
                     let is_null_value: bool = pre_json_value.is_null();
+
                     // Validation, if the field is required and empty, accumulate the error
                     // ( The default value is used whenever possible ).
                     // -----------------------------------------------------------------------------
@@ -700,28 +518,16 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
-                            continue;
-                        } else if is_null_value {
-                            if !final_widget.value.is_empty() {
-                                let val = final_widget.value.trim().parse::<f64>().unwrap();
-                                field_value = Some(val);
-                                // To deserialize an instance of a form with default values.
-                                *pre_json.get_mut(field_name).unwrap() = serde_json::json!(val);
-                                final_widget.value = String::new();
-                            } else {
-                                final_widget.value = String::new();
-                                continue;
-                            }
                         }
+                        final_widget.value = String::new();
+                        continue;
                     }
                     // Get clean data.
                     let field_value: f64 = field_value.unwrap();
-                    if !is_null_value {
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = field_value.to_string();
-                    }
+                    // In case of an error, return the current
+                    // state of the field to the user (client).
+                    final_widget.value = field_value.to_string();
+
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap();
@@ -744,6 +550,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
+
                 // Validation of boolean type fields.
                 // *********************************************************************************
                 "checkBox" => {
