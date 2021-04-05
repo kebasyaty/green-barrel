@@ -22,7 +22,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectText",
             default = "volvo",
-            select = r#"[
+            choice = r#"[
                 ["volvo","Volvo"],
                 ["saab","Saab"],
                 ["mercedes","Mercedes"],
@@ -33,7 +33,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectTextMult",
-            select = r#"[
+            choice = r#"[
                 ["volvo","Volvo"],
                 ["saab","Saab"],
                 ["mercedes","Mercedes"],
@@ -46,7 +46,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectI32",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -57,7 +57,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI32Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -70,7 +70,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectU32",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -81,7 +81,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectU32Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -94,7 +94,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectI64",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -105,7 +105,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI64Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -118,7 +118,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectF64",
             default = 1.1,
-            select = r#"[
+            choice = r#"[
                 [1.1,"Volvo"],
                 [2.2,"Saab"],
                 [3.3,"Mercedes"],
@@ -129,7 +129,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectF64Mult",
-            select = r#"[
+            choice = r#"[
                 [1.1,"Volvo"],
                 [2.2,"Saab"],
                 [3.3,"Mercedes"],
