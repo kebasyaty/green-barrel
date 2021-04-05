@@ -1483,7 +1483,7 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
-        "select" => match field_type.as_ref() {
+        "choice" => match field_type.as_ref() {
             "i32" | "Vec < i32 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
                     let raw_options: Vec<(i32, String)> =
@@ -1496,7 +1496,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
+                        Could not determine value for parameter `choice`. \
                         Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )
