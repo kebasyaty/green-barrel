@@ -296,7 +296,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.min != "0".to_string() {
+                    if !widget.min.is_empty() {
                         if !re_valid_date.is_match(widget.min.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `min` : \
@@ -305,7 +305,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.max != "0".to_string() {
+                    if !widget.max.is_empty() {
                         if !re_valid_date.is_match(widget.max.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `max` : \
@@ -330,7 +330,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.min != "0".to_string() {
+                    if !widget.min.is_empty() {
                         if !re_valid_datetime.is_match(widget.min.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `min` : \
@@ -339,7 +339,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.max != "0".to_string() {
+                    if !widget.max.is_empty() {
                         if !re_valid_datetime.is_match(widget.max.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `max` : \
