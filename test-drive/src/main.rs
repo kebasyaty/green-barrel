@@ -165,8 +165,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_1_@test.test".to_string()),
-        confirm_email: Some("test_1_@test.test".to_string()),
+        email: Some("test_2_@test.test".to_string()),
+        confirm_email: Some("test_2_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -178,10 +178,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         is_staff: Some(false),
         is_active: Some(true),
         select_text_mult: Some(vec!["1".to_string(), "2".to_string()]),
+        select_i32_mult: Some(vec![1, 2]),
+        select_u32_mult: Some(vec![1, 2]),
+        select_i64_mult: Some(vec![1, 2]),
+        select_f64_mult: Some(vec![1.0, 2.0]),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    //println!("{}", user.json_for_admin()?);
+    // println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None)?;

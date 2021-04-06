@@ -10,6 +10,8 @@
 //! `check` - Checking the Form before other proceeding.
 //!
 
+use std::convert::TryFrom;
+
 use crate::{
     forms::{caching::CachingForm, output_data::OutputDataForm, ToForm, Widget},
     models::validation::AdditionalValidation,
@@ -368,7 +370,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                 final_widget.value = val.clone();
                             }
                             "selectI32" => {
-                                let val = pre_json_value.as_i64().unwrap() as i32;
+                                let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
                                 final_widget.value = val.to_string();
                             }
                             "selectU32" | "selectI64" => {

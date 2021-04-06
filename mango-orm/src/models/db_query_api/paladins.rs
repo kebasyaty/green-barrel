@@ -17,6 +17,7 @@ use crate::{
     models::{caching::CachingModel, Meta, ToModel},
 };
 use rand::Rng;
+use std::convert::TryFrom;
 use std::{fs, path::Path};
 
 pub trait QPaladins: ToModel + CachingModel {
@@ -511,7 +512,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     mongodb::bson::Bson::String(val)
                                 }
                                 "selectI32" | "selectI32Dyn" => {
-                                    let val = pre_json_value.as_i64().unwrap() as i32;
+                                    let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
                                     final_widget.value = val.to_string();
                                     mongodb::bson::Bson::Int32(val)
                                 }
@@ -565,20 +566,18 @@ pub trait QPaladins: ToModel + CachingModel {
                                         .collect::<Vec<mongodb::bson::Bson>>();
                                     mongodb::bson::Bson::Array(val)
                                 }
-                                "selectI32Mult" | "selectI32MultDyn" => {
-                                    mongodb::bson::Bson::Array(
-                                        pre_json_value
-                                            .as_array()
-                                            .unwrap()
-                                            .iter()
-                                            .map(|item| {
-                                                mongodb::bson::Bson::Int32(
-                                                    item.as_i64().unwrap() as i32
-                                                )
-                                            })
-                                            .collect::<Vec<mongodb::bson::Bson>>(),
-                                    )
-                                }
+                                "selectI32Mult" | "selectI32MultDyn" => mongodb::bson::Bson::Array(
+                                    pre_json_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| {
+                                            mongodb::bson::Bson::Int32(
+                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                            )
+                                        })
+                                        .collect::<Vec<mongodb::bson::Bson>>(),
+                                ),
                                 "selectU32Mult" | "selectI64Mult" | "selectU32MultDyn"
                                 | "selectI64MultDyn" => mongodb::bson::Bson::Array(
                                     pre_json_value
