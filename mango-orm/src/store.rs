@@ -2,7 +2,7 @@
 //!
 //! `FormCache` - Structure for caching map of widgets, json and html, for mango models.
 //! `FORM_CACHE` - Storage of settings for mango models.
-//! `DB_MAP_CLIENT_NAMES` - Storage for Clients of MongoDB.
+//! `MONGODB_CLIENT_STORE` - Storage for Clients of MongoDB.
 
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
@@ -28,7 +28,7 @@ lazy_static! {
     };
     // Caching clients MongoDB
     // ---------------------------------------------------------------------------------------------
-    pub static ref DB_MAP_CLIENT_NAMES: RwLock<std::collections::HashMap<String, mongodb::sync::Client>> = {
+    pub static ref MONGODB_CLIENT_STORE: RwLock<std::collections::HashMap<String, mongodb::sync::Client>> = {
         RwLock::new(std::collections::HashMap::new())
     };
     // Regular expressions

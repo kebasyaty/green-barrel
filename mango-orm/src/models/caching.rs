@@ -14,7 +14,7 @@
 use crate::{
     forms::Widget,
     models::{Meta, ToModel},
-    store::{FormCache, DB_MAP_CLIENT_NAMES, FORM_CACHE},
+    store::{FormCache, FORM_CACHE, MONGODB_CLIENT_STORE},
 };
 
 // Caching information about Models for speed up work.
@@ -30,7 +30,7 @@ pub trait CachingModel: ToModel {
         // Create `FormCache` default and add map of widgets and metadata of model.
         let meta: Meta = Self::meta()?;
         // Get MongoDB client for current model.
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
         // Get a widget map.
         let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
@@ -164,7 +164,7 @@ pub trait CachingModel: ToModel {
             // Get model metadata from cache.
             let meta: &Meta = &form_cache.meta;
             // Get MongoDB client for current model.
-            let client_store = DB_MAP_CLIENT_NAMES.read()?;
+            let client_store = MONGODB_CLIENT_STORE.read()?;
             let client: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
             //
             Ok((form_cache.clone(), client.clone()))

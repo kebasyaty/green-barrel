@@ -8,7 +8,7 @@ mod settings;
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
     // Caching MongoDB clients.
     {
-        let mut client_store = DB_MAP_CLIENT_NAMES.write()?;
+        let mut client_store = MONGODB_CLIENT_STORE.write()?;
         client_store.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
