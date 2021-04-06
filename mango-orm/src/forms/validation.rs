@@ -354,7 +354,6 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                 &"Date out of range between `min` and` max`.".to_owned(),
                             )
                             .unwrap();
-                            continue;
                         }
                     }
                 }

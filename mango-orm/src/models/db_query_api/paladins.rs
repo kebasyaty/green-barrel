@@ -542,7 +542,6 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
                         final_widget.value = String::new();
-                        continue;
                     }
                 }
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
@@ -619,7 +618,6 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
                         final_widget.value = String::new();
-                        continue;
                     }
                 }
                 // Validation of file type fields.
