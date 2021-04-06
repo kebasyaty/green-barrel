@@ -438,8 +438,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap();
-                    let max: f64 = final_widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap_or_default();
+                    let max: f64 = final_widget.max.parse().unwrap_or_default();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -483,8 +483,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap();
-                    let max: f64 = final_widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap_or_default();
+                    let max: f64 = final_widget.max.parse().unwrap_or_default();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -530,8 +530,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap();
-                    let max: f64 = final_widget.max.parse().unwrap();
+                    let min: f64 = final_widget.min.parse().unwrap_or_default();
+                    let max: f64 = final_widget.max.parse().unwrap_or_default();
                     let num: f64 = field_value.clone();
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
