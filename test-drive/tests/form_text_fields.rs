@@ -92,7 +92,7 @@ fn test_form_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // text
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
@@ -218,7 +218,7 @@ fn test_form_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // text
     let map_wigets = result.wig();
     assert_eq!(

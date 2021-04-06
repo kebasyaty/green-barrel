@@ -93,7 +93,7 @@ fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     };
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values in widgets
@@ -141,7 +141,7 @@ fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());

@@ -138,7 +138,7 @@ impl OutputDataForm {
 
     // Get Boolean
     // ---------------------------------------------------------------------------------------------
-    pub fn bool(&self) -> bool {
+    pub fn is_valid(&self) -> bool {
         match self {
             Self::CheckForm(data) => data.0,
             Self::CheckModel(data) => data.0,

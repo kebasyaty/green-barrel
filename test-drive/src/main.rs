@@ -189,7 +189,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create doc.
     let result = user.save(None, None)?;
-    println!("Boolean: {}", result.bool());
+    println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());
@@ -219,7 +219,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     let result = user.save(None, None)?;
-    println!("\n\n\nBoolean: {}", result.bool());
+    println!("\n\n\nBoolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());

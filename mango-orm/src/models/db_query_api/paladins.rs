@@ -1088,7 +1088,7 @@ pub trait QPaladins: ToModel + CachingModel {
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
         // Get checked data from the `check()` method.
         let verified_data: OutputDataForm = self.check()?;
-        let is_no_error: bool = verified_data.bool();
+        let is_no_error: bool = verified_data.is_valid();
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.

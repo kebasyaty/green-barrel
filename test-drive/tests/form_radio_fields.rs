@@ -107,7 +107,7 @@ fn test_form_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // radio_text
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
@@ -179,7 +179,7 @@ fn test_form_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // radio_text
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();

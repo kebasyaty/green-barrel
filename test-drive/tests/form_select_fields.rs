@@ -167,7 +167,7 @@ fn test_form_select_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // select_text
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
@@ -300,7 +300,7 @@ fn test_form_select_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.bool());
+    assert!(result.is_valid());
     // select_text
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
