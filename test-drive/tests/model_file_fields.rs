@@ -1,8 +1,8 @@
 use mango_orm::*;
-use mango_orm::{migration::Monitor, test_tool::del_test_db};
+use mango_orm::{forms::FileData, migration::Monitor, test_tool::del_test_db};
 use metamorphose::Model;
 use mongodb::{
-    bson::{doc, oid::ObjectId},
+    bson::{de::from_document, doc, oid::ObjectId},
     sync::Client,
 };
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "FqVs5rA2PPCEWt4";
+    pub const UNIQUE_PROJECT_KEY: &str = "qhYR6caApSj5Ph1";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -27,17 +27,14 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "radioI64", default = 1, unique = true)]
-        pub radio: Option<i64>,
-        #[serde(default)]
-        #[field_attrs(widget = "numberI64", unique = true)]
-        pub number: Option<i64>,
-        #[serde(default)]
-        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12, unique = true)]
-        pub range: Option<i64>,
-        #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12, unique = true)]
-        pub hidden: Option<i64>,
+        #[field_attrs(
+            widget = "inputFile",
+            default = r#"{
+                "path":"./media/hello_world.odt",
+                "url":"/media/hello_world.odt"
+            }"#
+        )]
+        pub file: Option<String>,
     }
 
     // Test migration
@@ -49,7 +46,7 @@ mod app_name {
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
-        DB_MAP_CLIENT_NAMES.write()?.insert(
+        MONGODB_CLIENT_STORE.write()?.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
@@ -74,85 +71,54 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        radio: Some(20_i64),
-        number: Some(105_i64),
-        range: Some(9_i64),
-        hidden: Some(11_i64),
-        ..Default::default()
-    };
-    let mut test_model_2 = app_name::TestModel {
-        radio: Some(20_i64),
-        number: Some(105_i64),
-        range: Some(9_i64),
-        hidden: Some(11_i64),
+        file: Some(
+            r#"{"path":"./media/hello_world_2.odt","url":"/media/hello_world_2.odt","is_delete":false}"#.to_string(),
+        ),
         ..Default::default()
     };
 
     // Create
     // ---------------------------------------------------------------------------------------------
+    let file_data = FileData {
+        path: "./media/hello_world_2.odt".to_string(),
+        url: "/media/hello_world_2.odt".to_string(),
+        name: "hello_world_2.odt".to_string(),
+        size: 9989_u32,
+    };
     let result = test_model.save(None, None)?;
-    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
-    // Validation of `unique`
-    assert!(!result_2.bool());
-    // Validation of `hash`
-    assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // radio
+    // file
+    let map_wigets = result.wig();
+    assert_eq!(
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
+    );
+    /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        1_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
+        )?,
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            map_wigets.get("file").unwrap().value.as_str()
+        )?
     );
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        20_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
-    );
-    // number
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        105_i64,
-        map_wigets.get("number").unwrap().value.parse::<i64>()?
-    );
-    // range
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        9_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    // hidden
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        3_i64,
-        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        11_i64,
-        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
-    );
+    */
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -161,12 +127,13 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(20_i64, doc.get_i64("radio")?);
-        assert_eq!(105_i64, doc.get_i64("number")?);
-        assert_eq!(9_i64, doc.get_i64("range")?);
-        assert_eq!(11_i64, doc.get_i64("hidden")?);
+        let doc = coll.find_one(filter, None)?.unwrap();
+        assert!(!doc.is_null("file"));
+        assert_eq!(
+            file_data,
+            from_document::<FileData>(doc.get_document("file")?.clone())?
+        );
     }
 
     // Update
@@ -174,61 +141,33 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // radio
-    let result = test_model.save(None, None)?;
+    // file
     let map_wigets = result.wig();
     assert_eq!(
-        20_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
     );
+    /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        1_i64,
-        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
+        )?,
+        serde_json::from_str::<std::collections::HashMap<String, String>>(
+            map_wigets.get("file").unwrap().value.as_str()
+        )?
     );
-    // number
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(
-        105_i64,
-        map_wigets.get("number").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    // range
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(
-        9_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        5_i64,
-        map_wigets.get("range").unwrap().value.parse::<i64>()?
-    );
-    // hidden
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(
-        11_i64,
-        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
-    );
-    let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(
-        3_i64,
-        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
-    );
+    */
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -237,12 +176,13 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(20_i64, doc.get_i64("radio")?);
-        assert_eq!(105_i64, doc.get_i64("number")?);
-        assert_eq!(9_i64, doc.get_i64("range")?);
-        assert_eq!(11_i64, doc.get_i64("hidden")?);
+        let doc = coll.find_one(filter, None)?.unwrap();
+        assert!(!doc.is_null("file"));
+        assert_eq!(
+            file_data,
+            from_document::<FileData>(doc.get_document("file")?.clone())?
+        );
     }
 
     // ---------------------------------------------------------------------------------------------

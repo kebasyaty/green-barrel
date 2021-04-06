@@ -38,17 +38,19 @@ mod tests {
 
     #[test]
     fn regex_validate_color_code() {
-        let re =
-            RegexBuilder::new(r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^\)]*\)$")
-                .case_insensitive(true)
-                .build()
-                .unwrap();
+        let re = RegexBuilder::new(
+            r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
+        )
+        .case_insensitive(true)
+        .build()
+        .unwrap();
         // invalids
         assert!(!re.is_match("#f2ewq"));
         assert!(!re.is_match(""));
         // valids
         assert!(re.is_match("#f2f2f2"));
         assert!(re.is_match("#F2F2F2"));
+        assert!(re.is_match("#00000000"));
         assert!(re.is_match("#fff"));
         assert!(re.is_match("rgb(255,0,24)"));
         assert!(re.is_match("rgb(255, 0, 24)"));

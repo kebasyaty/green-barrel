@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "uwahfkh7JcVF3Xa";
+    pub const UNIQUE_PROJECT_KEY: &str = "2GhzTpa5HyVsEwL";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -27,8 +27,29 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBox")]
-        pub checkbox: Option<bool>,
+        #[field_attrs(widget = "radioF64", default = 1.0, unique = true)]
+        pub radio: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(widget = "numberF64", unique = true)]
+        pub number: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(
+            widget = "rangeF64",
+            default = 5.0,
+            min = 1.0,
+            max = 12.0,
+            unique = true
+        )]
+        pub range: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(
+            widget = "hiddenF64",
+            default = 3.0,
+            min = 1.0,
+            max = 12.0,
+            unique = true
+        )]
+        pub hidden: Option<f64>,
     }
 
     // Test migration
@@ -40,7 +61,7 @@ mod app_name {
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
-        DB_MAP_CLIENT_NAMES.write()?.insert(
+        MONGODB_CLIENT_STORE.write()?.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
@@ -65,34 +86,85 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_number_f64_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        checkbox: Some(true),
+        radio: Some(20_f64),
+        number: Some(105_f64),
+        range: Some(9_f64),
+        hidden: Some(11_f64),
+        ..Default::default()
+    };
+    let mut test_model_2 = app_name::TestModel {
+        radio: Some(20_f64),
+        number: Some(105_f64),
+        range: Some(9_f64),
+        hidden: Some(11_f64),
         ..Default::default()
     };
 
     // Create
     // ---------------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
+    // Validation of `unique`
+    assert!(!result_2.is_valid());
+    // Validation of `hash`
+    assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // checkbox
-    let map_wigets = result.wig();
-    assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
+    // radio
     let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        20_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
+    // number
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        105_f64,
+        map_wigets.get("number").unwrap().value.parse::<f64>()?
+    );
+    // range
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        9_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    // hidden
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result_2.wig();
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -103,7 +175,10 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(true, doc.get_bool("checkbox")?);
+        assert_eq!(20_f64, doc.get_f64("radio")?);
+        assert_eq!(105_f64, doc.get_f64("number")?);
+        assert_eq!(9_f64, doc.get_f64("range")?);
+        assert_eq!(11_f64, doc.get_f64("hidden")?);
     }
 
     // Update
@@ -111,21 +186,61 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // checkbox
+    // radio
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        20_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
+    // number
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        105_f64,
+        map_wigets.get("number").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    // range
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        9_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    // hidden
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -136,7 +251,10 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(true, doc.get_bool("checkbox")?);
+        assert_eq!(20_f64, doc.get_f64("radio")?);
+        assert_eq!(105_f64, doc.get_f64("number")?);
+        assert_eq!(9_f64, doc.get_f64("range")?);
+        assert_eq!(11_f64, doc.get_f64("hidden")?);
     }
 
     // ---------------------------------------------------------------------------------------------
