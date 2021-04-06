@@ -301,7 +301,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    if final_widget.min != "0".to_string() && final_widget.max != "0".to_string() {
+                    if !final_widget.min.is_empty() && !final_widget.max.is_empty() {
                         // Validation in regular expression (min).
                         Self::regex_validation(widget_type, final_widget.min.as_str())
                             .unwrap_or_else(|err| {
