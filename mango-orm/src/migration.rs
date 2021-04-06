@@ -403,7 +403,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "inputRadioI32" | "numberI32"
+                                        "radioI32" | "numberI32"
                                         | "rangeI32" | "selectI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
