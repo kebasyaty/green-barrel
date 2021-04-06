@@ -13,7 +13,7 @@
 
 use crate::{
     forms::{html_controls::HtmlControls, ToForm, Widget},
-    store::{FormCache, FORM_CACHE},
+    store::{FormCache, FORM_STORE},
 };
 
 // Caching information about Forms for speed up work.
@@ -25,7 +25,7 @@ pub trait CachingForm: ToForm + HtmlControls {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get write access in cache.
-        let mut form_store = FORM_CACHE.write()?;
+        let mut form_store = FORM_STORE.write()?;
         // Create `FormCache` default and add map of widgets.
         let map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
         let new_form_cache = FormCache {
@@ -44,7 +44,7 @@ pub trait CachingForm: ToForm + HtmlControls {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
+        let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Form in the cache.
         if !form_store.contains_key(key.as_str()) {
             // Unlock.
@@ -52,7 +52,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             // Add map of widgets to cache.
             Self::widgets_to_cache()?;
             // Reaccess.
-            form_store = FORM_CACHE.read()?;
+            form_store = FORM_STORE.read()?;
         }
         // Get data and return the result.
         if let Some(form_cache) = form_store.get(key.as_str()) {
@@ -71,7 +71,7 @@ pub trait CachingForm: ToForm + HtmlControls {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
+        let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Form in the cache.
         if !form_store.contains_key(key.as_str()) {
             // Unlock.
@@ -79,13 +79,13 @@ pub trait CachingForm: ToForm + HtmlControls {
             // Add map of widgets to cache.
             Self::widgets_to_cache()?;
             // Reaccess.
-            form_store = FORM_CACHE.read()?;
+            form_store = FORM_STORE.read()?;
         }
         // Get data and return the result.
         if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_json.is_empty() {
                 drop(form_store);
-                let mut form_store = FORM_CACHE.write()?;
+                let mut form_store = FORM_STORE.write()?;
                 let form_cache = form_store.get(key.as_str()).unwrap();
                 let json = serde_json::to_string(&form_cache.map_widgets.clone())?;
                 let mut new_form_cache = form_cache.clone();
@@ -108,7 +108,7 @@ pub trait CachingForm: ToForm + HtmlControls {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
+        let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Form in the cache.
         if !form_store.contains_key(key.as_str()) {
             // Unlock.
@@ -116,13 +116,13 @@ pub trait CachingForm: ToForm + HtmlControls {
             // Add map of widgets to cache.
             Self::widgets_to_cache()?;
             // Reaccess.
-            form_store = FORM_CACHE.read()?;
+            form_store = FORM_STORE.read()?;
         }
         // Get data and return the result.
         if let Some(form_cache) = form_store.get(key.as_str()) {
             if form_cache.form_html.is_empty() {
                 drop(form_store);
-                let mut form_store = FORM_CACHE.write()?;
+                let mut form_store = FORM_STORE.write()?;
                 let form_cache = form_store.get(key.as_str()).unwrap();
                 let html =
                     Self::to_html(&form_cache.meta.fields_name, form_cache.map_widgets.clone());
@@ -146,7 +146,7 @@ pub trait CachingForm: ToForm + HtmlControls {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
-        let mut form_store = FORM_CACHE.read()?;
+        let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Form in the cache.
         if !form_store.contains_key(key.as_str()) {
             // Unlock.
@@ -154,7 +154,7 @@ pub trait CachingForm: ToForm + HtmlControls {
             // Add map of widgets to cache.
             Self::widgets_to_cache()?;
             // Reaccess.
-            form_store = FORM_CACHE.read()?;
+            form_store = FORM_STORE.read()?;
         }
         // Get data and return the result.
         if let Some(form_cache) = form_store.get(key.as_str()) {

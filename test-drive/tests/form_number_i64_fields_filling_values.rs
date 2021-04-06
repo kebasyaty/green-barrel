@@ -93,7 +93,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let _form_store = FORM_CACHE.read()?;
+        let _form_store = FORM_STORE.read()?;
     }
 
     // Update
@@ -145,7 +145,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let _form_store = FORM_CACHE.read()?;
+        let _form_store = FORM_STORE.read()?;
     }
 
     Ok(())

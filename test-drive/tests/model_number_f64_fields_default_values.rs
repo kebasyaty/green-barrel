@@ -143,7 +143,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
+        let form_store = FORM_STORE.read()?;
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
@@ -207,7 +207,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
+        let form_store = FORM_STORE.read()?;
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;

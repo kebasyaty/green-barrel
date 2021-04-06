@@ -1,7 +1,7 @@
 //! # Global storage
 //!
 //! `FormCache` - Structure for caching map of widgets, json and html, for mango models.
-//! `FORM_CACHE` - Storage of settings for mango models.
+//! `FORM_STORE` - Storage of settings for mango models.
 //! `MONGODB_CLIENT_STORE` - Storage for Clients of MongoDB.
 
 use lazy_static::lazy_static;
@@ -23,7 +23,7 @@ pub struct FormCache {
 lazy_static! {
     // Storage of settings for mango models
     // ---------------------------------------------------------------------------------------------
-    pub static ref FORM_CACHE: RwLock<std::collections::HashMap<String, FormCache>> = {
+    pub static ref FORM_STORE: RwLock<std::collections::HashMap<String, FormCache>> = {
         RwLock::new(std::collections::HashMap::new())
     };
     // Caching clients MongoDB

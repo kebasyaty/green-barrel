@@ -57,7 +57,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_CACHE.read()?;
+        let form_store = FORM_STORE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
@@ -80,7 +80,7 @@ fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_CACHE.read()?;
+        let form_store = FORM_STORE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
