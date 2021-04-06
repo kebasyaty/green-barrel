@@ -143,7 +143,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_select_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
         // text
         select_text: Some("audi".to_string()),

@@ -9,34 +9,38 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const UNIQUE_PROJECT_KEY: &str = "UAQf8spkQ_DU8bXp";
+    pub const UNIQUE_PROJECT_KEY: &str = "7zzbT7QukN_TRa5h";
     pub const SERVICE_NAME: &str = "service_name";
 
-    // Create form
+    // Create Forms
     // *********************************************************************************************
     #[Form]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestForm {
         #[serde(default)]
-        #[field_attrs(widget = "radioF64", default = 1.0)]
-        pub radio: Option<f64>,
+        #[field_attrs(widget = "radioI64", default = 1)]
+        pub radio: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "numberF64")]
-        pub number: Option<f64>,
+        #[field_attrs(widget = "numberI64")]
+        pub number: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeF64", default = 5.0, min = 1.0, max = 12.0)]
-        pub range: Option<f64>,
+        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12)]
+        pub range: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenF64", default = 3.0, min = 1.0, max = 12.0)]
-        pub hidden: Option<f64>,
+        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12)]
+        pub hidden: Option<i64>,
     }
 }
 
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_number_i64_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
+        radio: Some(20_i64),
+        number: Some(105_i64),
+        range: Some(9_i64),
+        hidden: Some(11_i64),
         ..Default::default()
     };
 
@@ -48,37 +52,48 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+        1_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    assert_eq!(
+        20_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+    );
     // number
     let map_wigets = app_name::TestForm::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = result.wig();
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    assert_eq!(
+        105_i64,
+        map_wigets.get("number").unwrap().value.parse::<i64>()?
+    );
     // range
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
+        5_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    assert_eq!(
+        9_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
+    );
     // hidden
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        3_f64,
-        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
+        let _form_store = FORM_STORE.read()?;
     }
 
     // Update
@@ -87,39 +102,50 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating
     assert!(result.bool());
     // radio
+    let map_wigets = result.wig();
+    assert_eq!(
+        20_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+        1_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
     // number
-    let map_wigets = app_name::TestForm::form_wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = result.wig();
+    assert_eq!(
+        105_i64,
+        map_wigets.get("number").unwrap().value.parse::<i64>()?
+    );
+    let map_wigets = app_name::TestForm::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
+    let map_wigets = result.wig();
+    assert_eq!(
+        9_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
+        5_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
     // hidden
+    let map_wigets = result.wig();
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        3_f64,
-        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
-        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
+        let _form_store = FORM_STORE.read()?;
     }
 
     Ok(())

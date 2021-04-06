@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "T2SCaZC3V2HvRQdP";
+    pub const UNIQUE_PROJECT_KEY: &str = "37xtBe3LL8x2Fkf";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -28,10 +28,10 @@ mod app_name {
     pub struct TestModel {
         #[serde(default)]
         #[field_attrs(
-            widget = "inputDate",
-            default = "1970-02-28",
-            min = "1970-01-01",
-            max = "1970-03-01",
+            widget = "inputDateTime",
+            default = "1970-02-28T00:00",
+            min = "1970-01-01T00:00",
+            max = "1970-03-01T00:00",
             unique = true
         )]
         pub date: Option<String>,
@@ -71,17 +71,17 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        date: Some("1970-02-27".to_string()),
+        date: Some("1970-02-27T00:00".to_string()),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
-        date: Some("1970-02-27".to_string()),
+        date: Some("1970-02-27T00:00".to_string()),
         ..Default::default()
     };
 
@@ -101,17 +101,17 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // date
     let map_wigets = result.wig();
     assert_eq!(
-        "1970-02-27".to_string(),
+        "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        "1970-02-28".to_string(),
+        "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
     let map_wigets = result_2.wig();
     assert_eq!(
-        "1970-02-27".to_string(),
+        "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
 
@@ -130,10 +130,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         let dt_value: chrono::DateTime<chrono::Utc> = chrono::DateTime::<chrono::Utc>::from_utc(
-            chrono::NaiveDateTime::parse_from_str(
-                &format!("{}T00:00", "1970-02-27".to_string()),
-                "%Y-%m-%dT%H:%M",
-            )?,
+            chrono::NaiveDateTime::parse_from_str("1970-02-27T00:00", "%Y-%m-%dT%H:%M")?,
             chrono::Utc,
         );
         assert_eq!(&dt_value, doc.get_datetime("date")?);
@@ -152,12 +149,12 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     // date
     let map_wigets = result.wig();
     assert_eq!(
-        "1970-02-27".to_string(),
+        "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        "1970-02-28".to_string(),
+        "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
 
@@ -176,10 +173,7 @@ fn test_model_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         let dt_value: chrono::DateTime<chrono::Utc> = chrono::DateTime::<chrono::Utc>::from_utc(
-            chrono::NaiveDateTime::parse_from_str(
-                &format!("{}T00:00", "1970-02-27".to_string()),
-                "%Y-%m-%dT%H:%M",
-            )?,
+            chrono::NaiveDateTime::parse_from_str("1970-02-27T00:00", "%Y-%m-%dT%H:%M")?,
             chrono::Utc,
         );
         assert_eq!(&dt_value, doc.get_datetime("date")?);

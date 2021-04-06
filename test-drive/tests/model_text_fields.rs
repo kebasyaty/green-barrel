@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "wurdhmgp4tr3lw";
+    pub const UNIQUE_PROJECT_KEY: &str = "8JUBHtgyg8gEjk5";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -110,20 +110,44 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
+        text: Some("Lorem ipsum dolor sit amet".to_string()),
+        hidden_text: Some("Hidden lorem ipsum dolor sit amet".to_string()),
+        radio: Some("Lorem ipsum dolor sit amet".to_string()),
+        color: Some("#ffffff".to_string()),
+        email: Some("no_reply@email.net".to_string()),
+        password: Some("12345678".to_string()),
+        phone: Some("+00000000000".to_string()),
+        url: Some("https://www.google.com/".to_string()),
+        ip: Some("172.217.14.196".to_string()),
+        ipv4: Some("172.217.14.196".to_string()),
+        ipv6: Some("::ffff:acd9:ec4".to_string()),
+        textarea: Some("Lorem ipsum dolor sit amet".to_string()),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
+        text: Some("Lorem ipsum dolor sit amet".to_string()),
+        hidden_text: Some("Hidden lorem ipsum dolor sit amet".to_string()),
+        radio: Some("Lorem ipsum dolor sit amet".to_string()),
+        color: Some("#ffffff".to_string()),
+        email: Some("no_reply@email.net".to_string()),
+        password: Some("12345678".to_string()),
+        phone: Some("+00000000000".to_string()),
+        url: Some("https://www.google.com/".to_string()),
+        ip: Some("172.217.14.196".to_string()),
+        ipv4: Some("172.217.14.196".to_string()),
+        ipv6: Some("::ffff:acd9:ec4".to_string()),
+        textarea: Some("Lorem ipsum dolor sit amet".to_string()),
         ..Default::default()
     };
 
     // Create
-    // ---------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
     let result_2 = test_model_2.save(None, None)?;
     // Validating create
@@ -142,7 +166,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("text").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("text").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("text").unwrap().value
+    );
     // hidden_text
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -150,7 +177,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("hidden_text").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("hidden_text").unwrap().value);
+    assert_eq!(
+        "Hidden lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -158,7 +188,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("radio").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("radio").unwrap().value
+    );
     // color
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -166,12 +199,18 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("color").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("color").unwrap().value);
+    assert_eq!(
+        "#ffffff".to_string(),
+        map_wigets.get("color").unwrap().value
+    );
     // email
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
+    assert_eq!(
+        "no_reply@email.net".to_string(),
+        map_wigets.get("email").unwrap().value
+    );
     // password
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
@@ -181,17 +220,26 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
+    assert_eq!(
+        "+00000000000".to_string(),
+        map_wigets.get("phone").unwrap().value
+    );
     // url
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
+    assert_eq!(
+        "https://www.google.com/".to_string(),
+        map_wigets.get("url").unwrap().value
+    );
     // ip
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!("127.0.0.1".to_string(), map_wigets.get("ip").unwrap().value);
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("ip").unwrap().value);
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_wigets.get("ip").unwrap().value
+    );
     // ipv4
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -199,7 +247,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("ipv4").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("ipv4").unwrap().value);
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_wigets.get("ipv4").unwrap().value
+    );
     // ipv6
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -207,7 +258,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("ipv6").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("ipv6").unwrap().value);
+    assert_eq!(
+        "::ffff:acd9:ec4".to_string(),
+        map_wigets.get("ipv6").unwrap().value
+    );
     // textarea
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
@@ -215,7 +269,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("textarea").unwrap().value
     );
     let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("textarea").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("textarea").unwrap().value
+    );
 
     // Validating values in database
     {
@@ -231,34 +288,42 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!("Lorem ipsum", doc.get_str("text")?);
-        assert_eq!("Hidden lorem ipsum", doc.get_str("hidden_text")?);
-        assert_eq!("Lorem ipsum", doc.get_str("radio")?);
-        assert_eq!("#000000", doc.get_str("color")?);
-        assert_eq!(Some(()), doc.get("email").unwrap().as_null());
-        assert!(doc.get("password").is_none());
-        assert_eq!(Some(()), doc.get("phone").unwrap().as_null());
-        assert_eq!(Some(()), doc.get("url").unwrap().as_null());
-        assert_eq!("127.0.0.1", doc.get_str("ip")?);
-        assert_eq!("127.0.0.1", doc.get_str("ipv4")?);
-        assert_eq!("::ffff:7f00:1", doc.get_str("ipv6")?);
-        assert_eq!("Lorem ipsum", doc.get_str("textarea")?);
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("text")?);
+        assert_eq!(
+            "Hidden lorem ipsum dolor sit amet",
+            doc.get_str("hidden_text")?
+        );
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("radio")?);
+        assert_eq!("#ffffff", doc.get_str("color")?);
+        assert_eq!("no_reply@email.net", doc.get_str("email")?);
+        assert!(argon2::verify_encoded(
+            &doc.get_str("password")?,
+            test_model.password.clone().unwrap().as_bytes()
+        )
+        .unwrap());
+        assert_eq!("+00000000000", doc.get_str("phone")?);
+        assert_eq!("https://www.google.com/", doc.get_str("url")?);
+        assert_eq!("172.217.14.196", doc.get_str("ip")?);
+        assert_eq!("172.217.14.196", doc.get_str("ipv4")?);
+        assert_eq!("::ffff:acd9:ec4", doc.get_str("ipv6")?);
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("textarea")?);
     }
 
     // Update
-    // ---------------------------------------------------------------------------------------------
-    let tmp_hash = test_model.hash.clone().unwrap();
+    // -----------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
     // Validating update
     assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
-    assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // text
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("text").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("text").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
@@ -267,7 +332,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // hidden_text
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("hidden_text").unwrap().value);
+    assert_eq!(
+        "Hidden lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("hidden_text").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "Hidden lorem ipsum".to_string(),
@@ -276,7 +344,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // radio
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("radio").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("radio").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
@@ -285,7 +356,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // color
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("color").unwrap().value);
+    assert_eq!(
+        "#ffffff".to_string(),
+        map_wigets.get("color").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "#000000".to_string(),
@@ -294,7 +368,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // email
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
+    assert_eq!(
+        "no_reply@email.net".to_string(),
+        map_wigets.get("email").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
     // password
@@ -306,25 +383,37 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // phone
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
+    assert_eq!(
+        "+00000000000".to_string(),
+        map_wigets.get("phone").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
     // url
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
+    assert_eq!(
+        "https://www.google.com/".to_string(),
+        map_wigets.get("url").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
     // ip
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("ip").unwrap().value);
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_wigets.get("ip").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!("127.0.0.1".to_string(), map_wigets.get("ip").unwrap().value);
     // ipv4
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("ipv4").unwrap().value);
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_wigets.get("ipv4").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "127.0.0.1".to_string(),
@@ -333,7 +422,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // ipv6
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("ipv6").unwrap().value);
+    assert_eq!(
+        "::ffff:acd9:ec4".to_string(),
+        map_wigets.get("ipv6").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "::ffff:7f00:1".to_string(),
@@ -342,7 +434,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // textarea
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("textarea").unwrap().value);
+    assert_eq!(
+        "Lorem ipsum dolor sit amet".to_string(),
+        map_wigets.get("textarea").unwrap().value
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
@@ -363,18 +458,25 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!("Lorem ipsum", doc.get_str("text")?);
-        assert_eq!("Hidden lorem ipsum", doc.get_str("hidden_text")?);
-        assert_eq!("Lorem ipsum", doc.get_str("radio")?);
-        assert_eq!("#000000", doc.get_str("color")?);
-        assert_eq!(Some(()), doc.get("email").unwrap().as_null());
-        assert!(doc.get("password").is_none());
-        assert_eq!(Some(()), doc.get("phone").unwrap().as_null());
-        assert_eq!(Some(()), doc.get("url").unwrap().as_null());
-        assert_eq!("127.0.0.1", doc.get_str("ip")?);
-        assert_eq!("127.0.0.1", doc.get_str("ipv4")?);
-        assert_eq!("::ffff:7f00:1", doc.get_str("ipv6")?);
-        assert_eq!("Lorem ipsum", doc.get_str("textarea")?);
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("text")?);
+        assert_eq!(
+            "Hidden lorem ipsum dolor sit amet",
+            doc.get_str("hidden_text")?
+        );
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("radio")?);
+        assert_eq!("#ffffff", doc.get_str("color")?);
+        assert_eq!("no_reply@email.net", doc.get_str("email")?);
+        assert!(argon2::verify_encoded(
+            &doc.get_str("password")?,
+            test_model.password.unwrap().as_bytes()
+        )
+        .unwrap());
+        assert_eq!("+00000000000", doc.get_str("phone")?);
+        assert_eq!("https://www.google.com/", doc.get_str("url")?);
+        assert_eq!("172.217.14.196", doc.get_str("ip")?);
+        assert_eq!("172.217.14.196", doc.get_str("ipv4")?);
+        assert_eq!("::ffff:acd9:ec4", doc.get_str("ipv6")?);
+        assert_eq!("Lorem ipsum dolor sit amet", doc.get_str("textarea")?);
     }
 
     // ---------------------------------------------------------------------------------------------

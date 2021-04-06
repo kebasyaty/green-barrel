@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "1XL6P1c5yZWPchU";
+    pub const UNIQUE_PROJECT_KEY: &str = "QHZsU5vJ3R3Y7NV";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -27,29 +27,17 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "radioF64", default = 1.0, unique = true)]
-        pub radio: Option<f64>,
+        #[field_attrs(widget = "radioU32", default = 1, unique = true)]
+        pub radio: Option<u32>,
         #[serde(default)]
-        #[field_attrs(widget = "numberF64", unique = true)]
-        pub number: Option<f64>,
+        #[field_attrs(widget = "numberU32", unique = true)]
+        pub number: Option<u32>,
         #[serde(default)]
-        #[field_attrs(
-            widget = "rangeF64",
-            default = 5.0,
-            min = 1.0,
-            max = 12.0,
-            unique = true
-        )]
-        pub range: Option<f64>,
+        #[field_attrs(widget = "rangeU32", default = 5, min = 1, max = 12, unique = true)]
+        pub range: Option<u32>,
         #[serde(default)]
-        #[field_attrs(
-            widget = "hiddenF64",
-            default = 3.0,
-            min = 1.0,
-            max = 12.0,
-            unique = true
-        )]
-        pub hidden: Option<f64>,
+        #[field_attrs(widget = "hiddenU32", default = 3, min = 1, max = 12, unique = true)]
+        pub hidden: Option<u32>,
     }
 
     // Test migration
@@ -86,15 +74,23 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
+        radio: Some(20_u32),
+        number: Some(105_u32),
+        range: Some(9_u32),
+        hidden: Some(11_u32),
         ..Default::default()
     };
     let mut test_model_2 = app_name::TestModel {
+        radio: Some(20_u32),
+        number: Some(105_u32),
+        range: Some(9_u32),
+        hidden: Some(11_u32),
         ..Default::default()
     };
 
@@ -114,32 +110,44 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+        1_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result_2.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    assert_eq!(
+        20_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+    );
     // number
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = result_2.wig();
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    assert_eq!(
+        105_i64,
+        map_wigets.get("number").unwrap().value.parse::<i64>()?
+    );
     // range
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
+        5_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result_2.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    assert_eq!(
+        9_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
+    );
     // hidden
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        3_f64,
-        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
     );
     let map_wigets = result_2.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
 
     // Validating values in database
     {
@@ -155,10 +163,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(1_f64, doc.get_f64("radio")?);
-        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
-        assert_eq!(5_f64, doc.get_f64("range")?);
-        assert_eq!(3_f64, doc.get_f64("hidden")?);
+        assert_eq!(20_i64, doc.get_i64("radio")?);
+        assert_eq!(105_i64, doc.get_i64("number")?);
+        assert_eq!(9_i64, doc.get_i64("range")?);
+        assert_eq!(11_i64, doc.get_i64("hidden")?);
     }
 
     // Update
@@ -174,35 +182,47 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // radio
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    assert_eq!(
+        20_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        1_f64,
-        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+        1_i64,
+        map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
     // number
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    assert_eq!(
+        105_i64,
+        map_wigets.get("number").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    assert_eq!(
+        9_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        5_f64,
-        map_wigets.get("range").unwrap().value.parse::<f64>()?
+        5_i64,
+        map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
     // hidden
     let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    assert_eq!(
+        11_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        3_f64,
-        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+        3_i64,
+        map_wigets.get("hidden").unwrap().value.parse::<i64>()?
     );
 
     // Validating values in database
@@ -219,10 +239,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         let doc = coll.find_one(filter, None)?.unwrap();
         assert_eq!(1_i64, coll.count_documents(None, None)?);
-        assert_eq!(1_f64, doc.get_f64("radio")?);
-        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
-        assert_eq!(5_f64, doc.get_f64("range")?);
-        assert_eq!(3_f64, doc.get_f64("hidden")?);
+        assert_eq!(20_i64, doc.get_i64("radio")?);
+        assert_eq!(105_i64, doc.get_i64("number")?);
+        assert_eq!(9_i64, doc.get_i64("range")?);
+        assert_eq!(11_i64, doc.get_i64("hidden")?);
     }
 
     // ---------------------------------------------------------------------------------------------

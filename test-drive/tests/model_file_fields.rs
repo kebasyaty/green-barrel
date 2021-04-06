@@ -1,5 +1,5 @@
 use mango_orm::*;
-use mango_orm::{forms::ImageData, migration::Monitor, test_tool::del_test_db};
+use mango_orm::{forms::FileData, migration::Monitor, test_tool::del_test_db};
 use metamorphose::Model;
 use mongodb::{
     bson::{de::from_document, doc, oid::ObjectId},
@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "6tGGxnAHU1HhQ";
+    pub const UNIQUE_PROJECT_KEY: &str = "qhYR6caApSj5Ph1";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -28,13 +28,13 @@ mod app_name {
     pub struct TestModel {
         #[serde(default)]
         #[field_attrs(
-            widget = "inputImage",
+            widget = "inputFile",
             default = r#"{
-                "path":"./media/no-image-found.png",
-                "url":"/media/no-image-found.png"
+                "path":"./media/hello_world.odt",
+                "url":"/media/hello_world.odt"
             }"#
         )]
-        pub image: Option<String>,
+        pub file: Option<String>,
     }
 
     // Test migration
@@ -71,28 +71,25 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        image: Some(
-            r#"{"path":"./media/beautiful-mountains.jpg","url":"/media/beautiful-mountains.jpg","is_delete":false}"#
-                .to_string(),
+        file: Some(
+            r#"{"path":"./media/hello_world_2.odt","url":"/media/hello_world_2.odt","is_delete":false}"#.to_string(),
         ),
         ..Default::default()
     };
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let image_data = ImageData {
-        path: "./media/beautiful-mountains.jpg".to_string(),
-        url: "/media/beautiful-mountains.jpg".to_string(),
-        name: "beautiful-mountains.jpg".to_string(),
-        size: 241138_u32,
-        width: 1024_u32,
-        height: 748_u32,
+    let file_data = FileData {
+        path: "./media/hello_world_2.odt".to_string(),
+        url: "/media/hello_world_2.odt".to_string(),
+        name: "hello_world_2.odt".to_string(),
+        size: 9989_u32,
     };
     let result = test_model.save(None, None)?;
     // Validating create
@@ -100,20 +97,20 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values in widgets
-    // image
+    // file
     let map_wigets = result.wig();
     assert_eq!(
-        map_wigets.get("image").unwrap().value,
-        serde_json::to_string(&image_data)?
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
     );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("image").unwrap().value.as_str()
+            map_wigets.get("file").unwrap().value.as_str()
         )?
     );
     */
@@ -132,10 +129,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         let doc = coll.find_one(filter, None)?.unwrap();
-        assert!(!doc.is_null("image"));
+        assert!(!doc.is_null("file"));
         assert_eq!(
-            image_data,
-            from_document::<ImageData>(doc.get_document("image")?.clone())?
+            file_data,
+            from_document::<FileData>(doc.get_document("file")?.clone())?
         );
     }
 
@@ -149,20 +146,20 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // image
+    // file
     let map_wigets = result.wig();
     assert_eq!(
-        map_wigets.get("image").unwrap().value,
-        serde_json::to_string(&image_data)?
+        map_wigets.get("file").unwrap().value,
+        serde_json::to_string(&file_data)?
     );
     /*
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
+            r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("image").unwrap().value.as_str()
+            map_wigets.get("file").unwrap().value.as_str()
         )?
     );
     */
@@ -181,10 +178,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         let filter = doc! {"_id": object_id};
         assert_eq!(1_i64, coll.count_documents(None, None)?);
         let doc = coll.find_one(filter, None)?.unwrap();
-        assert!(!doc.is_null("image"));
+        assert!(!doc.is_null("file"));
         assert_eq!(
-            image_data,
-            from_document::<ImageData>(doc.get_document("image")?.clone())?
+            file_data,
+            from_document::<FileData>(doc.get_document("file")?.clone())?
         );
     }
 

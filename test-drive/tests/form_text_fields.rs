@@ -71,7 +71,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_filling_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
         text: Some("Lorem ipsum dolor sit amet".to_string()),
         hidden: Some("Lorem ipsum dolor sit amet".to_string()),

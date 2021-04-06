@@ -165,7 +165,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // Validation of text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea" => {
+                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
+                | "hiddenText" => {
                     // Get field value for validation.
                     let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
@@ -414,7 +415,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" => {
+                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -459,7 +460,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
+                | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -504,7 +506,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" => {
+                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
                     let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.

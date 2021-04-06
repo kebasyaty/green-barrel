@@ -35,7 +35,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
         radio: Some(-20),
         number: Some(105),

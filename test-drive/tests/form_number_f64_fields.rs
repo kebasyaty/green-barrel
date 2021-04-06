@@ -9,7 +9,7 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const UNIQUE_PROJECT_KEY: &str = "e8pxg8A4ApGJuf_T";
+    pub const UNIQUE_PROJECT_KEY: &str = "uucTUjTd_2bvQ8Ye";
     pub const SERVICE_NAME: &str = "service_name";
 
     // Create form
@@ -18,25 +18,29 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestForm {
         #[serde(default)]
-        #[field_attrs(widget = "radioI32", default = -1)]
-        pub radio: Option<i32>,
+        #[field_attrs(widget = "radioF64", default = 1.0)]
+        pub radio: Option<f64>,
         #[serde(default)]
-        #[field_attrs(widget = "numberI32")]
-        pub number: Option<i32>,
+        #[field_attrs(widget = "numberF64")]
+        pub number: Option<f64>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeI32", default = 5, min = 1, max = 12)]
-        pub range: Option<i32>,
+        #[field_attrs(widget = "rangeF64", default = 5.0, min = 1.0, max = 12.0)]
+        pub range: Option<f64>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI32", default = 3, min = 1, max = 12)]
-        pub hidden: Option<i32>,
+        #[field_attrs(widget = "hiddenF64", default = 3.0, min = 1.0, max = 12.0)]
+        pub hidden: Option<f64>,
     }
 }
 
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_number_f64_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
+        radio: Some(20_f64),
+        number: Some(105_f64),
+        range: Some(9_f64),
+        hidden: Some(11_f64),
         ..Default::default()
     };
 
@@ -48,32 +52,44 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        -1_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    assert_eq!(
+        20_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
     // number
     let map_wigets = app_name::TestForm::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = result.wig();
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    assert_eq!(
+        105_f64,
+        map_wigets.get("number").unwrap().value.parse::<f64>()?
+    );
     // range
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        5_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    assert_eq!(
+        9_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
     // hidden
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        3_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
     );
     let map_wigets = result.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating cache
     {
@@ -87,33 +103,49 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // Validating
     assert!(result.bool());
     // radio
+    let result = test_form.check()?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    assert_eq!(
+        20_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        -1_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
     // number
+    let result = test_form.check()?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    assert_eq!(
+        105_f64,
+        map_wigets.get("number").unwrap().value.parse::<f64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
+    let result = test_form.check()?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    assert_eq!(
+        9_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        5_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
     );
     // hidden
+    let result = test_form.check()?;
     let map_wigets = result.wig();
-    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    assert_eq!(
+        11_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
-        3_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
     );
 
     // Validating cache

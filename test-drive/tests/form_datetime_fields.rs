@@ -9,7 +9,7 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const UNIQUE_PROJECT_KEY: &str = "5GQcVK2QAQu_Qh8";
+    pub const UNIQUE_PROJECT_KEY: &str = "PSug_V7hs7XU3ZUq";
     pub const SERVICE_NAME: &str = "service_name";
 
     // Create form
@@ -18,16 +18,23 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestForm {
         #[serde(default)]
-        #[field_attrs(widget = "checkBox")]
-        pub checkbox: Option<bool>,
+        #[field_attrs(
+            widget = "inputDateTime",
+            default = "1970-02-28T00:00",
+            min = "1970-01-01T00:00",
+            max = "1970-03-01T00:00",
+            unique = true
+        )]
+        pub date: Option<String>,
     }
 }
 
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
+        date: Some("1970-02-27T00:00".to_string()),
         ..Default::default()
     };
 
@@ -36,11 +43,17 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_form.check()?;
     // Validating
     assert!(result.bool());
-    // checkbox
+    // date
     let map_wigets = result.wig();
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        "1970-02-27T00:00".to_string(),
+        map_wigets.get("date").unwrap().value
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        "1970-02-28T00:00".to_string(),
+        map_wigets.get("date").unwrap().value
+    );
 
     // Validating cache
     {
@@ -53,11 +66,17 @@ fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_form.check()?;
     // Validating
     assert!(result.bool());
-    // checkbox
+    // date
     let map_wigets = result.wig();
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        "1970-02-27T00:00".to_string(),
+        map_wigets.get("date").unwrap().value
+    );
     let map_wigets = app_name::TestForm::form_wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    assert_eq!(
+        "1970-02-28T00:00".to_string(),
+        map_wigets.get("date").unwrap().value
+    );
 
     // Validating cache
     {
