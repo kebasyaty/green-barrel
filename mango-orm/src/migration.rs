@@ -13,7 +13,7 @@
 
 use crate::{
     forms::{FileData, ImageData},
-    store::MONGODB_CLIENT_STORE,
+    store::DB_MAP_CLIENT_NAMES,
 };
 use mongodb::{
     bson, bson::document::Document, options::UpdateModifications, sync::Client, sync::Collection,
@@ -199,7 +199,7 @@ impl<'a> Monitor<'a> {
     pub fn migrat(&self) {
         // Get cache MongoDB clients.
         let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
-            MONGODB_CLIENT_STORE.read()
+            DB_MAP_CLIENT_NAMES.read()
             .unwrap_or_else(|err| panic!("Migration method: `migrat()` : {}", err.to_string()));
         // Run refresh models state.
         self.refresh(&client_store);
@@ -403,7 +403,7 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "radioI32" | "numberI32"
+                                        "inputRadioI32" | "numberI32"
                                         | "rangeI32" | "selectI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {

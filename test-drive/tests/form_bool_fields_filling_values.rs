@@ -26,7 +26,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
         checkbox: Some(true),
         ..Default::default()
@@ -36,7 +36,7 @@ fn test_form_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
@@ -45,7 +45,7 @@ fn test_form_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
@@ -53,7 +53,7 @@ fn test_form_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
@@ -62,7 +62,7 @@ fn test_form_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 

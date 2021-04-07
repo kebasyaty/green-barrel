@@ -8,7 +8,7 @@ mod settings;
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
     // Caching MongoDB clients.
     {
-        let mut client_store = MONGODB_CLIENT_STORE.write()?;
+        let mut client_store = DB_MAP_CLIENT_NAMES.write()?;
         client_store.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
@@ -178,18 +178,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         is_staff: Some(false),
         is_active: Some(true),
         select_text_mult: Some(vec!["1".to_string(), "2".to_string()]),
-        select_i32_mult: Some(vec![1, 2]),
-        select_u32_mult: Some(vec![1, 2]),
-        select_i64_mult: Some(vec![1, 2]),
-        select_f64_mult: Some(vec![1.0, 2.0]),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    // println!("{}", user.json_for_admin()?);
+    //println!("{}", user.json_for_admin()?);
 
     // Create doc.
     let result = user.save(None, None)?;
-    println!("Boolean: {}", result.is_valid());
+    println!("Boolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());
@@ -219,7 +215,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     let result = user.save(None, None)?;
-    println!("\n\n\nBoolean: {}", result.is_valid());
+    println!("\n\n\nBoolean: {}", result.bool());
     println!("Hash: {}", result.hash()?);
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());

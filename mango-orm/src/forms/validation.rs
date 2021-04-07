@@ -10,8 +10,6 @@
 //! `check` - Checking the Form before other proceeding.
 //!
 
-use std::convert::TryFrom;
-
 use crate::{
     forms::{caching::CachingForm, output_data::OutputDataForm, ToForm, Widget},
     models::validation::AdditionalValidation,
@@ -165,8 +163,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 // Validation of text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
-                | "hiddenText" => {
+                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea" => {
                     // Get field value for validation.
                     let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
@@ -301,7 +298,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    if !final_widget.min.is_empty() && !final_widget.max.is_empty() {
+                    if final_widget.min != "0".to_string() && final_widget.max != "0".to_string() {
                         // Validation in regular expression (min).
                         Self::regex_validation(widget_type, final_widget.min.as_str())
                             .unwrap_or_else(|err| {
@@ -357,6 +354,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                 &"Date out of range between `min` and` max`.".to_owned(),
                             )
                             .unwrap();
+                            continue;
                         }
                     }
                 }
@@ -371,7 +369,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                                 final_widget.value = val.clone();
                             }
                             "selectI32" => {
-                                let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
+                                let val = pre_json_value.as_i64().unwrap() as i32;
                                 final_widget.value = val.to_string();
                             }
                             "selectU32" | "selectI64" => {
@@ -415,7 +413,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
+                "radioI32" | "numberI32" | "rangeI32" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -440,8 +438,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -460,8 +458,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
-                | "hiddenU32" | "hiddenI64" => {
+                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64" => {
                     // Get field value for validation.
                     let field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -486,8 +483,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value as f64;
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(
@@ -506,7 +503,7 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
+                "radioF64" | "numberF64" | "rangeF64" => {
                     // Get field value for validation.
                     let field_value: Option<f64> = pre_json_value.as_f64();
                     // Define field state flag.
@@ -533,8 +530,8 @@ pub trait ValidationForm: ToForm + CachingForm + AdditionalValidation {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
+                    let min: f64 = final_widget.min.parse().unwrap();
+                    let max: f64 = final_widget.max.parse().unwrap();
                     let num: f64 = field_value.clone();
                     if (min > 0_f64 || max > 0_f64)
                         && !validator::validate_range(

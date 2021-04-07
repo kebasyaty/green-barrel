@@ -9,7 +9,7 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const UNIQUE_PROJECT_KEY: &str = "_qFbE9pfgAMD9fDd";
+    pub const UNIQUE_PROJECT_KEY: &str = "G2jup_4W3BT1FPMX";
     pub const SERVICE_NAME: &str = "service_name";
 
     // Create form
@@ -32,9 +32,8 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_date_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
-        date: Some("1970-02-27".to_string()),
         ..Default::default()
     };
 
@@ -42,13 +41,10 @@ fn test_form_date_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // date
     let map_wigets = result.wig();
-    assert_eq!(
-        "1970-02-27".to_string(),
-        map_wigets.get("date").unwrap().value
-    );
+    assert_eq!(String::new(), map_wigets.get("date").unwrap().value);
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
         "1970-02-28".to_string(),
@@ -57,7 +53,7 @@ fn test_form_date_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
@@ -65,13 +61,10 @@ fn test_form_date_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // date
     let map_wigets = result.wig();
-    assert_eq!(
-        "1970-02-27".to_string(),
-        map_wigets.get("date").unwrap().value
-    );
+    assert_eq!(String::new(), map_wigets.get("date").unwrap().value);
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
         "1970-02-28".to_string(),
@@ -80,7 +73,7 @@ fn test_form_date_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
         let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 

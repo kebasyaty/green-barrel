@@ -1,8 +1,8 @@
 use mango_orm::*;
-use mango_orm::{forms::ImageData, migration::Monitor, test_tool::del_test_db};
+use mango_orm::{migration::Monitor, test_tool::del_test_db};
 use metamorphose::Model;
 use mongodb::{
-    bson::{de::from_document, doc, oid::ObjectId},
+    bson::{doc, oid::ObjectId},
     sync::Client,
 };
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
-    pub const UNIQUE_PROJECT_KEY: &str = "6tGGxnAHU1HhQ";
+    pub const UNIQUE_PROJECT_KEY: &str = "1XL6P1c5yZWPchU";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
@@ -27,14 +27,29 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
+        #[field_attrs(widget = "radioF64", default = 1.0, unique = true)]
+        pub radio: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(widget = "numberF64", unique = true)]
+        pub number: Option<f64>,
+        #[serde(default)]
         #[field_attrs(
-            widget = "inputImage",
-            default = r#"{
-                "path":"./media/no-image-found.png",
-                "url":"/media/no-image-found.png"
-            }"#
+            widget = "rangeF64",
+            default = 5.0,
+            min = 1.0,
+            max = 12.0,
+            unique = true
         )]
-        pub image: Option<String>,
+        pub range: Option<f64>,
+        #[serde(default)]
+        #[field_attrs(
+            widget = "hiddenF64",
+            default = 3.0,
+            min = 1.0,
+            max = 12.0,
+            unique = true
+        )]
+        pub hidden: Option<f64>,
     }
 
     // Test migration
@@ -46,7 +61,7 @@ mod app_name {
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
-        MONGODB_CLIENT_STORE.write()?.insert(
+        DB_MAP_CLIENT_NAMES.write()?.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
@@ -71,57 +86,65 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
 
     let mut test_model = app_name::TestModel {
-        image: Some(
-            r#"{"path":"./media/beautiful-mountains.jpg","url":"/media/beautiful-mountains.jpg","is_delete":false}"#
-                .to_string(),
-        ),
+        ..Default::default()
+    };
+    let mut test_model_2 = app_name::TestModel {
         ..Default::default()
     };
 
     // Create
     // ---------------------------------------------------------------------------------------------
-    let image_data = ImageData {
-        path: "./media/beautiful-mountains.jpg".to_string(),
-        url: "/media/beautiful-mountains.jpg".to_string(),
-        name: "beautiful-mountains.jpg".to_string(),
-        size: 241138_u32,
-        width: 1024_u32,
-        height: 748_u32,
-    };
     let result = test_model.save(None, None)?;
+    let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
+    // Validation of `unique`
+    assert!(!result_2.bool());
+    // Validation of `hash`
+    assert!(test_model_2.hash.is_none());
     // Validating values in widgets
-    // image
-    let map_wigets = result.wig();
-    assert_eq!(
-        map_wigets.get("image").unwrap().value,
-        serde_json::to_string(&image_data)?
-    );
-    /*
+    // radio
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
-        )?,
-        serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("image").unwrap().value.as_str()
-        )?
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
-    */
+    let map_wigets = result_2.wig();
+    assert!(map_wigets.get("radio").unwrap().value.is_empty());
+    // number
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    let map_wigets = result_2.wig();
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    // range
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result_2.wig();
+    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    // hidden
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
+    let map_wigets = result_2.wig();
+    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
 
     // Validating values in database
     {
-        let form_store = FORM_STORE.read()?;
-        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
+        let client_store = DB_MAP_CLIENT_NAMES.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -130,13 +153,12 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        assert_eq!(1_i64, coll.count_documents(None, None)?);
         let doc = coll.find_one(filter, None)?.unwrap();
-        assert!(!doc.is_null("image"));
-        assert_eq!(
-            image_data,
-            from_document::<ImageData>(doc.get_document("image")?.clone())?
-        );
+        assert_eq!(1_i64, coll.count_documents(None, None)?);
+        assert_eq!(1_f64, doc.get_f64("radio")?);
+        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
+        assert_eq!(5_f64, doc.get_f64("range")?);
+        assert_eq!(3_f64, doc.get_f64("hidden")?);
     }
 
     // Update
@@ -144,33 +166,49 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.bool(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
-    // image
+    // radio
+    let result = test_model.save(None, None)?;
     let map_wigets = result.wig();
-    assert_eq!(
-        map_wigets.get("image").unwrap().value,
-        serde_json::to_string(&image_data)?
-    );
-    /*
+    assert!(map_wigets.get("radio").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::form_wig()?;
     assert_eq!(
-        serde_json::from_str::<std::collections::HashMap<String, String>>(
-            r#"{"path":"./media/no-image-found.png","url":"/media/no-image-found.png"}"#
-        )?,
-        serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("image").unwrap().value.as_str()
-        )?
+        1_f64,
+        map_wigets.get("radio").unwrap().value.parse::<f64>()?
     );
-    */
+    // number
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    // range
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert!(map_wigets.get("range").unwrap().value.is_empty());
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        5_f64,
+        map_wigets.get("range").unwrap().value.parse::<f64>()?
+    );
+    // hidden
+    let result = test_model.save(None, None)?;
+    let map_wigets = result.wig();
+    assert!(map_wigets.get("hidden").unwrap().value.is_empty());
+    let map_wigets = app_name::TestModel::form_wig()?;
+    assert_eq!(
+        3_f64,
+        map_wigets.get("hidden").unwrap().value.parse::<f64>()?
+    );
 
     // Validating values in database
     {
-        let form_store = FORM_STORE.read()?;
-        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
+        let client_store = DB_MAP_CLIENT_NAMES.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -179,13 +217,12 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         let filter = doc! {"_id": object_id};
-        assert_eq!(1_i64, coll.count_documents(None, None)?);
         let doc = coll.find_one(filter, None)?.unwrap();
-        assert!(!doc.is_null("image"));
-        assert_eq!(
-            image_data,
-            from_document::<ImageData>(doc.get_document("image")?.clone())?
-        );
+        assert_eq!(1_i64, coll.count_documents(None, None)?);
+        assert_eq!(1_f64, doc.get_f64("radio")?);
+        assert_eq!(Some(()), doc.get("number").unwrap().as_null());
+        assert_eq!(5_f64, doc.get_f64("range")?);
+        assert_eq!(3_f64, doc.get_f64("hidden")?);
     }
 
     // ---------------------------------------------------------------------------------------------

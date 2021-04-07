@@ -2,7 +2,7 @@
 //!
 //! `del_test_base` - Remove test databases.
 
-use crate::store::MONGODB_CLIENT_STORE;
+use crate::store::DB_MAP_CLIENT_NAMES;
 
 // Remove test databases
 pub fn del_test_db(
@@ -13,7 +13,7 @@ pub fn del_test_db(
     // Name of the technical database for testing
     let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
     //
-    let client_store = MONGODB_CLIENT_STORE.read()?;
+    let client_store = DB_MAP_CLIENT_NAMES.read()?;
     // Removing databases
     for meta in models {
         let client: &mongodb::sync::Client =

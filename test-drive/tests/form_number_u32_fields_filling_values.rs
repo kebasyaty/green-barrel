@@ -9,7 +9,7 @@ mod app_name {
 
     // Test application settings
     // *********************************************************************************************
-    pub const UNIQUE_PROJECT_KEY: &str = "7zzbT7QukN_TRa5h";
+    pub const UNIQUE_PROJECT_KEY: &str = "2YxrJbPqvX_g2L4A";
     pub const SERVICE_NAME: &str = "service_name";
 
     // Create Forms
@@ -18,29 +18,29 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestForm {
         #[serde(default)]
-        #[field_attrs(widget = "radioI64", default = 1)]
-        pub radio: Option<i64>,
+        #[field_attrs(widget = "radioU32", default = 1)]
+        pub radio: Option<u32>,
         #[serde(default)]
-        #[field_attrs(widget = "numberI64")]
-        pub number: Option<i64>,
+        #[field_attrs(widget = "numberU32")]
+        pub number: Option<u32>,
         #[serde(default)]
-        #[field_attrs(widget = "rangeI64", default = 5, min = 1, max = 12)]
-        pub range: Option<i64>,
+        #[field_attrs(widget = "rangeU32", default = 5, min = 1, max = 12)]
+        pub range: Option<u32>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", default = 3, min = 1, max = 12)]
-        pub hidden: Option<i64>,
+        #[field_attrs(widget = "hiddenU32", default = 3, min = 1, max = 12)]
+        pub hidden: Option<u32>,
     }
 }
 
 // TEST
 // #################################################################################################
 #[test]
-fn test_form_number_i64_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn test_form_with_filling_values() -> Result<(), Box<dyn std::error::Error>> {
     let test_form = app_name::TestForm {
-        radio: Some(20_i64),
-        number: Some(105_i64),
-        range: Some(9_i64),
-        hidden: Some(11_i64),
+        radio: Some(20_u32),
+        number: Some(105_u32),
+        range: Some(9_u32),
+        hidden: Some(11_u32),
         ..Default::default()
     };
 
@@ -48,7 +48,7 @@ fn test_form_number_i64_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // radio
     let map_wigets = app_name::TestForm::form_wig()?;
     assert_eq!(
@@ -93,14 +93,15 @@ fn test_form_number_i64_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let _form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     // Update
     // ---------------------------------------------------------------------------------------------
     let result = test_form.check()?;
     // Validating
-    assert!(result.is_valid());
+    assert!(result.bool());
     // radio
     let map_wigets = result.wig();
     assert_eq!(
@@ -145,7 +146,8 @@ fn test_form_number_i64_fields() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating cache
     {
-        let _form_store = FORM_STORE.read()?;
+        let form_store = FORM_CACHE.read()?;
+        let _form_cache: &FormCache = form_store.get(&app_name::TestForm::key()[..]).unwrap();
     }
 
     Ok(())
