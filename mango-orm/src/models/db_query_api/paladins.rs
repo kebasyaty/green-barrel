@@ -839,7 +839,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     // -----------------------------------------------------------------------------
                     let min: i32 = final_widget.min.parse().unwrap_or_default();
                     let max: i32 = final_widget.max.parse().unwrap_or_default();
-                    if max > 0_i32 && (field_value < min || field_value > max) {
+                    if (min != 0_i32 || max != 0_i32) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
@@ -897,7 +897,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     // -----------------------------------------------------------------------------
                     let min: i64 = final_widget.min.parse().unwrap_or_default();
                     let max: i64 = final_widget.max.parse().unwrap_or_default();
-                    if max > 0_i64 && (field_value < min || field_value > max) {
+                    if (min != 0_i64 || max != 0_i64) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
@@ -952,7 +952,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap_or_default();
                     let max: f64 = final_widget.max.parse().unwrap_or_default();
-                    if max > 0_f64 && (field_value < min || field_value > max) {
+                    if (min != 0_f64 || max != 0_f64) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
