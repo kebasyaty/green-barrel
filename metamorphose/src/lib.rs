@@ -296,7 +296,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.min != "0".to_string() {
+                    if !widget.min.is_empty() {
                         if !re_valid_date.is_match(widget.min.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `min` : \
@@ -305,7 +305,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.max != "0".to_string() {
+                    if !widget.max.is_empty() {
                         if !re_valid_date.is_match(widget.max.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `max` : \
@@ -330,7 +330,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.min != "0".to_string() {
+                    if !widget.min.is_empty() {
                         if !re_valid_datetime.is_match(widget.min.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `min` : \
@@ -339,7 +339,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             )
                         }
                     }
-                    if widget.max != "0".to_string() {
+                    if !widget.max.is_empty() {
                         if !re_valid_datetime.is_match(widget.max.as_str()) {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Parameter: `max` : \
@@ -950,9 +950,9 @@ impl Default for Widget {
             unique: false,
             disabled: false,
             readonly: false,
-            step: String::from("0"),
-            min: String::from("0"),
-            max: String::from("0"),
+            step: String::from("1"),
+            min: String::new(),
+            max: String::new(),
             other_attrs: String::new(),
             css_classes: String::new(),
             options: Vec::new(),
@@ -1483,7 +1483,7 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
-        "select" => match field_type.as_ref() {
+        "choice" => match field_type.as_ref() {
             "i32" | "Vec < i32 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
                     let raw_options: Vec<(i32, String)> =
@@ -1496,7 +1496,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
-                        Could not determine value for parameter `select`. \
+                        Could not determine value for parameter `choice`. \
                         Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
                         model_or_form, model_name, field_name, field_type
                     )

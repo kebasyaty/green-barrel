@@ -31,7 +31,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectText",
             default = "volvo",
-            select = r#"[
+            choice = r#"[
                 ["volvo","Volvo"],
                 ["saab","Saab"],
                 ["mercedes","Mercedes"],
@@ -45,7 +45,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectTextMult",
-            select = r#"[
+            choice = r#"[
                 ["volvo","Volvo"],
                 ["saab","Saab"],
                 ["mercedes","Mercedes"],
@@ -61,7 +61,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectI32",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -75,7 +75,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI32Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -91,7 +91,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectU32",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -105,7 +105,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectU32Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -121,7 +121,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectI64",
             default = 1,
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -135,7 +135,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI64Mult",
-            select = r#"[
+            choice = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
                 [3,"Mercedes"],
@@ -151,7 +151,7 @@ mod app_name {
         #[field_attrs(
             widget = "selectF64",
             default = 1.1,
-            select = r#"[
+            choice = r#"[
                 [1.1,"Volvo"],
                 [2.2,"Saab"],
                 [3.3,"Mercedes"],
@@ -165,7 +165,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectF64Mult",
-            select = r#"[
+            choice = r#"[
                 [1.1,"Volvo"],
                 [2.2,"Saab"],
                 [3.3,"Mercedes"],
@@ -187,7 +187,7 @@ mod app_name {
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
-        DB_MAP_CLIENT_NAMES.write()?.insert(
+        MONGODB_CLIENT_STORE.write()?.insert(
             "default".to_string(),
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
@@ -212,7 +212,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
+fn test_model_select_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     app_name::mango_migration()?;
     // ^ ^ ^ ---------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // select_text
@@ -277,7 +277,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         .is_empty());
     // select_text_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("select_text_mult").unwrap().value,
+        r#"["saab","audi"]"#
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -324,7 +327,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_i32_dyn").unwrap().options.is_empty());
     // select_i32_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_i32_mult").unwrap().value, "[2,4]");
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -371,7 +374,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_u32_dyn").unwrap().options.is_empty());
     // select_u32_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_u32_mult").unwrap().value, "[2,4]");
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -418,7 +421,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_i64_dyn").unwrap().options.is_empty());
     // select_i64_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_i64_mult").unwrap().value, "[2,4]");
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -465,7 +468,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_f64_dyn").unwrap().options.is_empty());
     // select_f64_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("select_f64_mult").unwrap().value,
+        "[2.2,4.4]"
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -495,8 +501,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
@@ -571,7 +577,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.bool(), "{}", result.hash()?);
+    assert!(result.is_valid(), "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
@@ -599,7 +605,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
         .is_empty());
     // select_text_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("select_text_mult").unwrap().value,
+        r#"["saab","audi"]"#
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -646,7 +655,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_i32_dyn").unwrap().options.is_empty());
     // select_i32_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_i32_mult").unwrap().value, r#"[2,4]"#);
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -693,7 +702,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_u32_dyn").unwrap().options.is_empty());
     // select_u32_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_u32_mult").unwrap().value, "[2,4]");
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -740,7 +749,7 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_i64_dyn").unwrap().options.is_empty());
     // select_i64_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
+    assert_eq!(map_wigets.get("select_i64_mult").unwrap().value, "[2,4]");
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -787,7 +796,10 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("select_f64_dyn").unwrap().options.is_empty());
     // select_f64_mult
     let map_wigets = result.wig();
-    assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
+    assert_eq!(
+        map_wigets.get("select_f64_mult").unwrap().value,
+        "[2.2,4.4]"
+    );
     let map_wigets = app_name::TestModel::form_wig()?;
     assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
     assert_eq!(
@@ -817,8 +829,8 @@ fn test_model_with_default_values() -> Result<(), Box<dyn std::error::Error>> {
 
     // Validating values in database
     {
-        let form_store = FORM_CACHE.read()?;
-        let client_store = DB_MAP_CLIENT_NAMES.read()?;
+        let form_store = FORM_STORE.read()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
         let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();

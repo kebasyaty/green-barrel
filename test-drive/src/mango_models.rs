@@ -260,6 +260,22 @@ pub struct UserProfile {
     #[serde(default)]
     #[field_attrs(widget = "selectTextMult")]
     pub select_text_mult: Option<Vec<String>>,
+    //
+    #[serde(default)]
+    #[field_attrs(widget = "selectI32Mult")]
+    pub select_i32_mult: Option<Vec<i32>>,
+    //
+    #[serde(default)]
+    #[field_attrs(widget = "selectU32Mult")]
+    pub select_u32_mult: Option<Vec<u32>>,
+    //
+    #[serde(default)]
+    #[field_attrs(widget = "selectI64Mult")]
+    pub select_i64_mult: Option<Vec<i64>>,
+    //
+    #[serde(default)]
+    #[field_attrs(widget = "selectF64Mult")]
+    pub select_f64_mult: Option<Vec<f64>>,
 }
 
 // Methods for additional validation.
