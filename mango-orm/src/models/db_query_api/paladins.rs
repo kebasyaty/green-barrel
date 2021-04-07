@@ -290,18 +290,10 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Hint: The `validate_length()` method did not
                     // provide the desired result.
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.minlength.clone() as f64;
-                    let max: f64 = final_widget.maxlength.clone() as f64;
-                    let len: f64 = field_value.encode_utf16().count() as f64;
-                    if (min > 0_f64 || max > 0_f64)
-                        && !validator::validate_range(
-                            validator::Validator::Range {
-                                min: Some(min),
-                                max: Some(max),
-                            },
-                            len,
-                        )
-                    {
+                    let min = final_widget.minlength.clone();
+                    let max = final_widget.maxlength.clone();
+                    let len = field_value.encode_utf16().count();
+                    if max > 0_usize && (len < min || len > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Length {} is out of range (min={} <> max={}).",
@@ -825,7 +817,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         continue;
                     }
                     // Get clean data.
-                    let field_value: i32 = field_value.unwrap() as i32;
+                    let field_value = i32::try_from(field_value.unwrap())?;
                     // In case of an error, return the current
                     // state of the field to the user (client).
                     final_widget.value = field_value.to_string();
@@ -845,22 +837,13 @@ pub trait QPaladins: ToModel + CachingModel {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
-                    let num: f64 = field_value as f64;
-                    if (min > 0_f64 || max > 0_f64)
-                        && !validator::validate_range(
-                            validator::Validator::Range {
-                                min: Some(min),
-                                max: Some(max),
-                            },
-                            num,
-                        )
-                    {
+                    let min: i32 = final_widget.min.parse().unwrap_or_default();
+                    let max: i32 = final_widget.max.parse().unwrap_or_default();
+                    if max > 0_i32 && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
-                            num, min, max
+                            field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
@@ -912,22 +895,13 @@ pub trait QPaladins: ToModel + CachingModel {
 
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
-                    let num: f64 = field_value as f64;
-                    if (min > 0_f64 || max > 0_f64)
-                        && !validator::validate_range(
-                            validator::Validator::Range {
-                                min: Some(min),
-                                max: Some(max),
-                            },
-                            num,
-                        )
-                    {
+                    let min: i64 = final_widget.min.parse().unwrap_or_default();
+                    let max: i64 = final_widget.max.parse().unwrap_or_default();
+                    if max > 0_i64 && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
-                            num, min, max
+                            field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
@@ -978,20 +952,11 @@ pub trait QPaladins: ToModel + CachingModel {
                     // -----------------------------------------------------------------------------
                     let min: f64 = final_widget.min.parse().unwrap_or_default();
                     let max: f64 = final_widget.max.parse().unwrap_or_default();
-                    let num: f64 = field_value.clone();
-                    if (min > 0_f64 || max > 0_f64)
-                        && !validator::validate_range(
-                            validator::Validator::Range {
-                                min: Some(min),
-                                max: Some(max),
-                            },
-                            num,
-                        )
-                    {
+                    if max > 0_f64 && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
                             "Number {} is out of range (min={} <> max={}).",
-                            num, min, max
+                            field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                     }
@@ -1001,6 +966,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         final_doc.insert(field_name, bson_field_value);
                     }
                 }
+
                 // Validation of boolean type fields.
                 // *********************************************************************************
                 "checkBox" => {
