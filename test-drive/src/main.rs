@@ -23,7 +23,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
-        // -----------------------------------------------------------------------------------------
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         models: vec![
             mango_models::Dynamic::meta()?,
             mango_models::User::meta()?,
@@ -33,10 +33,14 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
     monitor.migrat();
 
     // Add metadata and widgects map to cache.
-    // ---------------------------------------------------------------------------------------------
+    // Hint: Optional. It is required to add to work with the admin panel.
+    // Admin panel: https://github.com/kebasyaty/mango-panel
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    /*
     mango_models::Dynamic::to_cache()?;
     mango_models::User::to_cache()?;
     mango_models::UserProfile::to_cache()?;
+    */
     //
     Ok(())
 }
@@ -165,8 +169,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_1_@test.test".to_string()),
-        confirm_email: Some("test_1_@test.test".to_string()),
+        email: Some("test_2_@test.test".to_string()),
+        confirm_email: Some("test_2_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
