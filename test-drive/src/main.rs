@@ -30,7 +30,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
             mango_models::UserProfile::meta()?,
         ],
     };
-    monitor.migrat();
+    monitor.migrat()?;
 
     // Add metadata and widgects map to cache.
     // Hint: Optional. It is required to add to work with the admin panel.
@@ -169,8 +169,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_5_@test.test".to_string()),
-        confirm_email: Some("test_5_@test.test".to_string()),
+        email: Some("test_1_@test.test".to_string()),
+        confirm_email: Some("test_1_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
