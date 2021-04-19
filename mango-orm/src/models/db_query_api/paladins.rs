@@ -632,38 +632,35 @@ pub trait QPaladins: ToModel + CachingModel {
                     } else {
                         FileData::default()
                     };
+                    // Get preliminary information about a file.
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
-                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
-                            continue;
-                        } else {
-                            if !is_update {
+                        if !is_update {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                                continue;
+                            } else {
                                 // Trying to apply the value default.
                                 if !final_widget.value.is_empty() {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                                } else if !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value =
-                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value =
-                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
-                            } else {
-                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
-                                continue;
                             }
+                        } else {
+                            continue;
                         }
                     }
-                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
@@ -672,8 +669,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example (for default): {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\"}} \
-                            Example (from client side): {{\"path\":\"./media/hello_world.odt\",\"url\":\"/media/hello_world.odt\",\"is_delete\":false}}",
+                            Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} \
+                            Example: (from client side): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\",\"is_delete\":false}}",
                             model_name, field_name
                         ))?
                     }
@@ -721,38 +718,35 @@ pub trait QPaladins: ToModel + CachingModel {
                     } else {
                         ImageData::default()
                     };
+                    // Get preliminary information about a file.
+                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
-                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
-                            continue;
-                        } else {
-                            if !is_update {
+                        if !is_update {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                                continue;
+                            } else {
                                 // Trying to apply the value default.
                                 if !final_widget.value.is_empty() {
                                     field_value = serde_json::from_str(final_widget.value.trim())?;
-                                } else if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                                } else if !ignore_fields.contains(&field_name) {
                                     final_doc.insert(field_name, mongodb::bson::Bson::Null);
-                                    final_widget.value =
-                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 } else {
-                                    final_widget.value =
-                                        self.db_get_file_info(&coll, field_name)?;
                                     continue;
                                 }
-                            } else {
-                                final_widget.value = self.db_get_file_info(&coll, field_name)?;
-                                continue;
                             }
+                        } else {
+                            continue;
                         }
                     }
-                    final_widget.value = self.db_get_file_info(&coll, field_name)?;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
@@ -761,8 +755,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example (for default): {{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\"}} \
-                            Example (from client side): {{\"path\":\"./media/no-image-found.png\",\"url\":\"/media/no-image-found.png\",\"is_delete\":false}}",
+                            Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} \
+                            Example: (from client side): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\",\"is_delete\":false}}",
                             model_name, field_name
                         ))?
                     }
