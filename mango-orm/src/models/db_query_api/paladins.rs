@@ -501,6 +501,14 @@ pub trait QPaladins: ToModel + CachingModel {
                                 "selectText" | "selectTextDyn" => {
                                     let val = pre_json_value.as_str().unwrap().to_string();
                                     final_widget.value = val.clone();
+                                    if val.is_empty() && final_widget.required {
+                                        is_err_symptom = true;
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Required field.".to_owned(),
+                                        )
+                                        .unwrap();
+                                    }
                                     mongodb::bson::Bson::String(val)
                                 }
                                 "selectI32" | "selectI32Dyn" => {
@@ -668,8 +676,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} \
-                            Example: (from client side): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\",\"is_delete\":false}}",
+                            Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
+                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
                             model_name, field_name
                         ))?
                     }
@@ -753,8 +761,8 @@ pub trait QPaladins: ToModel + CachingModel {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                             `check()` : Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} \
-                            Example: (from client side): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\",\"is_delete\":false}}",
+                            Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
+                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
                             model_name, field_name
                         ))?
                     }
@@ -1008,6 +1016,30 @@ pub trait QPaladins: ToModel + CachingModel {
                     final_doc.insert("updated_at", mongodb::bson::Bson::DateTime(dt));
                 } else {
                     final_doc.insert("updated_at", mongodb::bson::Bson::DateTime(dt));
+                }
+            }
+        }
+
+        // If the validation is negative, delete the orphaned files.
+        if is_err_symptom && !is_update {
+            for (_, widget) in final_map_widgets.iter_mut() {
+                let path = match widget.widget.as_str() {
+                    "inputFile" if !widget.value.is_empty() => {
+                        let file_data = serde_json::from_str::<FileData>(widget.value.as_str())?;
+                        Some(file_data.path)
+                    }
+                    "inputImage" if !widget.value.is_empty() => {
+                        let file_data = serde_json::from_str::<ImageData>(widget.value.as_str())?;
+                        Some(file_data.path)
+                    }
+                    _ => None,
+                };
+                if let Some(path) = path {
+                    let path = Path::new(&path);
+                    if path.exists() {
+                        fs::remove_file(path)?;
+                    }
+                    widget.value = String::new();
                 }
             }
         }
