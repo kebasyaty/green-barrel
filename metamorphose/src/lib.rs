@@ -1116,7 +1116,7 @@ fn get_param_value<'a>(
                 )
             }
         }
-        "value" => match field_type.as_ref() {
+        "value" => match field_type {
             "i32" => {
                 if let syn::Lit::Int(lit_int) = &mnv.lit {
                     widget.value = lit_int.base10_parse::<i32>().unwrap().to_string();
@@ -1294,7 +1294,7 @@ fn get_param_value<'a>(
                 )
             }
         }
-        "step" => match field_type.as_ref() {
+        "step" => match field_type {
             "i32" => {
                 if let syn::Lit::Int(lit_int) = &mnv.lit {
                     widget.step = lit_int.base10_parse::<i32>().unwrap().to_string();
@@ -1361,7 +1361,7 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
-        "min" => match field_type.as_ref() {
+        "min" => match field_type {
             "i32" => {
                 if let syn::Lit::Int(lit_int) = &mnv.lit {
                     widget.min = lit_int.base10_parse::<i32>().unwrap().to_string();
@@ -1428,7 +1428,7 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
-        "max" => match field_type.as_ref() {
+        "max" => match field_type {
             "i32" => {
                 if let syn::Lit::Int(lit_int) = &mnv.lit {
                     widget.max = lit_int.base10_parse::<i32>().unwrap().to_string();
@@ -1495,78 +1495,113 @@ fn get_param_value<'a>(
                 model_or_form, model_name, field_name, field_type
             ),
         },
-        "options" => match field_type.as_ref() {
+        "options" => match field_type {
             "i32" | "Vec < i32 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(i32, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let json = lit_str.value().replace('_', "");
+                    let raw_options: Vec<(i32, String)> = if json.matches("[").count() > 1 {
+                        serde_json::from_str(json.as_str()).unwrap()
+                    } else {
+                        let arr: Vec<i32> = serde_json::from_str(json.as_str()).unwrap();
+                        arr.iter().map(|item| (*item, item.to_string())).collect()
+                    };
                     widget.options = raw_options
                         .iter()
-                        .map(|item| (item.0.to_string(), item.1.clone()))
+                        .map(|item| (item.0.to_string(), item.1.to_string()))
                         .collect();
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
+                        Example: [10, 20, ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
             }
             "u32" | "Vec < u32 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(u32, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let json = lit_str.value().replace('_', "");
+                    let raw_options: Vec<(u32, String)> = if json.matches("[").count() > 1 {
+                        serde_json::from_str(json.as_str()).unwrap()
+                    } else {
+                        let arr: Vec<u32> = serde_json::from_str(json.as_str()).unwrap();
+                        arr.iter().map(|item| (*item, item.to_string())).collect()
+                    };
                     widget.options = raw_options
                         .iter()
-                        .map(|item| (item.0.to_string(), item.1.clone()))
+                        .map(|item| (item.0.to_string(), item.1.to_string()))
                         .collect();
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
+                        Example: [10, 20, ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
             }
             "i64" | "Vec < i64 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(i64, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let json = lit_str.value().replace('_', "");
+                    let raw_options: Vec<(i64, String)> = if json.matches("[").count() > 1 {
+                        serde_json::from_str(json.as_str()).unwrap()
+                    } else {
+                        let arr: Vec<i64> = serde_json::from_str(json.as_str()).unwrap();
+                        arr.iter().map(|item| (*item, item.to_string())).collect()
+                    };
                     widget.options = raw_options
                         .iter()
-                        .map(|item| (item.0.to_string(), item.1.clone()))
+                        .map(|item| (item.0.to_string(), item.1.to_string()))
                         .collect();
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...]",
+                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
+                        Example: [10, 20, ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
             }
             "f64" | "Vec < f64 >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    let raw_options: Vec<(f64, String)> =
-                        serde_json::from_str(lit_str.value().replace('_', "").as_str()).unwrap();
+                    let json = lit_str.value().replace('_', "");
+                    let raw_options: Vec<(f64, String)> = if json.matches("[").count() > 1 {
+                        serde_json::from_str(json.as_str()).unwrap()
+                    } else {
+                        let arr: Vec<f64> = serde_json::from_str(json.as_str()).unwrap();
+                        arr.iter().map(|item| (*item, item.to_string())).collect()
+                    };
                     widget.options = raw_options
                         .iter()
-                        .map(|item| (item.0.to_string(), item.1.clone()))
+                        .map(|item| (item.0.to_string(), item.1.to_string()))
                         .collect();
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
-                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...]",
+                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...] OR \
+                        Example: [10.1, 20.2, ...]",
                         model_or_form, model_name, field_name, field_type
                     )
                 }
             }
             "String" | "Vec < String >" => {
                 if let syn::Lit::Str(lit_str) = &mnv.lit {
-                    widget.options = serde_json::from_str(lit_str.value().as_str()).unwrap();
+                    let json = lit_str.value();
+                    widget.options = if json.matches("[").count() > 1 {
+                        serde_json::from_str(json.as_str()).unwrap()
+                    } else {
+                        let arr: Vec<String> = serde_json::from_str(json.as_str()).unwrap();
+                        arr.iter()
+                            .map(|item| {
+                                let item = item.to_string();
+                                (item.clone(), item)
+                            })
+                            .collect()
+                    };
                 } else {
                     panic!(
                         "{}: `{}` > Field: `{}` > Type: {} : \
