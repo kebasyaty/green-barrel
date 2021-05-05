@@ -94,6 +94,18 @@ pub trait QPaladins: ToModel + CachingModel {
                         if path.exists() {
                             fs::remove_file(path)?;
                         }
+                        // Remove thumbnails.
+                        let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
+                        for size_name in size_names.iter() {
+                            let key_name = format!("{}_{}", "path", size_name);
+                            let path = field_file.get_str(key_name.as_str())?;
+                            if path.is_empty() {
+                                let path = Path::new(path);
+                                if path.exists() {
+                                    fs::remove_file(path)?;
+                                }
+                            }
+                        }
                     }
                 } else {
                     Err(format!(
@@ -132,6 +144,27 @@ pub trait QPaladins: ToModel + CachingModel {
         }
         //
         Ok(result)
+    }
+
+    // Calculate the maximum size for a thumbnail.
+    // *********************************************************************************************
+    fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
+        if width > height {
+            if width > max_size {
+                return (
+                    max_size,
+                    (height as f32 * (max_size as f32 / width as f32)).floor() as u32,
+                );
+            }
+        } else {
+            if height > max_size {
+                return (
+                    (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
+                    max_size,
+                );
+            }
+        }
+        (0, 0)
     }
 
     // Checking the Model before queries the database.
@@ -782,13 +815,12 @@ pub trait QPaladins: ToModel + CachingModel {
                         ))?
                     }
                     // Create path for validation of file.
-                    let path: String = field_value.path.clone();
-                    let f_path = std::path::Path::new(path.as_str());
+                    let f_path = std::path::Path::new(field_value.path.as_str());
                     if !f_path.exists() || !f_path.is_file() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
                                 `check()` : File is missing - {}",
-                            model_name, field_name, path
+                            model_name, field_name, field_value.path
                         ))?
                     }
                     // Get file metadata.
@@ -798,9 +830,73 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get file name
                     field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
-                    let dimensions: (u32, u32) = image::image_dimensions(path)?;
+                    let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
                     field_value.width = dimensions.0;
                     field_value.height = dimensions.1;
+                    // Generate sub-size images.
+                    let mut img = image::open(f_path)?;
+                    let max_size_list: [(&str, u32); 4] =
+                        [("lg", 1600), ("md", 800), ("sm", 400), ("xs", 200)];
+                    for max_size in max_size_list.iter() {
+                        let thumbnail_size: (u32, u32) =
+                            Self::calculate_thumbnail_size(dimensions.0, dimensions.1, max_size.1);
+                        if thumbnail_size.0 > 0 && thumbnail_size.1 > 0 {
+                            let width = thumbnail_size.0;
+                            let height = thumbnail_size.1;
+                            let thumb_name = format!("{}_{}", max_size.0, field_value.name);
+                            let thumb_path = field_value
+                                .path
+                                .clone()
+                                .replace(field_value.name.as_str(), thumb_name.as_str());
+                            let thumb_url = field_value
+                                .url
+                                .clone()
+                                .replace(field_value.name.as_str(), thumb_name.as_str());
+                            match max_size.0 {
+                                "lg" => {
+                                    img = img.resize_exact(
+                                        width,
+                                        height,
+                                        image::imageops::FilterType::Nearest,
+                                    );
+                                    img.save(thumb_path.clone())?;
+                                    field_value.path_lg = thumb_path;
+                                    field_value.url_lg = thumb_url;
+                                }
+                                "md" => {
+                                    img = img.resize_exact(
+                                        width,
+                                        height,
+                                        image::imageops::FilterType::Triangle,
+                                    );
+                                    img.save(thumb_path.clone())?;
+                                    field_value.path_md = thumb_path;
+                                    field_value.url_md = thumb_url;
+                                }
+                                "sm" => {
+                                    img = img.resize_exact(
+                                        width,
+                                        height,
+                                        image::imageops::FilterType::Triangle,
+                                    );
+                                    img.save(thumb_path.clone())?;
+                                    field_value.path_sm = thumb_path;
+                                    field_value.url_sm = thumb_url;
+                                }
+                                "xs" => {
+                                    img = img.resize_exact(
+                                        width,
+                                        height,
+                                        image::imageops::FilterType::Nearest,
+                                    );
+                                    img.save(thumb_path.clone())?;
+                                    field_value.path_xs = thumb_path;
+                                    field_value.url_xs = thumb_url;
+                                }
+                                _ => {}
+                            }
+                        };
+                    }
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         // Add image data to widget.
@@ -1061,6 +1157,23 @@ pub trait QPaladins: ToModel + CachingModel {
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
+                            // Remove thumbnails.
+                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
+                            for size_name in size_names.iter() {
+                                let path = match *size_name {
+                                    "lg" => current.path_lg.clone(),
+                                    "md" => current.path_md.clone(),
+                                    "sm" => current.path_sm.clone(),
+                                    "xs" => current.url_xs.clone(),
+                                    _ => String::new(),
+                                };
+                                if path.is_empty() {
+                                    let path = Path::new(path.as_str());
+                                    if path.exists() {
+                                        fs::remove_file(path)?;
+                                    }
+                                }
+                            }
                             widget.value = String::new();
                         }
                     }
@@ -1207,6 +1320,18 @@ pub trait QPaladins: ToModel + CachingModel {
                                             let path = Path::new(path);
                                             if path.exists() {
                                                 fs::remove_file(path)?;
+                                            }
+                                            // Remove thumbnails.
+                                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
+                                            for size_name in size_names.iter() {
+                                                let key_name = format!("{}_{}", "path", size_name);
+                                                let path = field_file.get_str(key_name.as_str())?;
+                                                if path.is_empty() {
+                                                    let path = Path::new(path);
+                                                    if path.exists() {
+                                                        fs::remove_file(path)?;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
