@@ -81,6 +81,10 @@ pub trait QPaladins: ToModel + CachingModel {
             let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
             let filter = mongodb::bson::doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter.clone(), None)? {
+                // If `is_deleted=true` was passed incorrectly.
+                if document.is_null(field_name) {
+                    return Ok(());
+                }
                 // Delete the file information in the database.
                 let file_doc = mongodb::bson::doc! {field_name: mongodb::bson::Bson::Null};
                 let update = mongodb::bson::doc! { "$set": file_doc };
@@ -88,18 +92,26 @@ pub trait QPaladins: ToModel + CachingModel {
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
                     if !is_image {
-                        let default = serde_json::from_str::<FileData>(widget_default_value)?;
+                        let default_path = if !widget_default_value.is_empty() {
+                            serde_json::from_str::<FileData>(widget_default_value)?.path
+                        } else {
+                            String::new()
+                        };
                         let path = info_file.get_str("path")?;
-                        if path != default.path {
+                        if path != default_path {
                             let path = Path::new(path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
                         }
                     } else {
-                        let default = serde_json::from_str::<ImageData>(widget_default_value)?;
+                        let default_path = if !widget_default_value.is_empty() {
+                            serde_json::from_str::<ImageData>(widget_default_value)?.path
+                        } else {
+                            String::new()
+                        };
                         let path = info_file.get_str("path")?;
-                        if path != default.path {
+                        if path != default_path {
                             let path = Path::new(path);
                             if path.exists() {
                                 fs::remove_file(path)?;
@@ -120,7 +132,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (file) not found.",
+                        "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
@@ -1155,11 +1167,15 @@ pub trait QPaladins: ToModel + CachingModel {
             for (field, widget) in final_map_widgets.iter_mut() {
                 match widget.widget.as_str() {
                     "inputFile" if !widget.value.is_empty() => {
-                        let default = map_default_values.get(field).unwrap().1.as_str();
-                        let default = serde_json::from_str::<FileData>(default)?;
+                        let default_value = map_default_values.get(field).unwrap().1.as_str();
+                        let default_path = if !default_value.is_empty() {
+                            serde_json::from_str::<FileData>(default_value)?.path
+                        } else {
+                            String::new()
+                        };
                         let current = serde_json::from_str::<FileData>(widget.value.as_str())?;
                         // Exclude files by default.
-                        if current.path != default.path {
+                        if current.path != default_path {
                             let path = Path::new(&current.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
@@ -1168,11 +1184,15 @@ pub trait QPaladins: ToModel + CachingModel {
                         }
                     }
                     "inputImage" if !widget.value.is_empty() => {
-                        let default = map_default_values.get(field).unwrap().1.as_str();
-                        let default = serde_json::from_str::<ImageData>(default)?;
+                        let default_value = map_default_values.get(field).unwrap().1.as_str();
+                        let default_path = if !default_value.is_empty() {
+                            serde_json::from_str::<ImageData>(default_value)?.path
+                        } else {
+                            String::new()
+                        };
                         let current = serde_json::from_str::<ImageData>(widget.value.as_str())?;
                         // Exclude files by default.
-                        if current.path != default.path {
+                        if current.path != default_path {
                             let path = Path::new(&current.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
@@ -1328,76 +1348,74 @@ pub trait QPaladins: ToModel + CachingModel {
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
                 for (field_name, widget_name) in meta.map_widget_type.iter() {
-                    match widget_name.as_str() {
-                        "inputFile" => {
-                            if let Some(field_file) = document.get(field_name) {
-                                if field_file != &mongodb::bson::Bson::Null {
-                                    if let Some(info_file) = field_file.as_document() {
-                                        let path = info_file.get_str("path")?;
-                                        let default = meta
-                                            .map_default_values
-                                            .get(field_name)
-                                            .unwrap()
-                                            .1
-                                            .as_str();
-                                        let default = serde_json::from_str::<FileData>(default)?;
-                                        if path != default.path {
-                                            let path = Path::new(path);
-                                            if path.exists() {
-                                                fs::remove_file(path)?;
-                                            }
+                    if !document.is_null(field_name) {
+                        match widget_name.as_str() {
+                            "inputFile" => {
+                                if let Some(info_file) =
+                                    document.get(field_name).unwrap().as_document()
+                                {
+                                    let path = info_file.get_str("path")?;
+                                    let default_value =
+                                        meta.map_default_values.get(field_name).unwrap().1.as_str();
+                                    let default_path = if !default_value.is_empty() {
+                                        serde_json::from_str::<FileData>(default_value)?.path
+                                    } else {
+                                        String::new()
+                                    };
+                                    if path != default_path {
+                                        let path = Path::new(path);
+                                        if path.exists() {
+                                            fs::remove_file(path)?;
                                         }
                                     }
-                                }
-                            } else {
-                                Err(format!(
+                                } else {
+                                    Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` : The field is missing in the document.",
+                                         Method: `delete()` : Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
+                                }
                             }
-                        }
-                        "inputImage" => {
-                            if let Some(field_file) = document.get(field_name) {
-                                if field_file != &mongodb::bson::Bson::Null {
-                                    if let Some(info_file) = field_file.as_document() {
-                                        let path = info_file.get_str("path")?;
-                                        let default = meta
-                                            .map_default_values
-                                            .get(field_name)
-                                            .unwrap()
-                                            .1
-                                            .as_str();
-                                        let default = serde_json::from_str::<ImageData>(default)?;
-                                        if path != default.path {
-                                            let path = Path::new(path);
-                                            if path.exists() {
-                                                fs::remove_file(path)?;
-                                            }
-                                            // Remove thumbnails.
-                                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                                            for size_name in size_names.iter() {
-                                                let key_name = format!("path_{}", size_name);
-                                                let path = info_file.get_str(key_name.as_str())?;
-                                                if !path.is_empty() {
-                                                    let path = Path::new(path);
-                                                    if path.exists() {
-                                                        fs::remove_file(path)?;
-                                                    }
+                            "inputImage" => {
+                                if let Some(info_file) =
+                                    document.get(field_name).unwrap().as_document()
+                                {
+                                    let path = info_file.get_str("path")?;
+                                    let default_value =
+                                        meta.map_default_values.get(field_name).unwrap().1.as_str();
+                                    let default_path = if !default_value.is_empty() {
+                                        serde_json::from_str::<ImageData>(default_value)?.path
+                                    } else {
+                                        String::new()
+                                    };
+                                    if path != default_path {
+                                        let path = Path::new(path);
+                                        if path.exists() {
+                                            fs::remove_file(path)?;
+                                        }
+                                        // Remove thumbnails.
+                                        let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
+                                        for size_name in size_names.iter() {
+                                            let key_name = format!("path_{}", size_name);
+                                            let path = info_file.get_str(key_name.as_str())?;
+                                            if !path.is_empty() {
+                                                let path = Path::new(path);
+                                                if path.exists() {
+                                                    fs::remove_file(path)?;
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            } else {
-                                Err(format!(
+                                } else {
+                                    Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` : The field is missing in the document.",
+                                         Method: `delete()` : Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
+                                }
                             }
+                            _ => {}
                         }
-                        _ => {}
                     }
                 }
             } else {
