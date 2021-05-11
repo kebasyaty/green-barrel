@@ -47,10 +47,10 @@ mod tests {
         assert!(!re.is_match("#f2ewq"));
         assert!(!re.is_match(""));
         // valids
+        assert!(re.is_match("#fff"));
         assert!(re.is_match("#f2f2f2"));
         assert!(re.is_match("#F2F2F2"));
         assert!(re.is_match("#00000000"));
-        assert!(re.is_match("#fff"));
         assert!(re.is_match("rgb(255,0,24)"));
         assert!(re.is_match("rgb(255, 0, 24)"));
         assert!(re.is_match("rgba(255, 0, 24, .5)"));
@@ -63,6 +63,76 @@ mod tests {
         assert!(re.is_match("hsla(170,23%,25%,0.2)"));
         assert!(re.is_match("0x00ffff"));
         assert!(re.is_match("0x00FFFF"));
+    }
+
+    #[test]
+    fn regex_replace_color() {
+        let re = RegexBuilder::new(
+            r"(?P<color>(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\))",
+        )
+        .case_insensitive(true)
+        .build()
+        .unwrap();
+
+        // invalids
+        let before = "Lorem ipsum dolor #f2ewq sit amet.";
+        let after = re.replace_all(before, r#"<div style="background-color:$color;"></div>"#);
+        assert_ne!(
+            after,
+            r#"Lorem ipsum dolor <div style="background-color:#fff;"></div> sit amet."#
+        );
+
+        // valids
+        let before = "Lorem ipsum dolor sit amet.";
+        let after = re.replace_all(before, r#"<div style="background-color:$color;"></div>"#);
+        assert_eq!(after, r#"Lorem ipsum dolor sit amet."#);
+        //
+        let samples: Vec<&str> = vec![
+            "#fff",
+            "#f2f2f2",
+            "#F2F2F2",
+            "#00000000",
+            "rgb(255,0,24)",
+            "rgb(255, 0, 24)",
+            "rgba(255, 0, 24, .5)",
+            "rgba(#fff, .5)",
+            "rgba(#fff,.5)",
+            "rgba(#FFF, .5)",
+            "hsl(120, 100%, 50%)",
+            "hsl(120,100%,50%)",
+            "hsla(170, 23%, 25%, 0.2)",
+            "hsla(170,23%,25%,0.2)",
+            "0x00ffff",
+            "0x00FFFF",
+        ];
+        for sample in samples {
+            // 1
+            let before = format!("Lorem ipsum dolor {} sit amet.", sample);
+            let after = re.replace_all(
+                before.as_str(),
+                r#"<div style="background-color:$color;"></div>"#,
+            );
+            assert_eq!(
+                after,
+                format!(
+                    r#"Lorem ipsum dolor <div style="background-color:{};"></div> sit amet."#,
+                    sample
+                )
+            );
+            // 2
+            let before = format!("Lorem ipsum {} dolor {} sit amet.", sample, sample);
+            let after = re.replace_all(
+                before.as_str(),
+                r#"<div style="background-color:$color;"></div>"#,
+            );
+            assert_eq!(
+                after,
+                format!(
+                    r#"Lorem ipsum <div style="background-color:{};"></div> dolor <div style="background-color:{};"></div> sit amet."#,
+                    sample, sample
+                )
+            );
+        }
     }
 
     #[test]
