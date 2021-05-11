@@ -935,7 +935,7 @@ struct Widget {
     pub min: String,
     pub max: String,
     pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
-    pub thumbnails: bool,
+    pub thumbnails: Vec<(String, u32)>,
     pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
     pub css_classes: String, // "class-name class-name ..."
     pub hint: String,
@@ -967,7 +967,7 @@ impl Default for Widget {
             min: String::new(),
             max: String::new(),
             options: Vec::new(),
-            thumbnails: false,
+            thumbnails: Vec::new(),
             other_attrs: String::new(),
             css_classes: String::new(),
             hint: String::new(),
@@ -1621,13 +1621,26 @@ fn get_param_value<'a>(
             ),
         },
         "thumbnails" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                widget.thumbnails = lit_bool.value;
+            if let syn::Lit::Str(lit_str) = &mnv.lit {
+                let json = lit_str.value().replace('_', "");
+                let mut sizes = serde_json::from_str::<Vec<(String, u32)>>(json.as_str()).unwrap();
+                sizes.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+                let valid_size_names: [&str; 4] = ["xs", "sm", "md", "lg"];
+                for size in sizes.iter() {
+                    if !valid_size_names.contains(&size.0.as_str()) {
+                        panic!(
+                            "{}: `{}` > Field: `{}` : Valid size names - `xs`, `sm`, `md`, `lg`",
+                            model_or_form, model_name, field_name
+                        )
+                    }
+                }
+                widget.thumbnails = sizes;
             } else {
                 panic!(
                     "{}: `{}` > Field: `{}` : \
                     Could not determine value for parameter `thumbnails`. \
-                    Example: false. Default = true.",
+                    Example: [[\"xs\",150],[\"sm\",300],[\"md\",600],[\"lg\",1200]] \
+                    from one to four inclusive",
                     model_or_form, model_name, field_name
                 )
             }
