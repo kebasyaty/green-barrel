@@ -21,9 +21,17 @@ use std::convert::TryFrom;
 use std::{fs, path::Path};
 
 pub trait QPaladins: ToModel + CachingModel {
-    // Json-line for admin panel.
-    // ( converts a widget map to a list, in the order of the Model fields )
+    /// Json-line for admin panel.
+    /// ( converts a widget map to a list, in the order of the Model fields )
     // *********************************************************************************************
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile{...};
+    /// println!("{}", user_profile.json_for_admin()?);
+    /// ```
+    ///
     fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
@@ -66,7 +74,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    // Deleting a file in the database and in the file system.
+    /// Deleting a file in the database and in the file system.
     // *********************************************************************************************
     fn delete_file(
         &self,
@@ -147,7 +155,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(())
     }
 
-    // Get file info from database.
+    /// Get file info from database.
     // *********************************************************************************************
     fn db_get_file_info(
         &self,
@@ -169,7 +177,7 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(result)
     }
 
-    // Calculate the maximum size for a thumbnail.
+    /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
     fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
         if width > height {
@@ -190,8 +198,17 @@ pub trait QPaladins: ToModel + CachingModel {
         (0, 0)
     }
 
-    // Checking the Model before queries the database.
+    /// Checking the Model before queries the database.
     // *********************************************************************************************
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile  = UserProfile {...}
+    /// let result = user_profile.check()?;
+    /// assert!(result.is_valid());
+    /// ```
+    ///
     fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -1224,7 +1241,8 @@ pub trait QPaladins: ToModel + CachingModel {
         )))
     }
 
-    // Save to database as a new document or update an existing document.
+    /// Save to database as a new document or update an existing document.
+    /// ( Used in conjunction with the `check ()` method. )
     // *********************************************************************************************
     fn save(
         &mut self,
@@ -1290,8 +1308,18 @@ pub trait QPaladins: ToModel + CachingModel {
         )))
     }
 
-    // Remove document from collection.
+    /// Remove document from collection.
     // *********************************************************************************************
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data  = UserProfile.delete(None)?;
+    /// if !routput_data.is_valid() {
+    ///     println!("{}", routput_data.err_msg());
+    /// }
+    /// ```
+    ///
     fn delete(
         &self,
         options: Option<mongodb::options::DeleteOptions>,
@@ -1417,8 +1445,17 @@ pub trait QPaladins: ToModel + CachingModel {
 
     // Operations with passwords.
     // *********************************************************************************************
-    // Generate password hash and add to result document.
+    /// Generate password hash and add to result document.
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile {...};
+    /// let field_value = user_profile.password;
+    /// println!("{}", user_profile.create_password_hash(field_value)?);
+    /// ```
+    ///
     fn create_password_hash(field_value: &str) -> Result<String, Box<dyn std::error::Error>> {
         const CHARSET: &[u8] =
             b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&+=*!~)(";
@@ -1437,8 +1474,17 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(hash)
     }
 
-    // Match the password from the user to the password in the database.
+    /// Match the password from the user to the password in the database.
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile {...};
+    /// let password = "12345678";
+    /// assert!(user_profile.create_password_hash(password, None)?);
+    /// ```
+    ///
     fn verify_password(
         &self,
         password: &str,
@@ -1499,8 +1545,18 @@ pub trait QPaladins: ToModel + CachingModel {
         Ok(argon2::verify_encoded(password_hash, password.as_bytes())?)
     }
 
-    // For replace or recover password.
+    /// For replace or recover password.
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile {...};
+    /// let old_password = "12345678";
+    /// let new_password = "qBfJHCW2C9EH3_RW";
+    /// assert!(user_profile.create_password_hash(old_password, new_password, None)?);
+    /// ```
+    ///
     fn update_password(
         &self,
         old_password: &str,

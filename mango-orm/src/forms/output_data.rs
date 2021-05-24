@@ -5,7 +5,7 @@
 
 use crate::forms::{html_controls::HtmlControls, Widget};
 
-// Output data type
+/// Output data type
 #[derive(Debug)]
 pub enum OutputDataForm {
     CheckForm(
@@ -36,7 +36,16 @@ pub enum OutputDataForm {
 }
 
 impl HtmlControls for OutputDataForm {
-    // Get Html-line
+    /// Get Html-line
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{}", output_data.html());
+    /// ```
+    ///
     fn html(&self) -> String {
         match self {
             Self::CheckForm(data) => Self::to_html(&data.1, data.2.clone()),
@@ -48,7 +57,7 @@ impl HtmlControls for OutputDataForm {
 }
 
 impl OutputDataForm {
-    // Get Hash-line
+    /// Get Hash-line
     // ---------------------------------------------------------------------------------------------
     fn to_hash(
         map_widgets: &std::collections::HashMap<String, Widget>,
@@ -68,7 +77,14 @@ impl OutputDataForm {
         Ok(map_widgets.get("hash").unwrap().value.clone())
     }
 
-    // Get Hash-line
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{}", output_data.hash());
+    /// ```
+    ///
     pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(Self::to_hash(&data.2)?),
@@ -77,7 +93,16 @@ impl OutputDataForm {
         }
     }
 
-    // Get MongoDB ID from hash-line
+    /// Get MongoDB ID from hash-line
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{:?}", output_data.id()?);
+    /// ```
+    ///
     pub fn id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
@@ -90,9 +115,17 @@ impl OutputDataForm {
         }
     }
 
-    // Get Map of Widgets
-    // ( Wig - Widgets )
+    /// Get Map of Widgets
     // ---------------------------------------------------------------------------------------------
+    /// ( Wig - Widgets )
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{:?}", output_data.wig());
+    /// ```
+    ///
     pub fn wig(&self) -> std::collections::HashMap<String, Widget> {
         match self {
             Self::CheckForm(data) => data.2.clone(),
@@ -102,8 +135,16 @@ impl OutputDataForm {
         }
     }
 
-    // Get Json-line
+    /// Get Json-line
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{}", output_data.json()?);
+    /// ```
+    ///
     pub fn json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::CheckForm(data) => Ok(serde_json::to_string(&data.2)?),
@@ -113,8 +154,17 @@ impl OutputDataForm {
         }
     }
 
-    // Json-line for admin panel.
-    // ( converts a widget map to a list, in the order of the Model fields )
+    /// Json-line for admin panel.
+    // ---------------------------------------------------------------------------------------------
+    /// ( converts a widget map to a list, in the order of the Model fields )
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{}", output_data.json_for_admin()?);
+    /// ```
+    ///
     pub fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
         let data = match self {
             Self::Save(data) => data,
@@ -136,8 +186,17 @@ impl OutputDataForm {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    // Get Boolean
+    /// Get validation status (boolean)
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile {...}
+    /// let result = output_data.check()?;
+    /// assert!(result.is_valid());
+    /// ```
+    ///
     pub fn is_valid(&self) -> bool {
         match self {
             Self::CheckForm(data) => data.0,
@@ -147,8 +206,16 @@ impl OutputDataForm {
         }
     }
 
-    // Get Document
+    /// Get Document
     // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.save()?;
+    /// println!("{:?}", output_data.doc());
+    /// ```
+    ///
     pub fn doc(&self) -> mongodb::bson::document::Document {
         match self {
             Self::CheckModel(data) => data.3.clone(),
@@ -156,9 +223,17 @@ impl OutputDataForm {
         }
     }
 
-    // Get Form instance.
-    // (It is convenient if the form passes (after validation) the value of the fields to Models.)
+    /// Get Form instance.)
     // ---------------------------------------------------------------------------------------------
+    /// (It is convenient if the form passes (after validation) the value of the fields to Models.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = RestorePasswordForm.check()?;
+    /// let instance =  output_data.form::<RestorePasswordForm>()?;
+    /// ```
+    ///
     pub fn form<T>(&self) -> Result<T, serde_json::error::Error>
     where
         T: serde::de::DeserializeOwned,
@@ -169,9 +244,17 @@ impl OutputDataForm {
         }
     }
 
-    // A description of the error if the document was not deleted.
-    // (Main use for admin panel.)
+    /// A description of the error if the document was not deleted.
     // ---------------------------------------------------------------------------------------------
+    /// (Main use for admin panel.)
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.delete()?;
+    /// println!("{}", output_data.err_msg());
+    /// ```
+    ///
     pub fn err_msg(&self) -> String {
         match self {
             Self::Delete(data) => data.1.clone(),

@@ -1,10 +1,12 @@
 //! # Testing tools
 //!
 //! `del_test_base` - Remove test databases.
+//!
 
 use crate::store::MONGODB_CLIENT_STORE;
 
-// Remove test databases
+/// Remove test databases
+/// Hint: See the tests in the `test-drive` section for an example.
 pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
