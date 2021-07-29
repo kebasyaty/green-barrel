@@ -10,10 +10,8 @@
 //! ( If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc. )
 //!
 
-pub mod caching;
 pub mod html_controls;
 pub mod output_data;
-pub mod validation;
 
 // FORMS
 // #################################################################################################
@@ -136,30 +134,4 @@ impl Default for Widget {
 #[derive(serde::Deserialize)]
 pub struct TransMapWidgets {
     pub map_widgets: std::collections::HashMap<String, Widget>,
-}
-
-// Form settings.
-// *************************************************************************************************
-pub trait ToForm {
-    /// Get form key.
-    /// (To access data in the cache)
-    // ---------------------------------------------------------------------------------------------
-    fn key() -> String;
-
-    /// Get form name
-    // ---------------------------------------------------------------------------------------------
-    fn form_name() -> String;
-
-    /// Get fields name list.
-    // ---------------------------------------------------------------------------------------------
-    fn fields_name() -> Result<Vec<String>, Box<dyn std::error::Error>>;
-
-    /// Get map of widgets for Form fields.
-    /// Hint: Vec<field name, Widget>
-    // ---------------------------------------------------------------------------------------------
-    fn widgets() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>>;
-
-    /// Serialize Form to json-line.
-    // ---------------------------------------------------------------------------------------------
-    fn self_to_json(&self) -> Result<serde_json::value::Value, Box<dyn std::error::Error>>;
 }

@@ -1,5 +1,5 @@
 use mango_orm::*;
-use metamorphose::{Form, Model};
+use metamorphose::Model;
 use serde::{Deserialize, Serialize};
 
 // Get settings of service/sub-application.
@@ -287,66 +287,6 @@ impl AdditionalValidation for UserProfile {
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
-        let mut error_map: std::collections::HashMap<&'a str, &'a str> =
-            std::collections::HashMap::new();
-        // Get clean data
-        let email = self.email.clone().unwrap_or_default();
-        let confirm_email = self.confirm_email.clone().unwrap_or_default();
-        let password = self.password.clone().unwrap_or_default();
-        let confirm_password = self.confirm_password.clone().unwrap_or_default();
-        // Fields validation
-        if email != confirm_email {
-            error_map.insert(
-                "confirm_email",
-                "Email address confirmation does not match.",
-            );
-        }
-        if password != confirm_password {
-            error_map.insert("confirm_password", "Password confirmation does not match.");
-        }
-        Ok(error_map)
-    }
-}
-
-#[Form(is_use_add_valid = true)]
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct UserForm {
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        value = "Some text",
-        required = false,
-        minlength = 3,
-        maxlength = 40
-    )]
-    pub username: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(widget = "inputEmail", required = true, unique = true, maxlength = 74)]
-    pub email: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(widget = "inputEmail", required = true, maxlength = 74)]
-    pub confirm_email: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
-    pub password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(widget = "inputPassword", required = true, minlength = 8)]
-    pub confirm_password: Option<String>,
-}
-
-// Methods for additional validation.
-// Hint: For custom use, add the Model attribute `is_use_add_valid = true`.
-impl AdditionalValidation for UserForm {
-    // Example of additional validation for ignored fields
-    // ---------------------------------------------------------------------------------------------
-    fn add_validation<'a>(
-        &self,
-    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-        // error_map.insert("field_name", "Error message.")
         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
             std::collections::HashMap::new();
         // Get clean data

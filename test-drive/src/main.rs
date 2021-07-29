@@ -274,39 +274,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    /*
-    // Test Form.
-    // *********************************************************************************************
-    // println!("{:?}\n\n", mango_models::UserForm::form_wig().unwrap());
-    // println!("{}\n\n", mango_models::UserForm::form_json().unwrap());
-    // println!("{}\n\n", mango_models::UserForm::form_html().unwrap());
-
-    println!("Form name: {}\n", mango_models::UserForm::form_name());
-    println!(
-        "Fields name:\n{:?}\n",
-        mango_models::UserForm::fields_name()?
-    );
-
-    // Test Form.
-    let user_form = mango_models::UserForm {
-        username: Some("Rust".to_string()),
-        email: Some("test_1_@test.test".to_string()),
-        confirm_email: Some("test_1_@test.test".to_string()),
-        password: Some("12345678".to_string()),
-        confirm_password: Some("12345678".to_string()),
-    };
-
-    let result = user_form.check()?;
-
-    println!("Boolean: {}\n\n", result.is_valid());
-    //println!("Widget map:\n{:?}\n\n", result.wig());
-    //println!("Json:\n{}\n\n", result.json()?);
-    //println!("Html:\n{}\n", result.html());
-    println!(
-        "Form instance:\n{:?}\n",
-        result.form::<mango_models::UserForm>()
-    );
-    */
-
     Ok(())
 }

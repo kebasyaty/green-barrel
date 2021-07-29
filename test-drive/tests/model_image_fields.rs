@@ -90,9 +90,9 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
         path: "./media/beautiful-mountains.jpg".to_string(),
         url: "/media/beautiful-mountains.jpg".to_string(),
         name: "beautiful-mountains.jpg".to_string(),
-        size: 241138_u32,
-        width: 1024_u32,
-        height: 748_u32,
+        size: 520620_u32,
+        width: 1600_u32,
+        height: 1067_u32,
         ..Default::default()
     };
     let result = test_model.save(None, None)?;

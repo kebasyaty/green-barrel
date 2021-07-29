@@ -13,7 +13,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use serde::Serialize;
-use syn::Ident;
 use syn::{parse_macro_input, Attribute, AttributeArgs, DeriveInput, MetaNameValue, NestedMeta};
 
 // MODEL - MACRO FOR CONVERTING STRUCTURE TO MANGO-ORM MODEL
@@ -373,7 +372,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                                                 field_name.as_ref(),
                                                 field_type.as_ref(),
                                                 &mut check_field_type,
-                                                "Model",
                                             );
                                         }
                                     }
@@ -716,313 +714,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     TokenStream::from(output)
 }
 
-// FORM - MACRO FOR CONVERTING STRUCTURE TO MANGO-ORM FORM
-// #################################################################################################
-/// Macro for converting Structure to mango-orm Form.
-/// The form does not have access to the database.
-/// Form are needed where it makes no sense to use a model -
-/// To create a search form, to recover a password, to combine models, etc.
-///
-/// # Example:
-///
-/// ```
-/// use mango_orm::*;
-/// use metamorphose::Form;
-/// use serde::{Deserialize, Serialize};
-///
-/// #[Form]
-/// #[derive(Serialize, Deserialize, Default, Debug)]
-/// pub struct RestorePassword {
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputEmail",
-///        value = "Your Email",
-///        required = true,
-///        unique = true,
-///        maxlength = 74
-///    )]
-///    pub email: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPassword",
-///        value = "Your old password",
-///        required = true,
-///        minlength = 8
-///    )]
-///    pub old_password: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPassword",
-///        value = "Your new password",
-///        required = true,
-///        minlength = 8
-///    )]
-///    pub new_password: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPassword",
-///        value = "Confirm the password",
-///        required = true,
-///        minlength = 8
-///    )]
-///    pub confirm_password: Option<String>,
-/// }
-/// ```
-///
-#[allow(non_snake_case)]
-#[proc_macro_attribute]
-pub fn Form(args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = parse_macro_input!(args as AttributeArgs);
-    let mut ast = parse_macro_input!(input as DeriveInput);
-    impl_create_form(&args, &mut ast)
-}
-
-// Parsing fields and attributes of a structure, creating implementation of methods.
-// *************************************************************************************************
-fn impl_create_form(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
-    // Clear the field type from `Option <>`.
-    let re_clear_field_type = regex::RegexBuilder::new(r"^Option < ([a-z\d\s<>]+) >$")
-        .case_insensitive(true)
-        .build()
-        .unwrap();
-    let form_name: &Ident = &ast.ident;
-    let mut trans_map_widgets: TransMapWidgets = Default::default();
-    let mut fields_name: Vec<String> = Vec::new();
-    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #form_name {}};
-
-    // Get Form attributes.
-    // *********************************************************************************************
-    for nested_meta in args {
-        if let NestedMeta::Meta(meta) = nested_meta {
-            if let syn::Meta::NameValue(mnv) = meta {
-                if mnv.path.is_ident("is_use_add_valid") {
-                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        if lit_bool.value {
-                            add_trait_custom_valid = quote! {};
-                        }
-                    } else {
-                        panic!(
-                            "Form: `{}` : Could not determine value for \
-                            parameter `is_use_add_valid`. Use the `bool` type.",
-                            form_name.to_string(),
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    // Get Form fields.
-    // *********************************************************************************************
-    if let syn::Data::Struct(ref mut data) = &mut ast.data {
-        if let syn::Fields::Named(ref mut fields) = &mut data.fields {
-            let fields = &mut fields.named;
-
-            // Loop over fields.
-            // -------------------------------------------------------------------------------------
-            for field in fields {
-                let mut field_name = String::new();
-                let mut field_type = String::new();
-
-                // Get field name.
-                if let Some(ident) = &field.ident {
-                    field_name = ident.to_string();
-                }
-
-                // Add field name to list.
-                fields_name.push(field_name.clone());
-
-                // Get field type.
-                if let syn::Type::Path(ty) = &field.ty {
-                    field_type = quote! {#ty}.to_string();
-                    let cap = &re_clear_field_type
-                        .captures_iter(field_type.as_str())
-                        .next();
-                    if cap.is_some() {
-                        field_type = cap.as_ref().unwrap()[1].to_string();
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` : Change field type to `Option < {} >`.",
-                            form_name.to_string(),
-                            field_name,
-                            field_type
-                        )
-                    }
-                }
-
-                // Get the attribute of the field `field_attrs`.
-                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs");
-                let mut widget = Widget {
-                    id: get_id(form_name.to_string(), field_name.clone()),
-                    name: field_name.clone(),
-                    ..Default::default()
-                };
-                // Allow Validation - Whether the Widget supports the current field type.
-                let mut check_field_type = true;
-
-                // Get field attributes.
-                if attrs.is_some() {
-                    match attrs.unwrap().parse_meta() {
-                        Ok(meta) => {
-                            if let syn::Meta::List(meta_list) = meta {
-                                for nested_meta in meta_list.nested {
-                                    if let NestedMeta::Meta(meta) = nested_meta {
-                                        if let syn::Meta::NameValue(mnv) = meta {
-                                            let attr_name =
-                                                &mnv.path.get_ident().unwrap().to_string()[..];
-                                            get_param_value(
-                                                attr_name,
-                                                &mnv,
-                                                &mut widget,
-                                                form_name.to_string().as_ref(),
-                                                field_name.as_ref(),
-                                                field_type.as_ref(),
-                                                &mut check_field_type,
-                                                "Form",
-                                            );
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Err(err) => panic!("{}", err.to_string()),
-                    }
-                }
-                // Match widget type and field type.
-                if check_field_type {
-                    let widget_name = widget.widget.clone();
-                    let widget_info = get_widget_info(&widget_name).unwrap_or_else(|err| {
-                        panic!(
-                            "Form: `{}` > Field: `{}` : {}",
-                            form_name.to_string(),
-                            field_name,
-                            err.to_string()
-                        )
-                    });
-                    if widget_info.0 != field_type {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {}: \
-                            The widget type `{}` is not the same \
-                            as the field type.",
-                            form_name.to_string(),
-                            field_name,
-                            field_type,
-                            widget_info.0
-                        )
-                    }
-                }
-                // Add widget to map.
-                trans_map_widgets
-                    .map_widgets
-                    .insert(field_name.clone(), widget);
-                // Delete field attributes.
-                // ( To avoid conflicts with the compiler )
-                field.attrs = Vec::new();
-            }
-        } else {
-            panic!(
-                "Form: `{}` : Expected a struct with named fields.",
-                form_name.to_string()
-            )
-        }
-    }
-
-    // Post processing.
-    // *********************************************************************************************
-    // Checking default values.
-    for field_name in fields_name.clone() {
-        let widget = trans_map_widgets.map_widgets.get(&field_name[..]).unwrap();
-        if widget.widget.contains("Dyn") {
-            panic!(
-                "Form: `{}` > Field: `{}` : \
-                Forms are not supported by dynamic widgets.",
-                form_name.to_string(),
-                field_name,
-            )
-        }
-    }
-    // TransMapWidgets to Json-string
-    let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
-        Ok(json_string) => json_string,
-        Err(err) => panic!("Form: `{}` : {}", form_name.to_string(), err),
-    };
-    // fields_name to Json-string
-    let fields_name: String = match serde_json::to_string(&fields_name) {
-        Ok(json_string) => json_string,
-        Err(err) => panic!("Form: `{}` : {}", form_name.to_string(), err),
-    };
-
-    // Implementation of methods.
-    // *********************************************************************************************
-    let output = quote! {
-        #ast
-
-        impl ToForm for #form_name {
-            // Get form key.
-            // (To access data in the cache)
-            // -------------------------------------------------------------------------------------
-            fn key() -> String {
-                let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                format!(
-                    "{}__{}__{}",
-                    SERVICE_NAME.trim(),
-                    re.replace_all(stringify!(#form_name), "_$upper_chr"),
-                    UNIQUE_PROJECT_KEY.trim().to_string()
-                )
-                .to_lowercase()
-            }
-
-            // Get form name
-            // -------------------------------------------------------------------------------------
-            fn form_name() -> String {
-                stringify!(#form_name).to_string()
-            }
-
-            // Get fields name list.
-            // -------------------------------------------------------------------------------------
-            fn fields_name() -> Result<Vec<String>, Box<dyn std::error::Error>> {
-                Ok(serde_json::from_str::<Vec<String>>(#fields_name)?)
-            }
-
-            // Get map of widgets for model fields.
-            // Hint: <field name, Widget>
-            // -------------------------------------------------------------------------------------
-            fn widgets() -> Result<std::collections::HashMap<String, Widget>,
-                Box<dyn std::error::Error>> {
-                Ok(serde_json::from_str::<TransMapWidgets>(&#trans_map_widgets)?.map_widgets)
-            }
-
-            // Serialize Form to json-line.
-            // -------------------------------------------------------------------------------------
-            fn self_to_json(&self)
-                -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
-                Ok(serde_json::to_value(self)?)
-            }
-        }
-
-        // Caching information about Models and Forms for speed up work.
-        // *****************************************************************************************
-        impl CachingForm for #form_name {}
-
-        // Validating Form fields for save and update.
-        // *****************************************************************************************
-        impl ValidationForm for #form_name {}
-
-        // A set of methods for custom validation.
-        // *****************************************************************************************
-        #add_trait_custom_valid
-
-        // Rendering HTML-controls code for Form.
-        // *****************************************************************************************
-        impl HtmlControls for #form_name {}
-    };
-    // Hand the output tokens back to the compiler.
-    TokenStream::from(output)
-}
-
 // AUXILIARY STRUCTURES AND FUNCTIONS
 // #################################################################################################
 // Get field attribute.
@@ -1246,7 +937,6 @@ fn get_param_value<'a>(
     field_name: &'a str,
     field_type: &'a str,
     check_field_type: &mut bool,
-    model_or_form: &'a str,
 ) {
     match attr_name {
         "label" => {
@@ -1254,10 +944,10 @@ fn get_param_value<'a>(
                 widget.label = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `label`. \
                     Example: \"Some text\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1266,10 +956,10 @@ fn get_param_value<'a>(
                 widget.accept = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `accept`. \
                     Example: \"image/jpeg,image/png\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1278,8 +968,7 @@ fn get_param_value<'a>(
                 let widget_name = lit_str.value();
                 let widget_info = get_widget_info(widget_name.as_ref()).unwrap_or_else(|err| {
                     panic!(
-                        "{}: `{}` > Field: `{}` : {}",
-                        model_or_form,
+                        "Model: `{}` > Field: `{}` : {}",
                         model_name,
                         field_name,
                         err.to_string()
@@ -1287,9 +976,9 @@ fn get_param_value<'a>(
                 });
                 if widget_info.0 != field_type {
                     panic!(
-                        "{}: `{}` > Field: `{}` : \
+                        "Model: `{}` > Field: `{}` : \
                         The widget type is not the same as the field type.",
-                        model_or_form, model_name, field_name,
+                        model_name, field_name,
                     )
                 }
                 widget.widget = widget_name.clone();
@@ -1297,10 +986,10 @@ fn get_param_value<'a>(
                 *check_field_type = false;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `widget`. \
                     Example: \"inputEmail\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1310,10 +999,10 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `value`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1322,10 +1011,10 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `value`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1334,10 +1023,10 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `value`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1346,10 +1035,10 @@ fn get_param_value<'a>(
                     widget.value = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `value`. \
                         Example: 10.2",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1358,17 +1047,16 @@ fn get_param_value<'a>(
                     widget.value = lit_str.value().trim().to_string()
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `value`. \
                         Example: \"Some text\"",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
+                "Model: `{}` > Field: `{}` > Type: {} : \
                 Unsupported field type for `default` parameter.",
-                model_or_form,
                 model_name.to_string(),
                 field_name,
                 field_type
@@ -1379,10 +1067,10 @@ fn get_param_value<'a>(
                 widget.placeholder = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `placeholder`. \
                     Example: \"Some text\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1391,10 +1079,10 @@ fn get_param_value<'a>(
                 widget.pattern = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `pattern`. \
                     Example: \"some regular expression\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1403,10 +1091,10 @@ fn get_param_value<'a>(
                 widget.minlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `minlength`. \
                     Example: 10",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1415,10 +1103,10 @@ fn get_param_value<'a>(
                 widget.maxlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `maxlength`. \
                     Example: 10",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1427,10 +1115,10 @@ fn get_param_value<'a>(
                 widget.required = lit_bool.value;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `required`. \
                     Example: true. Default = false.",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1439,10 +1127,10 @@ fn get_param_value<'a>(
                 widget.checked = lit_bool.value;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `checked`. \
                     Example: true. Default = false.",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1451,10 +1139,10 @@ fn get_param_value<'a>(
                 widget.unique = lit_bool.value;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `unique`. \
                     Example: true. Default = false.",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1463,10 +1151,10 @@ fn get_param_value<'a>(
                 widget.disabled = lit_bool.value;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `disabled`. \
                     Example: true. Default = false.",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1475,10 +1163,10 @@ fn get_param_value<'a>(
                 widget.readonly = lit_bool.value;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `readonly`. \
                     Example: true. Default = false.",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1488,10 +1176,10 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `step`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1500,10 +1188,10 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `step`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1512,10 +1200,10 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `step`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1524,10 +1212,10 @@ fn get_param_value<'a>(
                     widget.step = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `step`. \
                         Example: 10.2",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1536,17 +1224,17 @@ fn get_param_value<'a>(
                     widget.step = lit_str.value().trim().to_string()
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `step`.
                         Example: not supported.",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
+                "Model: `{}` > Field: `{}` > Type: {} : \
                 Unsupported field type for `step` parameter.",
-                model_or_form, model_name, field_name, field_type
+                model_name, field_name, field_type
             ),
         },
         "min" => match field_type {
@@ -1555,10 +1243,10 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `min`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1567,10 +1255,10 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `min`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1579,10 +1267,10 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `min`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1591,10 +1279,10 @@ fn get_param_value<'a>(
                     widget.min = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `min`. \
                         Example: 10.2",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1603,17 +1291,17 @@ fn get_param_value<'a>(
                     widget.min = lit_str.value().trim().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `min`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
+                "Model: `{}` > Field: `{}` > Type: {} : \
                 Unsupported field type for `min` parameter.",
-                model_or_form, model_name, field_name, field_type
+                model_name, field_name, field_type
             ),
         },
         "max" => match field_type {
@@ -1622,10 +1310,10 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `max`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1634,10 +1322,10 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `max`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1646,10 +1334,10 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `max`. \
                         Example: 10",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1658,10 +1346,10 @@ fn get_param_value<'a>(
                     widget.max = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `max`. \
                         Example: 10.2",
-                        model_or_form, model_name, field_name, field_type,
+                        model_name, field_name, field_type,
                     )
                 }
             }
@@ -1670,17 +1358,17 @@ fn get_param_value<'a>(
                     widget.max = lit_str.value().trim().to_string();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `max`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
+                "Model: `{}` > Field: `{}` > Type: {} : \
                 Unsupported field type for `max` parameter.",
-                model_or_form, model_name, field_name, field_type
+                model_name, field_name, field_type
             ),
         },
         "options" => match field_type {
@@ -1699,11 +1387,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
                         Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
                         Example: [10, 20, ...]",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1722,11 +1410,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
                         Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
                         Example: [10, 20, ...]",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1745,11 +1433,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
                         Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
                         Example: [10, 20, ...]",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1768,11 +1456,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
                         Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...] OR \
                         Example: [10.1, 20.2, ...]",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
@@ -1792,18 +1480,18 @@ fn get_param_value<'a>(
                     };
                 } else {
                     panic!(
-                        "{}: `{}` > Field: `{}` > Type: {} : \
+                        "Model: `{}` > Field: `{}` > Type: {} : \
                         Could not determine value for parameter `options`. \
                         Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...] OR \
                         Example: [\"Item\", \"Item 2\", ...]",
-                        model_or_form, model_name, field_name, field_type
+                        model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "{}: `{}` > Field: `{}` > Type: {} : \
+                "Model: `{}` > Field: `{}` > Type: {} : \
                 Unsupported field type for `options` parameter.",
-                model_or_form, model_name, field_name, field_type
+                model_name, field_name, field_type
             ),
         },
         "thumbnails" => {
@@ -1815,19 +1503,19 @@ fn get_param_value<'a>(
                 for size in sizes.iter() {
                     if !valid_size_names.contains(&size.0.as_str()) {
                         panic!(
-                            "{}: `{}` > Field: `{}` : Valid size names - `xs`, `sm`, `md`, `lg`",
-                            model_or_form, model_name, field_name
+                            "Model: `{}` > Field: `{}` : Valid size names - `xs`, `sm`, `md`, `lg`",
+                            model_name, field_name
                         )
                     }
                 }
                 widget.thumbnails = sizes;
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `thumbnails`. \
                     Example: [[\"xs\",150],[\"sm\",300],[\"md\",600],[\"lg\",1200]] \
                     from one to four inclusive",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1836,10 +1524,10 @@ fn get_param_value<'a>(
                 widget.other_attrs = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `other_attrs`. \
                     Example: \"autofocus multiple size=\\\"some number\\\"\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1848,10 +1536,10 @@ fn get_param_value<'a>(
                 widget.css_classes = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `css_classes`. \
                     Example: \"class_name, class_name\"",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
@@ -1860,36 +1548,35 @@ fn get_param_value<'a>(
                 widget.hint = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "{}: `{}` > Field: `{}` : \
+                    "Model: `{}` > Field: `{}` : \
                     Could not determine value for parameter `hint`. \
                     Example: \"Some text\".",
-                    model_or_form, model_name, field_name
+                    model_name, field_name
                 )
             }
         }
         "id" => panic!(
-            "{}: `{}` > Field: `{}` : The `id` parameter is determined automatically.",
-            model_or_form, model_name, field_name
+            "Model: `{}` > Field: `{}` : The `id` parameter is determined automatically.",
+            model_name, field_name
         ),
         "name" => panic!(
-            "{}: `{}` > Field: `{}` : The `name` parameter is determined automatically.",
-            model_or_form, model_name, field_name
+            "Model: `{}` > Field: `{}` : The `name` parameter is determined automatically.",
+            model_name, field_name
         ),
         "input_type" => panic!(
-            "{}: `{}` > Field: `{}` : The `input_type` parameter is determined automatically.",
-            model_or_form, model_name, field_name
+            "Model: `{}` > Field: `{}` : The `input_type` parameter is determined automatically.",
+            model_name, field_name
         ),
         "warning" => panic!(
-            "{}: `{}` > Field: `{}` : The `warning` parameter is determined automatically.",
-            model_or_form, model_name, field_name
+            "Model: `{}` > Field: `{}` : The `warning` parameter is determined automatically.",
+            model_name, field_name
         ),
         "error" => panic!(
-            "{}: `{}` > Field: `{}` : The `error` parameter is determined automatically.",
-            model_or_form, model_name, field_name
+            "Model: `{}` > Field: `{}` : The `error` parameter is determined automatically.",
+            model_name, field_name
         ),
         _ => panic!(
-            "{}: `{}` > Field: `{}` : Undefined field attribute `{}`.",
-            model_or_form,
+            "Model: `{}` > Field: `{}` : Undefined field attribute `{}`.",
             model_name.to_string(),
             field_name,
             attr_name
