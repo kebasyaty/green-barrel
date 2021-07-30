@@ -170,8 +170,8 @@
 
 #### 2) Cargo.toml
     [dependencies]
-    mango-orm = "0.4"
-    metamorphose = "0.2"
+    mango-orm = "0.5"
+    metamorphose = "0.3"
     chrono = "0.4"
     image = "0.23"
     lazy_static = "1.0"
@@ -428,6 +428,10 @@
         //
         Ok(())
     }
+
+## Changelog
+-  **v0.5.1** (Updated README.md)
+-  **v0.5.0** (Support for the Form macro has been removed.)
 
 ## License
 #### This project is licensed under the [MIT](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-APACHE "Apache Version 2.0")
