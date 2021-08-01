@@ -26,33 +26,40 @@
 | Field type: | Widget type: |
 | :------------ | :------------ |
 | bool | "checkBox" |
+|-|-|
 | String | "inputColor" |
 | String | "inputDate" |
 | String | "inputDateTime" |
 | String | "inputEmail" |
-| String | "inputFile" |
-| String | "inputImage" |
-| i32 | "numberI32" |
-| u32 | "numberU32" |
-| i64 | "numberI64" |
-| f64 | "numberF64" |
 | String | "inputPassword" |
-| String | "radioText" |
-| i32 | "radioI32" |
-| u32 | "radioU32" |
-| i64 | "radioI64" |
-| f64 | "radioF64" |
-| i32 | "rangeI32" |
-| u32 | "rangeU32" |
-| i64 | "rangeI64" |
-| f64 | "rangeF64" |
 | String | "inputPhone" |
 | String | "inputText" |
 | String | "inputUrl" |
 | String | "inputIP" |
 | String | "inputIPv4" |
 | String | "inputIPv6" |
+|-|-|
 | String | "textArea" |
+|-|-|
+| String | "inputFile" |
+| String | "inputImage" |
+|-|-|
+| i32 | "numberI32" |
+| u32 | "numberU32" |
+| i64 | "numberI64" |
+| f64 | "numberF64" |
+|-|-|
+| String | "radioText" |
+| i32 | "radioI32" |
+| u32 | "radioU32" |
+| i64 | "radioI64" |
+| f64 | "radioF64" |
+|-|-|
+| i32 | "rangeI32" |
+| u32 | "rangeU32" |
+| i64 | "rangeI64" |
+| f64 | "rangeF64" |
+|-|-|
 | String | "selectText" |
 | String | "selectTextDyn" |
 | Vec< String  > | "selectTextMult" |
@@ -73,6 +80,7 @@
 | f64 | "selectF64Dyn" |
 | Vec< f64 > | "selectF64Mult" |
 | Vec< f64 > | "selectF64MultDyn" |
+|-|-|
 | String | "hiddenText" |
 | i32 | "hiddenI32" |
 | u32 | "hiddenU32" |
@@ -430,8 +438,7 @@
     }
 
 ## Changelog
--  **v0.5.1** (Updated README.md)
--  **v0.5.0** (Support for the Form macro has been removed.)
+**v0.5** *Support for the Form macro has been removed.*
 
 ## License
 #### This project is licensed under the [MIT](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-APACHE "Apache Version 2.0")
