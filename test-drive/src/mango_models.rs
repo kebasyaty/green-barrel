@@ -236,7 +236,9 @@ pub struct UserProfile {
         value = r#"{
             "path":"./test-drive/media/no-image-found.png",
             "url":"/media/no-image-found.png"
-        }"#
+        }"#,
+        accept = "image/jpeg,image/png",
+        thumbnails = r#"[["xs",60],["sm",150]]"# // all sizes: "xs","sm","md","lg"
     )]
     pub image: Option<String>,
     //
@@ -244,6 +246,7 @@ pub struct UserProfile {
     #[field_attrs(
         widget = "checkBox",
         label = "is staff?",
+        checked = true,
         hint = "User can access the admin site?"
     )]
     pub is_staff: Option<bool>,
@@ -252,6 +255,7 @@ pub struct UserProfile {
     #[field_attrs(
         widget = "checkBox",
         label = "is active?",
+        checked = true,
         hint = "Is this an active account?"
     )]
     pub is_active: Option<bool>,

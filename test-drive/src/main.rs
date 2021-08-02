@@ -182,8 +182,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     let mut user = mango_models::UserProfile {
         username: Some("Rust".to_string()),
-        email: Some("test_1_@test.test".to_string()),
-        confirm_email: Some("test_1_@test.test".to_string()),
+        email: Some("test_4_@test.test".to_string()),
+        confirm_email: Some("test_4_@test.test".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         date: Some("2020-12-19".to_string()),
@@ -232,36 +232,38 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
     // Update doc.
-    user.username = Some("Rust 2".to_string());
-    //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    let result = user.save(None, None)?;
-    println!("\n\n\nBoolean: {}", result.is_valid());
-    println!("Hash: {}", result.hash()?);
-    //println!("Remove document: {:?}", user.delete(None)?);
-    //println!("ID: {:?}", result.id()?);
-    //println!("\n\nWidget map:\n{:?}", result.wig());
-    //println!("\n\nJson:\n{}", result.json()?);
-    //println!("\n\nHtml:\n{}", result.html());
-    //println!("{}", result.json_for_admin()?);
-    /*
-    println!(
-        "Update password (false): {}",
-        user.update_password("123456789", "123456789", None, None)?
-    );
-    println!(
-        "Update password (true): {}",
-        user.update_password("12345678", "123456789", None, None)?
-    );
-    println!(
-        "Verify password (true): {}",
-        user.verify_password("123456789", None)?
-    );
-    println!(
-        "Verify password (false): {}",
-        user.verify_password("12345678", None)?
-    );
-    */
+    if result.is_valid() {
+        user.username = Some("Rust 2".to_string());
+        //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+        //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+        let result = user.save(None, None)?;
+        println!("\n\n\nBoolean: {}", result.is_valid());
+        println!("Hash: {}", result.hash()?);
+        //println!("Remove document: {:?}", user.delete(None)?);
+        //println!("ID: {:?}", result.id()?);
+        //println!("\n\nWidget map:\n{:?}", result.wig());
+        //println!("\n\nJson:\n{}", result.json()?);
+        //println!("\n\nHtml:\n{}", result.html());
+        //println!("{}", result.json_for_admin()?);
+        /*
+        println!(
+            "Update password (false): {}",
+            user.update_password("123456789", "123456789", None, None)?
+        );
+        println!(
+            "Update password (true): {}",
+            user.update_password("12345678", "123456789", None, None)?
+        );
+        println!(
+            "Verify password (true): {}",
+            user.verify_password("123456789", None)?
+        );
+        println!(
+            "Verify password (false): {}",
+            user.verify_password("12345678", None)?
+        );
+        */
+    }
 
     /*
     // Remove document.

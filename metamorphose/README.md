@@ -23,7 +23,7 @@
 - serde
 
 ## Changelog
-**v0.3** *Support for the Form macro has been removed*.
+- **v0.3** *Removed the Form macro..*
 
 ## License
 #### This project is licensed under the [MIT](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-APACHE "Apache Version 2.0")

@@ -19,6 +19,7 @@ use crate::{
 use rand::Rng;
 use std::convert::TryFrom;
 use std::{fs, path::Path};
+use uuid::Uuid;
 
 pub trait QPaladins: ToModel + CachingModel {
     /// Json-line for admin panel.
@@ -782,12 +783,15 @@ pub trait QPaladins: ToModel + CachingModel {
                     // Get file name.
                     field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !ignore_fields.contains(&field_name) {
                         // Add file data to widget.
                         final_widget.value = serde_json::to_string(&field_value)?;
                         //
-                        let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
-                        final_doc.insert(field_name, bson_field_value);
+                        if !is_err_symptom {
+                            let bson_field_value =
+                                mongodb::bson::ser::to_bson(&field_value.clone())?;
+                            final_doc.insert(field_name, bson_field_value);
+                        }
                     }
                 }
                 "inputImage" => {
@@ -832,6 +836,25 @@ pub trait QPaladins: ToModel + CachingModel {
                             } else if !final_widget.value.is_empty() {
                                 // Trying to apply the value default.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
+                                // Copy the default image to the default section.
+                                let new_file_name = Uuid::new_v4().to_string();
+                                let path = Path::new(field_value.path.as_str());
+                                let parent = path.parent().unwrap().to_str().unwrap();
+                                let extension =
+                                    path.extension().unwrap().to_str().unwrap().to_string();
+                                fs::create_dir_all(format!("{}/default", parent))?;
+                                let new_default_path =
+                                    format!("{}/default/{}.{}", parent, new_file_name, extension);
+                                fs::copy(
+                                    Path::new(field_value.path.as_str()),
+                                    Path::new(new_default_path.as_str()),
+                                )?;
+                                field_value.path = new_default_path;
+                                //
+                                let url = Path::new(field_value.url.as_str());
+                                let parent = url.parent().unwrap().to_str().unwrap();
+                                field_value.url =
+                                    format!("{}/default/{}.{}", parent, new_file_name, extension);
                             } else {
                                 final_doc.insert(field_name, mongodb::bson::Bson::Null);
                                 continue;
@@ -928,12 +951,15 @@ pub trait QPaladins: ToModel + CachingModel {
                         }
                     }
                     // Insert result.
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !ignore_fields.contains(&field_name) {
                         // Add image data to widget.
                         final_widget.value = serde_json::to_string(&field_value)?;
                         //
-                        let bson_field_value = mongodb::bson::ser::to_bson(&field_value.clone())?;
-                        final_doc.insert(field_name, bson_field_value);
+                        if !is_err_symptom {
+                            let bson_field_value =
+                                mongodb::bson::ser::to_bson(&field_value.clone())?;
+                            final_doc.insert(field_name, bson_field_value);
+                        }
                     }
                 }
                 // Validation of number type fields.
@@ -1199,12 +1225,12 @@ pub trait QPaladins: ToModel + CachingModel {
                             }
                             // Remove thumbnails.
                             let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names.iter() {
-                                let path = match *size_name {
+                            for size_name in size_names {
+                                let path = match size_name {
                                     "lg" => current.path_lg.clone(),
                                     "md" => current.path_md.clone(),
                                     "sm" => current.path_sm.clone(),
-                                    "xs" => current.path_sm.clone(),
+                                    "xs" => current.path_xs.clone(),
                                     _ => String::new(),
                                 };
                                 if !path.is_empty() {
