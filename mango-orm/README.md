@@ -442,6 +442,7 @@
     }
 
 ## Changelog
+- **v0.5.4** *Optimization for creating thumbnails, for default images.*
 - **v0.5.3** *Improved cleaning of orphaned files.*
 - **v0.5** *Support for the Form macro has been removed.*
 

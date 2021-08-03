@@ -837,24 +837,30 @@ pub trait QPaladins: ToModel + CachingModel {
                                 // Trying to apply the value default.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
                                 // Copy the default image to the default section.
-                                let new_file_name = Uuid::new_v4().to_string();
-                                let path = Path::new(field_value.path.as_str());
-                                let parent = path.parent().unwrap().to_str().unwrap();
-                                let extension =
-                                    path.extension().unwrap().to_str().unwrap().to_string();
-                                fs::create_dir_all(format!("{}/default", parent))?;
-                                let new_default_path =
-                                    format!("{}/default/{}.{}", parent, new_file_name, extension);
-                                fs::copy(
-                                    Path::new(field_value.path.as_str()),
-                                    Path::new(new_default_path.as_str()),
-                                )?;
-                                field_value.path = new_default_path;
-                                //
-                                let url = Path::new(field_value.url.as_str());
-                                let parent = url.parent().unwrap().to_str().unwrap();
-                                field_value.url =
-                                    format!("{}/default/{}.{}", parent, new_file_name, extension);
+                                if !final_widget.thumbnails.is_empty() {
+                                    let new_file_name = Uuid::new_v4().to_string();
+                                    let path = Path::new(field_value.path.as_str());
+                                    let parent = path.parent().unwrap().to_str().unwrap();
+                                    let extension =
+                                        path.extension().unwrap().to_str().unwrap().to_string();
+                                    fs::create_dir_all(format!("{}/default", parent))?;
+                                    let new_default_path = format!(
+                                        "{}/default/{}.{}",
+                                        parent, new_file_name, extension
+                                    );
+                                    fs::copy(
+                                        Path::new(field_value.path.as_str()),
+                                        Path::new(new_default_path.as_str()),
+                                    )?;
+                                    field_value.path = new_default_path;
+                                    //
+                                    let url = Path::new(field_value.url.as_str());
+                                    let parent = url.parent().unwrap().to_str().unwrap();
+                                    field_value.url = format!(
+                                        "{}/default/{}.{}",
+                                        parent, new_file_name, extension
+                                    );
+                                }
                             } else {
                                 final_doc.insert(field_name, mongodb::bson::Bson::Null);
                                 continue;
