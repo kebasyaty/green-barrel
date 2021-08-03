@@ -149,7 +149,7 @@
     ### Ubuntu, Mint:
     $ sudo apt install mongodb
     ## OR
-    ### Ubuntu 20.04, Mint 19.x:
+    ### Ubuntu 20.04, Mint 20.x:
     $ sudo apt update
     $ sudo apt install dirmngr gnupg apt-transport-https ca-certificates
     $ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
