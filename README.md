@@ -356,6 +356,7 @@
         #[field_attrs(
             widget = "checkBox",
             label = "is staff?",
+            checked = true,
             hint = "User can access the admin site?"
         )]
         pub is_staff: Option<bool>,
@@ -364,6 +365,7 @@
         #[field_attrs(
             widget = "checkBox",
             label = "is active?",
+            checked = true,
             hint = "Is this an active account?"
         )]
         pub is_active: Option<bool>,
