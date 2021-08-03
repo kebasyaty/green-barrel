@@ -795,6 +795,8 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                 }
                 "inputImage" => {
+                    //
+                    let is_create_thumbnails: bool = !final_widget.thumbnails.is_empty();
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
@@ -837,7 +839,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 // Trying to apply the value default.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
                                 // Copy the default image to the default section.
-                                if !final_widget.thumbnails.is_empty() {
+                                if is_create_thumbnails {
                                     let new_file_name = Uuid::new_v4().to_string();
                                     let path = Path::new(field_value.path.as_str());
                                     let parent = path.parent().unwrap().to_str().unwrap();
@@ -905,7 +907,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     field_value.width = dimensions.0;
                     field_value.height = dimensions.1;
                     // Generate sub-size images.
-                    if !final_widget.thumbnails.is_empty() {
+                    if is_create_thumbnails {
                         let mut img = image::open(f_path)?;
                         for max_size in final_widget.thumbnails.iter() {
                             let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
