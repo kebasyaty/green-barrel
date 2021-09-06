@@ -29,6 +29,9 @@
 | :------------ | :------------ |
 | bool | "checkBox" |
 |-|-|
+| String | "inputSlug" |
+| String | "hiddenSlug" |
+|-|-|
 | String | "inputColor" |
 | String | "inputDate" |
 | String | "inputDateTime" |
