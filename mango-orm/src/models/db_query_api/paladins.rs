@@ -17,6 +17,7 @@ use crate::{
     models::{caching::CachingModel, Meta, ToModel},
 };
 use rand::Rng;
+use slug::slugify;
 use std::convert::TryFrom;
 use std::{fs, path::Path};
 use uuid::Uuid;
@@ -422,6 +423,27 @@ pub trait QPaladins: ToModel + CachingModel {
                                 final_doc.insert(field_name, bson_field_value);
                             }
                         }
+                    }
+                }
+                // Validation of slug type fields.
+                "inputSlug" | "hiddenSlug" => {
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        let mut slug_str = String::new();
+                        for field in final_widget.slug_sources.iter() {
+                            let value = pre_json.get(field).unwrap();
+                            if value.is_string() {
+                                let text = value.as_str().unwrap().trim().to_string();
+                                slug_str = format!("{}-{}", slug_str, text);
+                            } else if value.is_i64() {
+                                let num = value.as_i64().unwrap();
+                                slug_str = format!("{}-{}", slug_str, num);
+                            } else if value.is_f64() {
+                                let num = value.as_f64().unwrap();
+                                slug_str = format!("{}-{}", slug_str, num);
+                            }
+                        }
+                        slug_str = slugify(slug_str);
+                        final_doc.insert(field_name, mongodb::bson::Bson::String(slug_str));
                     }
                 }
                 // Validation of date type fields.

@@ -181,6 +181,10 @@ pub struct UserProfile {
     pub username: Option<String>,
     //
     #[serde(default)]
+    #[field_attrs(widget = "hiddenSlug", slug_sources = r#"["username", "hash"]"#)]
+    pub slug: Option<String>,
+    //
+    #[serde(default)]
     #[field_attrs(widget = "inputEmail", required = true, unique = true, maxlength = 74)]
     pub email: Option<String>,
     //

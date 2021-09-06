@@ -308,7 +308,8 @@ impl<'a> Monitor<'a> {
                                         "checkBoxText" | "radioText" | "inputColor"
                                         | "inputEmail" | "inputPassword" | "inputPhone"
                                         | "inputText" | "inputUrl" | "inputIP" | "inputIPv4"
-                                        | "inputIPv6" | "textArea" | "selectText" => {
+                                        | "inputIPv6" | "textArea" | "selectText" | "inputSlug" 
+                                        | "hiddenText" | "hiddenSlug" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::String(val)
@@ -363,8 +364,8 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "radioI32" | "numberI32"
-                                        | "rangeI32" | "selectI32" => {
+                                        "radioI32" | "numberI32" | "rangeI32" 
+                                        | "selectI32" | "hiddenI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Int32(
@@ -375,8 +376,9 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "radioU32" | "numberU32" | "rangeU32"
-                                        | "selectU32" | "checkBoxI64" | "radioI64"
-                                        | "numberI64" | "rangeI64" | "selectI64" => {
+                                        | "selectU32" | "checkBoxI64" | "radioI64" 
+                                        | "numberI64" | "rangeI64" | "selectI64" 
+                                        | "hiddenU32" | "hiddenI64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Int64(
@@ -386,7 +388,8 @@ impl<'a> Monitor<'a> {
                                                 mongodb::bson::Bson::Null
                                             }
                                         }
-                                        "radioF64" | "numberF64" | "rangeF64" | "selectF64" => {
+                                        "radioF64" | "numberF64" | "rangeF64" 
+                                        | "selectF64" | "hiddenF64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::Double(

@@ -538,6 +538,24 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 )
             }
         }
+        // Validation the `slug_sources` parameter for widgets of the `Slug` type.
+        if widget.widget.contains("Slug") {
+            if !widget.value.is_empty() {
+                panic!(
+                    "Model: `{}` > Field: `{}` > Parameter: `value` : \
+                    No default value is allowed for fields of type Slug.",
+                    model_name, field_name
+                )
+            }
+            if widget.slug_sources.is_empty() {
+                panic!(
+                    "Model: `{}` > Field: `{}` > Parameter: `slug_sources` : \
+                    An empty array is not valid. \
+                    Example: [\"title\"] or [\"title\", \"hash\"]",
+                    model_name, field_name
+                )
+            }
+        }
         // File fields must not be ignored.
         match widget.widget.as_str() {
             "inputFile" | "inputImage" if trans_meta.ignore_fields.contains(field_name) => {
@@ -813,8 +831,9 @@ struct Widget {
     pub max: String,
     pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
     pub thumbnails: Vec<(String, u32)>,
-    pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
-    pub css_classes: String, // "class-name class-name ..."
+    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["title", "hash"]"#
+    pub other_attrs: String,       // "autofocus tabindex=\"some number\" size=\"some number\" ..."
+    pub css_classes: String,       // "class-name class-name ..."
     pub hint: String,
     pub warning: String,    // The value is determined automatically
     pub error: String,      // The value is determined automatically
@@ -845,6 +864,7 @@ impl Default for Widget {
             max: String::new(),
             options: Vec::new(),
             thumbnails: Vec::new(),
+            slug_sources: Vec::new(),
             other_attrs: String::new(),
             css_classes: String::new(),
             hint: String::new(),
@@ -892,6 +912,7 @@ fn get_widget_info<'a>(
         "rangeF64" => ("f64", "range"),
         "inputPhone" => ("String", "tel"),
         "inputText" => ("String", "text"),
+        "inputSlug" => ("String", "text"),
         "inputUrl" => ("String", "url"),
         "inputIP" => ("String", "text"),
         "inputIPv4" => ("String", "text"),
@@ -918,6 +939,7 @@ fn get_widget_info<'a>(
         "selectF64Mult" => ("Vec < f64 >", "select"),
         "selectF64MultDyn" => ("Vec < f64 >", "select"),
         "hiddenText" => ("String", "hidden"),
+        "hiddenSlug" => ("String", "hidden"),
         "hiddenI32" => ("i32", "hidden"),
         "hiddenU32" => ("u32", "hidden"),
         "hiddenI64" => ("i64", "hidden"),
@@ -1515,6 +1537,19 @@ fn get_param_value<'a>(
                     Could not determine value for parameter `thumbnails`. \
                     Example: [[\"xs\",150],[\"sm\",300],[\"md\",600],[\"lg\",1200]] \
                     from one to four inclusive",
+                    model_name, field_name
+                )
+            }
+        }
+        "slug_sources" => {
+            if let syn::Lit::Str(lit_str) = &mnv.lit {
+                let json = lit_str.value().replace('_', "");
+                widget.slug_sources = serde_json::from_str::<Vec<String>>(json.as_str()).unwrap();
+            } else {
+                panic!(
+                    "Model: `{}` > Field: `{}` : \
+                    Could not determine value for parameter `slug_sources`. \
+                    Example: [\"title\"] or [\"title\", \"hash\"]",
                     model_name, field_name
                 )
             }
