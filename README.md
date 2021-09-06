@@ -194,6 +194,7 @@
     regex = "1.3"
     rust-argon2 = "0.8"
     serde_json = "1.0"
+    slug = "0.1"
     uuid = "0.8"
     validator = "0.11"
     
@@ -294,6 +295,13 @@
             hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
         )]
         pub username: Option<String>,
+       //
+       #[serde(default)]
+       #[field_attrs(
+           widget = "hiddenSlug",
+           unique = true,
+           slug_sources = r#"["username", "hash"]"#
+       )]
         //
         #[serde(default)]
         #[field_attrs(
