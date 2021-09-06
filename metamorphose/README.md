@@ -23,6 +23,7 @@
 - serde
 
 ## Changelog
+- **v0.4** *Added inputSlug and hiddenSlug fields.*
 - **v0.3** *Removed the Form macro..*
 
 ## License

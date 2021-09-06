@@ -19,6 +19,7 @@
 - regex
 - rust-argon2
 - serde_json
+- slug
 - validator
 - uuid
 - metamorphose
@@ -131,6 +132,8 @@
     // From one to four inclusive
     // Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
     thumbnails: Vec<(String, u32)>
+    // Example: r#"["title"]"# or r#"["title", "hash"]"#
+    slug_sources: Vec<String>
     // "autofocus tabindex=\"some number\" size=\"some number\" ..."
     other_attrs: String
     // "class-name class-name ..."
@@ -179,8 +182,8 @@
 
 #### 2) Cargo.toml
     [dependencies]
-    mango-orm = "0.5"
-    metamorphose = "0.3"
+    mango-orm = "0.6"
+    metamorphose = "0.4"
     chrono = "0.4"
     image = "0.23"
     lazy_static = "1.0"
@@ -442,6 +445,7 @@
     }
 
 ## Changelog
+- **v0.6** *1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration.*
 - **v0.5.4** *Optimization for creating thumbnails, for default images.*
 - **v0.5.3** *Improved cleaning of orphaned files.*
 - **v0.5** *Support for the Form macro has been removed.*
