@@ -427,23 +427,68 @@ pub trait QPaladins: ToModel + CachingModel {
                 }
                 // Validation of slug type fields.
                 "inputSlug" | "hiddenSlug" => {
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        let mut slug_str = String::new();
-                        for field in final_widget.slug_sources.iter() {
-                            let value = pre_json.get(field).unwrap();
-                            if value.is_string() {
-                                let text = value.as_str().unwrap().trim().to_string();
-                                slug_str = format!("{}-{}", slug_str, text);
-                            } else if value.is_i64() {
-                                let num = value.as_i64().unwrap();
-                                slug_str = format!("{}-{}", slug_str, num);
-                            } else if value.is_f64() {
-                                let num = value.as_f64().unwrap();
-                                slug_str = format!("{}-{}", slug_str, num);
-                            }
+                    let mut slug_str = String::new();
+                    for field in final_widget.slug_sources.iter() {
+                        let value = pre_json.get(field).unwrap();
+                        if value.is_string() {
+                            let text = value.as_str().unwrap().trim().to_string();
+                            slug_str = format!("{}-{}", slug_str, text);
+                        } else if value.is_i64() {
+                            let num = value.as_i64().unwrap();
+                            slug_str = format!("{}-{}", slug_str, num);
+                        } else if value.is_f64() {
+                            let num = value.as_f64().unwrap();
+                            slug_str = format!("{}-{}", slug_str, num);
                         }
-                        slug_str = slugify(slug_str);
-                        final_doc.insert(field_name, mongodb::bson::Bson::String(slug_str));
+                    }
+                    slug_str = slugify(slug_str);
+                    // Validation, if the field is required and empty, accumulate the error.
+                    if slug_str.is_empty() {
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    Required field.",
+                                    model_name, field_name
+                                ))?
+                            }
+                        } else if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                        }
+                        continue;
+                    }
+                    //
+                    let bson_field_value = mongodb::bson::Bson::String(slug_str);
+                    // Validation of `unique`.
+                    if final_widget.unique {
+                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
+                            });
+                    }
+                    // Insert result.
+                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                        final_doc.insert(field_name, bson_field_value);
                     }
                 }
                 // Validation of date type fields.

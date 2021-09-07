@@ -26,7 +26,6 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         models: vec![
             mango_models::Dynamic::meta()?,
-            mango_models::User::meta()?,
             mango_models::UserProfile::meta()?,
         ],
     };
@@ -181,24 +180,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("Rust".to_string()),
-        email: Some("test_7_@test.test".to_string()),
-        confirm_email: Some("test_7_@test.test".to_string()),
+        username: Some("user_2".to_string()),
+        email: Some("user_2_@site.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
-        date: Some("2020-12-19".to_string()),
-        datetime: Some("2020-12-19T15:57".to_string()),
-        num_i32: Some(-32),
-        num_u32: Some(32),
-        num_i64: Some(-64),
-        num_f64: Some(-64.64),
         is_staff: Some(false),
-        is_active: Some(true),
-        select_text_mult: Some(vec!["1".to_string(), "2".to_string()]),
-        select_i32_mult: Some(vec![1, 2]),
-        select_u32_mult: Some(vec![1, 2]),
-        select_i64_mult: Some(vec![1, 2]),
-        select_f64_mult: Some(vec![1.0, 2.0]),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
@@ -233,7 +219,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Update doc.
     if result.is_valid() {
-        user.username = Some("Rust 2".to_string());
+        // user.username = Some("user_x".to_string());
         //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
         //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
         let result = user.save(None, None)?;

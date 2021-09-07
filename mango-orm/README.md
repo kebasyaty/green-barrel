@@ -300,6 +300,7 @@
         #[field_attrs(
             widget = "hiddenSlug",
             unique = true,
+            required = true,
             slug_sources = r#"["username", "hash"]"#
         )]
         pub slug: Option<String>,
@@ -457,6 +458,7 @@
     }
 
 ## Changelog
+- **v0.6.4** *Fixes for fields of slug type.*
 - **v0.6** *1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration.*
 - **v0.5.4** *Optimization for creating thumbnails, for default images.*
 - **v0.5.3** *Improved cleaning of orphaned files.*
