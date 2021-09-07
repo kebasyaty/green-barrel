@@ -329,9 +329,19 @@ pub trait QPaladins: ToModel + CachingModel {
                     if field_value.is_empty() {
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    Required field.",
+                                    model_name, field_name
+                                ))?
+                            }
                             final_widget.value = String::new();
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
@@ -354,15 +364,35 @@ pub trait QPaladins: ToModel + CachingModel {
                     Self::check_minlength(final_widget.minlength, field_value).unwrap_or_else(
                         |err| {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
                         },
                     );
                     Self::check_maxlength(final_widget.maxlength, field_value).unwrap_or_else(
                         |err| {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
                         },
                     );
 
@@ -379,7 +409,14 @@ pub trait QPaladins: ToModel + CachingModel {
                             "Length {} is out of range (min={} <> max={}).",
                             len, min, max
                         );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        if !widget_type.contains("hidden") {
+                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                model_name, field_name, msg
+                            ))?
+                        }
                     }
 
                     // Validation of `unique`.
@@ -388,8 +425,19 @@ pub trait QPaladins: ToModel + CachingModel {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                if !widget_type.contains("hidden") {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
                             });
                     }
 
@@ -397,8 +445,18 @@ pub trait QPaladins: ToModel + CachingModel {
                     // -----------------------------------------------------------------------------
                     Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
                         is_err_symptom = true;
-                        final_widget.error =
-                            Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                        if !widget_type.contains("hidden") {
+                            final_widget.error =
+                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                model_name,
+                                field_name,
+                                err.to_string()
+                            ))
+                            .unwrap()
+                        }
                     });
 
                     // Insert result.
@@ -1049,9 +1107,19 @@ pub trait QPaladins: ToModel + CachingModel {
                     if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    Required field.",
+                                    model_name, field_name
+                                ))?
+                            }
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
@@ -1072,8 +1140,19 @@ pub trait QPaladins: ToModel + CachingModel {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                if !widget_type.contains("hidden") {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
                             });
                     }
 
@@ -1087,7 +1166,15 @@ pub trait QPaladins: ToModel + CachingModel {
                             "Number {} is out of range (min={} <> max={}).",
                             field_value, min, max
                         );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        if !widget_type.contains("hidden") {
+                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                model_name, field_name, msg
+                            ))
+                            .unwrap()
+                        }
                     }
 
                     // Insert result.
@@ -1107,9 +1194,20 @@ pub trait QPaladins: ToModel + CachingModel {
                     if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    Required field.",
+                                    model_name, field_name
+                                ))
+                                .unwrap()
+                            }
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
@@ -1130,8 +1228,19 @@ pub trait QPaladins: ToModel + CachingModel {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                if !widget_type.contains("hidden") {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
                             });
                     }
 
@@ -1145,7 +1254,15 @@ pub trait QPaladins: ToModel + CachingModel {
                             "Number {} is out of range (min={} <> max={}).",
                             field_value, min, max
                         );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        if !widget_type.contains("hidden") {
+                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                model_name, field_name, msg
+                            ))
+                            .unwrap()
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1163,9 +1280,20 @@ pub trait QPaladins: ToModel + CachingModel {
                     if pre_json_value.is_null() {
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
+                            if !widget_type.contains("hidden") {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    Required field.",
+                                    model_name, field_name
+                                ))
+                                .unwrap()
+                            }
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, mongodb::bson::Bson::Null);
                         }
@@ -1186,8 +1314,19 @@ pub trait QPaladins: ToModel + CachingModel {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                if !widget_type.contains("hidden") {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
                             });
                     }
                     // Validation of range (`min` <> `max`).
@@ -1200,7 +1339,15 @@ pub trait QPaladins: ToModel + CachingModel {
                             "Number {} is out of range (min={} <> max={}).",
                             field_value, min, max
                         );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        if !widget_type.contains("hidden") {
+                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                model_name, field_name, msg
+                            ))
+                            .unwrap()
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------

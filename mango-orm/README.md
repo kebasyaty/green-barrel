@@ -4,6 +4,8 @@
 #### ORM-like API MongoDB for Rust
 **To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/mango-orm/tree/master/test-drive/tests "tests"). For maximum convenience use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel").**
 
+**[Mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") is the recommended part of the entire ecosystem. For those who use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") - Follow our updates.**
+
 [![crates.io](https://img.shields.io/crates/v/mango-orm "crates.io")](https://crates.io/crates/mango-orm "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.52%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
 ![crates.io](https://img.shields.io/crates/d/mango-orm)
@@ -458,6 +460,7 @@
     }
 
 ## Changelog
+- **v0.6.5** *In the check() method, errors are redirected to the console, for fields of hidden type.*
 - **v0.6.4** *Fixes for fields of slug type.*
 - **v0.6** *1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration.*
 - **v0.5.4** *Optimization for creating thumbnails, for default images.*
