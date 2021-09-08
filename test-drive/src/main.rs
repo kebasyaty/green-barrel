@@ -180,8 +180,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_3".to_string()),
-        email: Some("user_3_@site.net".to_string()),
+        username: Some("user_4".to_string()),
+        email: Some("user_4_@site.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),

@@ -88,8 +88,9 @@ pub struct Widget {
     pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
     pub thumbnails: Vec<(String, u32)>,
     pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["title", "hash"]"#
-    pub other_attrs: String,       // "autofocus tabindex=\"some number\" size=\"some number\" ..."
-    pub css_classes: String,       // Hint: "class-name class-name ..."
+    pub is_hide: bool,
+    pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
+    pub css_classes: String, // Hint: "class-name class-name ..."
     pub hint: String,
     pub warning: String,    // The value is determined automatically.
     pub error: String,      // The value is determined automatically.
@@ -121,6 +122,7 @@ impl Default for Widget {
             options: Vec::new(),
             thumbnails: Vec::new(),
             slug_sources: Vec::new(),
+            is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
             hint: String::new(),

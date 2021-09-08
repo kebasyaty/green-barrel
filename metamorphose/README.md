@@ -23,6 +23,7 @@
 - serde
 
 ## Changelog
+- **v0.4.1** *Added **is_hide** parameter for Widgets.*
 - **v0.4** *Added inputSlug and hiddenSlug fields.*
 - **v0.3** *Removed the Form macro..*
 

@@ -28,8 +28,9 @@ pub trait HtmlControls {
             match attrs.input_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
                     controls = format!(
-                        "{}<p>{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -91,8 +92,9 @@ pub trait HtmlControls {
                 }
                 "checkbox" => {
                     controls = format!(
-                        "{}<p><input{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
+                        "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         format!(" id=\"{}\"", attrs.id),
                         format!(" type=\"{}\"", attrs.input_type),
                         format!(" name=\"{}\"", attrs.name),
@@ -135,8 +137,9 @@ pub trait HtmlControls {
                     let mut inputs = String::new();
                     for (idx, item) in attrs.options.iter().enumerate() {
                         inputs = format!(
-                            "{}<p><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
+                            "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                             inputs,
+                            if attrs.is_hide { "none" } else { "block" },
                             format!(" id=\"{}\"-{}", attrs.id, idx),
                             format!(" type=\"{}\"", attrs.input_type),
                             format!(" name=\"{}\"", attrs.name),
@@ -184,8 +187,9 @@ pub trait HtmlControls {
                 }
                 "date" | "datetime" => {
                     controls = format!(
-                        "{}<p>{}<input{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -237,8 +241,9 @@ pub trait HtmlControls {
                 }
                 "file" => {
                     controls = format!(
-                        "{}<p>{}<input{}{}{}{}{}{}{}{}>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -279,8 +284,9 @@ pub trait HtmlControls {
                 }
                 "number" => {
                     controls = format!(
-                        "{}<p>{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -342,8 +348,9 @@ pub trait HtmlControls {
                 }
                 "range" => {
                     controls = format!(
-                        "{}<p>{}<input{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -400,8 +407,9 @@ pub trait HtmlControls {
                 }
                 "textarea" => {
                     controls = format!(
-                        "{}<p>{}<textarea{}{}{}{}{}{}{}{}{}{}>{}</textarea>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<textarea{}{}{}{}{}{}{}{}{}{}>{}</textarea>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
@@ -471,8 +479,9 @@ pub trait HtmlControls {
                         );
                     }
                     controls = format!(
-                        "{}<p>{}<select{}{}{}{}{}{}{}>{}</select>{}{}{}</p>",
+                        "{}<p style=\"display:{};\">{}<select{}{}{}{}{}{}{}>{}</select>{}{}{}</p>",
                         controls,
+                        if attrs.is_hide { "none" } else { "block" },
                         if !attrs.label.is_empty() {
                             format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
                         } else {
