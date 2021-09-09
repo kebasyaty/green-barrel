@@ -33,7 +33,6 @@
 | bool | "checkBox" |
 |-|-|
 | String | "inputSlug" |
-| String | "hiddenSlug" |
 |-|-|
 | String | "inputColor" |
 | String | "inputDate" |
@@ -303,9 +302,12 @@
         //
         #[serde(default)]
         #[field_attrs(
-            widget = "hiddenSlug",
+            widget = "inputSlug",
+            label = "Slug",
             unique = true,
-            required = true,
+            readonly = true,
+            is_hide = true,
+            hint = "To create a human readable url",
             slug_sources = r#"["username", "hash"]"#
         )]
         pub slug: Option<String>,
@@ -463,6 +465,7 @@
     }
 
 ## Changelog
+- **v0.6.7** *Removed **hiddenSlug** field.*
 - **v0.6.6** *Added **is_hide** parameter for Widgets.*
 - **v0.6.5** *In the check() method, errors are redirected to the console, for fields of hidden type.*
 - **v0.6.4** *Fixes for fields of slug type.*

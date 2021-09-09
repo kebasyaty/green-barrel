@@ -484,7 +484,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                 }
                 // Validation of slug type fields.
-                "inputSlug" | "hiddenSlug" => {
+                "inputSlug" => {
                     let mut slug_str = String::new();
                     for field in final_widget.slug_sources.iter() {
                         let value = pre_json.get(field).unwrap();
@@ -500,6 +500,7 @@ pub trait QPaladins: ToModel + CachingModel {
                         }
                     }
                     slug_str = slugify(slug_str);
+                    final_widget.value = slug_str.clone();
                     // Validation, if the field is required and empty, accumulate the error.
                     if slug_str.is_empty() {
                         if final_widget.required {

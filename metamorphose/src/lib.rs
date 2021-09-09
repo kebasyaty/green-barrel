@@ -941,7 +941,6 @@ fn get_widget_info<'a>(
         "selectF64Mult" => ("Vec < f64 >", "select"),
         "selectF64MultDyn" => ("Vec < f64 >", "select"),
         "hiddenText" => ("String", "hidden"),
-        "hiddenSlug" => ("String", "hidden"),
         "hiddenI32" => ("i32", "hidden"),
         "hiddenU32" => ("u32", "hidden"),
         "hiddenI64" => ("i64", "hidden"),

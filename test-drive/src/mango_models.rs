@@ -30,9 +30,12 @@ pub struct UserProfile {
     //
     #[serde(default)]
     #[field_attrs(
-        widget = "hiddenSlug",
+        widget = "inputSlug",
+        label = "Slug",
         unique = true,
-        required = true,
+        readonly = true,
+        is_hide = true,
+        hint = "To create a human readable url",
         slug_sources = r#"["username"]"#
     )]
     pub slug: Option<String>,
