@@ -551,9 +551,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 panic!(
                     "Model: `{}` > Field: `{}` > Parameter: `slug_sources` : \
                     An empty array is not valid. \
-                    Example: [\"title\"] or [\"title\", \"hash\"]",
+                    Example: [\"title\"] or [\"username\",] or [\"email\", \"first_name\", \"last_name\"]",
                     model_name, field_name
                 )
+            } else {
+                for source_field in widget.slug_sources.iter() {
+                    if !trans_meta.fields_name.contains(source_field) {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Attribute: `slug_sources` : \
+                            The field `{}` is missing.",
+                            model_name.to_string(),
+                            field_name,
+                            source_field
+                        )
+                    }
+                }
             }
         }
         // File fields must not be ignored.

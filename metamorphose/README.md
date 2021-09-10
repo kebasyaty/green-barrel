@@ -23,6 +23,7 @@
 - serde
 
 ## Changelog
+- **v0.4.3** *Improved validation for Slug fields.*
 - **v0.4.2** *Removed **hiddenSlug** field.*
 - **v0.4.1** *Added **is_hide** parameter for Widgets.*
 - **v0.4** *Added **inputSlug** and **hiddenSlug** fields.*
