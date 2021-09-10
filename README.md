@@ -191,22 +191,14 @@
     [dependencies]
     mango-orm = "0.6"
     metamorphose = "0.4"
-    chrono = "0.4"
-    image = "0.23"
-    lazy_static = "1.0"
-    rand = "0.7"
-    regex = "1.3"
-    rust-argon2 = "0.8"
+    regex = "1.0"
     serde_json = "1.0"
-    slug = "0.1"
-    uuid = "0.8"
-    validator = "0.11"
     
     [dependencies.mongodb]
     default-features = false
     features = ["sync"]
     version = "1.0"
-    
+
     [dependencies.serde]
     features = ["derive"]
     version = "1.0"
