@@ -137,7 +137,7 @@
     // From one to four inclusive
     // Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
     thumbnails: Vec<(String, u32)>
-    // Example: r#"["title"]"# or r#"["title", "hash"]"#
+    // Example: r#"["title"]"# or r#"["username"]"# or r#"["email", "first_name", "last_name"]"#
     slug_sources: Vec<String>
     //
     is_hide: bool,
@@ -308,7 +308,7 @@
             readonly = true,
             is_hide = true,
             hint = "To create a human readable url",
-            slug_sources = r#"["username", "hash"]"#
+            slug_sources = r#"["username"]"#
         )]
         pub slug: Option<String>,
         //

@@ -308,8 +308,8 @@ impl<'a> Monitor<'a> {
                                         "checkBoxText" | "radioText" | "inputColor"
                                         | "inputEmail" | "inputPassword" | "inputPhone"
                                         | "inputText" | "inputUrl" | "inputIP" | "inputIPv4"
-                                        | "inputIPv6" | "textArea" | "selectText" | "inputSlug" 
-                                        | "hiddenText" | "hiddenSlug" => {
+                                        | "inputIPv6" | "textArea" | "selectText" | "hiddenText"
+                                        | "inputSlug" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 mongodb::bson::Bson::String(val)
