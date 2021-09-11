@@ -438,7 +438,6 @@
             password: Some("12345678".to_string()),
             confirm_password: Some("12345678".to_string()),
             is_staff: Some(false),
-            is_active: Some(true),
             ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
         };
     

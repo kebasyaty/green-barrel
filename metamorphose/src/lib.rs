@@ -177,9 +177,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         ..Default::default()
     };
     let mut trans_map_widgets: TransMapWidgets = Default::default();
-    // <field_name, (widget_type, value)>
-    let mut map_default_values: std::collections::HashMap<String, (String, String)> =
-        std::collections::HashMap::new();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
 
     // Get Model attributes.
@@ -537,9 +534,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name,
                 )
             }
-        }
         // Validation the `slug_sources` parameter for widgets of the `Slug` type.
-        if widget.widget.contains("Slug") {
+        } else if widget.widget.contains("Slug") {
             if !widget.value.is_empty() {
                 panic!(
                     "Model: `{}` > Field: `{}` > Parameter: `value` : \
@@ -567,22 +563,19 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 }
             }
-        }
         // File fields must not be ignored.
-        match widget.widget.as_str() {
-            "inputFile" | "inputImage" if trans_meta.ignore_fields.contains(field_name) => {
-                panic!(
-                    "Model: `{}` > Field: `{}` : \
+        } else if (widget.widget == "inputFile" || widget.widget == "inputImage")
+            && trans_meta.ignore_fields.contains(field_name)
+        {
+            panic!(
+                "Model: `{}` > Field: `{}` : \
                      Ignored fields are incompatible with fields of type `file`.",
-                    model_name.to_string(),
-                    field_name,
-                )
-            }
-            _ => {}
-        }
+                model_name.to_string(),
+                field_name,
+            )
         // For widgets of the `select` type,
         // the default value must correspond to one of the proposed options.
-        if widget.widget.contains("select") {
+        } else if widget.widget.contains("select") {
             if !widget.value.is_empty()
                 && widget
                     .options
@@ -598,13 +591,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name,
                 )
             }
-        }
         // For widgets with support for u32 numbers, parameter min = 0
-        if widget.widget.contains("U32") {
+        } else if widget.widget.contains("U32") {
             widget.min = 0_usize.to_string();
         }
         // Add default values in the map.
-        map_default_values.insert(
+        trans_meta.map_default_values.insert(
             field_name.clone(),
             (
                 widget.widget.clone(),
@@ -616,7 +608,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             ),
         );
     }
-    trans_meta.map_default_values = map_default_values;
 
     // trans_meta to Json-line.
     // ---------------------------------------------------------------------------------------------
