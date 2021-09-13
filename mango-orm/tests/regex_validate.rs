@@ -469,6 +469,9 @@ mod tests {
         assert!(re.is_match(r#"{"field_name":[]}"#));
         assert!(re.is_match(r#"{"field_name_2":[]}"#));
         assert!(re.is_match(r#"{"field":[["value","Title"]]}"#));
+        assert!(re.is_match(r#"{"field":[["значение","Заголовок"]]}"#));
+        assert!(re.is_match(r#"{"field":[["意义","标题"]]}"#));
+        assert!(re.is_match(r#"{"field":[["Bedeutung","Üerschrift"]]}"#));
         assert!(re.is_match(
             r#"{"field":[["-_.,`@#$%^&+=*!~)(:><?;№|\/ aA123","-_.,`@#$%^&+=*!~)(:><?;№|\/ aA123"]]}"#
         ));

@@ -262,12 +262,12 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let json-line =  r#"{"field_name":[["value","Title"]]}"#;
+    /// let json-line =  r#"{"field_name":[["value","Title"], ...]}"#;
     /// // or
     /// let json-line = r#"{
-    ///        "field_name":[["value","Title"]],
-    ///        "field_name_2":[["value","Title 2"]],
-    ///        "field_name_3":[["value","Title 3"]]
+    ///        "field_name":[["value","Title"], ...],
+    ///        "field_name_2":[["value","Title 2"], ...],
+    ///        "field_name_3":[["value","Title 3"], ...]
     ///     }"#;
     ///
     /// assert!(Dynamic::db_update_dyn_widgets(json-line).is_ok());
