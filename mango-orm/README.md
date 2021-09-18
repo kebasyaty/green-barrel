@@ -167,25 +167,29 @@
     $ sudo apt update
     $ sudo apt install mongodb-org
     $ sudo systemctl enable --now mongod
-    $ mongo --eval 'db.runCommand({ connectionStatus: 1 })'    # For check
+    # For check
+    $ mongod --version
+    $ mongo --eval 'db.runCommand({ connectionStatus: 1 })' 
+    #
     $ reboot
     ### Configuration file:
     sudo nano /etc/mongod.conf
     ### Systemd:
-    $ sudo service mongod status
-    $ sudo service mongod start
-    $ sudo service mongod stop
-    $ sudo service mongod restart
-    $ sudo service mongod enable
-    $ sudo service mongod disable
+    $ sudo systemctl status mongod
+    $ sudo systemctl start mongod
+    $ sudo systemctl stop mongod
+    $ sudo systemctl restart mongod
+    $ sudo systemctl enable mongod
+    $ sudo systemctl disable mongod
     ### Uninstall:
-    $ sudo service mongod stop
-    $ sudo service mongod disable
-    $ sudo apt purge mongodb-org*
+    $ sudo systemctl stop mongod
+    $ sudo systemctl disable mongod
+    $ sudo apt --purge remove mongodb\*  # OR (for mongodb-org) - $ sudo apt --purge remove mongodb-org\**
     $ sudo rm -r /var/log/mongodb
     $ sudo rm -r /var/lib/mongodb
     $ sudo rm -f /etc/mongod.conf
-    $ sudo rm -f /etc/apt/sources.list.d/mongodb-org-4.4.list
+    $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
+    $ sudo apt update
 
 #### 2) Cargo.toml
     [dependencies]
