@@ -154,8 +154,7 @@
     // Messages common to the entire Form
     common_msg: String
 
-## Installation
-#### 1)  Install mongodb (if not installed)
+## Install mongodb (if not installed)
     ### Ubuntu, Mint:
     $ sudo apt install mongodb
     ## OR
@@ -191,7 +190,8 @@
     $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
     $ sudo apt update
 
-#### 2) Cargo.toml
+## Example Usage:
+#### Cargo.toml
     [dependencies]
     mango-orm = "0.6"
     metamorphose = "0.4"
@@ -207,7 +207,6 @@
     features = ["derive"]
     version = "1.0"
 
-## Example Usage:
 #### src/settings.rs
     // General settings for the project.
     // Project name.
