@@ -24,7 +24,7 @@ pub mod default {
     // Valid characters: _ a-z A-Z 0-9
     // Max size: 21
     // First character: a-z A-Z
-    pub const DATABASE_NAME: &str = "database_name";
+    pub const DATABASE_NAME: &str = "service_name";
     pub const DB_CLIENT_NAME: &str = "default";
     pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 }

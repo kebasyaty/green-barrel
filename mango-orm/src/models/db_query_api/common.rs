@@ -66,7 +66,7 @@ pub trait QCommon: ToModel + CachingModel {
     ///
     /// ```
     /// let filter = doc!{};
-    /// let count  = UserProfile::count_documents(filter, None)?;
+    /// let count  = UserProfile::count_documents(Some(filter), None)?;
     /// println!("{}", count);
     /// ```
     ///
@@ -182,7 +182,7 @@ pub trait QCommon: ToModel + CachingModel {
     /// ```
     /// let ield_name = "";
     /// let filter = doc!{};
-    /// let output_data  = UserProfile::distinct(field_name, filter, None)?;
+    /// let output_data  = UserProfile::distinct(field_name, Some(filter), None)?;
     /// println!("{:?}", routput_data);
     /// ```
     ///
@@ -277,7 +277,7 @@ pub trait QCommon: ToModel + CachingModel {
     ///
     /// ```
     /// let filter = doc!{};
-    /// let output_data  = UserProfile::find(filter, None)?;
+    /// let output_data  = UserProfile::find(Some(filter), None)?;
     /// if output_data.is_valid()? {
     ///     // Get raw documents. (Hint: For non-standard operations.)
     ///     println!("{:?}", routput_data.raw_docs()?);
@@ -333,7 +333,7 @@ pub trait QCommon: ToModel + CachingModel {
     ///
     /// ```
     /// let filter = doc!{};
-    /// let output_data  = UserProfile::find_one(filter, None)?;
+    /// let output_data  = UserProfile::find_one(Some(filter), None)?;
     /// if output_data.is_valid()? {
     ///     // Get raw document. (Hint: For non-standard operations.)
     ///     println!("{:?}", output_data.raw_doc()?);

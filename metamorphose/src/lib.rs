@@ -55,18 +55,15 @@ use syn::{parse_macro_input, Attribute, AttributeArgs, DeriveInput, MetaNameValu
 ///    //
 ///    #[serde(default)]
 ///    #[field_attrs(
-///        widget = "inputImage",
-///        label = "Photo",
-///        value = r#"{
-///                "path":"./media/no_avatar.png",
-///                "url":"/media/no_avatar.png"
-///            }"#,
-///        placeholder = "Upload your photo",
-///        accept = "image/jpeg,image/png",
-///        hint = "Image in JPEG or PNG format",
-///        thumbnails = r#"[["xs",150],["sm",300]]"#
+///        widget = "inputSlug",
+///        label = "Slug",
+///        unique = true,
+///        readonly = true,
+///        is_hide = true,
+///        hint = "To create a human readable url",
+///        slug_sources = r#"["username"]"#
 ///    )]
-///    pub photo: Option<String>,
+///    pub slug: Option<String>,
 ///    //
 ///    #[serde(default)]
 ///    #[field_attrs(
@@ -290,7 +287,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_field = new_field.named.first().unwrap().to_owned();
-            &fields.push(new_field);
+            fields.push(new_field);
 
             // Get the number of fields.
             trans_meta.fields_count = fields.len();

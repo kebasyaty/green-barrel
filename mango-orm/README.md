@@ -172,7 +172,7 @@
     #
     $ reboot
     ### Configuration file:
-    sudo nano /etc/mongod.conf
+    $ sudo nano /etc/mongod.conf
     ### Systemd:
     $ sudo systemctl status mongod
     $ sudo systemctl start mongod
@@ -232,7 +232,7 @@
         // Valid characters: _ a-z A-Z 0-9
         // Max size: 21
         // First character: a-z A-Z
-        pub const DATABASE_NAME: &str = "users";
+        pub const DATABASE_NAME: &str = "accounts";
         pub const DB_CLIENT_NAME: &str = "default";
         pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
     }
