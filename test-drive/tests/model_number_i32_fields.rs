@@ -35,7 +35,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "rangeI32", value = 5, min = 1, max = 12, unique = true)]
         pub range: Option<i32>,
-        #[field_attrs(widget = "hiddenI32", value = 3, min = 1, max = 12, unique = true)]
+        #[field_attrs(widget = "hiddenI32", value = 3, min = 1, max = 12)]
         pub hidden: Option<i32>,
     }
 

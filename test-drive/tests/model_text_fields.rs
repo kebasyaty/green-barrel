@@ -40,8 +40,7 @@ mod app_name {
             widget = "hiddenText",
             value = "Hidden lorem ipsum",
             minlength = 2,
-            maxlength = 60,
-            unique = true
+            maxlength = 60
         )]
         pub hidden_text: Option<String>,
         #[serde(default)]

@@ -1713,7 +1713,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let password: &[u8] = field_value.as_bytes();
         let salt: String = (0..SALT_LEN)
             .map(|_| {
-                let idx = rng.gen_range(0, CHARSET.len());
+                let idx = rng.gen_range(0..CHARSET.len());
                 CHARSET[idx] as char
             })
             .collect();

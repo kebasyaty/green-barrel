@@ -36,13 +36,7 @@ mod app_name {
         #[field_attrs(widget = "rangeF64", value = 5.0, min = 1.0, max = 12.0, unique = true)]
         pub range: Option<f64>,
         #[serde(default)]
-        #[field_attrs(
-            widget = "hiddenF64",
-            value = 3.0,
-            min = 1.0,
-            max = 12.0,
-            unique = true
-        )]
+        #[field_attrs(widget = "hiddenF64", value = 3.0, min = 1.0, max = 12.0)]
         pub hidden: Option<f64>,
     }
 

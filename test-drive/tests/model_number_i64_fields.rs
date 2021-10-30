@@ -36,7 +36,7 @@ mod app_name {
         #[field_attrs(widget = "rangeI64", value = 5, min = 1, max = 12, unique = true)]
         pub range: Option<i64>,
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", value = 3, min = 1, max = 12, unique = true)]
+        #[field_attrs(widget = "hiddenI64", value = 3, min = 1, max = 12)]
         pub hidden: Option<i64>,
     }
 

@@ -459,6 +459,7 @@
     }
 
 ## Changelog
+- **v0.6.15** *Updating by version of dependencies.*
 - **v0.6.10** *Updated test for dynamic widgets.*
 - **v0.6.7** *Removed **hiddenSlug** field.*
 - **v0.6.6** *Added **is_hide** parameter for Widgets.*
