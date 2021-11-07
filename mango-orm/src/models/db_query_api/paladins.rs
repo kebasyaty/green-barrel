@@ -13,8 +13,8 @@
 //!
 
 use crate::{
-    forms::{output_data::OutputDataForm, FileData, ImageData, Widget},
     models::{caching::CachingModel, Meta, ToModel},
+    widgets::{output_data::OutputDataForm, FileData, ImageData, Widget},
 };
 use rand::Rng;
 use slug::slugify;

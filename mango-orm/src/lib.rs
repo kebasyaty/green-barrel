@@ -4,7 +4,6 @@
 //!
 
 pub use crate::{
-    forms::{html_controls::HtmlControls, output_data::OutputDataForm, TransMapWidgets, Widget},
     migration::Monitor,
     models::{
         caching::CachingModel,
@@ -15,12 +14,13 @@ pub use crate::{
         Meta, ToModel,
     },
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
+    widgets::{html_controls::HtmlControls, output_data::OutputDataForm, TransMapWidgets, Widget},
 };
 
 pub use crate::test_tool::del_test_db;
 
-pub mod forms;
 pub mod migration;
 pub mod models;
 pub mod store;
 pub mod test_tool;
+pub mod widgets;

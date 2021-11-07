@@ -18,12 +18,12 @@
 //!
 
 use crate::{
-    forms::output_data::OutputDataForm,
     models::{
         caching::CachingModel,
         output_data::{OutputDataMany, OutputDataOne},
         Meta, ToModel,
     },
+    widgets::output_data::OutputDataForm,
 };
 
 pub trait QCommon: ToModel + CachingModel {

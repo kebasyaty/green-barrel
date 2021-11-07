@@ -10,6 +10,8 @@
 ![crates.io](https://img.shields.io/crates/l/mango-orm)
 
 ## Attention
+#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.3 "MongoDB Rust Driver") version 1.2.3 is used.
+
 **[Mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") ). For those who use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") - Follow our updates.**
 
 ## Requirements
@@ -459,6 +461,7 @@
     }
 
 ## Changelog
+- **v0.6.16** *Renamed the Forms module to Widgets.*
 - **v0.6.15** *Updating by version of dependencies.*
 - **v0.6.10** *Updated test for dynamic widgets.*
 - **v0.6.7** *Removed **hiddenSlug** field.*

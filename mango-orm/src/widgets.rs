@@ -1,8 +1,7 @@
-//! # Forms.
-//! To create form of search, form of recover password, combine multiple models, etc.
+//! # Widgets
+//! For control of fields on the server and client side.
 //!
-//! `ToForm` - Define form settings for models (widgets, html).
-//! `Widget` - Form controls parameters.
+//! `Widget` - Field attributes.
 //! `OutputData` - Output data for the `check()` and `save()` methods.
 //! `TransMapWidgetType` - For transporting of Widget types map to implementation of methods.
 //! `TransMapWidgets` - For transporting of Widgets map to implementation of methods.
@@ -13,9 +12,9 @@
 pub mod html_controls;
 pub mod output_data;
 
-// FORMS
+// CONTROLS FOR MODEL FIELDS.
 // #################################################################################################
-/// Data structures for `inputFile` and `inputImage` widgets.
+/// Helper structures for inputFile and inputImage widgets.
 // *************************************************************************************************
 #[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
@@ -62,7 +61,7 @@ pub struct ImageData {
 }
 
 /// Widget.
-/// ( Form controls parameters )
+/// ( Field attributes.)
 // *************************************************************************************************
 #[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {

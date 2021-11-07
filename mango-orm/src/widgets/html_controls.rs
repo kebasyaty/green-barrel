@@ -4,7 +4,7 @@
 //! ( If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc. )
 //!
 
-use crate::forms::Widget;
+use crate::widgets::Widget;
 
 pub trait HtmlControls {
     /// Rendering HTML-controls code for Form.

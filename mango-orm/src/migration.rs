@@ -12,7 +12,7 @@
 //!
 
 use crate::{
-    forms::{FileData, ImageData},
+    widgets::{FileData, ImageData},
     store::MONGODB_CLIENT_STORE,
 };
 use mongodb::{

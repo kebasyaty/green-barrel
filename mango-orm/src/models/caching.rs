@@ -15,9 +15,9 @@
 //!
 
 use crate::{
-    forms::Widget,
     models::{Meta, ToModel},
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
+    widgets::Widget,
 };
 
 /// Caching information about Models for speed up work.

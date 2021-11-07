@@ -3,7 +3,7 @@
 //! `OutputDataForm` - To return results after processing Forms.
 //!
 
-use crate::forms::{html_controls::HtmlControls, Widget};
+use crate::widgets::{html_controls::HtmlControls, Widget};
 
 /// Output data type
 #[derive(Debug)]

@@ -1,5 +1,5 @@
 use mango_orm::*;
-use mango_orm::{forms::ImageData, migration::Monitor, test_tool::del_test_db};
+use mango_orm::{migration::Monitor, test_tool::del_test_db, widgets::ImageData};
 use metamorphose::Model;
 use mongodb::{
     bson::{de::from_document, doc, oid::ObjectId},

@@ -6,8 +6,8 @@
 //!
 
 use crate::{
-    forms::{html_controls::HtmlControls, Widget},
     models::validation::{AdditionalValidation, ValidationModel},
+    widgets::{html_controls::HtmlControls, Widget},
 };
 
 pub mod caching;
