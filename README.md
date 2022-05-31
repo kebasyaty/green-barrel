@@ -32,69 +32,69 @@
 ## Match field types and widget types
 | Field type: | Widget type: |
 | :------------ | :------------ |
-| bool | "checkBox" |
+| Option< bool > | "checkBox" |
 |-|-|
-| String | "inputSlug" |
+| Option< String > | "inputSlug" |
 |-|-|
-| String | "inputColor" |
-| String | "inputDate" |
-| String | "inputDateTime" |
-| String | "inputEmail" |
-| String | "inputPassword" |
-| String | "inputPhone" |
-| String | "inputText" |
-| String | "inputUrl" |
-| String | "inputIP" |
-| String | "inputIPv4" |
-| String | "inputIPv6" |
+| Option< String > | "inputColor" |
+| Option< String > | "inputDate" |
+| Option< String > | "inputDateTime" |
+| Option< String > | "inputEmail" |
+| Option< String > | "inputPassword" |
+| Option< String > | "inputPhone" |
+| Option< String > | "inputText" |
+| Option< String > | "inputUrl" |
+| Option< String > | "inputIP" |
+| Option< String > | "inputIPv4" |
+| Option< String > | "inputIPv6" |
 |-|-|
-| String | "textArea" |
+| Option< String > | "textArea" |
 |-|-|
-| String | "inputFile" |
-| String | "inputImage" |
+| Option< String > | "inputFile" |
+| Option< String > | "inputImage" |
 |-|-|
-| i32 | "numberI32" |
-| u32 | "numberU32" |
-| i64 | "numberI64" |
-| f64 | "numberF64" |
+| Option< i32 > | "numberI32" |
+| Option< u32 > | "numberU32" |
+| Option< i64 > | "numberI64" |
+| Option< f64 > | "numberF64" |
 |-|-|
-| String | "radioText" |
-| i32 | "radioI32" |
-| u32 | "radioU32" |
-| i64 | "radioI64" |
-| f64 | "radioF64" |
+| Option< String > | "radioText" |
+| Option< i32 > | "radioI32" |
+| Option< u32 > | "radioU32" |
+| Option< i64 > | "radioI64" |
+| Option< f64 > | "radioF64" |
 |-|-|
-| i32 | "rangeI32" |
-| u32 | "rangeU32" |
-| i64 | "rangeI64" |
-| f64 | "rangeF64" |
+| Option< i32 > | "rangeI32" |
+| Option< u32 > | "rangeU32" |
+| Option< i64 > | "rangeI64" |
+| Option< f64 > | "rangeF64" |
 |-|-|
-| String | "selectText" |
-| String | "selectTextDyn" |
-| Vec< String  > | "selectTextMult" |
-| Vec< String > | "selectTextMultDyn" |
-| i32 | "selectI32" |
-| i32 | "selectI32Dyn" |
-| Vec< i32 > | "selectI32Mult" |
-| Vec< i32 > | "selectI32MultDyn" |
-| u32 | "selectU32" |
-| u32 | "selectU32Dyn" |
-| Vec< u32 > | "selectU32Mult" |
-| Vec< u32 > | "selectU32MultDyn" |
-| i64 | "selectI64" |
-| i64 | "selectI64Dyn" |
-| Vec< i64 > | "selectI64Mult" |
-| Vec< i64 > | "selectI64MultDyn" |
-| f64 | "selectF64" |
-| f64 | "selectF64Dyn" |
-| Vec< f64 > | "selectF64Mult" |
-| Vec< f64 > | "selectF64MultDyn" |
+| Option< String > | "selectText" |
+| Option< String > | "selectTextDyn" |
+| Option< Vec< String  > > | "selectTextMult" |
+| Option< Vec< String > > | "selectTextMultDyn" |
+| Option< i32 > | "selectI32" |
+| Option< i32 > | "selectI32Dyn" |
+| Option< Vec< i32 > > | "selectI32Mult" |
+| Option< Vec< i32 > > | "selectI32MultDyn" |
+| Option< u32 > | "selectU32" |
+| Option< u32 > | "selectU32Dyn" |
+| Option< Vec< u32 > > | "selectU32Mult" |
+| Option< Vec< u32 > > | "selectU32MultDyn" |
+| Option< i64 > | "selectI64" |
+| Option< i64 > | "selectI64Dyn" |
+| Option< Vec< i64 > > | "selectI64Mult" |
+| Option< Vec< i64 > > | "selectI64MultDyn" |
+| Option< f64 > | "selectF64" |
+| Option< f64 > | "selectF64Dyn" |
+| Option< Vec< f64 > > | "selectF64Mult" |
+| Option< Vec< f64 > > | "selectF64MultDyn" |
 |-|-|
-| String | "hiddenText" |
-| i32 | "hiddenI32" |
-| u32 | "hiddenU32" |
-| i64 | "hiddenI64" |
-| f64 | "hiddenF64" |
+| Option< String > | "hiddenText" |
+| Option<  i32 > | "hiddenI32" |
+| Option< u32 > | "hiddenU32" |
+| Option< i64 > | "hiddenI64" |
+| Option< f64 > | "hiddenF64" |
 
 ## Widget attributes
     // "model-name--field-name" ( The value is determined automatically )
@@ -103,16 +103,19 @@
     label: String
     //
     widget: String
+    //
     // The value is determined automatically
     input_type: String,
     //
     name: String
     //
     value: String
+    //
     // Hint: accept="image/jpeg,image/png,image/gif"
     accept: String
     //
     placeholder: String
+    //
     // Validating a field using a client-side regex
     pattern: String
     //
@@ -121,6 +124,7 @@
     maxlength: usize
     //
     required: bool
+    //
     // For <input type="checkbox|radio">
     checked: bool
     //
@@ -129,30 +133,39 @@
     disabled: bool
     //
     readonly: bool
+    //
     step: String
     //
     min: String
     //
     max: String
+    //
     // Hint: <value, Title> - <option value="value1">Title 1</option>
     options: Vec<(String, String)>
+    //
     // From one to four inclusive
     // Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
     thumbnails: Vec<(String, u32)>
+    //
     // Example: r#"["title"]"# or r#"["username"]"# or r#"["email", "first_name", "last_name"]"#
     slug_sources: Vec<String>
     //
-    is_hide: bool,
+    is_hide: bool
+    //
     // "autofocus tabindex=\"some number\" size=\"some number\" ..."
     other_attrs: String
+    //
     // "class-name class-name ..."
     css_classes: String
     //
     hint: String
+    //
     // The value is determined automatically
     warning: String
+    //
     // The value is determined automatically
     error: String
+    //
     // Messages common to the entire Form
     common_msg: String
 
@@ -168,13 +181,15 @@
     $ sudo apt update
     $ sudo apt install mongodb-org
     $ sudo systemctl enable --now mongod
+    #
     # For check
     $ mongod --version
     $ mongo --eval 'db.runCommand({ connectionStatus: 1 })' 
-    #
     $ reboot
+    #
     ### Configuration file:
     $ sudo nano /etc/mongod.conf
+    #
     ### Systemd:
     $ sudo systemctl status mongod
     $ sudo systemctl start mongod
@@ -182,6 +197,7 @@
     $ sudo systemctl restart mongod
     $ sudo systemctl enable mongod
     $ sudo systemctl disable mongod
+    #
     ### Uninstall:
     $ sudo systemctl stop mongod
     $ sudo systemctl disable mongod
@@ -446,6 +462,9 @@
             ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
         };
     
+        // let result = user.check()?;
+        // println!("Is valid: {}", result.is_valid());
+        // OR
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
@@ -453,7 +472,6 @@
         println!("Widget map:\n{:?}", result.wig());
         println!("Json-line:\n{}", result.json()?);
         println!("Html:\n{}", result.html());
-        println!("For admin panale: {}", result.json_for_admin()?);
         // ...
         */
         //
