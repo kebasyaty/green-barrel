@@ -464,7 +464,8 @@
     
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
-        // OR
+        // Some code ...
+        //
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
