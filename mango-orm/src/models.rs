@@ -1,5 +1,4 @@
-//! # Models.
-//! Adapts the Structure for database queries using a programmatic or web interface.
+//! # Adapts the Structure for database queries using a programmatic or web interface.
 //!
 //! `Meta` - Metadata of model (database name, collection name, etc).
 //! `ToModel` - Transforms the Structure into a Model.

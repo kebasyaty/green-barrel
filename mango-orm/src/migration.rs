@@ -1,4 +1,4 @@
-//! # Migration of Models to database.
+//! # Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 //!
 //! Structs:
 //! `ModelState` - Creation and updating of a technical database for monitoring the state of models.

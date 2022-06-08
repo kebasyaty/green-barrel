@@ -1,4 +1,4 @@
-//! # Global storage
+//! # Global store of settings and metadata for models.
 //!
 //! `FormCache` - Structure for caching map of widgets, json and html, for mango models.
 //! `FORM_STORE` - Storage of settings for mango models.

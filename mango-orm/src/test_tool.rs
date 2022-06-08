@@ -1,4 +1,4 @@
-//! # Testing tools
+//! # Auxiliary tools for testing models.
 //!
 //! `del_test_base` - Remove test databases.
 //!

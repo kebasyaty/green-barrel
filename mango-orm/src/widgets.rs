@@ -1,5 +1,4 @@
-//! # Widgets
-//! For control of fields on the server and client side.
+//! # For control of fields on the server and client side.
 //!
 //! `Widget` - Field attributes.
 //! `OutputData` - Output data for the `check()` and `save()` methods.
