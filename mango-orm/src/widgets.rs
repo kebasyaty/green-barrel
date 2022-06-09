@@ -1,19 +1,11 @@
-//! # For control of fields on the server and client side.
-//!
-//! `Widget` - Field attributes.
-//! `OutputData` - Output data for the `check()` and `save()` methods.
-//! `TransMapWidgetType` - For transporting of Widget types map to implementation of methods.
-//! `TransMapWidgets` - For transporting of Widgets map to implementation of methods.
-//! `HtmlControls` - Rendering HTML-controls code for Form.
-//! ( If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc. )
-//!
+//! For control of fields on the server and client side.
 
 pub mod html_controls;
 pub mod output_data;
 
 // CONTROLS FOR MODEL FIELDS.
 // #################################################################################################
-/// Helper structures for inputFile and inputImage widgets.
+/// Helper structures for inputFile widgets.
 // *************************************************************************************************
 #[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
@@ -27,6 +19,7 @@ pub struct FileData {
     pub size: u32, // in bytes
 }
 
+/// Helper structures for inputImage widgets.
 #[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct ImageData {
     #[serde(default)]
@@ -59,8 +52,8 @@ pub struct ImageData {
     pub height: u32, // in pixels
 }
 
-/// Widget.
-/// ( Field attributes.)
+/// Widget
+/// ( field attributes.)
 // *************************************************************************************************
 #[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {

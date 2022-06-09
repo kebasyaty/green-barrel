@@ -1,14 +1,4 @@
 //! # Macros
-//!
-//! `Model` - Macro for converting Structure to mango-orm Model.
-//! The model can access the database.
-//! The model can create, update, and delete documents in collections.
-//!
-//! `Form` - Macro for converting Structure to mango-orm Form.
-//! The form does not have access to the database.
-//! Form are needed where it makes no sense to use a model -
-//! To create a search form, to recover a password, to combine models, etc.
-//!
 
 use proc_macro::TokenStream;
 use quote::quote;

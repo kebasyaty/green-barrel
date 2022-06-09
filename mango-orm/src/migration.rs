@@ -1,15 +1,4 @@
-//! # Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
-//!
-//! Structs:
-//! `ModelState` - Creation and updating of a technical database for monitoring the state of models.
-//! `Monitor` - Creation and updating of a technical database for monitoring the state of models.
-//!
-//! Methods:
-//! `mango_tech_name` - Get the name of the technical database for a project.
-//! `refresh` - Refresh models state.
-//! `napalm` - Reorganize databases state.
-//! `migrat` - Check the changes in the models and (if necessary) apply to the database.
-//!
+//! Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
 use crate::{
     widgets::{FileData, ImageData},
@@ -129,7 +118,7 @@ impl<'a> Monitor<'a> {
         Ok(())
     }
 
-    /// Reorganize databases state.
+    /// Reorganize databases state
     /// (full delete of orphaned collections and databases)
     // *********************************************************************************************
     fn napalm(&self) -> Result<(), Box<dyn std::error::Error>> {
@@ -173,7 +162,7 @@ impl<'a> Monitor<'a> {
         Ok(())
     }
 
-    /// Migrating Models.
+    /// Migrating Models -
     // *********************************************************************************************
     /// Check the changes in the models and (if necessary) apply to the database.
     pub fn migrat(&self) -> Result<(), Box<dyn std::error::Error>> {

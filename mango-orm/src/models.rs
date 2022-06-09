@@ -1,8 +1,4 @@
-//! # Adapts the Structure for database queries using a programmatic or web interface.
-//!
-//! `Meta` - Metadata of model (database name, collection name, etc).
-//! `ToModel` - Transforms the Structure into a Model.
-//!
+//! Adapts the Structure for database queries using a programmatic or web interface.
 
 use crate::{
     models::validation::{AdditionalValidation, ValidationModel},
@@ -16,8 +12,8 @@ pub mod validation;
 
 // MODEL
 // #################################################################################################
-/// Metadata.
-/// ( Model parameters )
+/// Metadata
+/// ( model parameters )
 // *************************************************************************************************
 #[derive(serde::Deserialize, Clone, Debug)]
 pub struct Meta {
@@ -67,11 +63,11 @@ impl Default for Meta {
     }
 }
 
-// Model options and widget map for Form.
+/// Model options and widget map for Form.
 // *************************************************************************************************
 pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
-    /// Get model key.
-    /// (To access data in the cache)
+    /// Get model key
+    /// ( to access data in the cache )
     // ---------------------------------------------------------------------------------------------
     fn key() -> String;
 

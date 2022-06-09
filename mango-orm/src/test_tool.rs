@@ -1,7 +1,4 @@
-//! # Auxiliary tools for testing models.
-//!
-//! `del_test_base` - Remove test databases.
-//!
+//! Auxiliary tools for testing models.
 
 use crate::store::MONGODB_CLIENT_STORE;
 

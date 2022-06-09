@@ -1,9 +1,4 @@
-//! # Global store of settings and metadata for models.
-//!
-//! `FormCache` - Structure for caching map of widgets, json and html, for mango models.
-//! `FORM_STORE` - Storage of settings for mango models.
-//! `MONGODB_CLIENT_STORE` - Storage for Clients of MongoDB.
-//!
+//! Global store of settings and metadata for models.
 
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
@@ -11,7 +6,7 @@ use std::sync::RwLock;
 
 // GLOBAL STORAGE
 // #################################################################################################
-/// Structure for caching map of widgets, json and html, for mango models
+/// Structure for caching map of widgets, json and html, for mango models.
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
     pub meta: crate::models::Meta,
