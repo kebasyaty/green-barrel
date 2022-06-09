@@ -31,9 +31,9 @@ features = ["derive"]
 version = "1.0.137"
 
 [dependencies.uuid]
-version = "1.1.1"
 features = [
-    "v4",
-    "fast-rng",
-    "macro-diagnostics",
+  "v4",
+  "fast-rng",
+  "macro-diagnostics",
 ]
+version = "1.1.1"
