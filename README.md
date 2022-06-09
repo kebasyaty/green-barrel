@@ -10,7 +10,7 @@
 ![crates.io](https://img.shields.io/crates/l/mango-orm)
 
 ## Attention
-#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.3 "MongoDB Rust Driver") version 1.2.3 is used.
+#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
 **[Mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") ). For those who use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") - Follow our updates.**
 
@@ -212,17 +212,17 @@
     [dependencies]
     mango-orm = "0.6"
     metamorphose = "0.4"
-    regex = "1.0"
-    serde_json = "1.0"
+    regex = "1.5.6"
+    serde_json = "1.0.81"
     
     [dependencies.mongodb]
     default-features = false
     features = ["sync"]
-    version = "1.0"
+    version = "1.2.5"
 
     [dependencies.serde]
     features = ["derive"]
-    version = "1.0"
+    version = "1.0.137"
 
 #### src/settings.rs
     // General settings for the project.
