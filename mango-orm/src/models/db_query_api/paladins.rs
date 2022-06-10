@@ -1441,8 +1441,8 @@ pub trait QPaladins: ToModel + CachingModel {
     /// # Example:
     ///
     /// ```
-    /// let output_data  = UserProfile.delete(None)?;
-    /// if !routput_data.is_valid() {
+    /// let output_data  = user.delete(None)?;
+    /// if !output_data.is_valid() {
     ///     println!("{}", routput_data.err_msg());
     /// }
     /// ```
