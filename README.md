@@ -461,19 +461,26 @@
             ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
         };
     
+        // Get form with default data.
+        // println!("{:?}\n\n", mango_models::UserProfile::form_wig().unwrap());
+        // println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
+        // println!("{}\n\n", mango_models::UserProfile::form_html().unwrap());
+        //
+        // Check
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
-        // Some code ...
+        // println!("Hash: {}", result.hash()?);
+        // println!("Widget map:\n{:?}", result.wig());
+        // println!("Json-line:\n{}", result.json()?);
+        // println!("Html code:\n{}", result.html());
         //
+        // Check + Save
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
-        /*
-        println!("Widget map:\n{:?}", result.wig());
-        println!("Json-line:\n{}", result.json()?);
-        println!("Html:\n{}", result.html());
-        // ...
-        */
+        // println!("Widget map:\n{:?}", result.wig());
+        // println!("Json-line:\n{}", result.json()?);
+        // println!("Html code:\n{}", result.html());
         //
         Ok(())
     }
