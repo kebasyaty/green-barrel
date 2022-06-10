@@ -1,7 +1,4 @@
-//! # Output data types for Forms
-//!
-//! `OutputDataForm` - To return results after processing Forms.
-//!
+//! Output data types for Forms.
 
 use crate::widgets::{html_controls::HtmlControls, Widget};
 

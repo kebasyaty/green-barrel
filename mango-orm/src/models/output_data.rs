@@ -1,8 +1,4 @@
-//! # Output data types for database queries
-//!
-//! `OutputDataOne` - To return results after processing queries for one document.
-//! `OutputDataMany` - To return results after processing queries for many documents.
-//!
+//! Output data types for database queries.
 
 /// To return results after processing queries for one document.
 // *************************************************************************************************

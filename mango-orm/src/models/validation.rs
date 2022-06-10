@@ -1,19 +1,4 @@
-//! # Validating.
-//!
-//! Trait:
-//! `Validation` - Validating Model fields for save and update.
-//! Methods:
-//! `check_minlength` - Validation of `minlength`.
-//! `check_maxlength` - Validation of `maxlength`.
-//! `accumula_err` - Accumulation of errors.
-//! `regex_validation` - Validation in regular expression (email, password, etc...).
-//! `check_unique` - Validation of `unique`.
-//!
-//! Trait:
-//! `AdditionalValidation` - Methods for additional validation.
-//! Methods:
-//! `add_validation` - To create a custom validation.
-//!
+//! Validating Model fields for save and update.
 
 use crate::{
     store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},

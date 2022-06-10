@@ -1,18 +1,4 @@
-//! # Caching.
 //! Caching information about Models for speed up work.
-//!
-//! Trait:
-//! `Caching` - Methods caching information about Models for speed up work.
-//!
-//! Methods:
-//! `to_cache` - Add metadata and widgects map to cache.
-//! `form_wig` - Get an widgets map for page template.
-//! `form_json` - Get Form attributes in Json format for page templates.
-//! `form_json_for_admin` - Json-line for admin panel.
-//! `form_html` - Get Html Form of Model for page templates.
-//! `get_cache_data_for_query` - Get cached Model data.
-//! `db_update_dyn_widgets` - Accepts json-line to update data, for dynamic widgets.
-//!
 
 use crate::{
     models::{Meta, ToModel},

@@ -1,21 +1,4 @@
-//! # Common query methods.
-//!
-//! Trait:
-//! `QCommon` - Common database query methods.
-//! Methods:
-//! 'aggregate' - Runs an aggregation operation.
-//! `count_documents` - Gets the number of documents matching filter.
-//! `delete_many` - Deletes all documents stored in the collection matching query.
-//! `delete_one` - Finds a single document in the collection matching filter.
-//! `distinct` - Finds the distinct values of the field specified by field_name across the collection.
-//! `drop` - Drops the collection, deleting all data and indexes stored in it.
-//! `estimated_document_count` - Estimates the number of documents in the collection using collection metadata.
-//! `find` - Finds the documents in the collection matching filter.
-//! `find_one` - Finds a single document in the collection matching filter.
-//! `find_one_and_delete` - Atomically finds up to one document in the collection matching filter and deletes it.
-//! `name` - Gets the name of the Collection.
-//! `namespace` - Gets the namespace of the Collection.
-//!
+//! Common query methods.
 
 use crate::{
     models::{

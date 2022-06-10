@@ -1,16 +1,4 @@
-//! # Query methods for a Model instance.
-//!
-//! Trait:
-//! `QPaladin` - Database query methods directly related to the Model instance.
-//!
-//! Methods:
-//! `check` - Checking the Model before queries the database.
-//! `save` - Save to database as a new document or update an existing document.
-//! `delete` - Remove document from collection.
-//! `create_password_hash` - Generate password hash and add to result document.
-//! `verify_password` - Match the password from the user to the password in the database.
-//! `update_password` - For replace or recover password.
-//!
+//! Query methods for a Model instance.
 
 use crate::{
     models::{caching::CachingModel, Meta, ToModel},

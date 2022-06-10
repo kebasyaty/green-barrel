@@ -14,7 +14,7 @@ use std::collections::HashMap;
 
 // MIGRATION
 // #################################################################################################
-/// Creation and updating of a technical database for monitoring the state of models.
+/// For creation and updating of a technical database.
 #[derive(Serialize, Deserialize)]
 pub struct ModelState {
     pub database: String,
@@ -24,6 +24,7 @@ pub struct ModelState {
     pub status: bool,
 }
 
+/// For monitoring the state of models.
 pub struct Monitor<'a> {
     pub project_name: &'a str,
     pub unique_project_key: &'a str,
