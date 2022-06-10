@@ -491,6 +491,12 @@
         // println!("Json-line:\n{}", result.json()?);
         // println!("Html code:\n{}", result.html());
         //
+        // Remove document from collection.
+        // let output_data  = user.delete(None)?;
+        // if !output_data.is_valid() {
+        //     println!("{}", routput_data.err_msg());
+        // }
+        //
         Ok(())
     }
 
