@@ -442,15 +442,16 @@
     }
 
 #### src/main.rs
-    use mango_orm::*;
-    
     mod migration;
     mod models;
     mod settings;
+
+    use mango_orm::*;
     
     fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Run migration.
         migration::mango_migration()?;
+
         //
         let mut user = models::UserProfile {
             username: Some("testname".to_string()),
