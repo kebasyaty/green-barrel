@@ -471,6 +471,10 @@
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
         // println!("Hash: {}", result.hash()?);
+        //
+        // Printing errors to the console ( for development ).
+        // result.print_err();
+        //
         // Get form with current data.
         // println!("Widget map:\n{:?}", result.wig());
         // println!("Json-line:\n{}", result.json()?);
@@ -480,6 +484,8 @@
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        // Printing errors to the console ( for development ).
+        result.print_err();
         // Get form with current data.
         // println!("Widget map:\n{:?}", result.wig());
         // println!("Json-line:\n{}", result.json()?);
