@@ -180,8 +180,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_4".to_string()),
-        email: Some("user_4_@noreply.net".to_string()),
+        username: Some("user_5".to_string()),
+        email: Some("user_5_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -194,6 +194,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
+    // Printing errors to the console ( for development ).
+    result.print_err();
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.wig());
     //println!("\n\nJson:\n{}", result.json()?);

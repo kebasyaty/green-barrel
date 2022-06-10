@@ -50,18 +50,6 @@ impl OutputDataForm {
     fn to_hash(
         map_widgets: &std::collections::HashMap<String, Widget>,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let mut errors = String::new();
-        for (field_name, widget) in map_widgets {
-            let tmp = errors.clone();
-            if !widget.error.is_empty() {
-                errors = format!("{}Field: `{}` : {}", tmp, field_name, widget.error);
-            }
-        }
-        if !errors.is_empty() {
-            errors = errors.replace("<br>", " | ");
-            //Err(errors)?
-            println!("\n{}\n", errors);
-        }
         Ok(map_widgets.get("hash").unwrap().value.clone())
     }
 
@@ -77,6 +65,39 @@ impl OutputDataForm {
         match self {
             Self::CheckModel(data) => Ok(Self::to_hash(&data.2)?),
             Self::Save(data) => Ok(Self::to_hash(&data.2)?),
+            _ => panic!("Invalid output type."),
+        }
+    }
+
+    /// Printing errors to the console ( for development ).
+    // ---------------------------------------------------------------------------------------------
+    fn to_console(map_widgets: &std::collections::HashMap<String, Widget>) {
+        let mut errors = String::new();
+        for (field_name, widget) in map_widgets {
+            let tmp = errors.clone();
+            if !widget.error.is_empty() {
+                errors = format!("{}\nField: `{}` -> {}", tmp, field_name, widget.error);
+            }
+        }
+        if !errors.is_empty() {
+            errors = errors.replace("<br>", " | ");
+            println!("\nErrors:{}\n", errors);
+        }
+    }
+
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let output_data = UserProfile.check()?;
+    /// let output_data = UserProfile.save()?;
+    /// println!("{}", output_data.print_err());
+    /// ```
+    ///
+    pub fn print_err(&self) {
+        match self {
+            Self::CheckModel(data) => Self::to_console(&data.2),
+            Self::Save(data) => Self::to_console(&data.2),
             _ => panic!("Invalid output type."),
         }
     }
