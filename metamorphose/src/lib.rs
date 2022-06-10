@@ -1,4 +1,5 @@
-//! # Macros
+//! # Macro
+//! For converting structure to mango-orm model.
 
 use proc_macro::TokenStream;
 use quote::quote;
