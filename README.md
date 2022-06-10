@@ -462,14 +462,15 @@
         };
     
         // Get form with default data.
-        // println!("{:?}\n\n", mango_models::UserProfile::form_wig().unwrap());
-        // println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
-        // println!("{}\n\n", mango_models::UserProfile::form_html().unwrap());
+        // println!("Widget map:\n{:?}", models::UserProfile::form_wig().unwrap());
+        // println!("Json-line:\n{}", models::UserProfile::form_json().unwrap());
+        // println!("Html code:\n{}", models::UserProfile::form_html().unwrap());
         //
         // Check
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
         // println!("Hash: {}", result.hash()?);
+        // Get form with current data.
         // println!("Widget map:\n{:?}", result.wig());
         // println!("Json-line:\n{}", result.json()?);
         // println!("Html code:\n{}", result.html());
@@ -478,6 +479,7 @@
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        // Get form with current data.
         // println!("Widget map:\n{:?}", result.wig());
         // println!("Json-line:\n{}", result.json()?);
         // println!("Html code:\n{}", result.html());
