@@ -181,8 +181,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_7".to_string()),
-        email: Some("user_7_@noreply.net".to_string()),
+        username: Some("user_8".to_string()),
+        email: Some("user_8_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -199,7 +199,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}", result.to_html());
-    //println!("{}", result.json_for_admin()?);
 
     // Add document to database.
     let result = user.save(None, None)?;
@@ -212,7 +211,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}", result.to_html());
-    //println!("/nJson for admin: {}/n", result.json_for_admin()?);
+    //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
     /*
     println!(
         "Verify password (false): {}",
@@ -244,7 +243,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //println!("\n\nWidget map:\n{:?}", result.wig());
         //println!("\n\nJson:\n{}", result.to_json()?);
         //println!("\n\nHtml:\n{}", result.to_html());
-        //println!("/nJson for admin: {}/n", result.json_for_admin()?);
+        //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
         /*
         println!(
             "Update password (false): {}",
