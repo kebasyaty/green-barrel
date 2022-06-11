@@ -116,10 +116,10 @@ impl OutputDataForm {
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
-    /// println!("{:?}", output_data.id()?);
+    /// println!("{:?}", output_data.object_id()?);
     /// ```
     ///
-    pub fn id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
+    pub fn object_id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
                 Self::get_hash(&data.2)?.as_str(),

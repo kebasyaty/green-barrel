@@ -181,8 +181,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_8".to_string()),
-        email: Some("user_8_@noreply.net".to_string()),
+        username: Some("user_9".to_string()),
+        email: Some("user_9_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -195,7 +195,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Boolean: {}", result.is_valid());
     println!("\n\nbson::Document:\n{:?}", result.to_doc());
     */
-    //println!("ID: {:?}", result.id()?);
+    //println!("Object Id: {:?}", result.object_id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}", result.to_html());
@@ -207,7 +207,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Printing errors to the console ( for development ).
     result.print_err();
     //
-    //println!("ID: {:?}", result.id()?);
+    //println!("\nObject Id:\n{:?}\n", result.object_id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}\n", result.to_html());
@@ -239,7 +239,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("\n\n\nBoolean: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
         //println!("Remove document: {:?}", user.delete(None)?);
-        //println!("ID: {:?}", result.id()?);
+        //println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //println!("\n\nWidget map:\n{:?}", result.wig());
         //println!("\n\nJson:\n{}", result.to_json()?);
         //println!("\n\nHtml:\n{}", result.to_html());
