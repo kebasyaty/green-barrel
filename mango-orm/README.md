@@ -463,11 +463,11 @@
         };
     
         // Get form with default data.
-        // println!("Widget map:\n{:?}", models::UserProfile::form_wig().unwrap());
-        // println!("Json-line:\n{}", models::UserProfile::form_json().unwrap());
-        // println!("Html code:\n{}", models::UserProfile::form_html().unwrap());
+        // println!("Widget map:\n{:?}", models::UserProfile::to_wig().unwrap());
+        // println!("Json-line:\n{}", models::UserProfile::to_json().unwrap());
+        // println!("Html code:\n{}", models::UserProfile::to_html().unwrap());
         //
-        // Check
+        // Check.
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
         // println!("Hash: {}", result.hash()?);
@@ -476,20 +476,20 @@
         // result.print_err();
         //
         // Get form with current data.
-        // println!("Widget map:\n{:?}", result.wig());
-        // println!("Json-line:\n{}", result.json()?);
-        // println!("Html code:\n{}", result.html());
+        // println!("Widget map:\n{:?}", result.to_wig());
+        // println!("Json-line:\n{}", result.to_json()?);
+        // println!("Html code:\n{}", result.to_html());
         //
-        // Check + Save
+        // Add or update a document in the database ( check() + save() ).
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
         // Printing errors to the console ( for development ).
         result.print_err();
         // Get form with current data.
-        // println!("Widget map:\n{:?}", result.wig());
-        // println!("Json-line:\n{}", result.json()?);
-        // println!("Html code:\n{}", result.html());
+        // println!("Widget map:\n{:?}", result.to_wig());
+        // println!("Json-line:\n{}", result.to_json()?);
+        // println!("Html code:\n{}", result.to_html());
         //
         // Remove document from collection.
         // let output_data  = user.delete(None)?;
@@ -501,6 +501,7 @@
     }
 
 ## Changelog
+- **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md***
 - **v0.6.16** *Renamed the Forms module to Widgets.*
 - **v0.6.15** *Updating by version of dependencies.*
 - **v0.6.10** *Updated test for dynamic widgets.*
