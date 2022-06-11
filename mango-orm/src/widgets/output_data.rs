@@ -219,10 +219,10 @@ impl OutputDataForm {
     ///
     /// ```
     /// let output_data = UserProfile.save()?;
-    /// println!("{:?}", output_data.doc());
+    /// println!("{:?}", output_data.to_doc());
     /// ```
     ///
-    pub fn doc(&self) -> mongodb::bson::document::Document {
+    pub fn to_doc(&self) -> mongodb::bson::document::Document {
         match self {
             Self::CheckModel(data) => data.3.clone(),
             _ => panic!("Invalid output type."),

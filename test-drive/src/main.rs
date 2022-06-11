@@ -85,9 +85,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    //println!("{:?}\n\n", mango_models::Dynamic::wig().unwrap());
-    //println!("{}\n\n", mango_models::Dynamic::form_json().unwrap());
-    //println!("{}\n\n", mango_models::Dynamic::form_html().unwrap());
+    //println!("{:?}\n\n", mango_models::Dynamic::to_wig()?);
+    //println!("{}\n\n", mango_models::Dynamic::to_json()?);
+    //println!("{}\n\n", mango_models::Dynamic::fto_html()?);
 
     /*
     let mut dynamic = mango_models::Dynamic {
@@ -100,12 +100,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ..Default::default()
     };
     let result = dynamic.save(None, None, None)?;
-    println!("Boolean: {}", result.bool());
+    println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
     println!("ID: {:?}", result.id()?);
-    //println!("\n\nWidget map:\n{:?}", result.wig());
-    //println!("\n\nJson:\n{}", result.json()?);
-    //println!("\n\nHtml:\n{}", result.html());
+    //println!("\n\nWidget map:\n{:?}", result.to_wig());
+    //println!("\n\nJson:\n{}", result.to_json()?);
+    //println!("\n\nHtml:\n{}", result.to_html());
     */
 
     // Test Model.
@@ -175,33 +175,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     /*
     println!(
         "\n\n{}\n\n",
-        mango_models::UserProfile::json_for_admin()?
+        mango_models::UserProfile::to_json_for_admin()?
     );
     */
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_5".to_string()),
-        email: Some("user_5_@noreply.net".to_string()),
+        username: Some("user_7".to_string()),
+        email: Some("user_7_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
 
-    // println!("{}", user.json_for_admin()?);
+    // Check.
+    let result = user.check()?;
+    println!("Boolean: {}", result.is_valid());
+    println!("\n\nbson::Document:\n{:?}", result.to_doc());
+    //println!("ID: {:?}", result.id()?);
+    //println!("\n\nWidget map:\n{:?}", result.to_wig());
+    //println!("\n\nJson:\n{}", result.to_json()?);
+    //println!("\n\nHtml:\n{}", result.to_html());
+    //println!("{}", result.json_for_admin()?);
 
-    // Create doc.
+    // Add document to database.
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
     // Printing errors to the console ( for development ).
     result.print_err();
+    //
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
-    //println!("\n\nJson:\n{}", result.json()?);
-    //println!("\n\nHtml:\n{}", result.html());
-    //println!("{}", result.json_for_admin()?);
+    //println!("\n\nJson:\n{}", result.to_json()?);
+    //println!("\n\nHtml:\n{}", result.to_html());
+    //println!("/nJson for admin: {}/n", result.json_for_admin()?);
     /*
     println!(
         "Verify password (false): {}",
@@ -220,7 +229,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    // Update doc.
+    // Update document in database.
     if result.is_valid() {
         // user.username = Some("user_x".to_string());
         //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
@@ -231,9 +240,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("ID: {:?}", result.id()?);
         //println!("\n\nWidget map:\n{:?}", result.wig());
-        //println!("\n\nJson:\n{}", result.json()?);
-        //println!("\n\nHtml:\n{}", result.html());
-        //println!("{}", result.json_for_admin()?);
+        //println!("\n\nJson:\n{}", result.to_json()?);
+        //println!("\n\nHtml:\n{}", result.to_html());
+        //println!("/nJson for admin: {}/n", result.json_for_admin()?);
         /*
         println!(
             "Update password (false): {}",

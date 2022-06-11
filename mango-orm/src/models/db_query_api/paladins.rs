@@ -1394,7 +1394,7 @@ pub trait QPaladins: ToModel + CachingModel {
         // Save to database.
         // -----------------------------------------------------------------------------------------
         if is_no_error {
-            let final_doc = verified_data.doc();
+            let final_doc = verified_data.to_doc();
             if !is_update {
                 let result: mongodb::results::InsertOneResult =
                     coll.insert_one(final_doc, options_insert)?;
