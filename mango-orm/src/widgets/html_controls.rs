@@ -551,7 +551,7 @@ pub trait HtmlControls {
 
     // Get Html-line for `OutputDataForm`.
     // *********************************************************************************************
-    fn html(&self) -> String {
+    fn to_html(&self) -> String {
         // Stub.
         String::new()
     }

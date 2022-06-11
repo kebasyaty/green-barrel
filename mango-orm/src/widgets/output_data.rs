@@ -34,10 +34,10 @@ impl HtmlControls for OutputDataForm {
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
-    /// println!("{}", output_data.html());
+    /// println!("{}", output_data.to_html());
     /// ```
     ///
-    fn html(&self) -> String {
+    fn to_html(&self) -> String {
         match self {
             Self::CheckModel(data) => Self::generate_html(&data.1, data.2.clone()),
             Self::Save(data) => Self::generate_html(&data.1, data.2.clone()),

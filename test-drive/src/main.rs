@@ -210,7 +210,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}", result.to_html());
+    //println!("\n\nHtml:\n{}\n", result.to_html());
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
     /*
     println!(
