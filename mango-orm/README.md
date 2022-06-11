@@ -471,10 +471,11 @@
         // Check.
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
-        //
         // println!("Hash: {}", result.hash()?);
+        //
         // Get MongoDB ID from hash-line
-        // println!("ID: {:?}\n", result.id()?);
+        // println!("\nObject Id:\n{:?}\n", result.object_id()?);
+        //
         // println!("\n\nWidget map:\n{:?}", result.to_wig());
         // println!("\n\nJson:\n{}", result.to_json()?);
         // println!("\n\nHtml:\n{}", result.to_html());
@@ -495,7 +496,7 @@
         println!("Hash: {}", result.hash()?);
         //
         // Get MongoDB ID from hash-line
-        // println!("ID: {:?}\n", result.id()?);
+        // println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //
         // Printing errors to the console ( for development ).
         result.print_err();
