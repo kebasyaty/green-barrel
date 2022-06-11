@@ -85,11 +85,11 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::form_json()?;
+    /// let json_line = UserProfile::json()?;
     /// println!("{}", json_line);
     /// ```
     ///
-    fn form_json() -> Result<String, Box<dyn std::error::Error>> {
+    fn json() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
