@@ -47,7 +47,7 @@ impl HtmlControls for OutputDataForm {
 impl OutputDataForm {
     /// Get Hash-line
     // ---------------------------------------------------------------------------------------------
-    fn to_hash(
+    fn get_hash(
         map_widgets: &std::collections::HashMap<String, Widget>,
     ) -> Result<String, Box<dyn std::error::Error>> {
         Ok(map_widgets.get("hash").unwrap().value.clone())
@@ -63,8 +63,8 @@ impl OutputDataForm {
     ///
     pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
-            Self::CheckModel(data) => Ok(Self::to_hash(&data.2)?),
-            Self::Save(data) => Ok(Self::to_hash(&data.2)?),
+            Self::CheckModel(data) => Ok(Self::get_hash(&data.2)?),
+            Self::Save(data) => Ok(Self::get_hash(&data.2)?),
             _ => panic!("Invalid output type."),
         }
     }
@@ -115,10 +115,10 @@ impl OutputDataForm {
     pub fn id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
-                Self::to_hash(&data.2)?.as_str(),
+                Self::get_hash(&data.2)?.as_str(),
             )?),
             Self::Save(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
-                Self::to_hash(&data.2)?.as_str(),
+                Self::get_hash(&data.2)?.as_str(),
             )?),
             _ => panic!("Invalid output type."),
         }
@@ -132,10 +132,10 @@ impl OutputDataForm {
     ///
     /// ```
     /// let output_data = UserProfile.save()?;
-    /// println!("{:?}", output_data.wig());
+    /// println!("{:?}", output_data.to_wig());
     /// ```
     ///
-    pub fn wig(&self) -> std::collections::HashMap<String, Widget> {
+    pub fn to_wig(&self) -> std::collections::HashMap<String, Widget> {
         match self {
             Self::CheckModel(data) => data.2.clone(),
             Self::Save(data) => data.2.clone(),

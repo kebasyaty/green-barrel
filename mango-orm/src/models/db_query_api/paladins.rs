@@ -1384,7 +1384,8 @@ pub trait QPaladins: ToModel + CachingModel {
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Get widget map.
-        let mut final_map_widgets: std::collections::HashMap<String, Widget> = verified_data.wig();
+        let mut final_map_widgets: std::collections::HashMap<String, Widget> =
+            verified_data.to_wig();
         let is_update: bool = !self.get_hash().unwrap_or_default().is_empty();
         let coll: mongodb::sync::Collection = client_cache
             .database(meta.database_name.as_str())

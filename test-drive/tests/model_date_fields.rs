@@ -99,20 +99,20 @@ fn test_model_date_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // date
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "1970-02-27".to_string(),
-        map_wigets.get("date").unwrap().value
+        map_to_wigets.get("date").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "1970-02-28".to_string(),
-        map_wigets.get("date").unwrap().value
+        map_to_wigets.get("date").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "1970-02-27".to_string(),
-        map_wigets.get("date").unwrap().value
+        map_to_wigets.get("date").unwrap().value
     );
 
     // Validating values in database
@@ -150,15 +150,15 @@ fn test_model_date_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // date
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "1970-02-27".to_string(),
-        map_wigets.get("date").unwrap().value
+        map_to_wigets.get("date").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "1970-02-28".to_string(),
-        map_wigets.get("date").unwrap().value
+        map_to_wigets.get("date").unwrap().value
     );
 
     // Validating values in database

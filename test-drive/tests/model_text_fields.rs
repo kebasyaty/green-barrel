@@ -159,118 +159,121 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // text
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("text").unwrap().value
+        map_to_wigets.get("text").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("text").unwrap().value
+        map_to_wigets.get("text").unwrap().value
     );
     // hidden_text
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Hidden lorem ipsum".to_string(),
-        map_wigets.get("hidden_text").unwrap().value
+        map_to_wigets.get("hidden_text").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "Hidden lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("hidden_text").unwrap().value
+        map_to_wigets.get("hidden_text").unwrap().value
     );
     // radio
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("radio").unwrap().value
+        map_to_wigets.get("radio").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("radio").unwrap().value
+        map_to_wigets.get("radio").unwrap().value
     );
     // color
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "#000000".to_string(),
-        map_wigets.get("color").unwrap().value
+        map_to_wigets.get("color").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "#ffffff".to_string(),
-        map_wigets.get("color").unwrap().value
+        map_to_wigets.get("color").unwrap().value
     );
     // email
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
-    let map_wigets = result_2.wig();
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("email").unwrap().value);
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "no_reply@email.net".to_string(),
-        map_wigets.get("email").unwrap().value
+        map_to_wigets.get("email").unwrap().value
     );
     // password
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
-    let map_wigets = result_2.wig();
-    assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
+    let map_to_wigets = result_2.to_wig();
+    assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
     // phone
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
-    let map_wigets = result_2.wig();
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("phone").unwrap().value);
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "+00000000000".to_string(),
-        map_wigets.get("phone").unwrap().value
+        map_to_wigets.get("phone").unwrap().value
     );
     // url
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
-    let map_wigets = result_2.wig();
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("url").unwrap().value);
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "https://www.google.com/".to_string(),
-        map_wigets.get("url").unwrap().value
+        map_to_wigets.get("url").unwrap().value
     );
     // ip
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!("127.0.0.1".to_string(), map_wigets.get("ip").unwrap().value);
-    let map_wigets = result_2.wig();
-    assert_eq!(
-        "172.217.14.196".to_string(),
-        map_wigets.get("ip").unwrap().value
-    );
-    // ipv4
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "127.0.0.1".to_string(),
-        map_wigets.get("ipv4").unwrap().value
+        map_to_wigets.get("ip").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "172.217.14.196".to_string(),
-        map_wigets.get("ipv4").unwrap().value
+        map_to_wigets.get("ip").unwrap().value
+    );
+    // ipv4
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(
+        "127.0.0.1".to_string(),
+        map_to_wigets.get("ipv4").unwrap().value
+    );
+    let map_to_wigets = result_2.to_wig();
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_to_wigets.get("ipv4").unwrap().value
     );
     // ipv6
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "::ffff:7f00:1".to_string(),
-        map_wigets.get("ipv6").unwrap().value
+        map_to_wigets.get("ipv6").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "::ffff:acd9:ec4".to_string(),
-        map_wigets.get("ipv6").unwrap().value
+        map_to_wigets.get("ipv6").unwrap().value
     );
     // textarea
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("textarea").unwrap().value
+        map_to_wigets.get("textarea").unwrap().value
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("textarea").unwrap().value
+        map_to_wigets.get("textarea").unwrap().value
     );
 
     // Validating values in database
@@ -318,129 +321,132 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values
     // text
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("text").unwrap().value
+        map_to_wigets.get("text").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("text").unwrap().value
+        map_to_wigets.get("text").unwrap().value
     );
     // hidden_text
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "Hidden lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("hidden_text").unwrap().value
+        map_to_wigets.get("hidden_text").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Hidden lorem ipsum".to_string(),
-        map_wigets.get("hidden_text").unwrap().value
+        map_to_wigets.get("hidden_text").unwrap().value
     );
     // radio
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("radio").unwrap().value
+        map_to_wigets.get("radio").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("radio").unwrap().value
+        map_to_wigets.get("radio").unwrap().value
     );
     // color
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "#ffffff".to_string(),
-        map_wigets.get("color").unwrap().value
+        map_to_wigets.get("color").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "#000000".to_string(),
-        map_wigets.get("color").unwrap().value
+        map_to_wigets.get("color").unwrap().value
     );
     // email
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "no_reply@email.net".to_string(),
-        map_wigets.get("email").unwrap().value
+        map_to_wigets.get("email").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("email").unwrap().value);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("email").unwrap().value);
     // password
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("password").unwrap().value);
+    let map_to_wigets = result.to_wig();
+    assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
     // phone
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "+00000000000".to_string(),
-        map_wigets.get("phone").unwrap().value
+        map_to_wigets.get("phone").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("phone").unwrap().value);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("phone").unwrap().value);
     // url
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "https://www.google.com/".to_string(),
-        map_wigets.get("url").unwrap().value
+        map_to_wigets.get("url").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(String::new(), map_wigets.get("url").unwrap().value);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(String::new(), map_to_wigets.get("url").unwrap().value);
     // ip
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "172.217.14.196".to_string(),
-        map_wigets.get("ip").unwrap().value
+        map_to_wigets.get("ip").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!("127.0.0.1".to_string(), map_wigets.get("ip").unwrap().value);
-    // ipv4
-    let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
-    assert_eq!(
-        "172.217.14.196".to_string(),
-        map_wigets.get("ipv4").unwrap().value
-    );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "127.0.0.1".to_string(),
-        map_wigets.get("ipv4").unwrap().value
+        map_to_wigets.get("ip").unwrap().value
+    );
+    // ipv4
+    let result = test_model.save(None, None)?;
+    let map_to_wigets = result.to_wig();
+    assert_eq!(
+        "172.217.14.196".to_string(),
+        map_to_wigets.get("ipv4").unwrap().value
+    );
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(
+        "127.0.0.1".to_string(),
+        map_to_wigets.get("ipv4").unwrap().value
     );
     // ipv6
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "::ffff:acd9:ec4".to_string(),
-        map_wigets.get("ipv6").unwrap().value
+        map_to_wigets.get("ipv6").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "::ffff:7f00:1".to_string(),
-        map_wigets.get("ipv6").unwrap().value
+        map_to_wigets.get("ipv6").unwrap().value
     );
     // textarea
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
-        map_wigets.get("textarea").unwrap().value
+        map_to_wigets.get("textarea").unwrap().value
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         "Lorem ipsum".to_string(),
-        map_wigets.get("textarea").unwrap().value
+        map_to_wigets.get("textarea").unwrap().value
     );
 
     // Validating values in database

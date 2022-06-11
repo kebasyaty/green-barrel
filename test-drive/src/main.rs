@@ -198,7 +198,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Printing errors to the console ( for development ).
     result.print_err();
     //println!("ID: {:?}", result.id()?);
-    //println!("\n\nWidget map:\n{:?}", result.wig());
+    //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.json()?);
     //println!("\n\nHtml:\n{}", result.html());
     //println!("{}", result.json_for_admin()?);

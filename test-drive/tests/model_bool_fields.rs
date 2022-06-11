@@ -84,10 +84,10 @@ fn test_model_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     // Validating values in widgets
     // checkbox
-    let map_wigets = result.wig();
-    assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    let map_to_wigets = result.to_wig();
+    assert_eq!(true, map_to_wigets.get("checkbox").unwrap().checked);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(false, map_to_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
     {
@@ -117,10 +117,10 @@ fn test_model_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // checkbox
-    let map_wigets = result.wig();
-    assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = app_name::TestModel::wig()?;
-    assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
+    let map_to_wigets = result.to_wig();
+    assert_eq!(true, map_to_wigets.get("checkbox").unwrap().checked);
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert_eq!(false, map_to_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
     {

@@ -53,7 +53,7 @@ pub trait CachingModel: ToModel {
     /// println!("{:?}", widgets_map);
     /// ```
     ///
-    fn wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
+    fn to_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.

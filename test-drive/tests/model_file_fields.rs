@@ -98,19 +98,19 @@ fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model.hash.is_some());
     // Validating values in widgets
     // file
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
-        map_wigets.get("file").unwrap().value,
+        map_to_wigets.get("file").unwrap().value,
         serde_json::to_string(&file_data)?
     );
     /*
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_to_wigets = app_name::TestModel::form_to_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("file").unwrap().value.as_str()
+            map_to_wigets.get("file").unwrap().value.as_str()
         )?
     );
     */
@@ -147,19 +147,19 @@ fn test_model_file_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // file
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
-        map_wigets.get("file").unwrap().value,
+        map_to_wigets.get("file").unwrap().value,
         serde_json::to_string(&file_data)?
     );
     /*
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_to_wigets = app_name::TestModel::form_to_wig()?;
     assert_eq!(
         serde_json::from_str::<std::collections::HashMap<String, String>>(
             r#"{"path":"./media/hello_world.odt","url":"/media/hello_world.odt"}"#
         )?,
         serde_json::from_str::<std::collections::HashMap<String, String>>(
-            map_wigets.get("file").unwrap().value.as_str()
+            map_to_wigets.get("file").unwrap().value.as_str()
         )?
     );
     */

@@ -107,45 +107,45 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // radio
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         -1_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         -20_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
     // number
-    let map_wigets = app_name::TestModel::wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.wig();
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert!(map_to_wigets.get("number").unwrap().value.is_empty());
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         105_i32,
-        map_wigets.get("number").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("number").unwrap().value.parse::<i32>()?
     );
     // range
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         5_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("range").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         9_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("range").unwrap().value.parse::<i32>()?
     );
     // hidden
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         3_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("hidden").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = result_2.wig();
+    let map_to_wigets = result_2.to_wig();
     assert_eq!(
         11_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("hidden").unwrap().value.parse::<i32>()?
     );
 
     // Validating values in database
@@ -180,48 +180,48 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     // Validating values
     // radio
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         -20_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         -1_i32,
-        map_wigets.get("radio").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
     // number
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         105_i32,
-        map_wigets.get("number").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("number").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::wig()?;
-    assert!(map_wigets.get("number").unwrap().value.is_empty());
+    let map_to_wigets = app_name::TestModel::to_wig()?;
+    assert!(map_to_wigets.get("number").unwrap().value.is_empty());
     // range
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         9_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("range").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         5_i32,
-        map_wigets.get("range").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("range").unwrap().value.parse::<i32>()?
     );
     // hidden
     let result = test_model.save(None, None)?;
-    let map_wigets = result.wig();
+    let map_to_wigets = result.to_wig();
     assert_eq!(
         11_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("hidden").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(
         3_i32,
-        map_wigets.get("hidden").unwrap().value.parse::<i32>()?
+        map_to_wigets.get("hidden").unwrap().value.parse::<i32>()?
     );
 
     // Validating values in database

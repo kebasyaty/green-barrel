@@ -142,9 +142,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     assert!(test_model.hash.is_some());
     // select_text
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("Audi", map_wigets.get("select_text").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("Volvo", map_wigets.get("select_text").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -153,12 +153,12 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_text").unwrap().options
     );
     // select_text_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(
         map_wigets.get("select_text_mult").unwrap().value,
         r#"["Saab","Audi"]"#
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -168,9 +168,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_i32
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_i32").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_i32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -179,9 +179,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_i32").unwrap().options
     );
     // select_i32_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_i32_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -191,9 +191,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_u32
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_u32").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_u32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -202,9 +202,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_u32").unwrap().options
     );
     // select_u32_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_u32_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -214,9 +214,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_i64
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_i64").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_i64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -225,9 +225,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_i64").unwrap().options
     );
     // select_i64_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_i64_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -237,9 +237,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_f64
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4.4", map_wigets.get("select_f64").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1.1", map_wigets.get("select_f64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -249,12 +249,12 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
 
     // select_f64_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(
         map_wigets.get("select_f64_mult").unwrap().value,
         "[2.2,4.4]"
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -336,9 +336,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // select_text
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("Audi", map_wigets.get("select_text").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("Volvo", map_wigets.get("select_text").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -347,12 +347,12 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_text").unwrap().options
     );
     // select_text_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(
         map_wigets.get("select_text_mult").unwrap().value,
         r#"["Saab","Audi"]"#
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_text_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -362,9 +362,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_i32
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_i32").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_i32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -373,9 +373,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_i32").unwrap().options
     );
     // select_i32_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_i32_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_i32_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -385,9 +385,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_u32
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_u32").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_u32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -396,9 +396,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_u32").unwrap().options
     );
     // select_u32_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_u32_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_u32_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -408,9 +408,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_i64
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4", map_wigets.get("select_i64").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_wigets.get("select_i64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -419,9 +419,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_i64").unwrap().options
     );
     // select_i64_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(map_wigets.get("select_i64_mult").unwrap().value, "[2,4]");
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_i64_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -431,9 +431,9 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
     );
     // select_f64
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!("4.4", map_wigets.get("select_f64").unwrap().value);
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1.1", map_wigets.get("select_f64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -442,12 +442,12 @@ fn test_options_one_dimensional_array() -> Result<(), Box<dyn std::error::Error>
         map_wigets.get("select_f64").unwrap().options
     );
     // select_f64_mult
-    let map_wigets = result.wig();
+    let map_wigets = result.to_wig();
     assert_eq!(
         map_wigets.get("select_f64_mult").unwrap().value,
         "[2.2,4.4]"
     );
-    let map_wigets = app_name::TestModel::wig()?;
+    let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_f64_mult").unwrap().value.is_empty());
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
