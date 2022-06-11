@@ -49,11 +49,11 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let widgets_map = UserProfile::form_wig()?;
+    /// let widgets_map = UserProfile::wig()?;
     /// println!("{:?}", widgets_map);
     /// ```
     ///
-    fn form_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
+    fn wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.

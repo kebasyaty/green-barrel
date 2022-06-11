@@ -157,7 +157,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("audi", map_wigets.get("radio_text").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("volvo", map_wigets.get("radio_text").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -169,7 +169,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_i32").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_i32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -181,7 +181,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_u32").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_u32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -193,7 +193,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_i64").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_i64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -205,7 +205,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4.4", map_wigets.get("radio_f64").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1.1", map_wigets.get("radio_f64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -263,7 +263,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("audi", map_wigets.get("radio_text").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("volvo", map_wigets.get("radio_text").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -275,7 +275,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_i32").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_i32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -287,7 +287,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_u32").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_u32").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -299,7 +299,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4", map_wigets.get("radio_i64").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1", map_wigets.get("radio_i64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(
@@ -311,7 +311,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let map_wigets = result.wig();
     assert_eq!("4.4", map_wigets.get("radio_f64").unwrap().value);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!("1.1", map_wigets.get("radio_f64").unwrap().value);
     assert_eq!(
         serde_json::from_str::<Vec<(String, String)>>(

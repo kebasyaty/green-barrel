@@ -86,7 +86,7 @@ fn test_model_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database
@@ -119,7 +119,7 @@ fn test_model_bool_fields() -> Result<(), Box<dyn std::error::Error>> {
     // checkbox
     let map_wigets = result.wig();
     assert_eq!(true, map_wigets.get("checkbox").unwrap().checked);
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(false, map_wigets.get("checkbox").unwrap().checked);
 
     // Validating values in database

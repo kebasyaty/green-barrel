@@ -107,7 +107,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // radio
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         -1_i32,
         map_wigets.get("radio").unwrap().value.parse::<i32>()?
@@ -118,7 +118,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
     // number
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     let map_wigets = result_2.wig();
     assert_eq!(
@@ -126,7 +126,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("number").unwrap().value.parse::<i32>()?
     );
     // range
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         5_i32,
         map_wigets.get("range").unwrap().value.parse::<i32>()?
@@ -137,7 +137,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("range").unwrap().value.parse::<i32>()?
     );
     // hidden
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         3_i32,
         map_wigets.get("hidden").unwrap().value.parse::<i32>()?
@@ -185,7 +185,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         -20_i32,
         map_wigets.get("radio").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         -1_i32,
         map_wigets.get("radio").unwrap().value.parse::<i32>()?
@@ -197,7 +197,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         105_i32,
         map_wigets.get("number").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
     let result = test_model.save(None, None)?;
@@ -206,7 +206,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         9_i32,
         map_wigets.get("range").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         5_i32,
         map_wigets.get("range").unwrap().value.parse::<i32>()?
@@ -218,7 +218,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
         11_i32,
         map_wigets.get("hidden").unwrap().value.parse::<i32>()?
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         3_i32,
         map_wigets.get("hidden").unwrap().value.parse::<i32>()?

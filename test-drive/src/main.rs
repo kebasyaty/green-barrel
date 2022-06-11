@@ -85,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     */
 
-    //println!("{:?}\n\n", mango_models::Dynamic::form_wig().unwrap());
+    //println!("{:?}\n\n", mango_models::Dynamic::wig().unwrap());
     //println!("{}\n\n", mango_models::Dynamic::form_json().unwrap());
     //println!("{}\n\n", mango_models::Dynamic::form_html().unwrap());
 
@@ -110,7 +110,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     // *********************************************************************************************
-    // println!("{:?}\n\n", mango_models::UserProfile::form_wig().unwrap());
+    // println!("{:?}\n\n", mango_models::UserProfile::wig()?);
     // println!("{}\n\n", mango_models::UserProfile::form_json().unwrap());
     // println!("{}\n\n", mango_models::UserProfile::form_html().unwrap());
 

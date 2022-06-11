@@ -104,7 +104,7 @@ fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
@@ -152,7 +152,7 @@ fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
-    let map_wigets = app_name::TestModel::form_wig()?;
+    let map_wigets = app_name::TestModel::wig()?;
     assert_eq!(
         "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
