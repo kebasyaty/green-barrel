@@ -75,7 +75,7 @@ impl OutputDataForm {
 
     /// Printing errors to the console ( for development ).
     // ---------------------------------------------------------------------------------------------
-    fn to_console(map_widgets: &std::collections::HashMap<String, Widget>) {
+    fn print_to_console(map_widgets: &std::collections::HashMap<String, Widget>) {
         let mut errors = String::new();
         for (field_name, widget) in map_widgets {
             let tmp = errors.clone();
@@ -101,8 +101,8 @@ impl OutputDataForm {
     ///
     pub fn print_err(&self) {
         match self {
-            Self::CheckModel(data) => Self::to_console(&data.2),
-            Self::Save(data) => Self::to_console(&data.2),
+            Self::CheckModel(data) => Self::print_to_console(&data.2),
+            Self::Save(data) => Self::print_to_console(&data.2),
             _ => panic!("Invalid output type."),
         }
     }
