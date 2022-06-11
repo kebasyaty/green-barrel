@@ -111,7 +111,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test Model.
     // *********************************************************************************************
     // println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
-    // println!("{}\n\n", mango_models::UserProfile::to_json().unwrap());
+    // println!("{}\n\n", mango_models::UserProfile::to_json()?);
     // println!("{}\n\n", mango_models::UserProfile::to_json_for_admin()?);
     // println!("{}\n\n", mango_models::UserProfile::to_html().unwrap());
 
