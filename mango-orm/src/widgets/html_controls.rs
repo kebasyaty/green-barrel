@@ -8,7 +8,7 @@ pub trait HtmlControls {
     /// ( If necessary, customize the code generation yourself using html and css from
     /// Bootstrap, Material Design, etc. )
     ///
-    fn to_html(
+    fn generate_html(
         fields_name: &Vec<String>,
         map_widgets: std::collections::HashMap<String, Widget>,
     ) -> String {

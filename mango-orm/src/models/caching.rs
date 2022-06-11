@@ -162,7 +162,7 @@ pub trait CachingModel: ToModel {
     /// println!("{}", html);
     /// ```
     ///
-    fn form_html() -> Result<String, Box<dyn std::error::Error>> {
+    fn to_html() -> Result<String, Box<dyn std::error::Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
@@ -182,8 +182,10 @@ pub trait CachingModel: ToModel {
                 drop(form_store);
                 let mut form_store = FORM_STORE.write()?;
                 let form_cache = form_store.get(key.as_str()).unwrap();
-                let html =
-                    Self::to_html(&form_cache.meta.fields_name, form_cache.map_widgets.clone());
+                let html = Self::generate_html(
+                    &form_cache.meta.fields_name,
+                    form_cache.map_widgets.clone(),
+                );
                 let mut new_form_cache = form_cache.clone();
                 new_form_cache.form_html = html.clone();
                 form_store.insert(key, new_form_cache);

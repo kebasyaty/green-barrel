@@ -37,8 +37,8 @@ impl HtmlControls for OutputDataForm {
     ///
     fn html(&self) -> String {
         match self {
-            Self::CheckModel(data) => Self::to_html(&data.1, data.2.clone()),
-            Self::Save(data) => Self::to_html(&data.1, data.2.clone()),
+            Self::CheckModel(data) => Self::generate_html(&data.1, data.2.clone()),
+            Self::Save(data) => Self::generate_html(&data.1, data.2.clone()),
             _ => panic!("Invalid output type."),
         }
     }
