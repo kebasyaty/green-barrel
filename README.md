@@ -467,10 +467,18 @@
         // println!("Json-line:\n{}", models::UserProfile::to_json().unwrap());
         // println!("Html code:\n{}", models::UserProfile::to_html().unwrap());
         //
+        //
         // Check.
         // let result = user.check()?;
         // println!("Is valid: {}", result.is_valid());
+        //
         // println!("Hash: {}", result.hash()?);
+        // Get MongoDB ID from hash-line
+        // println!("ID: {:?}\n", result.id()?);
+        // println!("\n\nWidget map:\n{:?}", result.to_wig());
+        // println!("\n\nJson:\n{}", result.to_json()?);
+        // println!("\n\nHtml:\n{}", result.to_html());
+        // println!("\n\nbson::Document:\n{:?}", result.to_doc());
         //
         // Printing errors to the console ( for development ).
         // result.print_err();
@@ -480,12 +488,18 @@
         // println!("Json-line:\n{}", result.to_json()?);
         // println!("Html code:\n{}", result.to_html());
         //
+        //
         // Add or update a document in the database ( check() + save() ).
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        //
+        // Get MongoDB ID from hash-line
+        // println!("ID: {:?}\n", result.id()?);
+        //
         // Printing errors to the console ( for development ).
         result.print_err();
+        //
         // Get form with current data.
         // println!("Widget map:\n{:?}", result.to_wig());
         // println!("Json-line:\n{}", result.to_json()?);
@@ -501,7 +515,7 @@
     }
 
 ## Changelog
-- **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md***
+- **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md***. Updated documentation.
 - **v0.6.16** *Renamed the Forms module to Widgets.*
 - **v0.6.15** *Updating by version of dependencies.*
 - **v0.6.10** *Updated test for dynamic widgets.*
