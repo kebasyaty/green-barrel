@@ -112,6 +112,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // *********************************************************************************************
     // println!("{:?}\n\n", mango_models::UserProfile::wig()?);
     // println!("{}\n\n", mango_models::UserProfile::json().unwrap());
+    // println!("{}\n\n", mango_models::UserProfile::to_json_for_admin()?);
     // println!("{}\n\n", mango_models::UserProfile::html().unwrap());
 
     //mango_models::UserProfile::find_one_and_delete(doc! {"username": "Rust"}, None)?;
@@ -174,7 +175,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     /*
     println!(
         "\n\n{}\n\n",
-        mango_models::UserProfile::form_json_for_admin()?
+        mango_models::UserProfile::json_for_admin()?
     );
     */
 
