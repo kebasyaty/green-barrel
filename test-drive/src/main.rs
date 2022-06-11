@@ -110,10 +110,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     // *********************************************************************************************
-    // println!("{:?}\n\n", mango_models::UserProfile::wig()?);
-    // println!("{}\n\n", mango_models::UserProfile::json().unwrap());
+    // println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
+    // println!("{}\n\n", mango_models::UserProfile::to_json().unwrap());
     // println!("{}\n\n", mango_models::UserProfile::to_json_for_admin()?);
-    // println!("{}\n\n", mango_models::UserProfile::html().unwrap());
+    // println!("{}\n\n", mango_models::UserProfile::to_html().unwrap());
 
     //mango_models::UserProfile::find_one_and_delete(doc! {"username": "Rust"}, None)?;
 
