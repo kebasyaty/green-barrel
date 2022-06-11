@@ -190,9 +190,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // Check.
+    /*
     let result = user.check()?;
     println!("Boolean: {}", result.is_valid());
     println!("\n\nbson::Document:\n{:?}", result.to_doc());
+    */
     //println!("ID: {:?}", result.id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nJson:\n{}", result.to_json()?);
