@@ -31,7 +31,9 @@ impl HtmlControls for OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{}", output_data.html());
     /// ```
     ///
@@ -57,7 +59,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{}", output_data.hash());
     /// ```
     ///
@@ -89,8 +93,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.check()?;
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{}", output_data.print_err());
     /// ```
     ///
@@ -108,7 +113,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{:?}", output_data.id()?);
     /// ```
     ///
@@ -131,7 +138,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{:?}", output_data.to_wig());
     /// ```
     ///
@@ -149,11 +158,13 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
-    /// println!("{}", output_data.json()?);
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
+    /// println!("{}", output_data.to_json()?);
     /// ```
     ///
-    pub fn json(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::CheckModel(data) => Ok(serde_json::to_string(&data.2)?),
             Self::Save(data) => Ok(serde_json::to_string(&data.2)?),
@@ -168,7 +179,8 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.save(None, None)?;
     /// println!("{}", output_data.to_json_for_admin()?);
     /// ```
     ///
@@ -199,8 +211,10 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile {...}
-    /// let result = output_data.check()?;
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
+    /// let output_data = user_profile.delete()?;
     /// assert!(result.is_valid());
     /// ```
     ///
@@ -218,8 +232,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.save()?;
-    /// println!("{:?}", output_data.to_doc());
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// println!("{:?}", user_profile.to_doc());
     /// ```
     ///
     pub fn to_doc(&self) -> mongodb::bson::document::Document {
@@ -236,7 +251,9 @@ impl OutputDataForm {
     /// # Example:
     ///
     /// ```
-    /// let output_data = UserProfile.delete()?;
+    /// let user_profile = UserProfile {...};
+    /// user_profile.save(None, None)?;
+    /// let output_data = user_profile.delete()?;
     /// println!("{}", output_data.err_msg());
     /// ```
     ///
