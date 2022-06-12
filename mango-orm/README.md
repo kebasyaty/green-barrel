@@ -517,7 +517,7 @@
     }
 
 ## Changelog
-- **v0.6.34** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", username"]"#***
+- **v0.7.0** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", username"]"#***
 - **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies.*
 - **v0.6.16** *Renamed the Forms module to Widgets.*
 - **v0.6.15** *Updating by version of dependencies.*
