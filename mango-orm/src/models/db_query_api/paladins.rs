@@ -1397,10 +1397,12 @@ pub trait QPaladins: ToModel + CachingModel {
         if is_no_error {
             let final_doc = verified_data.to_doc();
             if !is_update {
+                // Create document.
                 let result: mongodb::results::InsertOneResult =
                     coll.insert_one(final_doc, options_insert)?;
                 self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
             } else if !final_doc.is_empty() {
+                // Update document.
                 let hash: Option<String> = self.get_hash();
                 if hash.is_none() {
                     Err(format!(
