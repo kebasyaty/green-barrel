@@ -36,7 +36,7 @@ pub struct UserProfile {
         readonly = true,
         is_hide = true,
         hint = "To create a human readable url",
-        slug_sources = r#"["username"]"#
+        slug_sources = r#"["hash", "username"]"#
     )]
     pub slug: Option<String>,
     //
