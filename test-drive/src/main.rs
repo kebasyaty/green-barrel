@@ -181,8 +181,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test Model.
     let mut user = mango_models::UserProfile {
-        username: Some("user_12".to_string()),
-        email: Some("user_12_@noreply.net".to_string()),
+        username: Some("user_15".to_string()),
+        email: Some("user_15_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -204,12 +204,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
-    println!("Slug: {}", user.slug.clone().unwrap_or_default());
     // Printing errors to the console ( for development ).
     result.print_err();
     //
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-    //println!("\n\nWidget map:\n{:?}", result.to_wig());
+    // println!("\n\nWidget map:\n{:?}", result.to_wig());
+    println!(
+        "\n\nWidget map:\n{:?}",
+        result.to_wig().get("slug").unwrap().value
+    );
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}\n", result.to_html());
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
@@ -239,10 +242,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let result = user.save(None, None)?;
         println!("\n\n\nBoolean: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
-        println!("Slug: {}", user.slug.clone().unwrap_or_default());
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-        //println!("\n\nWidget map:\n{:?}", result.to_wig());
+        // println!("\n\nWidget map:\n{:?}", result.to_wig());
+        println!(
+            "\n\nWidget map:\n{:?}",
+            result.to_wig().get("slug").unwrap().value
+        );
         //println!("\n\nJson:\n{}", result.to_json()?);
         //println!("\n\nHtml:\n{}", result.to_html());
         //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
