@@ -200,7 +200,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}", result.to_html());
 
-    // Add document to database.
+    // Create document in database.
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
