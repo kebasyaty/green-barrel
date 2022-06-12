@@ -1360,7 +1360,7 @@ pub trait QPaladins: ToModel + CachingModel {
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputDataForm::CheckModel((
+        Ok(OutputDataForm::Check((
             !is_err_symptom,
             meta.fields_name.clone(),
             final_map_widgets,

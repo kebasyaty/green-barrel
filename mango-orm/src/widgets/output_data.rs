@@ -5,7 +5,7 @@ use crate::widgets::{html_controls::HtmlControls, Widget};
 /// Output data type
 #[derive(Debug)]
 pub enum OutputDataForm {
-    CheckModel(
+    Check(
         (
             bool,
             Vec<String>,
@@ -39,7 +39,7 @@ impl HtmlControls for OutputDataForm {
     ///
     fn to_html(&self) -> String {
         match self {
-            Self::CheckModel(data) => Self::generate_html(&data.1, data.2.clone()),
+            Self::Check(data) => Self::generate_html(&data.1, data.2.clone()),
             Self::Save(data) => Self::generate_html(&data.1, data.2.clone()),
             _ => panic!("Invalid output type."),
         }
@@ -67,7 +67,7 @@ impl OutputDataForm {
     ///
     pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
-            Self::CheckModel(data) => Ok(Self::get_hash(&data.2)?),
+            Self::Check(data) => Ok(Self::get_hash(&data.2)?),
             Self::Save(data) => Ok(Self::get_hash(&data.2)?),
             _ => panic!("Invalid output type."),
         }
@@ -101,7 +101,7 @@ impl OutputDataForm {
     ///
     pub fn print_err(&self) {
         match self {
-            Self::CheckModel(data) => Self::print_to_console(&data.2),
+            Self::Check(data) => Self::print_to_console(&data.2),
             Self::Save(data) => Self::print_to_console(&data.2),
             _ => panic!("Invalid output type."),
         }
@@ -121,7 +121,7 @@ impl OutputDataForm {
     ///
     pub fn object_id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
         match self {
-            Self::CheckModel(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
+            Self::Check(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
                 Self::get_hash(&data.2)?.as_str(),
             )?),
             Self::Save(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
@@ -146,7 +146,7 @@ impl OutputDataForm {
     ///
     pub fn to_wig(&self) -> std::collections::HashMap<String, Widget> {
         match self {
-            Self::CheckModel(data) => data.2.clone(),
+            Self::Check(data) => data.2.clone(),
             Self::Save(data) => data.2.clone(),
             _ => panic!("Invalid output type."),
         }
@@ -166,7 +166,7 @@ impl OutputDataForm {
     ///
     pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
-            Self::CheckModel(data) => Ok(serde_json::to_string(&data.2)?),
+            Self::Check(data) => Ok(serde_json::to_string(&data.2)?),
             Self::Save(data) => Ok(serde_json::to_string(&data.2)?),
             _ => panic!("Invalid output type."),
         }
@@ -220,7 +220,7 @@ impl OutputDataForm {
     ///
     pub fn is_valid(&self) -> bool {
         match self {
-            Self::CheckModel(data) => data.0,
+            Self::Check(data) => data.0,
             Self::Save(data) => data.0,
             Self::Delete(data) => data.0,
         }
@@ -239,7 +239,7 @@ impl OutputDataForm {
     ///
     pub fn to_doc(&self) -> mongodb::bson::document::Document {
         match self {
-            Self::CheckModel(data) => data.3.clone(),
+            Self::Check(data) => data.3.clone(),
             _ => panic!("Invalid output type."),
         }
     }
