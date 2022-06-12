@@ -240,7 +240,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Hash: {}", result.hash()?);
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-        //println!("\n\nWidget map:\n{:?}", result.wig());
+        //println!("\n\nWidget map:\n{:?}", result.to_wig());
         //println!("\n\nJson:\n{}", result.to_json()?);
         //println!("\n\nHtml:\n{}", result.to_html());
         //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
