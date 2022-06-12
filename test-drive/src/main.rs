@@ -204,6 +204,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
+    println!("Slug: {}", user.slug.clone().unwrap_or_default());
     // Printing errors to the console ( for development ).
     result.print_err();
     //
@@ -238,6 +239,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let result = user.save(None, None)?;
         println!("\n\n\nBoolean: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        println!("Slug: {}", user.slug.clone().unwrap_or_default());
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //println!("\n\nWidget map:\n{:?}", result.to_wig());
