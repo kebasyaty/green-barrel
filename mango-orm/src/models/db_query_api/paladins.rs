@@ -1377,6 +1377,7 @@ pub trait QPaladins: ToModel + CachingModel {
         options_insert: Option<mongodb::options::InsertOneOptions>,
         options_update: Option<mongodb::options::UpdateOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        let mut stop_step: u8 = 0;
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
             let verified_data: OutputDataForm = self.check()?;
@@ -1392,6 +1393,15 @@ pub trait QPaladins: ToModel + CachingModel {
             let coll: mongodb::sync::Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
+            // Having fields with a widget of inputSlug type.
+            for val in form_cache.map_widgets.values() {
+                if val.widget == "inputSlug" {
+                    if !is_update {
+                        stop_step = 1;
+                    }
+                    break;
+                }
+            }
 
             // Save to database.
             // -------------------------------------------------------------------------------------
@@ -1430,7 +1440,7 @@ pub trait QPaladins: ToModel + CachingModel {
 
             // Return result.
             // -------------------------------------------------------------------------------------
-            if num == 1 {
+            if num == stop_step {
                 return Ok(OutputDataForm::Save((
                     is_no_error,
                     meta.fields_name.clone(),
