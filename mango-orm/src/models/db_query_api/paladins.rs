@@ -1377,66 +1377,70 @@ pub trait QPaladins: ToModel + CachingModel {
         options_insert: Option<mongodb::options::InsertOneOptions>,
         options_update: Option<mongodb::options::UpdateOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
-        // Get checked data from the `check()` method.
-        let verified_data: OutputDataForm = self.check()?;
-        let is_no_error: bool = verified_data.is_valid();
-        // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = form_cache.meta;
-        // Get widget map.
-        let mut final_map_widgets: std::collections::HashMap<String, Widget> =
-            verified_data.to_wig();
-        let is_update: bool = !self.get_hash().unwrap_or_default().is_empty();
-        let coll: mongodb::sync::Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+        for num in 0_u8..=1_u8 {
+            // Get checked data from the `check()` method.
+            let verified_data: OutputDataForm = self.check()?;
+            let is_no_error: bool = verified_data.is_valid();
+            // Get cached Model data.
+            let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+            // Get Model metadata.
+            let meta: Meta = form_cache.meta;
+            // Get widget map.
+            let mut final_map_widgets: std::collections::HashMap<String, Widget> =
+                verified_data.to_wig();
+            let is_update: bool = !self.get_hash().unwrap_or_default().is_empty();
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
 
-        // Save to database.
-        // -----------------------------------------------------------------------------------------
-        if is_no_error {
-            let final_doc = verified_data.to_doc();
-            if !is_update {
-                // Create document.
-                let result: mongodb::results::InsertOneResult =
-                    coll.insert_one(final_doc, options_insert)?;
-                self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
-            } else if !final_doc.is_empty() {
-                // Update document.
-                let hash: Option<String> = self.get_hash();
-                if hash.is_none() {
-                    Err(format!(
-                        "Model: `{}` > Field: `hash` : \
+            // Save to database.
+            // -------------------------------------------------------------------------------------
+            if is_no_error {
+                let final_doc = verified_data.to_doc();
+                if !is_update {
+                    // Create document.
+                    let result: mongodb::results::InsertOneResult =
+                        coll.insert_one(final_doc, options_insert.clone())?;
+                    self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
+                } else if !final_doc.is_empty() {
+                    // Update document.
+                    let hash: Option<String> = self.get_hash();
+                    if hash.is_none() {
+                        Err(format!(
+                            "Model: `{}` > Method: save() : \
                         An empty `hash` field is not allowed when updating.",
-                        meta.model_name
-                    ))?
+                            meta.model_name
+                        ))?
+                    }
+                    let object_id: mongodb::bson::oid::ObjectId =
+                        mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
+                    let query: mongodb::bson::document::Document =
+                        mongodb::bson::doc! {"_id": object_id};
+                    let update: mongodb::bson::document::Document = mongodb::bson::doc! {
+                        "$set": final_doc,
+                    };
+                    coll.update_one(query, update, options_update.clone())?;
                 }
-                let object_id: mongodb::bson::oid::ObjectId =
-                    mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
-                let query: mongodb::bson::document::Document =
-                    mongodb::bson::doc! {"_id": object_id};
-                let update: mongodb::bson::document::Document = mongodb::bson::doc! {
-                    "$set": final_doc,
-                };
-                coll.update_one(query, update, options_update)?;
+            }
+
+            // Add hash-line (for document identification).
+            // -------------------------------------------------------------------------------------
+            let hash = self.get_hash().unwrap_or_default();
+            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value = hash.clone();
+
+            // Return result.
+            // -------------------------------------------------------------------------------------
+            if num == 1 {
+                return Ok(OutputDataForm::Save((
+                    is_no_error,
+                    meta.fields_name.clone(),
+                    final_map_widgets,
+                    hash,
+                )));
             }
         }
-
-        // Add hash-line (for document identification).
-        // -----------------------------------------------------------------------------------------
-        let hash = self.get_hash().unwrap_or_default();
-        if !hash.is_empty() {
-            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value = hash.clone();
-        }
-
-        // Return result.
-        // -----------------------------------------------------------------------------------------
-        Ok(OutputDataForm::Save((
-            is_no_error,
-            meta.fields_name.clone(),
-            final_map_widgets,
-            hash,
-        )))
+        //
+        Ok(OutputDataForm::Stub)
     }
 
     /// Remove document from collection.

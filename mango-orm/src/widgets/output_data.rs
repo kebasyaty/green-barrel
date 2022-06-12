@@ -22,6 +22,7 @@ pub enum OutputDataForm {
         ),
     ),
     Delete((bool, String)),
+    Stub,
 }
 
 impl HtmlControls for OutputDataForm {
@@ -223,6 +224,7 @@ impl OutputDataForm {
             Self::Check(data) => data.0,
             Self::Save(data) => data.0,
             Self::Delete(data) => data.0,
+            _ => panic!("Invalid output type."),
         }
     }
 
