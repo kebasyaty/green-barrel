@@ -1394,12 +1394,14 @@ pub trait QPaladins: ToModel + CachingModel {
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
-            for val in form_cache.map_widgets.values() {
-                if val.widget == "inputSlug" {
-                    if !is_update {
+            if !is_update {
+                let wig_name = "inputSlug".to_string();
+                for val in form_cache.map_widgets.values() {
+                    if val.widget == wig_name {
                         stop_step = 1;
+
+                        break;
                     }
-                    break;
                 }
             }
 
