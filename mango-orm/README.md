@@ -147,7 +147,7 @@
     // Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
     thumbnails: Vec<(String, u32)>
     //
-    // Example: r#"["title"]"# or r#"["hash", username"]"# or r#"["email", "first_name", "last_name"]"#
+    // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#
     slug_sources: Vec<String>
     //
     is_hide: bool
@@ -320,7 +320,7 @@
             readonly = true,
             is_hide = true,
             hint = "To create a human readable url",
-            slug_sources = r#"["hash", username"]"#
+            slug_sources = r#"["hash", "username"]"#
         )]
         pub slug: Option<String>,
         //
@@ -517,7 +517,7 @@
     }
 
 ## Changelog
-- **v0.7.0** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", username"]"#***
+- **v0.7.0** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#***
 - **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies.*
 - **v0.6.16** *Renamed the Forms module to Widgets.*
 - **v0.6.15** *Updating by version of dependencies.*
