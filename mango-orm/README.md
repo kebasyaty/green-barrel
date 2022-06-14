@@ -110,77 +110,39 @@
 | Option< f64 > | "hiddenF64" |
 
 ## Field attributes
-    // "model-name--field-name" ( The value is determined automatically )
-    id: String
-    //
-    label: String
-    //
-    widget: String
-    //
-    // The value is determined automatically
-    input_type: String,
-    //
-    name: String
-    //
-    value: String
-    //
-    // Hint: accept="image/jpeg,image/png,image/gif"
-    accept: String
-    //
-    placeholder: String
-    //
-    // Validating a field using a client-side regex
-    pattern: String
-    //
-    minlength: usize
-    //
-    maxlength: usize
-    //
-    required: bool
-    //
-    // For <input type="checkbox|radio">
-    checked: bool
-    //
-    unique: bool
-    //
-    disabled: bool
-    //
-    readonly: bool
-    //
-    step: String
-    //
-    min: String
-    //
-    max: String
-    //
-    // Hint: <value, Title> - <option value="value1">Title 1</option>
-    options: Vec<(String, String)>
-    //
-    // From one to four inclusive
-    // Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
-    thumbnails: Vec<(String, u32)>
-    //
-    // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#
-    slug_sources: Vec<String>
-    //
-    is_hide: bool
-    //
-    // "autofocus tabindex=\"some number\" size=\"some number\" ..."
-    other_attrs: String
-    //
-    // "class-name class-name ..."
-    css_classes: String
-    //
-    hint: String
-    //
-    // The value is determined automatically
-    warning: String
-    //
-    // The value is determined automatically
-    error: String
-    //
-    // Messages common to the entire Form
-    common_msg: String
+***( "widget" - required attribute )***
+
+| Attribute: |Default: | Description: |
+| :------------ | :------------ | :------------ |
+| id | empty string | The value is determined automatically - "model-name--field-name".  |
+| label | empty string | Web form field name. |
+| widget | "inputText" | Widget name. |
+| input_type | "text" | The value is determined automatically. |
+| name | empty string | The value is determined automatically. |
+| value | empty string | Default value. |
+| accept | empty string | Hint: accept = "image/jpeg,image/png,image/gif" |
+| placeholder | empty string | Displays prompt text. |
+| pattern | empty string | Validating a field using a client-side regex. |
+| minlength | 0 | The minimum number of characters allowed in the text. |
+| maxlength | 256 | The maximum number of characters allowed in the text. |
+| required | false | Mandatory field. |
+| checked | false | A pre-activated radio button or checkbox. |
+| unique | false | The unique value of a field in a collection. |
+| disabled | false | Blocks access and modification of the element. |
+| readonly | false | Specifies that the field cannot be modified by the user. |
+| step | "1" | Increment step for numeric fields. |
+| min | empty string | The lower value for entering a number or date. |
+| max | empty string | The top value for entering a number or date. |
+| options | empty array | Example: r#"[[1,"Volvo"], [2,"Saab"]]"# |
+| thumbnails | empty array | From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"# |
+| slug_sources | empty array | Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"# |
+| is_hide | false | Hide field from user. |
+| other_attrs | empty string | Example: r# "autofocus tabindex="some number" size="some number""#  |
+| css_classes | empty string | Example: "class-name-1 class-name-2" |
+| hint | empty string | Additional explanation for the user. |
+| warning | empty string | The value is determined automatically. |
+| error | empty string | The value is determined automatically. |
+| common_msg | empty string | Messages common to the entire Form. |
 
 ## Install mongodb (if not installed)
     ### Ubuntu, Mint:
