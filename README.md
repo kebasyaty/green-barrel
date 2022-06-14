@@ -30,7 +30,8 @@
 - metamorphose
 
 ## Model attributes
-###### ( all attributes are optional )
+***( all attributes are optional )***
+
 | Attribute: |Default: | Description: |
 | :------------ | :------------ | :------------ |
 | db_client_name | empty string | Used to connect to a MongoDB cluster. |
