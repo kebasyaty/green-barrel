@@ -142,7 +142,7 @@
 | hint | empty string | Additional explanation for the user. |
 | warning | empty string | The value is determined automatically. |
 | error | empty string | The value is determined automatically. |
-| common_msg | empty string | Messages common to the entire Form. |
+| common_msg | empty string | Messages common to the entire Form. The value is determined automatically. |
 
 ## Install mongodb (if not installed)
     ### Ubuntu, Mint:
