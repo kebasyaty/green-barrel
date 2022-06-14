@@ -114,7 +114,7 @@
 
 | Attribute: |Default: | Description: |
 | :------------ | :------------ | :------------ |
-| id | empty string | The value is determined automatically - "model-name--field-name".  |
+| id | empty string | The value is determined automatically. Format: "model-name--field-name".  |
 | label | empty string | Web form field name. |
 | widget | "inputText" | Widget name. |
 | input_type | "text" | The value is determined automatically. |
