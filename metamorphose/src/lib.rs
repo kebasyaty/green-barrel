@@ -198,7 +198,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     } else {
                         panic!(
                             "Model: `{}` : Could not determine value for \
-                            parameter `db_client_name`. Use the `&str` type.",
+                            parameter `db_query_docs_limit`. Use the `&str` type.",
                             model_name.to_string(),
                         )
                     }

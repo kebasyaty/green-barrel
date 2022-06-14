@@ -29,6 +29,18 @@
 - uuid
 - metamorphose
 
+## Model attributes
+###### ( all attributes are optional )
+| Attribute: |Default: | Description: |
+| :------------ | :------------ | :------------ |
+| db_client_name | empty string | Used to connect to a MongoDB cluster. |
+| db_query_docs_limit | 1000 | limiting query results. |
+| is_add_docs | true | Create documents in the database |
+| is_up_docs | true | Update documents in the database |
+| is_del_docs | true | Delete documents from the database. |
+| ignore_fields | empty string | Fields that are not included in the database (separated by commas). |
+| is_use_add_valid | false | Allows additional validation -  **impl AdditionalValidation for ModelName**. |
+
 ## Match field types and widget types
 | Field type: | Widget type: |
 | :------------ | :------------ |
@@ -517,6 +529,7 @@
     }
 
 ## Changelog
+- **v0.7.4** *Updated **README.md**, added model attributes.*
 - **v0.7.0** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#***
 - **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies.*
 - **v0.6.16** *Renamed the Forms module to Widgets.*
