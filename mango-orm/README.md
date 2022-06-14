@@ -36,8 +36,8 @@
 | :------------ | :------------ | :------------ |
 | db_client_name | empty string | Used to connect to a MongoDB cluster. |
 | db_query_docs_limit | 1000 | limiting query results. |
-| is_add_docs | true | Create documents in the database |
-| is_up_docs | true | Update documents in the database |
+| is_add_docs | true | Create documents in the database. |
+| is_up_docs | true | Update documents in the database. |
 | is_del_docs | true | Delete documents from the database. |
 | ignore_fields | empty string | Fields that are not included in the database (separated by commas). |
 | is_use_add_valid | false | Allows additional validation -  **impl AdditionalValidation for ModelName**. |
