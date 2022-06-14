@@ -109,7 +109,7 @@
 | Option< i64 > | "hiddenI64" |
 | Option< f64 > | "hiddenF64" |
 
-## Widget attributes
+## Field attributes
     // "model-name--field-name" ( The value is determined automatically )
     id: String
     //
