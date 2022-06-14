@@ -23,6 +23,7 @@
 - serde
 
 ## Changelog
+- **v0.4.8** *Fixed error message text.*
 - **v0.4.6** *Updating by version of dependencies.*
 - **v0.4.4** *Optimization of the validation mechanism.*
 - **v0.4.3** *Improved validation for Slug fields.*
