@@ -15,19 +15,19 @@
 **[Mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") ). For those who use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") - Follow our updates.**
 
 ## Requirements
-- mongodb
-- serde
-- chrono
-- image
-- lazy_static
-- rand
-- regex
-- rust-argon2
-- serde_json
-- slug
-- validator
-- uuid
-- metamorphose
+- [mongodb](https://crates.io/crates/mongodb/1.2.5 "mongodb")
+- [serde](https://crates.io/crates/serde "serde")
+- [chrono](https://crates.io/crates/chrono "chrono")
+- [image](https://crates.io/crates/image "image")
+- [lazy_static](https://crates.io/crates/lazy_static "lazy_static")
+- [rand](https://crates.io/crates/rand "rand")
+- [regex](https://crates.io/crates/regex "regex")
+- [rust-argon2](https://crates.io/crates/rust-argon2 "rust-argon2")
+- [serde_json](https://crates.io/crates/serde_json "serde_json")
+- [slug](https://crates.io/crates/slug "slug")
+- [validator](https://crates.io/crates/validator "validator")
+- [uuid](https://crates.io/crates/uuid "uuid")
+- [metamorphose](https://crates.io/crates/metamorphose "metamorphose")
 
 ## Model attributes
 ***( all attributes are optional )***
