@@ -120,7 +120,7 @@
 | input_type | "text" | The value is determined automatically. |
 | name | empty string | The value is determined automatically. |
 | value | empty string | Default value. |
-| accept | empty string | Example: accept = "image/jpeg,image/png,image/gif" |
+| accept | empty string | Example: "image/jpeg,image/png,image/gif" |
 | placeholder | empty string | Displays prompt text. |
 | pattern | empty string | Validating a field using a client-side regex. |
 | minlength | 0 | The minimum number of characters allowed in the text. |
