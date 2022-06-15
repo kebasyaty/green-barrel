@@ -16,11 +16,11 @@
 > The model can create, update, and delete documents in collections.
 
 ## Requirements
-- quote
-- regex
-- serde_json
-- syn
-- serde
+- [quote](https://crates.io/crates/quote "quote")
+- [regex](https://crates.io/crates/regex "regex")
+- [serde_json](https://crates.io/crates/serde_json "serde_json")
+- [syn](https://crates.io/crates/syn "syn")
+- [serde](https://crates.io/crates/serde "serde")
 
 ## Changelog
 - **v0.4.8** *Fixed error message text.*
