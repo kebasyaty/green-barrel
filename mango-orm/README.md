@@ -110,7 +110,7 @@
 | Option< f64 > | "hiddenF64" |
 
 ## Field attributes
-***( "widget" - required attribute )***
+***( all attributes are optional )***
 
 | Attribute: |Default: | Description: |
 | :------------ | :------------ | :------------ |
