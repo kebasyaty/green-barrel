@@ -1,14 +1,14 @@
 //! Adapts the Structure for database queries using a programmatic or web interface.
 
-use crate::{
-    models::validation::{AdditionalValidation, ValidationModel},
-    widgets::{html_controls::HtmlControls, Widget},
-};
-
 pub mod caching;
 pub mod db_query_api;
 pub mod output_data;
 pub mod validation;
+
+use crate::{
+    models::validation::{AdditionalValidation, ValidationModel},
+    widgets::{html_controls::HtmlControls, Widget},
+};
 
 // MODEL
 // #################################################################################################
