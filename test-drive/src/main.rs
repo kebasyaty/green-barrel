@@ -1,8 +1,8 @@
-use mango_orm::*;
-//use mongodb::bson::doc;
-
 mod mango_models;
 mod settings;
+
+use mango_orm::*;
+//use mongodb::bson::doc;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -209,10 +209,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
     // println!("\n\nWidget map:\n{:?}", result.to_wig());
-    println!(
-        "\n\nSlug:\n{}",
-        result.to_wig().get("slug").unwrap().value
-    );
+    println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
     //println!("\n\nJson:\n{}", result.to_json()?);
     //println!("\n\nHtml:\n{}\n", result.to_html());
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
@@ -245,10 +242,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
         // println!("\n\nWidget map:\n{:?}", result.to_wig());
-        println!(
-            "\n\nSlug:\n{}",
-            result.to_wig().get("slug").unwrap().value
-        );
+        println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
         //println!("\n\nJson:\n{}", result.to_json()?);
         //println!("\n\nHtml:\n{}", result.to_html());
         //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
