@@ -57,35 +57,35 @@ pub struct ImageData {
 // *************************************************************************************************
 #[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {
-    pub id: String, // Example: "model-name--field-name" ( The value is determined automatically )
-    pub label: String,
-    pub widget: String,
+    pub id: String, // The value is determined automatically. Format: "model-name--field-name"
+    pub label: String, // Web form field name.
+    pub widget: String, // Widget name.
     pub input_type: String, // The value is determined automatically.
-    pub name: String,       // The value is determined automatically.
-    pub value: String,
-    pub accept: String, // Hint: accept="image/jpeg,image/png,image/gif"
-    pub placeholder: String,
+    pub name: String, // The value is determined automatically.
+    pub value: String, // Default value.
+    pub accept: String, // Example: "image/jpeg,image/png,image/gif"
+    pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex.
-    pub minlength: usize,
-    pub maxlength: usize,
-    pub required: bool,
-    pub checked: bool, // For <input type="checkbox">
-    pub unique: bool,
-    pub disabled: bool,
-    pub readonly: bool,
-    pub step: String,
-    pub min: String,
-    pub max: String,
-    pub options: Vec<(String, String)>, // Hint: <value, Title> - <option value="value1">Title 1</option>
-    pub thumbnails: Vec<(String, u32)>,
-    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["title", "hash"]"#
-    pub is_hide: bool,
-    pub other_attrs: String, // "autofocus tabindex=\"some number\" size=\"some number\" ..."
-    pub css_classes: String, // Hint: "class-name class-name ..."
-    pub hint: String,
-    pub warning: String,    // The value is determined automatically.
-    pub error: String,      // The value is determined automatically.
-    pub common_msg: String, // Messages common to the entire Form.
+    pub minlength: usize, // The minimum number of characters allowed in the text.
+    pub maxlength: usize, // The maximum number of characters allowed in the text.
+    pub required: bool, // Mandatory field.
+    pub checked: bool, // A pre-activated radio button or checkbox.
+    pub unique: bool, // The unique value of a field in a collection.
+    pub disabled: bool, // Blocks access and modification of the element.
+    pub readonly: bool, // Specifies that the field cannot be modified by the user.
+    pub step: String, // Increment step for numeric fields.
+    pub min: String, // The lower value for entering a number or date.
+    pub max: String, // The top value for entering a number or date.
+    pub options: Vec<(String, String)>, // <option value="value1">Title 1</option> - Example: r#"[[1,"Volvo"], [2,"Saab"]]"#
+    pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
+    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#
+    pub is_hide: bool,             // Hide field from user.
+    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some number""#
+    pub css_classes: String, // Example: "class-name-1 class-name-2"
+    pub hint: String,        // Additional explanation for the user.
+    pub warning: String,     // The value is determined automatically.
+    pub error: String,       // The value is determined automatically.
+    pub common_msg: String, // Messages common to the entire Form. The value is determined automatically.
 }
 
 impl Default for Widget {
