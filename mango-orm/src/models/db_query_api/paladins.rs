@@ -130,13 +130,13 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document (info file) not found.",
+                        "Model: `{}` > Field: `{}` > Method: `delete_file()` -> Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `delete_file()` : Document not found.",
+                    "Model: `{}` > Field: `{}` > Method: `delete_file()` -> Document not found.",
                     model_name, field_name
                 ))?
             }
@@ -244,7 +244,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
                         Err(format!(
-                            "Model: `{}` >  Method: `add_validation()` : \
+                            "Model: `{}` >  Method: `add_validation()` -> \
                             The `{}` field is missing from the model.",
                             model_name, field_name
                         ))?
@@ -274,7 +274,7 @@ pub trait QPaladins: ToModel + CachingModel {
             // Check field value.
             if pre_json_value.is_none() {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `check()` : This field is missing.",
+                    "Model: `{}` > Field: `{}` > Method: `check()` -> This field is missing.",
                     model_name, field_name
                 ))?
             }
@@ -325,7 +325,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 .unwrap();
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
                                     Required field.",
                                     model_name, field_name
                                 ))?
@@ -357,7 +357,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                    "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -374,7 +374,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                    "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -401,7 +401,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
                                 model_name, field_name, msg
                             ))?
                         }
@@ -419,7 +419,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                             .unwrap();
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                        "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
                                         model_name,
                                         field_name,
                                         err.to_string()
@@ -438,7 +438,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` > Method: `check()` : {}",
+                                "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
                                 model_name,
                                 field_name,
                                 err.to_string()
@@ -700,7 +700,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                     mongodb::bson::Bson::Double(val)
                                 }
                                 _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
                                         Unsupported widget type - `{}`.",
                                     model_name, field_name, widget_type
                                 ))?,
@@ -773,7 +773,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                         .collect::<Vec<mongodb::bson::Bson>>(),
                                 ),
                                 _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
                                         Unsupported widget type - `{}`.",
                                     model_name, field_name, widget_type
                                 ))?,
@@ -854,7 +854,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
-                            `check()` : Incorrectly filled field. \
+                            `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
                             model_name, field_name
@@ -866,7 +866,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     if !f_path.exists() || !f_path.is_file() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
-                                `check()` : File is missing - {}",
+                                `check()` -> File is missing - {}",
                             model_name, field_name, path
                         ))?
                     }
@@ -975,7 +975,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
-                            `check()` : Incorrectly filled field. \
+                            `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
                             model_name, field_name
@@ -986,7 +986,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     if !f_path.exists() || !f_path.is_file() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Method: \
-                                `check()` : File is missing - {}",
+                                `check()` -> File is missing - {}",
                             model_name, field_name, field_value.path
                         ))?
                     }
@@ -1270,7 +1270,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     }
                 }
                 _ => Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `check()` : \
+                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
                      Unsupported widget type - `{}`.",
                     model_name, field_name, widget_type
                 ))?,
@@ -1419,7 +1419,7 @@ pub trait QPaladins: ToModel + CachingModel {
                     let hash: Option<String> = self.get_hash();
                     if hash.is_none() {
                         Err(format!(
-                            "Model: `{}` > Method: save() : \
+                            "Model: `{}` > Method: save() -> \
                         An empty `hash` field is not allowed when updating.",
                             meta.model_name
                         ))?
@@ -1494,7 +1494,7 @@ pub trait QPaladins: ToModel + CachingModel {
             let hash: Option<String> = self.get_hash();
             if hash.is_none() {
                 Err(format!(
-                    "Model: `{}` > Field: `hash` : \
+                    "Model: `{}` > Field: `hash` -> \
                         An empty `hash` field is not allowed when deleting.",
                     meta.model_name
                 ))?
@@ -1529,7 +1529,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` : Document (info file) not found.",
+                                         Method: `delete()` -> Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -1567,7 +1567,7 @@ pub trait QPaladins: ToModel + CachingModel {
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` : Document (info file) not found.",
+                                         Method: `delete()` -> Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -1578,7 +1578,7 @@ pub trait QPaladins: ToModel + CachingModel {
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Method: `delete()` : Document not found.",
+                    "Model: `{}` > Method: `delete()` -> Document not found.",
                     meta.model_name
                 ))?
             }
@@ -1649,7 +1649,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let hash: Option<String> = self.get_hash();
         if hash.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` : \
+                "Model: `{}` > Method: `verify_password` -> \
                 An empty `hash` field is not allowed when updating.",
                 meta.model_name
             ))?
@@ -1664,7 +1664,7 @@ pub trait QPaladins: ToModel + CachingModel {
         // We check that for the given `hash` a document is found in the database.
         if doc.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` : \
+                "Model: `{}` > Method: `verify_password` -> \
                 There is no document in the database for the current `hash` value.",
                 meta.model_name
             ))?
@@ -1675,7 +1675,7 @@ pub trait QPaladins: ToModel + CachingModel {
         let password_hash = doc.get("password");
         if password_hash.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` : \
+                "Model: `{}` > Method: `verify_password` -> \
                 The password field is missing.",
                 meta.model_name
             ))?

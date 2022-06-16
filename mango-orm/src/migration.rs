@@ -177,12 +177,12 @@ impl<'a> Monitor<'a> {
         for meta in self.models.iter() {
             // Service_name validation.
             if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
-                Err(format!("Model: `{}` : Service_name - Valid characters: _ a-z A-Z 0-9 \
+                Err(format!("Model: `{}` -> Service_name - Valid characters: _ a-z A-Z 0-9 \
                              ; Max size: 31 ; First character: _ a-z A-Z", meta.model_name))?;
             }
             // Database name validation.
             if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$").unwrap().is_match(meta.database_name.as_str()) {
-                Err(format!("Model: `{}` : Database name - Valid characters: _ a-z A-Z 0-9 \
+                Err(format!("Model: `{}` -> Database name - Valid characters: _ a-z A-Z 0-9 \
                              ; Max size: 21 ; First character: _ a-z A-Z", meta.model_name))?;
             }
             //
@@ -285,7 +285,7 @@ impl<'a> Monitor<'a> {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
                                     Err(format!("Service: `{}` > Model: `{}` > Field: `{}` > \
-                                                 Method: `migrat()` : \
+                                                 Method: `migrat()` -> \
                                                  Can't get field value from database.",
                                         meta.service_name, meta.model_name, field))?;
                                 }
@@ -313,7 +313,7 @@ impl<'a> Monitor<'a> {
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATE.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` > \
-                                                                 Method: `widgets()` : Incorrect date \
+                                                                 Method: `widgets()` -> Incorrect date \
                                                                  format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
                                                 }
@@ -336,7 +336,7 @@ impl<'a> Monitor<'a> {
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATETIME.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` > \
-                                                                 Method: `widgets()` : \
+                                                                 Method: `widgets()` -> \
                                                                  Incorrect date and time format. \
                                                                  Example: 1970-02-28T00:00",
                                                         meta.service_name, meta.model_name
@@ -410,7 +410,7 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
-                                                                 `migrat()` : Check the `path` and `url` \
+                                                                 `migrat()` -> Check the `path` and `url` \
                                                                  attributes in the `default` field parameter.",
                                                         meta.model_name, field)
                                                     )?
@@ -420,7 +420,7 @@ impl<'a> Monitor<'a> {
                                                 let f_path = std::path::Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
-                                                                 `migrat()` : File is missing - {}",
+                                                                 `migrat()` -> File is missing - {}",
                                                         meta.model_name, field, path)
                                                     )?
                                                 }
@@ -448,7 +448,7 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
-                                                                 `migrat()` : Check the `path` and `url` \
+                                                                 `migrat()` -> Check the `path` and `url` \
                                                                  attributes in the `default` field parameter.",
                                                         meta.model_name, field
                                                     ))?
@@ -458,7 +458,7 @@ impl<'a> Monitor<'a> {
                                                 let f_path = std::path::Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
-                                                                 `migrat()` : File is missing - {}",
+                                                                 `migrat()` -> File is missing - {}",
                                                         meta.model_name, field, path
                                                     ))?
                                                 }
@@ -531,7 +531,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         _ => {
                                             Err(format!("Service: `{}` > Model: `{}` > Method: \
-                                                         `migrat()` : Invalid Widget type.",
+                                                         `migrat()` -> Invalid Widget type.",
                                                 meta.service_name, meta.model_name
                                             ))?
                                         }
@@ -548,14 +548,14 @@ impl<'a> Monitor<'a> {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
                                     Err(format!("Service: `{}` > Model: `{}` > \
-                                                 Method: `migrat()` : \
+                                                 Method: `migrat()` -> \
                                                  Cannot get field value from database for \
                                                  field `{}`.",
                                         meta.service_name, meta.model_name, field
                                     ))?
                                 }
                             } else {
-                                Err(format!("Service: `{}` > Model: `{}` > Method: `migrat()` : \
+                                Err(format!("Service: `{}` > Model: `{}` > Method: `migrat()` -> \
                                              Key `{}` was not found in the document from \
                                              the database.",
                                     meta.service_name, meta.model_name, field

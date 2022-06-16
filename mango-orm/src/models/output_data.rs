@@ -232,7 +232,7 @@ impl OutputDataOne {
                         mongodb::bson::Bson::String(bson_val.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
-                            "Model: `{}` > Field: `hash` > Method: `find_one()` : \
+                            "Model: `{}` > Field: `hash` > Method: `find_one()` -> \
                                 Missing document identifier `_id`.",
                             model_name.clone()
                         ))?
@@ -369,7 +369,7 @@ impl OutputDataMany {
                                     )
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `hash` > Method: `find_one()` : \
+                                        "Model: `{}` > Field: `hash` > Method: `find_one()` -> \
                                         Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
@@ -462,7 +462,7 @@ impl OutputDataMany {
                                     )
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `hash` > Method: `find_one()` : \
+                                        "Model: `{}` > Field: `hash` > Method: `find_one()` -> \
                                         Missing document identifier `_id`.",
                                         data.5.clone()
                                     ))?
