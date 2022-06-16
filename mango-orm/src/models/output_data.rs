@@ -178,8 +178,8 @@ impl OutputDataOne {
     /// ```
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one_and_delete(filter, None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
@@ -198,8 +198,8 @@ impl OutputDataOne {
     /// ```
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one_and_delete(filter, None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
@@ -310,7 +310,7 @@ impl OutputDataMany {
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
     ///     // Get raw documents. (Hint: For non-standard operations.)
-    ///     println!("{:?}", routput_data.raw_docs()?);
+    ///     println!("{:?}", output_data.raw_docs()?);
     /// }
     /// ```
     ///
@@ -338,7 +338,7 @@ impl OutputDataMany {
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
     ///     // Get prepared documents. (Hint: For page template.)
-    ///     println!("{:?}", routput_data.docs()?);
+    ///     println!("{:?}", output_data.docs()?);
     /// }
     /// ```
     ///
@@ -433,7 +433,7 @@ impl OutputDataMany {
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
     ///     // Get json-line. (Hint: For Ajax.)
-    ///     println!("{:?}", routput_data.json()?);
+    ///     println!("{:?}", output_data.json()?);
     /// }
     /// ```
     ///
@@ -539,7 +539,7 @@ impl OutputDataMany {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
-    ///     ...
+    ///     Some code ...
     /// }
     /// ```
     ///
@@ -556,7 +556,7 @@ impl OutputDataMany {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
-    ///     println!("{}", routput_data.count()?);
+    ///     println!("{}", output_data.count()?);
     /// }
     /// ```
     ///
