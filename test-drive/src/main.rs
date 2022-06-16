@@ -121,7 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get boolean.
     println!(
         "Documents availability: {}\n\n",
-        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.bool()
+        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.is_valid()
     );
     // Get raw document.
     println!(
@@ -131,24 +131,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get prepared document.
     println!(
         "Prepared document:\n{:?}\n\n",
-        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.doc()?
+        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.to_doc()?
     );
     // Get json-line.
     println!(
         "Json-line:\n{}\n\n",
-        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.json()?
+        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?.to_json()?
     );
     // Get Model instance.
     println!(
         "Model instance:\n{:?}\n\n",
         mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?
-            .model::<mango_models::UserProfile>()?
+            .to_model_instance::<mango_models::UserProfile>()?
     );
 
     // Get boolean.
     println!(
         "Documents availability: {}\n\n",
-        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.bool()?
+        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.is_valid()?
     );
     // Get the number of documents.
     println!(
@@ -163,12 +163,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get prepared document.
     println!(
         "Prepared document:\n{:?}\n\n",
-        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.docs()?
+        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.to_docs()?
     );
     // Get json-line.
     println!(
         "Json-line:\n{}\n\n",
-        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.json()?
+        mango_models::UserProfile::find(Some(doc! {"username": "Rust"}), None)?.to_json()?
     );
     */
 
