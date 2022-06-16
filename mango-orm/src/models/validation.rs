@@ -74,7 +74,8 @@ pub trait ValidationModel {
             }
             "inputPassword" => {
                 if !REGEX_IS_PASSWORD.is_match(value) {
-                    Err("Size 8-256 chars ; Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (")?
+                    Err("Size 8-256 chars.<br>\
+                        Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (")?
                 }
             }
             "inputDate" => {
