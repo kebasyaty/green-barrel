@@ -473,7 +473,7 @@
         // Get MongoDB ID from hash-line
         // println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //
-        println!("\nSlug: {:?}\n", result.to_wig().get("slug").unwrap().value);
+        println!("\nSlug: {}\n", result.to_wig().get("slug").unwrap().value);
         //
         // Printing errors to the console ( for development ).
         result.print_err();
