@@ -210,7 +210,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
     // println!("\n\nWidget map:\n{:?}", result.to_wig());
     println!(
-        "\n\nSlug:\n{:?}",
+        "\n\nSlug:\n{}",
         result.to_wig().get("slug").unwrap().value
     );
     //println!("\n\nJson:\n{}", result.to_json()?);
@@ -246,7 +246,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
         // println!("\n\nWidget map:\n{:?}", result.to_wig());
         println!(
-            "\n\nSlug:\n{:?}",
+            "\n\nSlug:\n{}",
             result.to_wig().get("slug").unwrap().value
         );
         //println!("\n\nJson:\n{}", result.to_json()?);
