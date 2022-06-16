@@ -77,8 +77,8 @@ pub trait QCommon: ToModel + CachingModel {
     /// ```
     /// let query = doc!{};
     /// let output_data  = UserProfile::delete_many(query, None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
@@ -121,8 +121,8 @@ pub trait QCommon: ToModel + CachingModel {
     /// ```
     /// let query = doc!{};
     /// let output_data  = UserProfile::delete_one(query, None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
@@ -163,10 +163,10 @@ pub trait QCommon: ToModel + CachingModel {
     /// # Example:
     ///
     /// ```
-    /// let ield_name = "";
+    /// let field_name = "";
     /// let filter = doc!{};
     /// let output_data  = UserProfile::distinct(field_name, Some(filter), None)?;
-    /// println!("{:?}", routput_data);
+    /// println!("{:?}", output_data);
     /// ```
     ///
     fn distinct(
@@ -193,8 +193,8 @@ pub trait QCommon: ToModel + CachingModel {
     ///
     /// ```
     /// let output_data  = UserProfile::drop(None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
@@ -263,13 +263,13 @@ pub trait QCommon: ToModel + CachingModel {
     /// let output_data  = UserProfile::find(Some(filter), None)?;
     /// if output_data.is_valid()? {
     ///     // Get raw documents. (Hint: For non-standard operations.)
-    ///     println!("{:?}", routput_data.raw_docs()?);
+    ///     println!("{:?}", output_data.raw_docs()?);
     ///     // Get prepared documents. (Hint: For page template.)
-    ///     println!("{:?}", routput_data.docs()?);
+    ///     println!("{:?}", output_data.docs()?);
     ///     // Get json-line. (Hint: For Ajax.)
-    ///     println!("{:?}", routput_data.json()?);
+    ///     println!("{:?}", output_data.json()?);
     ///     // Get the number of documents.
-    ///     println!("{}", routput_data.count()?);
+    ///     println!("{}", output_data.count()?);
     /// }
     /// ```
     ///
@@ -360,7 +360,7 @@ pub trait QCommon: ToModel + CachingModel {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one_and_delete(filter, None)?;
     /// if !routput_data.is_valid() {
-    ///     println!("{}", routput_data.err_msg());
+    ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
