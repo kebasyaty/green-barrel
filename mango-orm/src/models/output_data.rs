@@ -52,11 +52,11 @@ impl OutputDataOne {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one(filter, None)?;
     /// if output_data.is_valid()? {
-    ///     println!("{:?}", output_data.doc()?);
+    ///     println!("{:?}", output_data.to_doc()?);
     /// }
     /// ```
     ///
-    pub fn doc(&self) -> Result<mongodb::bson::document::Document, Box<dyn std::error::Error>> {
+    pub fn to_doc(&self) -> Result<mongodb::bson::document::Document, Box<dyn std::error::Error>> {
         match self {
             Self::Doc(data) => {
                 if data.0.is_some() {
@@ -83,11 +83,11 @@ impl OutputDataOne {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one(filter, None)?;
     /// if output_data.is_valid()? {
-    ///     println!("{}", output_data.json()?);
+    ///     println!("{}", output_data.to_json()?);
     /// }
     /// ```
     ///
-    pub fn json(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::Doc(data) => {
                 if data.0.is_some() {
@@ -116,11 +116,11 @@ impl OutputDataOne {
     /// let filter = doc!{};
     /// let output_data  = UserProfile::find_one(filter, None)?;
     /// if output_data.is_valid()? {
-    ///     println!("{:?}", output_data.model::<UserProfile>()?);
+    ///     println!("{:?}", output_data.to_model_instance::<UserProfile>()?);
     /// }
     /// ```
     ///
-    pub fn model<T>(&self) -> Result<T, mongodb::bson::de::Error>
+    pub fn to_model_instance<T>(&self) -> Result<T, mongodb::bson::de::Error>
     where
         T: serde::de::DeserializeOwned,
     {
@@ -338,11 +338,11 @@ impl OutputDataMany {
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
     ///     // Get prepared documents. (Hint: For page template.)
-    ///     println!("{:?}", output_data.docs()?);
+    ///     println!("{:?}", output_data.to_docs()?);
     /// }
     /// ```
     ///
-    pub fn docs(
+    pub fn to_docs(
         &self,
     ) -> Result<Vec<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
         match self {
@@ -433,11 +433,11 @@ impl OutputDataMany {
     /// let output_data  = UserProfile::find(filter, None)?;
     /// if output_data.is_valid()? {
     ///     // Get json-line. (Hint: For Ajax.)
-    ///     println!("{:?}", output_data.json()?);
+    ///     println!("{:?}", output_data.to_json()?);
     /// }
     /// ```
     ///
-    pub fn json(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::Data(data) => {
                 let mut cursor = data.2.find(data.0.clone(), data.1.clone())?;
