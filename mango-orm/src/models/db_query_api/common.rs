@@ -1,17 +1,13 @@
 //! Common query methods.
 
 use crate::{
-    models::{
-        caching::CachingModel,
-        output_data::{OutputDataMany, OutputDataOne},
-        Meta, ToModel,
-    },
+    models::{caching::CachingModel, output_data::OutputData, Meta, ToModel},
     widgets::output_data::OutputDataForm,
 };
 
-pub trait QCommon: ToModel + CachingModel {
+pub trait QCommon: ToModel + CachingModel + OutputData {
     /// Runs an aggregation operation.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.aggregate
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
     /// See the documentation https://docs.mongodb.com/manual/aggregation/ for more information on aggregations.
     // ---------------------------------------------------------------------------------------------
     ///
@@ -19,8 +15,8 @@ pub trait QCommon: ToModel + CachingModel {
     ///
     /// ```
     /// let pipeline = doc!{};
-    /// let document  = UserProfile::aggregate(pipeline, None)?;
-    /// println!("{:?}", document);
+    /// let documents  = UserProfile::aggregate(pipeline, None)?;
+    /// println!("{:?}", documents);
     /// ```
     ///
     fn aggregate(
@@ -42,7 +38,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Gets the number of documents matching filter.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.count_documents
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.count_documents
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -69,7 +65,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Deletes all documents stored in the collection matching query.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.delete_many
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_many
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -113,7 +109,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Deletes up to one document found matching query.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.delete_one
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_one
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -157,7 +153,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Finds the distinct values of the field specified by field_name across the collection.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.distinct
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.distinct
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -186,7 +182,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Drops the collection, deleting all data and indexes stored in it.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.drop
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.drop
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -206,8 +202,7 @@ pub trait QCommon: ToModel + CachingModel {
         let meta: Meta = form_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
-        // Error message for the client.
-        // (Main use for admin panel.)
+        //
         let err_msg = if is_permission_delete {
             String::new()
         } else {
@@ -228,7 +223,7 @@ pub trait QCommon: ToModel + CachingModel {
     }
 
     /// Estimates the number of documents in the collection using collection metadata.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.estimated_document_count
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.estimated_document_count
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -252,31 +247,23 @@ pub trait QCommon: ToModel + CachingModel {
         Ok(coll.estimated_document_count(options)?)
     }
 
-    /// Finds the documents in the collection matching filter.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.find
+    /// Finds the documents in the collection matching filter and return document list.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let filter = doc!{};
-    /// let output_data  = UserProfile::find(Some(filter), None)?;
-    /// if output_data.is_valid()? {
-    ///     // Get raw documents. (Hint: For non-standard operations.)
-    ///     println!("{:?}", output_data.raw_docs()?);
-    ///     // Get prepared documents. (Hint: For page template.)
-    ///     println!("{:?}", output_data.docs()?);
-    ///     // Get json-line. (Hint: For Ajax.)
-    ///     println!("{:?}", output_data.json()?);
-    ///     // Get the number of documents.
-    ///     println!("{}", output_data.count()?);
+    /// let result = UserProfile::find_many_to_doc(None, None)?;
+    /// if result.is_some() {
+    ///     println!("{:?}", result.unwrap());
     /// }
     /// ```
     ///
-    fn find(
+    fn find_many_to_doc(
         filter: Option<mongodb::bson::document::Document>,
         options: Option<mongodb::options::FindOptions>,
-    ) -> Result<OutputDataMany, Box<dyn std::error::Error>> {
+    ) -> Result<Option<Vec<mongodb::bson::document::Document>>, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -298,41 +285,88 @@ pub trait QCommon: ToModel + CachingModel {
                 .build()
         };
         // Execute query.
-        Ok(OutputDataMany::Data((
+        let docs = Self::many_to_docs(
             filter,
             Some(options),
             coll,
-            meta.ignore_fields.clone(),
-            meta.map_widget_type.clone(),
-            meta.model_name.clone(),
-        )))
+            &meta.ignore_fields.clone(),
+            &meta.map_widget_type.clone(),
+            meta.model_name.clone().as_str(),
+        )?;
+        if !docs.is_empty() {
+            Ok(Some(docs))
+        } else {
+            Ok(None)
+        }
     }
 
-    /// Finds a single document in the collection matching filter.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.find_one
+    /// Finds the documents in the collection matching filter and return in JSON format.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let filter = doc!{};
-    /// let output_data  = UserProfile::find_one(Some(filter), None)?;
-    /// if output_data.is_valid()? {
-    ///     // Get raw document. (Hint: For non-standard operations.)
-    ///     println!("{:?}", output_data.raw_doc()?);
-    ///     // Get prepared document. (Hint: For page template.)
-    ///     println!("{:?}", output_data.doc()?);
-    ///     //Get json-line. (Hint: For Ajax.)
-    ///     println!("{}", output_data.json()?);
-    ///     // Get model instance. (Hint: For the `save`, `update`, `delete` operations.)
-    ///     println!("{:?}", output_data.model::<UserProfile>()?);
+    /// let result = UserProfile::find_many_to_json(None, None);
+    /// if result.is_ok() {
+    ///     println!("{}", result?);
     /// }
     /// ```
     ///
-    fn find_one(
+    fn find_many_to_json(
         filter: Option<mongodb::bson::document::Document>,
+        options: Option<mongodb::options::FindOptions>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = form_cache.meta;
+        // Access collection
+        let coll: mongodb::sync::Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Apply parameter `db_query_docs_limit`.
+        // (if necessary)
+        let options = if options.is_some() {
+            let mut options = options.unwrap();
+            if options.limit == Some(0_i64) {
+                options.limit = Some(meta.db_query_docs_limit as i64);
+            }
+            options
+        } else {
+            mongodb::options::FindOptions::builder()
+                .limit(Some(meta.db_query_docs_limit as i64))
+                .build()
+        };
+        // Execute query.
+        Self::many_to_json(
+            filter,
+            Some(options),
+            coll,
+            &meta.ignore_fields.clone(),
+            &meta.map_widget_type.clone(),
+            meta.model_name.clone().as_str(),
+        )
+    }
+
+    /// Finds a single document in the collection matching filter and return in Doc format.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_to_doc(filter, None)?;
+    /// if result.is_some() {
+    ///     println!("{:?}", result.unwrap());
+    /// }
+    /// ```
+    ///
+    fn find_one_to_doc(
+        filter: mongodb::bson::document::Document,
         options: Option<mongodb::options::FindOneOptions>,
-    ) -> Result<OutputDataOne, Box<dyn std::error::Error>> {
+    ) -> Result<Option<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -341,45 +375,113 @@ pub trait QCommon: ToModel + CachingModel {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        Ok(OutputDataOne::Doc((
+        Self::one_to_doc(
             coll.find_one(filter, options)?,
-            meta.ignore_fields.clone(),
-            meta.map_widget_type.clone(),
-            meta.model_name.clone(),
-            String::new(),
-        )))
+            &meta.ignore_fields.clone(),
+            &meta.map_widget_type.clone(),
+            meta.model_name.clone().as_str(),
+        )
     }
 
-    /// Atomically finds up to one document in the collection matching filter and deletes it.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.find_one_and_delete
+    /// Finds a single document in the collection matching filter and return in JSON format.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let filter = doc!{};
-    /// let output_data  = UserProfile::find_one_and_delete(filter, None)?;
-    /// if !routput_data.is_valid() {
-    ///     println!("{}", output_data.err_msg());
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_to_json(filter, None);
+    /// if result.is_ok() {
+    ///     println!("{}", result);
     /// }
     /// ```
     ///
-    fn find_one_and_delete(
+    fn find_one_to_json(
+        filter: mongodb::bson::document::Document,
+        options: Option<mongodb::options::FindOneOptions>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = form_cache.meta;
+        // Access collection.
+        let coll: mongodb::sync::Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        Self::one_to_json(
+            coll.find_one(filter, options)?,
+            &meta.ignore_fields.clone(),
+            &meta.map_widget_type.clone(),
+            meta.model_name.clone().as_str(),
+        )
+    }
+
+    /// Finds a single document in the collection matching filter and return as model instance.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_to_model_instance::<UserProfile>(filter, None);
+    /// if result.is_ok() {
+    ///     println!("{:?}", result.unwrap());
+    /// }
+    /// ```
+    ///
+    fn find_one_to_model_instance<T>(
+        filter: mongodb::bson::document::Document,
+        options: Option<mongodb::options::FindOneOptions>,
+    ) -> Result<Option<T>, mongodb::bson::de::Error>
+    where
+        T: serde::de::DeserializeOwned,
+    {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query().unwrap();
+        let meta: Meta = form_cache.meta;
+        // Access collection.
+        let coll: mongodb::sync::Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        Self::to_model_instance::<T>(
+            coll.find_one(filter, options).unwrap(),
+            &meta.ignore_fields.clone(),
+            &meta.map_widget_type.clone(),
+            meta.model_name.clone().as_str(),
+        )
+    }
+
+    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Returns the deleted document (in Doc format).
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_and_delete_to_doc(filter, None);
+    /// if result.is_ok() {
+    ///     println!("{:?}", result.unwrap());
+    /// }
+    /// ```
+    ///
+    fn find_one_and_delete_to_doc(
         filter: mongodb::bson::document::Document,
         options: Option<mongodb::options::FindOneAndDeleteOptions>,
-    ) -> Result<OutputDataOne, Box<dyn std::error::Error>> {
+    ) -> Result<Option<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
-        // Error message for the client.
-        // (Main use for admin panel.)
-        let err_msg = if is_permission_delete {
-            String::new()
-        } else {
-            "It is forbidden to perform delete.".to_string()
-        };
         //
         if is_permission_delete {
             // Access collection.
@@ -387,22 +489,105 @@ pub trait QCommon: ToModel + CachingModel {
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
-            Ok(OutputDataOne::Doc((
+            Self::one_to_doc(
                 coll.find_one_and_delete(filter, options)?,
-                meta.ignore_fields.clone(),
-                meta.map_widget_type.clone(),
-                meta.model_name.clone(),
-                String::new(),
-            )))
+                &meta.ignore_fields.clone(),
+                &meta.map_widget_type.clone(),
+                meta.model_name.clone().as_str(),
+            )
         } else {
+            Err("It is forbidden to perform delete.".to_string())?
+        }
+    }
+
+    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Returns the deleted document (in JSON format).
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_and_delete_to_json(filter, None);
+    /// if result.is_ok() {
+    ///     println!("{}", result);
+    /// }
+    /// ```
+    ///
+    fn find_one_and_delete_to_json(
+        filter: mongodb::bson::document::Document,
+        options: Option<mongodb::options::FindOneAndDeleteOptions>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = form_cache.meta;
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        //
+        if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
             // Execute query.
-            Ok(OutputDataOne::Doc((
-                Some(mongodb::bson::document::Document::new()),
-                Vec::new(),
-                std::collections::HashMap::new(),
-                String::new(),
-                err_msg.clone(),
-            )))
+            Self::one_to_json(
+                coll.find_one_and_delete(filter, options)?,
+                &meta.ignore_fields.clone(),
+                &meta.map_widget_type.clone(),
+                meta.model_name.clone().as_str(),
+            )
+        } else {
+            Err("It is forbidden to perform delete.".to_string())?
+        }
+    }
+
+    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Returns the deleted document (in Model instance).
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_and_delete_to_model_instance::<UserProfile>(filter, None)?;
+    /// if result.is_some() {
+    ///     println!("{}", result.unwrap());
+    /// }
+    /// ```
+    ///
+    fn find_one_and_delete_to_model_instance<T>(
+        filter: mongodb::bson::document::Document,
+        options: Option<mongodb::options::FindOneAndDeleteOptions>,
+    ) -> Result<Option<T>, mongodb::bson::de::Error>
+    where
+        T: serde::de::DeserializeOwned,
+    {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query().unwrap();
+        let meta: Meta = form_cache.meta;
+        // Get permission to delete the document.
+        let is_permission_delete: bool = meta.is_del_docs;
+        //
+        if is_permission_delete {
+            // Access collection.
+            let coll: mongodb::sync::Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Execute query.
+            Self::to_model_instance::<T>(
+                coll.find_one_and_delete(filter, options).unwrap(),
+                &meta.ignore_fields.clone(),
+                &meta.map_widget_type.clone(),
+                meta.model_name.clone().as_str(),
+            )
+        } else {
+            Err("It is forbidden to perform delete.".to_string()).unwrap()
         }
     }
 
