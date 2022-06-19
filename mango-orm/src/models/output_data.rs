@@ -1,4 +1,4 @@
-//! A set of helper methods for the common.rs module.
+//! Helper methods for generating output data (use in the common.rs module).
 
 pub trait OutputData {
     /// Get prepared document.
