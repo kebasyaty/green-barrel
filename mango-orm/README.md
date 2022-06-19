@@ -185,7 +185,7 @@
 ## Example Usage:
 #### Cargo.toml
     [dependencies]
-    mango-orm = "0.7"
+    mango-orm = "0.8"
     metamorphose = "0.4"
     regex = "1.5.6"
     serde_json = "1.0.81"
