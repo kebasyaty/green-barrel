@@ -438,9 +438,9 @@
         };
     
         // Get form with default data.
-        // println!("Widget map:\n{:?}", models::UserProfile::to_wig().unwrap());
-        // println!("Json-line:\n{}", models::UserProfile::to_json().unwrap());
-        // println!("Html code:\n{}", models::UserProfile::to_html().unwrap());
+        // println!("Widget map:\n{:?}", models::UserProfile::to_wig()?);
+        // println!("Json-line:\n{}", models::UserProfile::to_json()?);
+        // println!("Html code:\n{}", models::UserProfile::to_html()?);
         //
         //
         // Check.
