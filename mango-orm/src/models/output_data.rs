@@ -1,6 +1,6 @@
-//! Helper methods for generating output data (use in the common.rs module).
+//! Helper methods for converting output data (use in the common.rs module).
 
-pub trait OutputData {
+pub trait Converters {
     /// Get prepared document.
     /// Hint: For page template.
     fn one_to_doc(

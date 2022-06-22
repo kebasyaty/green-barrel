@@ -13,8 +13,8 @@ pub use crate::{
     migration::Monitor,
     models::{
         caching::CachingModel,
-        db_query_api::{common::QCommon, paladins::QPaladins},
-        output_data::OutputData,
+        db_query_api::{commons::QCommons, paladins::QPaladins},
+        output_data::Converters,
         validation::{AdditionalValidation, ValidationModel},
         Meta, ToModel,
     },

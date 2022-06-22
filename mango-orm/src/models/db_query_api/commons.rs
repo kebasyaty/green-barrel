@@ -1,11 +1,11 @@
 //! Common query methods.
 
 use crate::{
-    models::{caching::CachingModel, output_data::OutputData, Meta, ToModel},
+    models::{caching::CachingModel, output_data::Converters, Meta, ToModel},
     widgets::output_data::OutputDataForm,
 };
 
-pub trait QCommon: ToModel + CachingModel + OutputData {
+pub trait QCommons: ToModel + CachingModel + Converters {
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
     /// See the documentation https://docs.mongodb.com/manual/aggregation/ for more information on aggregations.

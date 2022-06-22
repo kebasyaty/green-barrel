@@ -1,4 +1,4 @@
 //! Database Query API
 
-pub mod common;
+pub mod commons;
 pub mod paladins;

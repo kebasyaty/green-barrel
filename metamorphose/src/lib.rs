@@ -709,10 +709,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         // Database Query API
         // *****************************************************************************************
-        // Output data types for database queries.
-        impl OutputData for #model_name {}
+        // Output data converters for database queries.
+        impl Converters for #model_name {}
         // Common database query methods.
-        impl QCommon for #model_name {}
+        impl QCommons for #model_name {}
         // Query methods for a Model instance.
         impl QPaladins for #model_name {}
 
