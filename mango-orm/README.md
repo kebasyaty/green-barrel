@@ -451,7 +451,7 @@
             ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
         };
 
-        // Get form with default data.
+        // Get data for form fields.
         // println!("Widget map:\n{:?}", models::UserProfile::to_wig()?);
         // println!("Json-line:\n{}", models::UserProfile::to_json()?);
         // println!("Html code:\n{}", models::UserProfile::to_html()?);
@@ -471,9 +471,11 @@
         // println!("\n\nBSON::Document:\n{:?}", result.to_doc());
         //
         // Printing errors to the console ( for development ).
-        // result.print_err();
+        // if !result.is_valid() {
+        //     result.print_err();
+        // }
         //
-        // Get form with current data.
+        // Get data for form fields.
         // println!("Widget map:\n{:?}", result.to_wig());
         // println!("Json-line:\n{}", result.to_json()?);
         // println!("Html code:\n{}", result.to_html());
@@ -490,15 +492,16 @@
         println!("\nSlug: {}\n", result.to_wig().get("slug").unwrap().value);
         //
         // Printing errors to the console ( for development ).
-        result.print_err();
-        //
-        // Get form with current data.
+        // if !result.is_valid() {
+        //     result.print_err();
+        // }
+        // Get data for form fields.
         // println!("Widget map:\n{:?}", result.to_wig());
         // println!("Json-line:\n{}", result.to_json()?);
         // println!("Html code:\n{}", result.to_html());
         //
         //
-        // Remove document from collection.
+        // Remove document from collection in database.
         // let output_data  = user.delete(None)?;
         // if !output_data.is_valid() {
         //     println!("{}", output_data.err_msg());
