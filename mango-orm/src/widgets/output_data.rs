@@ -1,8 +1,9 @@
-//! Output data types for Forms.
+//! Output data for QOaladins.
 
+///
 use crate::widgets::{html_controls::HtmlControls, Widget};
 
-/// Output data type
+/// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]
 pub enum OutputDataForm {
     Check(

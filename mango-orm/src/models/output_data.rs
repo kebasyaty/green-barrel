@@ -1,6 +1,6 @@
-//! Output data.
+//! Output data for QCommons.
 
-/// Helper methods for converting output data (use in the common.rs module).
+/// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
     /// Get prepared document.
     /// Hint: For page template.
