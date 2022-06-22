@@ -509,7 +509,7 @@
 
 ## Changelog
 
-- **v0.8.0** _Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data**._
+- **v0.8.0** _Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**._
 - **v0.7.4** _Updated **README.md**, added model attributes._
 - **v0.7.0** \*Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#\***
 - **v0.6.30** _Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies._
