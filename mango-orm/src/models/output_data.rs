@@ -1,5 +1,6 @@
-//! Helper methods for converting output data (use in the common.rs module).
+//! Output data.
 
+/// Helper methods for converting output data (use in the common.rs module).
 pub trait Converters {
     /// Get prepared document.
     /// Hint: For page template.
