@@ -207,13 +207,10 @@ pub trait Converters {
             );
         }
 
-        Ok(format!(
-            "[{}]",
-            if !json_line.is_empty() {
-                &json_line[1..]
-            } else {
-                ""
-            }
-        ))
+        if !json_line.is_empty() {
+            Ok(format!("[{}]", &json_line[1..]))
+        } else {
+            Ok(String::new())
+        }
     }
 }
