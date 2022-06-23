@@ -378,12 +378,17 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        Self::one_to_doc(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields.clone(),
-            &meta.map_widget_type.clone(),
-            meta.model_name.clone().as_str(),
-        )
+        let doc = coll.find_one(filter, options)?;
+        if doc.is_some() {
+            Ok(Some(Self::to_prepared_doc(
+                doc.unwrap(),
+                &meta.ignore_fields.clone(),
+                &meta.map_widget_type.clone(),
+                meta.model_name.clone().as_str(),
+            )?))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Finds a single document in the collection matching filter and
