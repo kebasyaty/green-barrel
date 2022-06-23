@@ -420,12 +420,22 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        Self::one_to_json(
+        let widget_map = Self::one_to_wig(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
             &meta.map_widget_type,
-            meta.model_name.as_str(),
-        )
+            &meta.model_name,
+            &meta.fields_name,
+            form_cache.map_widgets.clone(),
+        )?;
+
+        if widget_map.is_some() {
+            let json = serde_json::to_value(widget_map.unwrap())?;
+            let json = serde_json::to_string(&json)?;
+            Ok(json)
+        } else {
+            Ok(String::new())
+        }
     }
 
     /// Finds a single document in the collection matching filter and
@@ -456,7 +466,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        Self::one_doc_to_wig(
+        Self::one_to_wig(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
             &meta.map_widget_type,
@@ -589,12 +599,19 @@ pub trait QCommons: ToModel + CachingModel + Converters {
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
-            Self::one_to_json(
-                coll.find_one_and_delete(filter, options)?,
-                &meta.ignore_fields,
-                &meta.map_widget_type,
-                meta.model_name.as_str(),
-            )
+            let doc = coll.find_one_and_delete(filter, options)?;
+            if doc.is_some() {
+                Ok(mongodb::bson::Bson::Document(Self::to_prepared_doc(
+                    doc.unwrap(),
+                    &meta.ignore_fields,
+                    &meta.map_widget_type,
+                    meta.model_name.as_str(),
+                )?)
+                .into_relaxed_extjson()
+                .to_string())
+            } else {
+                Ok(String::new())
+            }
         } else {
             Err("It is forbidden to perform delete.".to_string())?
         }

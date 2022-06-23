@@ -5,30 +5,8 @@ use mongodb::bson::spec::ElementType;
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get json-line from document ( presence of widgets ).
-    fn one_to_json(
-        doc: Option<mongodb::bson::document::Document>,
-        ignore_fields: &Vec<String>,
-        map_widget_type: &std::collections::HashMap<String, String>,
-        model_name: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
-        //
-        if doc.is_some() {
-            Ok(mongodb::bson::Bson::Document(Self::to_prepared_doc(
-                doc.unwrap(),
-                ignore_fields,
-                map_widget_type,
-                model_name,
-            )?)
-            .into_relaxed_extjson()
-            .to_string())
-        } else {
-            Ok(String::new())
-        }
-    }
-
     /// Get widgets map from document ( presence of widgets ).
-    fn one_doc_to_wig(
+    fn one_to_wig(
         doc: Option<mongodb::bson::document::Document>,
         ignore_fields: &Vec<String>,
         map_widget_type: &std::collections::HashMap<String, String>,
