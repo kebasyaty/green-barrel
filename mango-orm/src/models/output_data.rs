@@ -81,13 +81,14 @@ pub trait Converters {
                             ElementType::Boolean => {
                                 widget.checked = doc.as_bool().unwrap();
                             }
+                            ElementType::Array => {
+                                widget.value =
+                                    serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
+                            }
                             _ => match widget.widget.as_str() {
                                 "inputFile" | "inputImage" => {
                                     widget.value =
                                         serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
-                                }
-                                "selectTextMult" => {
-                                    //
                                 }
                                 _ => Err(format!(
                                     "Model: `{}` > Method: `one_doc_to_wig()` \
