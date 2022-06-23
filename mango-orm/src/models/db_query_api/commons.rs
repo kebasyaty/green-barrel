@@ -247,7 +247,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         Ok(coll.estimated_document_count(options)?)
     }
 
-    /// Finds the documents in the collection matching filter and return document list.
+    /// Finds the documents in the collection matching filter and
+    /// return document list ( missing widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
@@ -300,7 +301,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         }
     }
 
-    /// Finds the documents in the collection matching filter and return in JSON format.
+    /// Finds the documents in the collection matching filter and
+    /// return in JSON format ( missing widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
@@ -348,7 +350,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         )
     }
 
-    /// Finds a single document in the collection matching filter and return in Doc format.
+    /// Finds a single document in the collection matching filter and
+    /// return in Doc format ( missing widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -418,7 +421,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         )
     }
 
-    /// Finds a single document in the collection matching filter and return as model instance.
+    /// Finds a single document in the collection matching filter and
+    /// return as model instance ( missing widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -456,7 +460,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         )
     }
 
-    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Atomically finds up to one document in the collection matching filter and
+    /// deletes it ( missing widgets ).
     /// Returns the deleted document (in Doc format).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
     // ---------------------------------------------------------------------------------------------
@@ -500,7 +505,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         }
     }
 
-    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Atomically finds up to one document in the collection matching filter and
+    /// deletes it ( missing widgets ).
     /// Returns the deleted document (in JSON format).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
     // ---------------------------------------------------------------------------------------------
@@ -544,7 +550,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         }
     }
 
-    /// Atomically finds up to one document in the collection matching filter and deletes it.
+    /// Atomically finds up to one document in the collection matching filter and
+    /// deletes it ( missing widgets ).
     /// Returns the deleted document (in Model instance).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
     // ---------------------------------------------------------------------------------------------
