@@ -291,9 +291,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             filter,
             Some(options),
             coll,
-            &meta.ignore_fields.clone(),
-            &meta.map_widget_type.clone(),
-            meta.model_name.clone().as_str(),
+            &meta.ignore_fields,
+            &meta.map_widget_type,
+            meta.model_name.as_str(),
         )?;
         if !docs.is_empty() {
             Ok(Some(docs))
@@ -345,9 +345,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             filter,
             Some(options),
             coll,
-            &meta.ignore_fields.clone(),
-            &meta.map_widget_type.clone(),
-            meta.model_name.clone().as_str(),
+            &meta.ignore_fields,
+            &meta.map_widget_type,
+            meta.model_name.as_str(),
         )
     }
 
@@ -383,9 +383,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         if doc.is_some() {
             Ok(Some(Self::to_prepared_doc(
                 doc.unwrap(),
-                &meta.ignore_fields.clone(),
-                &meta.map_widget_type.clone(),
-                meta.model_name.clone().as_str(),
+                &meta.ignore_fields,
+                &meta.map_widget_type,
+                meta.model_name.as_str(),
             )?))
         } else {
             Ok(None)
@@ -422,9 +422,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Execute query.
         Self::one_to_json(
             coll.find_one(filter, options)?,
-            &meta.ignore_fields.clone(),
-            &meta.map_widget_type.clone(),
-            meta.model_name.clone().as_str(),
+            &meta.ignore_fields,
+            &meta.map_widget_type,
+            meta.model_name.as_str(),
         )
     }
 
@@ -458,9 +458,10 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Execute query.
         Self::one_doc_to_wig(
             coll.find_one(filter, options)?,
-            &meta.ignore_fields.clone(),
-            &meta.model_name.clone(),
-            &meta.fields_name.clone(),
+            &meta.ignore_fields,
+            &meta.map_widget_type,
+            &meta.model_name,
+            &meta.fields_name,
             form_cache.map_widgets.clone(),
         )
     }
@@ -498,9 +499,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Execute query.
         Self::to_model_instance::<T>(
             coll.find_one(filter, options).unwrap(),
-            &meta.ignore_fields.clone(),
-            &meta.map_widget_type.clone(),
-            meta.model_name.clone().as_str(),
+            &meta.ignore_fields,
+            &meta.map_widget_type,
+            meta.model_name.as_str(),
         )
     }
 
@@ -542,9 +543,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             if doc.is_some() {
                 Ok(Some(Self::to_prepared_doc(
                     doc.unwrap(),
-                    &meta.ignore_fields.clone(),
-                    &meta.map_widget_type.clone(),
-                    meta.model_name.clone().as_str(),
+                    &meta.ignore_fields,
+                    &meta.map_widget_type,
+                    meta.model_name.as_str(),
                 )?))
             } else {
                 Ok(None)
@@ -590,9 +591,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             // Execute query.
             Self::one_to_json(
                 coll.find_one_and_delete(filter, options)?,
-                &meta.ignore_fields.clone(),
-                &meta.map_widget_type.clone(),
-                meta.model_name.clone().as_str(),
+                &meta.ignore_fields,
+                &meta.map_widget_type,
+                meta.model_name.as_str(),
             )
         } else {
             Err("It is forbidden to perform delete.".to_string())?
@@ -638,9 +639,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             // Execute query.
             Self::to_model_instance::<T>(
                 coll.find_one_and_delete(filter, options).unwrap(),
-                &meta.ignore_fields.clone(),
-                &meta.map_widget_type.clone(),
-                meta.model_name.clone().as_str(),
+                &meta.ignore_fields,
+                &meta.map_widget_type,
+                meta.model_name.as_str(),
             )
         } else {
             Err("It is forbidden to perform delete.".to_string()).unwrap()
