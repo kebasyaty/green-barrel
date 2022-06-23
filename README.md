@@ -511,22 +511,22 @@
     }
 
 ## Changelog
-
-- **v0.8.0** _Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**._
-- **v0.7.4** _Updated **README.md**, added model attributes._
-- **v0.7.0** \*Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#\***
-- **v0.6.30** _Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies._
-- **v0.6.16** _Renamed the Forms module to Widgets._
-- **v0.6.15** _Updating by version of dependencies._
-- **v0.6.10** _Updated test for dynamic widgets._
-- **v0.6.7** _Removed **hiddenSlug** field._
-- **v0.6.6** _Added **is_hide** parameter for Widgets._
-- **v0.6.5** _In the check() method, errors are redirected to the console, for fields of hidden type._
-- **v0.6.4** _Fixes for fields of slug type._
-- **v0.6** _1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration._
-- **v0.5.4** _Optimization for creating thumbnails, for default images._
-- **v0.5.3** _Improved cleaning of orphaned files._
-- **v0.5** _Support for the Form macro has been removed._
+- **v0.8.26** *Add find_one_to_wig method. See documentation: **mango_orm > models > db_query_api > commons > QCommons**.*
+- **v0.8.0** *Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**.*
+- **v0.7.4** *Updated **README.md**, added model attributes.*
+- **v0.7.0** *Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#\***
+- **v0.6.30** *Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies.*
+- **v0.6.16** *Renamed the Forms module to Widgets.*
+- **v0.6.15** *Updating by version of dependencies.*
+- **v0.6.10** *Updated test for dynamic widgets.*
+- **v0.6.7** *Removed **hiddenSlug** field.*
+- **v0.6.6** *Added **is_hide** parameter for Widgets.*
+- **v0.6.5** *In the check() method, errors are redirected to the console, for fields of hidden type.*
+- **v0.6.4** *Fixes for fields of slug type.*
+- **v0.6** *1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration.*
+- **v0.5.4** *Optimization for creating thumbnails, for default images.*
+- **v0.5.3** *Improved cleaning of orphaned files.*
+- **v0.5** *Support for the Form macro has been removed.*
 
 ## License
 
