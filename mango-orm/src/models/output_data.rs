@@ -41,7 +41,7 @@ pub trait Converters {
             .into_relaxed_extjson()
             .to_string())
         } else {
-            Ok(String::from("{}"))
+            Ok(String::new())
         }
     }
 
