@@ -31,7 +31,6 @@ pub trait Converters {
     fn one_doc_to_wig(
         doc: Option<mongodb::bson::document::Document>,
         ignore_fields: &Vec<String>,
-        map_widget_type: &std::collections::HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
         mut map_widgets: std::collections::HashMap<String, Widget>,

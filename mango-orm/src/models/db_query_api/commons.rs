@@ -1,5 +1,6 @@
 //! Common query methods.
 
+use crate::widgets::Widget;
 use crate::{
     models::{caching::CachingModel, output_data::Converters, Meta, ToModel},
     widgets::output_data::OutputDataForm,
@@ -424,6 +425,43 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             &meta.ignore_fields.clone(),
             &meta.map_widget_type.clone(),
             meta.model_name.clone().as_str(),
+        )
+    }
+
+    /// Finds a single document in the collection matching filter and
+    /// return widget map.
+    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// use mongodb::bson::doc;
+    /// let filter = doc!{"username", "user_1"};
+    /// let result  = UserProfile::find_one_to_wig(filter, None)?;
+    /// if result.is_some()) {
+    ///     println!("{:?}", result.unwrap());
+    /// }
+    /// ```
+    ///
+    fn find_one_to_wig(
+        filter: mongodb::bson::document::Document,
+        options: Option<mongodb::options::FindOneOptions>,
+    ) -> Result<Option<std::collections::HashMap<String, Widget>>, Box<dyn std::error::Error>> {
+        // Get cached Model data.
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = form_cache.meta;
+        // Access collection.
+        let coll: mongodb::sync::Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        Self::one_doc_to_wig(
+            coll.find_one(filter, options)?,
+            &meta.ignore_fields.clone(),
+            &meta.model_name.clone(),
+            &meta.fields_name.clone(),
+            form_cache.map_widgets.clone(),
         )
     }
 
