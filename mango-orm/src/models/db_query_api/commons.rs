@@ -386,7 +386,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         )
     }
 
-    /// Finds a single document in the collection matching filter and return in JSON format.
+    /// Finds a single document in the collection matching filter and
+    /// return in JSON format ( presence of widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
