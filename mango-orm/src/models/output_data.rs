@@ -1,5 +1,8 @@
 //! Output data for QCommons.
 
+use crate::widgets::Widget;
+use mongodb::bson::spec::ElementType;
+
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
     /// Get prepared document.
@@ -45,6 +48,63 @@ pub trait Converters {
         }
     }
 
+    ///
+    fn one_doc_to_wig(
+        doc: Option<mongodb::bson::document::Document>,
+        ignore_fields: &Vec<String>,
+        map_widget_type: &std::collections::HashMap<String, String>,
+        model_name: &str,
+        fields_name: &Vec<String>,
+        mut map_widgets: std::collections::HashMap<String, Widget>,
+    ) -> Result<Option<std::collections::HashMap<String, Widget>>, Box<dyn std::error::Error>> {
+        if doc.is_some() {
+            let prepared_doc =
+                Self::to_prepared_doc(doc.unwrap(), ignore_fields, map_widget_type, model_name)?;
+            for field in fields_name {
+                if !ignore_fields.contains(field) {
+                    let mut widget = map_widgets.get_mut(field).unwrap();
+                    let doc = prepared_doc.get(field).unwrap();
+                    if doc.element_type() != ElementType::Null {
+                        match doc.element_type() {
+                            ElementType::String => {
+                                widget.value = doc.as_str().unwrap().to_string();
+                            }
+                            ElementType::Int32 => {
+                                widget.value = doc.as_i32().unwrap().to_string();
+                            }
+                            ElementType::Int64 => {
+                                widget.value = doc.as_i64().unwrap().to_string();
+                            }
+                            ElementType::Double => {
+                                widget.value = doc.as_f64().unwrap().to_string();
+                            }
+                            ElementType::Boolean => {
+                                widget.checked = doc.as_bool().unwrap();
+                            }
+                            _ => match widget.widget.as_str() {
+                                "inputFile" | "inputImage" => {
+                                    widget.value =
+                                        serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
+                                }
+                                "selectTextMult" => {
+                                    //
+                                }
+                                _ => Err(format!(
+                                    "Model: `{}` > Method: `one_doc_to_wig()` \
+                                    -> Invalid Widget type.",
+                                    model_name
+                                ))?,
+                            },
+                        }
+                    }
+                }
+            }
+            Ok(Some(map_widgets))
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Get model instance.
     /// Hint: For the `save`, `update`, `delete` operations.
     fn to_model_instance<T>(
@@ -61,16 +121,15 @@ pub trait Converters {
                 Self::to_prepared_doc(doc.unwrap(), ignore_fields, map_widget_type, model_name)
                     .unwrap();
             let mut prepared_doc = mongodb::bson::document::Document::new();
-            let bson_null = &mongodb::bson::Bson::Null;
             for (field_name, widget_type) in map_widget_type {
                 if ignore_fields.contains(&field_name) {
                     continue;
                 }
-                let bson_val = doc.get(field_name.as_str()).unwrap();
+                let bson_val = doc.get(field_name).unwrap();
                 if widget_type == "inputFile" || widget_type == "inputImage" {
                     prepared_doc.insert(
                         field_name,
-                        if bson_val != bson_null {
+                        if bson_val.element_type() != ElementType::Null {
                             let result =
                                 serde_json::to_string(&bson_val.clone().into_relaxed_extjson())
                                     .unwrap();
@@ -98,7 +157,6 @@ pub trait Converters {
         map_widget_type: &std::collections::HashMap<String, String>,
         model_name: &str,
     ) -> Result<mongodb::bson::document::Document, Box<dyn std::error::Error>> {
-        let bson_null = &mongodb::bson::Bson::Null;
         let mut prepared_doc = mongodb::bson::document::Document::new();
         for (field_name, widget_type) in map_widget_type {
             if ignore_fields.contains(&field_name) {
@@ -108,7 +166,7 @@ pub trait Converters {
                 let bson_val = doc.get("_id").unwrap();
                 prepared_doc.insert(
                     field_name,
-                    if bson_val != bson_null {
+                    if bson_val.element_type() != ElementType::Null {
                         mongodb::bson::Bson::String(bson_val.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
@@ -122,7 +180,7 @@ pub trait Converters {
                 let bson_val = doc.get(field_name.as_str()).unwrap();
                 prepared_doc.insert(
                     field_name,
-                    if bson_val != bson_null {
+                    if bson_val.element_type() != ElementType::Null {
                         mongodb::bson::Bson::String(String::new())
                     } else {
                         mongodb::bson::Bson::Null
@@ -132,7 +190,7 @@ pub trait Converters {
                 let bson_val = doc.get(field_name.as_str()).unwrap();
                 prepared_doc.insert(
                     field_name,
-                    if bson_val != bson_null {
+                    if bson_val.element_type() != ElementType::Null {
                         mongodb::bson::Bson::String(
                             bson_val.as_datetime().unwrap().to_rfc3339()[..10].into(),
                         )
@@ -144,7 +202,7 @@ pub trait Converters {
                 let bson_val = doc.get(field_name.as_str()).unwrap();
                 prepared_doc.insert(
                     field_name,
-                    if bson_val != bson_null {
+                    if bson_val.element_type() != ElementType::Null {
                         mongodb::bson::Bson::String(
                             bson_val.as_datetime().unwrap().to_rfc3339()[..16].into(),
                         )
