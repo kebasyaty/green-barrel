@@ -157,7 +157,7 @@ pub trait Converters {
                     },
                 );
             } else if widget_type == "inputPassword" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
+                let bson_val = doc.get(field_name).unwrap();
                 prepared_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
@@ -167,7 +167,7 @@ pub trait Converters {
                     },
                 );
             } else if widget_type == "inputDate" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
+                let bson_val = doc.get(field_name).unwrap();
                 prepared_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
@@ -179,7 +179,7 @@ pub trait Converters {
                     },
                 );
             } else if widget_type == "inputDateTime" {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
+                let bson_val = doc.get(field_name).unwrap();
                 prepared_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
@@ -191,7 +191,7 @@ pub trait Converters {
                     },
                 );
             } else {
-                let bson_val = doc.get(field_name.as_str()).unwrap();
+                let bson_val = doc.get(field_name).unwrap();
                 prepared_doc.insert(field_name, bson_val);
             }
         }
