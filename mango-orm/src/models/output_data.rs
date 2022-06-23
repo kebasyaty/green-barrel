@@ -5,7 +5,7 @@ use mongodb::bson::spec::ElementType;
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get prepared document.
+    /// Get prepared document ( missing widgets ).
     /// Hint: For page template.
     fn one_to_doc(
         doc: Option<mongodb::bson::document::Document>,
@@ -26,7 +26,7 @@ pub trait Converters {
         }
     }
 
-    /// Get json-line.
+    /// Get json-line from document ( presence of widgets ).
     fn one_to_json(
         doc: Option<mongodb::bson::document::Document>,
         ignore_fields: &Vec<String>,
@@ -48,7 +48,7 @@ pub trait Converters {
         }
     }
 
-    ///
+    /// Get widgets map from document ( presence of widgets ).
     fn one_doc_to_wig(
         doc: Option<mongodb::bson::document::Document>,
         ignore_fields: &Vec<String>,
@@ -106,7 +106,7 @@ pub trait Converters {
         }
     }
 
-    /// Get model instance.
+    /// Get model instance from document.
     /// Hint: For the `save`, `update`, `delete` operations.
     fn to_model_instance<T>(
         doc: Option<mongodb::bson::document::Document>,
@@ -149,7 +149,7 @@ pub trait Converters {
         }
     }
 
-    /// Get prepared doc.
+    /// Get prepared document.
     /// Hint: Converting data types to model-friendly formats.
     // ---------------------------------------------------------------------------------------------
     fn to_prepared_doc(
@@ -220,7 +220,7 @@ pub trait Converters {
         Ok(prepared_doc)
     }
 
-    /// Get prepared documents.
+    /// Get prepared documents ( missing widgets ).
     fn many_to_docs(
         filter: Option<mongodb::bson::document::Document>,
         find_options: Option<mongodb::options::FindOptions>,
@@ -241,7 +241,7 @@ pub trait Converters {
         Ok(docs)
     }
 
-    /// Get json-line.
+    /// Get json-line from document list ( missing widgets ).
     fn many_to_json(
         filter: Option<mongodb::bson::document::Document>,
         find_options: Option<mongodb::options::FindOptions>,
