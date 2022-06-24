@@ -12,7 +12,7 @@ use crate::settings::{
 #[Model(
     is_del_docs = false,
     is_use_add_valid = true,
-    is_use_hooks = false,
+    is_use_hooks = true,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -155,6 +155,32 @@ impl AdditionalValidation for UserProfile {
         }
 
         Ok(error_map)
+    }
+}
+
+impl Hooks for UserProfile {
+    fn pre_create(&self) {
+        println!("!!!Pre Create!!!");
+    }
+    //
+    fn post_create(&self) {
+        println!("!!!Post Create!!!");
+    }
+    //
+    fn pre_update(&self) {
+        println!("!!!Pre Update!!!");
+    }
+    //
+    fn post_update(&self) {
+        println!("!!!Post Update!!!");
+    }
+    //
+    fn pre_delete(&self) {
+        println!("!!!Pre Delet!!!");
+    }
+    //
+    fn post_delete(&self) {
+        println!("!!!Post Delet!!!");
     }
 }
 

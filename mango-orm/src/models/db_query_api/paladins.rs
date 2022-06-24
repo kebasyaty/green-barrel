@@ -1456,7 +1456,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     //
                     coll.update_one(query, update, options_update.clone())?;
                     // Run hook.
-                    self.post_update();
+                    if stop_step == 0 {
+                        self.post_update();
+                    }
                 }
             }
 

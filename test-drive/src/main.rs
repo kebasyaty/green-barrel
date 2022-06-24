@@ -65,8 +65,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = mango_models::UserProfile {
-        username: Some("user_15".to_string()),
-        email: Some("user_15_@noreply.net".to_string()),
+        username: Some("user_18".to_string()),
+        email: Some("user_18_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -118,41 +118,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
     // Update document in database.
-    // user.username = Some("user_x".to_string());
-    //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    let result = user.save(None, None)?;
-    println!("\n\n\nBoolean: {}", result.is_valid());
-    println!("Hash: {}", result.hash()?);
-    // Printing errors to the console ( for development ).
-    if !result.is_valid() {
-        result.print_err();
+    if result.is_valid() {
+        // user.username = Some("user_x".to_string());
+        //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+        //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
+        let result = user.save(None, None)?;
+        println!("\n\nBoolean: {}", result.is_valid());
+        println!("Hash: {}", result.hash()?);
+        // Printing errors to the console ( for development ).
+        if !result.is_valid() {
+            result.print_err();
+        }
+        //println!("Remove document: {:?}", user.delete(None)?);
+        //println!("\nObject Id:\n{:?}\n", result.object_id()?);
+        // println!("\n\nWidget map:\n{:?}", result.to_wig());
+        //println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
+        //println!("\n\nJson:\n{}", result.to_json()?);
+        //println!("\n\nHtml:\n{}", result.to_html());
+        //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
+        /*
+        println!(
+            "Update password (false): {}",
+            user.update_password("123456789", "123456789", None, None)?
+        );
+        println!(
+            "Update password (true): {}",
+            user.update_password("12345678", "123456789", None, None)?
+        );
+        println!(
+            "Verify password (true): {}",
+            user.verify_password("123456789", None)?
+        );
+        println!(
+            "Verify password (false): {}",
+            user.verify_password("12345678", None)?
+        );
+        */
     }
-    //println!("Remove document: {:?}", user.delete(None)?);
-    //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-    // println!("\n\nWidget map:\n{:?}", result.to_wig());
-    //println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
-    //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}", result.to_html());
-    //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
-    /*
-    println!(
-        "Update password (false): {}",
-        user.update_password("123456789", "123456789", None, None)?
-    );
-    println!(
-        "Update password (true): {}",
-        user.update_password("12345678", "123456789", None, None)?
-    );
-    println!(
-        "Verify password (true): {}",
-        user.verify_password("123456789", None)?
-    );
-    println!(
-        "Verify password (false): {}",
-        user.verify_password("12345678", None)?
-    );
-    */
 
     /*
     // Remove document.
