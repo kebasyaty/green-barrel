@@ -14,6 +14,7 @@ pub use crate::{
     models::{
         caching::CachingModel,
         db_query_api::{commons::QCommons, paladins::QPaladins},
+        hooks::Hooks,
         output_data::Converters,
         validation::{AdditionalValidation, ValidationModel},
         Meta, ToModel,

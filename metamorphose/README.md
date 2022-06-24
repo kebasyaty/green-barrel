@@ -23,6 +23,7 @@
 - [serde](https://crates.io/crates/serde "serde")
 
 ## Changelog
+- **v0.5.0** *Added model attribute is_use_hooks. See documentation: **mango_orm > models > db_query_api > paladins > QPaladins**.*
 - **v0.4.8** *Fixed error message text.*
 - **v0.4.6** *Updating by version of dependencies.*
 - **v0.4.4** *Optimization of the validation mechanism.*

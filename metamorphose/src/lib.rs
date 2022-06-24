@@ -52,7 +52,7 @@ use syn::{parse_macro_input, Attribute, AttributeArgs, DeriveInput, MetaNameValu
 ///        readonly = true,
 ///        is_hide = true,
 ///        hint = "To create a human readable url",
-///        slug_sources = r#"["username"]"#
+///        slug_sources = r#"["hash", "username"]"#
 ///    )]
 ///    pub slug: Option<String>,
 ///    //
@@ -166,6 +166,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     };
     let mut trans_map_widgets: TransMapWidgets = Default::default();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
+    let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -258,6 +259,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         panic!(
                             "Model: `{}` -> Could not determine value for \
                             parameter `is_use_add_valid`. Use the `bool` type.",
+                            model_name.to_string(),
+                        )
+                    }
+                } else if mnv.path.is_ident("is_use_hooks") {
+                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        if lit_bool.value {
+                            add_trait_hooks = quote! {};
+                        }
+                    } else {
+                        panic!(
+                            "Model: `{}` -> Could not determine value for \
+                            parameter `is_use_hooks`. Use the `bool` type.",
                             model_name.to_string(),
                         )
                     }
@@ -715,6 +728,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         impl QCommons for #model_name {}
         // Query methods for a Model instance.
         impl QPaladins for #model_name {}
+        // Methods that are called at different stages when accessing the database.
+        #add_trait_hooks
 
         // Rendering HTML-controls code for Form.
         // *****************************************************************************************
