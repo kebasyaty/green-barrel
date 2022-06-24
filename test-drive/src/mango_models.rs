@@ -12,6 +12,7 @@ use crate::settings::{
 #[Model(
     is_del_docs = false,
     is_use_add_valid = true,
+    is_use_hooks = false,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]

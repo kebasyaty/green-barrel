@@ -2,7 +2,7 @@ mod mango_models;
 mod settings;
 
 use mango_orm::*;
-use mongodb::bson::doc;
+//use mongodb::bson::doc;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -64,7 +64,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test model instance.
     // *********************************************************************************************
-    /*
     let mut user = mango_models::UserProfile {
         username: Some("user_30".to_string()),
         email: Some("user_30_@noreply.net".to_string()),
@@ -73,7 +72,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         is_staff: Some(false),
         ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
     };
-    */
 
     // Check.
     /*
@@ -87,11 +85,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nHtml:\n{}", result.to_html());
 
     // Create document in database.
-    //let result = user.save(None, None)?;
-    //println!("Boolean: {}", result.is_valid());
-    //println!("Hash: {}", result.hash()?);
+    let result = user.save(None, None)?;
+    println!("Boolean: {}", result.is_valid());
+    println!("Hash: {}", result.hash()?);
     // Printing errors to the console ( for development ).
-    //result.print_err();
+    if result.is_valid() {
+        result.print_err();
+    }
     //
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
     // println!("\n\nWidget map:\n{:?}", result.to_wig());
