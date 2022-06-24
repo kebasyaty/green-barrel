@@ -89,7 +89,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
     // Printing errors to the console ( for development ).
-    if result.is_valid() {
+    if !result.is_valid() {
         result.print_err();
     }
     //
