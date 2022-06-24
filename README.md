@@ -430,32 +430,32 @@
             Ok(error_map)
         }
     }
-    //
+
     impl Hooks for UserProfile {
         fn pre_create(&self) {
             println!("!!!Pre Create!!!");
         }
-       //
-       fn post_create(&self) {
-           println!("!!!Post Create!!!");
+        //
+        fn post_create(&self) {
+            println!("!!!Post Create!!!");
         }
         //
-		fn pre_update(&self) {
-			println!("!!!Pre Update!!!");
-		}
-		//
-		fn post_update(&self) {
-			println!("!!!Post Update!!!");
-		}
-		//
-		fn pre_delete(&self) {
-			println!("!!!Pre Delet!!!");
-		}
-		//
-		fn post_delete(&self) {
-			println!("!!!Post Delet!!!");
-		}
-	}
+        fn pre_update(&self) {
+            println!("!!!Pre Update!!!");
+        }
+        //
+        fn post_update(&self) {
+            println!("!!!Post Update!!!");
+        }
+        //
+        fn pre_delete(&self) {
+            println!("!!!Pre Delet!!!");
+        }
+        //
+        fn post_delete(&self) {
+            println!("!!!Post Delet!!!");
+        }
+    }
 
 #### src/main.rs
 
