@@ -45,7 +45,8 @@
 | is_up_docs          | true         | Update documents in the database.                                           |
 | is_del_docs         | true         | Delete documents from the database.                                         |
 | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).         |
-| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**. |
+| is_use_add_valid | false | Allows additional validation - **impl AdditionalValidation for ModelName**. |
+| is_use_hooks | true | Allows hooks methods - **impl Hooks for ModelName**. |
 
 ## Match field types and widget types
 
@@ -195,8 +196,8 @@
 #### Cargo.toml
 
     [dependencies]
-    mango-orm = "0.8"
-    metamorphose = "0.4"
+    mango-orm = "0.9"
+    metamorphose = "0.5"
     regex = "1.5.6"
     serde_json = "1.0.81"
 
