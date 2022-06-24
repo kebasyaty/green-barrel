@@ -118,13 +118,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
     // Update document in database.
-    //if result.is_valid() {
     // user.username = Some("user_x".to_string());
     //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
     //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
-    //let result = user.save(None, None)?;
-    //println!("\n\n\nBoolean: {}", result.is_valid());
-    //println!("Hash: {}", result.hash()?);
+    let result = user.save(None, None)?;
+    println!("\n\n\nBoolean: {}", result.is_valid());
+    println!("Hash: {}", result.hash()?);
+    // Printing errors to the console ( for development ).
+    if !result.is_valid() {
+        result.print_err();
+    }
     //println!("Remove document: {:?}", user.delete(None)?);
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
     // println!("\n\nWidget map:\n{:?}", result.to_wig());
@@ -150,7 +153,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         user.verify_password("12345678", None)?
     );
     */
-    //}
 
     /*
     // Remove document.
