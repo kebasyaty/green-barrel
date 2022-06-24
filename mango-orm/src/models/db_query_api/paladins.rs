@@ -1629,8 +1629,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user_profile = UserProfile {...};
-    /// let field_value = user_profile.password;
+    /// let user = UserProfile {...};
+    /// let field_value = user.password;
     /// println!("{}", user_profile.create_password_hash(field_value)?);
     /// ```
     ///
@@ -1729,10 +1729,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user_profile = UserProfile {...};
+    /// let user = UserProfile {...};
     /// let old_password = "12345678";
     /// let new_password = "qBfJHCW2C9EH3_RW";
-    /// assert!(user_profile.create_password_hash(old_password, new_password, None)?);
+    /// assert!(user.create_password_hash(old_password, new_password, None)?);
     /// ```
     ///
     fn update_password(
