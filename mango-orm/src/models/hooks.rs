@@ -1,10 +1,8 @@
 //! Methods that are called at different stages when accessing the database.
 
-use crate::models::db_query_api::paladins::QPaladins;
-
 /// Hooks methods.
-pub trait Hooks: QPaladins {
-    /// Вызывается перед созданием нового документа в базе данных.
+pub trait Hooks {
+    /// Called before a new document is created in the database.
     ///
     //// # Example:
     ///
@@ -18,13 +16,13 @@ pub trait Hooks: QPaladins {
     /// }
     ///
     /// impl Hooks for ModelName {
-    ///     fn pre_save(&self) {
+    ///     fn pre_create(&self) {
     ///         Some code ...
     ///    }
     /// }
     /// ```
     ///
-    fn pre_save(&self) {
+    fn pre_create(&self) {
         //
     }
     /// Called after a new document has been created in the database.
@@ -41,13 +39,13 @@ pub trait Hooks: QPaladins {
     /// }
     ///
     /// impl Hooks for ModelName {
-    ///     fn post_save(&self) {
+    ///     fn post_create(&self) {
     ///         Some code ...
     ///    }
     /// }
     /// ```
     ///
-    fn post_save(&self) {
+    fn post_create(&self) {
         //
     }
     /// Called before updating an existing document in the database.

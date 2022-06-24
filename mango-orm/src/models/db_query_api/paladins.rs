@@ -1,7 +1,7 @@
 //! Query methods for a Model instance.
 
 use crate::{
-    models::{caching::CachingModel, Meta, ToModel},
+    models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
     widgets::{output_data::OutputDataForm, FileData, ImageData, Widget},
 };
 use rand::Rng;
@@ -10,7 +10,7 @@ use std::convert::TryFrom;
 use std::{fs, path::Path};
 use uuid::Uuid;
 
-pub trait QPaladins: ToModel + CachingModel {
+pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// Json-line for admin panel.
     /// ( converts a widget map to a list, in the order of the Model fields )
     // *********************************************************************************************
@@ -1377,7 +1377,15 @@ pub trait QPaladins: ToModel + CachingModel {
         options_insert: Option<mongodb::options::InsertOneOptions>,
         options_update: Option<mongodb::options::UpdateOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        // Run hooks.
+        if self.get_hash().is_none() {
+            self.pre_create();
+        } else {
+            self.pre_update();
+        }
+        //
         let mut stop_step: u8 = 0;
+        //
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
             let verified_data: OutputDataForm = self.check()?;
@@ -1389,7 +1397,7 @@ pub trait QPaladins: ToModel + CachingModel {
             // Get widget map.
             let mut final_map_widgets: std::collections::HashMap<String, Widget> =
                 verified_data.to_wig();
-            let is_update: bool = !self.get_hash().unwrap_or_default().is_empty();
+            let is_update: bool = self.get_hash().is_some();
             let coll: mongodb::sync::Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
@@ -1414,6 +1422,8 @@ pub trait QPaladins: ToModel + CachingModel {
                     let result: mongodb::results::InsertOneResult =
                         coll.insert_one(final_doc, options_insert.clone())?;
                     self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
+                    // Run hook.
+                    self.post_create();
                 } else if !final_doc.is_empty() {
                     // Update document.
                     let hash: Option<String> = self.get_hash();
@@ -1424,6 +1434,7 @@ pub trait QPaladins: ToModel + CachingModel {
                             meta.model_name
                         ))?
                     }
+                    //
                     let object_id: mongodb::bson::oid::ObjectId =
                         mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
                     let query: mongodb::bson::document::Document =
@@ -1431,7 +1442,10 @@ pub trait QPaladins: ToModel + CachingModel {
                     let update: mongodb::bson::document::Document = mongodb::bson::doc! {
                         "$set": final_doc,
                     };
+                    //
                     coll.update_one(query, update, options_update.clone())?;
+                    // Run hook.
+                    self.post_update();
                 }
             }
 
@@ -1471,6 +1485,8 @@ pub trait QPaladins: ToModel + CachingModel {
         &self,
         options: Option<mongodb::options::DeleteOptions>,
     ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        // Run hook.
+        self.pre_delete();
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -1587,6 +1603,9 @@ pub trait QPaladins: ToModel + CachingModel {
         } else {
             false
         };
+        // Run hook.
+        self.post_delete();
+        //
         Ok(OutputDataForm::Delete((result_bool, err_msg)))
     }
 
