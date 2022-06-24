@@ -46,7 +46,7 @@
 | is_del_docs         | true         | Delete documents from the database.                                         |
 | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).         |
 | is_use_add_valid | false | Allows additional validation - **impl AdditionalValidation for ModelName**. |
-| is_use_hooks | true | Allows hooks methods - **impl Hooks for ModelName**. |
+| is_use_hooks | false | Allows hooks methods - **impl Hooks for ModelName**. |
 
 ## Match field types and widget types
 
