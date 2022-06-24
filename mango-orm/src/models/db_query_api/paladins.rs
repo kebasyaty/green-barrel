@@ -194,8 +194,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user_profile  = UserProfile {...}
-    /// let result = user_profile.check()?;
+    /// let user  = UserProfile {...}
+    /// let result = user.check()?;
     /// assert!(result.is_valid());
     /// ```
     ///
@@ -1370,7 +1370,18 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     }
 
     /// Save to database as a new document or update an existing document.
-    /// ( Used in conjunction with the `check ()` method. )
+    /// Hint: Used in conjunction with the `check ()` method.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user  = UserProfile {...}
+    /// let result = user.save(None, None)?;
+    /// if !result.is_valid() {
+    ///     result.print_err();
+    /// }
+    /// ```
+    ///
     // *********************************************************************************************
     fn save(
         &mut self,
