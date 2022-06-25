@@ -539,7 +539,7 @@
     }
 
 ## Changelog
-- **v0.9.0** *Added hook methods. See documentation: **mango_orm > models > db_query_api > paladins > QPaladins**.*
+- **v0.9.0** *Added hook methods. See documentation: **mango_orm > models > hooks > Hooks**.*
 - **v0.8.26** *Add find_one_to_wig method. See documentation: **mango_orm > models > db_query_api > commons > QCommons**.*
 - **v0.8.0** *Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**.*
 - **v0.7.4** *Updated **README.md**, added model attributes.*
