@@ -5,6 +5,17 @@ use crate::{
     models::{caching::CachingModel, output_data::Converters, Meta, ToModel},
     widgets::output_data::OutputDataForm,
 };
+use mongodb::{
+    bson::{document::Document, Bson},
+    options::AggregateOptions,
+    options::{
+        CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
+        EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
+    },
+    sync::Collection,
+    Namespace,
+};
+use std::{collections::HashMap, error::Error};
 
 pub trait QCommons: ToModel + CachingModel + Converters {
     /// Runs an aggregation operation.
@@ -21,14 +32,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn aggregate(
-        pipeline: Vec<mongodb::bson::document::Document>,
-        options: Option<mongodb::options::AggregateOptions>,
-    ) -> Result<Vec<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
+        pipeline: Vec<Document>,
+        options: Option<AggregateOptions>,
+    ) -> Result<Vec<Document>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -51,14 +62,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn count_documents(
-        filter: Option<mongodb::bson::document::Document>,
-        options: Option<mongodb::options::CountOptions>,
-    ) -> Result<i64, Box<dyn std::error::Error>> {
+        filter: Option<Document>,
+        options: Option<CountOptions>,
+    ) -> Result<i64, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -80,9 +91,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn delete_many(
-        query: mongodb::bson::document::Document,
-        options: Option<mongodb::options::DeleteOptions>,
-    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        query: Document,
+        options: Option<DeleteOptions>,
+    ) -> Result<OutputDataForm, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -98,7 +109,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -124,9 +135,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn delete_one(
-        query: mongodb::bson::document::Document,
-        options: Option<mongodb::options::DeleteOptions>,
-    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        query: Document,
+        options: Option<DeleteOptions>,
+    ) -> Result<OutputDataForm, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -142,7 +153,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -168,14 +179,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     ///
     fn distinct(
         field_name: &str,
-        filter: Option<mongodb::bson::document::Document>,
-        options: Option<mongodb::options::DistinctOptions>,
-    ) -> Result<Vec<mongodb::bson::Bson>, Box<dyn std::error::Error>> {
+        filter: Option<Document>,
+        options: Option<DistinctOptions>,
+    ) -> Result<Vec<Bson>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -195,9 +206,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// }
     /// ```
     ///
-    fn drop(
-        options: Option<mongodb::options::DropCollectionOptions>,
-    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputDataForm, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -212,7 +221,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -235,13 +244,13 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn estimated_document_count(
-        options: Option<mongodb::options::EstimatedDocumentCountOptions>,
-    ) -> Result<i64, Box<dyn std::error::Error>> {
+        options: Option<EstimatedDocumentCountOptions>,
+    ) -> Result<i64, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -263,14 +272,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_many_to_doc(
-        filter: Option<mongodb::bson::document::Document>,
-        options: Option<mongodb::options::FindOptions>,
-    ) -> Result<Option<Vec<mongodb::bson::document::Document>>, Box<dyn std::error::Error>> {
+        filter: Option<Document>,
+        options: Option<FindOptions>,
+    ) -> Result<Option<Vec<Document>>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
@@ -282,7 +291,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             }
             options
         } else {
-            mongodb::options::FindOptions::builder()
+            FindOptions::builder()
                 .limit(Some(meta.db_query_docs_limit as i64))
                 .build()
         };
@@ -317,14 +326,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_many_to_json(
-        filter: Option<mongodb::bson::document::Document>,
-        options: Option<mongodb::options::FindOptions>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+        filter: Option<Document>,
+        options: Option<FindOptions>,
+    ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
@@ -336,7 +345,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             }
             options
         } else {
-            mongodb::options::FindOptions::builder()
+            FindOptions::builder()
                 .limit(Some(meta.db_query_docs_limit as i64))
                 .build()
         };
@@ -368,14 +377,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_to_doc(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneOptions>,
-    ) -> Result<Option<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
+        filter: Document,
+        options: Option<FindOneOptions>,
+    ) -> Result<Option<Document>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -409,14 +418,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_to_json(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneOptions>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+        filter: Document,
+        options: Option<FindOneOptions>,
+    ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -455,14 +464,14 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_to_wig(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneOptions>,
-    ) -> Result<Option<std::collections::HashMap<String, Widget>>, Box<dyn std::error::Error>> {
+        filter: Document,
+        options: Option<FindOneOptions>,
+    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -493,8 +502,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_to_model_instance<T>(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneOptions>,
+        filter: Document,
+        options: Option<FindOneOptions>,
     ) -> Result<Option<T>, mongodb::bson::de::Error>
     where
         T: serde::de::DeserializeOwned,
@@ -503,7 +512,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         let (form_cache, client_cache) = Self::get_cache_data_for_query().unwrap();
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -534,9 +543,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_and_delete_to_doc(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneAndDeleteOptions>,
-    ) -> Result<Option<mongodb::bson::document::Document>, Box<dyn std::error::Error>> {
+        filter: Document,
+        options: Option<FindOneAndDeleteOptions>,
+    ) -> Result<Option<Document>, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -545,7 +554,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         //
         if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -584,9 +593,9 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_and_delete_to_json(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneAndDeleteOptions>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+        filter: Document,
+        options: Option<FindOneAndDeleteOptions>,
+    ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -595,13 +604,13 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         //
         if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
             let doc = coll.find_one_and_delete(filter, options)?;
             if doc.is_some() {
-                Ok(mongodb::bson::Bson::Document(Self::to_prepared_doc(
+                Ok(Bson::Document(Self::to_prepared_doc(
                     doc.unwrap(),
                     &meta.ignore_fields,
                     &meta.map_widget_type,
@@ -636,8 +645,8 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// ```
     ///
     fn find_one_and_delete_to_model_instance<T>(
-        filter: mongodb::bson::document::Document,
-        options: Option<mongodb::options::FindOneAndDeleteOptions>,
+        filter: Document,
+        options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<T>, mongodb::bson::de::Error>
     where
         T: serde::de::DeserializeOwned,
@@ -650,7 +659,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         //
         if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -676,12 +685,12 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// println!("{}", name);
     /// ```
     ///
-    fn name() -> Result<String, Box<dyn std::error::Error>> {
+    fn name() -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -699,12 +708,12 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// println!("{:?}", name);
     /// ```
     ///
-    fn namespace() -> Result<mongodb::Namespace, Box<dyn std::error::Error>> {
+    fn namespace() -> Result<Namespace, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
