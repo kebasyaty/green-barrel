@@ -1,27 +1,15 @@
 //! Output data for QOaladins.
 
-///
 use crate::widgets::{html_controls::HtmlControls, Widget};
+use mongodb::bson::{document::Document, oid::ObjectId};
+use std::collections::HashMap;
+use std::error::Error;
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]
 pub enum OutputDataForm {
-    Check(
-        (
-            bool,
-            Vec<String>,
-            std::collections::HashMap<String, Widget>,
-            mongodb::bson::document::Document,
-        ),
-    ),
-    Save(
-        (
-            bool,
-            Vec<String>,
-            std::collections::HashMap<String, Widget>,
-            String,
-        ),
-    ),
+    Check((bool, Vec<String>, HashMap<String, Widget>, Document)),
+    Save((bool, Vec<String>, HashMap<String, Widget>, String)),
     Delete((bool, String)),
     Stub,
 }
@@ -51,9 +39,7 @@ impl HtmlControls for OutputDataForm {
 impl OutputDataForm {
     /// Get Hash-line
     // ---------------------------------------------------------------------------------------------
-    fn get_hash(
-        map_widgets: &std::collections::HashMap<String, Widget>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    fn get_hash(map_widgets: &HashMap<String, Widget>) -> Result<String, Box<dyn Error>> {
         Ok(map_widgets.get("hash").unwrap().value.clone())
     }
 
@@ -67,7 +53,7 @@ impl OutputDataForm {
     /// println!("{}", output_data.hash());
     /// ```
     ///
-    pub fn hash(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn hash(&self) -> Result<String, Box<dyn Error>> {
         match self {
             Self::Check(data) => Ok(Self::get_hash(&data.2)?),
             Self::Save(data) => Ok(Self::get_hash(&data.2)?),
@@ -77,7 +63,7 @@ impl OutputDataForm {
 
     /// Printing errors to the console ( for development ).
     // ---------------------------------------------------------------------------------------------
-    fn print_to_console(map_widgets: &std::collections::HashMap<String, Widget>) {
+    fn print_to_console(map_widgets: &HashMap<String, Widget>) {
         let mut errors = String::new();
         for (field_name, widget) in map_widgets {
             let tmp = errors.clone();
@@ -121,14 +107,10 @@ impl OutputDataForm {
     /// println!("{:?}", output_data.object_id()?);
     /// ```
     ///
-    pub fn object_id(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
+    pub fn object_id(&self) -> Result<ObjectId, Box<dyn Error>> {
         match self {
-            Self::Check(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
-                Self::get_hash(&data.2)?.as_str(),
-            )?),
-            Self::Save(data) => Ok(mongodb::bson::oid::ObjectId::with_string(
-                Self::get_hash(&data.2)?.as_str(),
-            )?),
+            Self::Check(data) => Ok(ObjectId::with_string(Self::get_hash(&data.2)?.as_str())?),
+            Self::Save(data) => Ok(ObjectId::with_string(Self::get_hash(&data.2)?.as_str())?),
             _ => panic!("Invalid output type."),
         }
     }
@@ -146,7 +128,7 @@ impl OutputDataForm {
     /// println!("{:?}", output_data.to_wig());
     /// ```
     ///
-    pub fn to_wig(&self) -> std::collections::HashMap<String, Widget> {
+    pub fn to_wig(&self) -> HashMap<String, Widget> {
         match self {
             Self::Check(data) => data.2.clone(),
             Self::Save(data) => data.2.clone(),
@@ -166,7 +148,7 @@ impl OutputDataForm {
     /// println!("{}", output_data.to_json()?);
     /// ```
     ///
-    pub fn to_json(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_json(&self) -> Result<String, Box<dyn Error>> {
         match self {
             Self::Check(data) => Ok(serde_json::to_string(&data.2)?),
             Self::Save(data) => Ok(serde_json::to_string(&data.2)?),
@@ -186,7 +168,7 @@ impl OutputDataForm {
     /// println!("{}", output_data.to_json_for_admin()?);
     /// ```
     ///
-    pub fn to_json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         let data = match self {
             Self::Save(data) => data,
             _ => panic!("Invalid output type."),
@@ -240,7 +222,7 @@ impl OutputDataForm {
     /// println!("{:?}", user_profile.to_doc());
     /// ```
     ///
-    pub fn to_doc(&self) -> mongodb::bson::document::Document {
+    pub fn to_doc(&self) -> Document {
         match self {
             Self::Check(data) => data.3.clone(),
             _ => panic!("Invalid output type."),
