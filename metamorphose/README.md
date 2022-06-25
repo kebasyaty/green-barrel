@@ -28,7 +28,7 @@
 ## Changelog
 
 - **v0.5.2** _Import optimized._
-- **v0.5.0** _Added model attribute is_use_hooks. See documentation: **mango_orm > models > db_query_api > paladins > QPaladins**._
+- **v0.5.0** _Added model attribute is_use_hooks. See documentation: **mango_orm > models > hooks > Hooks**._
 - **v0.4.8** _Fixed error message text._
 - **v0.4.6** _Updating by version of dependencies._
 - **v0.4.4** _Optimization of the validation mechanism._
