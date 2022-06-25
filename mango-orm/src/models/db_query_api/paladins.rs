@@ -4,10 +4,16 @@ use crate::{
     models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
     widgets::{output_data::OutputDataForm, FileData, ImageData, Widget},
 };
+use mongodb::{
+    bson::{doc, document::Document, oid::ObjectId, spec::ElementType, Bson},
+    options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
+    results::InsertOneResult,
+    sync::Collection,
+};
 use rand::Rng;
+use serde_json::value::Value;
 use slug::slugify;
-use std::convert::TryFrom;
-use std::{fs, path::Path};
+use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 pub trait QPaladins: ToModel + CachingModel + Hooks {
@@ -22,7 +28,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// println!("{}", user_profile.json_for_admin()?);
     /// ```
     ///
-    fn json_for_admin(&self) -> Result<String, Box<dyn std::error::Error>> {
+    fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -68,24 +74,25 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     // *********************************************************************************************
     fn delete_file(
         &self,
-        coll: &mongodb::sync::Collection,
+        coll: &Collection,
         model_name: &str,
         field_name: &str,
         widget_default_value: &str,
         is_image: bool,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box<dyn Error>> {
+        //
         let hash = self.get_hash().unwrap_or_default();
         if !hash.is_empty() {
-            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
-            let filter = mongodb::bson::doc! {"_id": object_id};
+            let object_id = ObjectId::with_string(hash.as_str())?;
+            let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter.clone(), None)? {
                 // If `is_deleted=true` was passed incorrectly.
                 if document.is_null(field_name) {
                     return Ok(());
                 }
                 // Delete the file information in the database.
-                let file_doc = mongodb::bson::doc! {field_name: mongodb::bson::Bson::Null};
-                let update = mongodb::bson::doc! { "$set": file_doc };
+                let file_doc = doc! {field_name: Bson::Null};
+                let update = doc! { "$set": file_doc };
                 coll.update_one(filter, update, None)?;
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
@@ -149,14 +156,14 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     // *********************************************************************************************
     fn db_get_file_info(
         &self,
-        coll: &mongodb::sync::Collection,
+        coll: &Collection,
         field_name: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, Box<dyn Error>> {
         let hash = self.get_hash().unwrap_or_default();
         let mut result = String::new();
         if !hash.is_empty() {
-            let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
-            let filter = mongodb::bson::doc! {"_id": object_id};
+            let object_id = ObjectId::with_string(hash.as_str())?;
+            let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(file_doc) = document.get(field_name).unwrap().as_document() {
                     result = serde_json::to_string(file_doc)?;
@@ -199,7 +206,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// assert!(result.is_valid());
     /// ```
     ///
-    fn check(&self) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+    fn check(&self) -> Result<OutputDataForm, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -223,19 +230,18 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             .map(|item| item.as_str())
             .collect();
         // Access the collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(&meta.database_name)
             .collection(&meta.collection_name);
         // Get preliminary data from the model.
-        let pre_json: serde_json::value::Value = self.self_to_json()?;
+        let pre_json: Value = self.self_to_json()?;
         // Document for the final result.
-        let mut final_doc = mongodb::bson::document::Document::new();
+        let mut final_doc = Document::new();
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
         let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
-        let mut final_map_widgets: std::collections::HashMap<String, Widget> =
-            form_cache.map_widgets.clone();
+        let mut final_map_widgets: HashMap<String, Widget> = form_cache.map_widgets.clone();
         // Apply additional validation.
         {
             let error_map = self.add_validation()?;
@@ -270,7 +276,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 continue;
             }
             // Get field value for validation.
-            let pre_json_value: Option<&serde_json::value::Value> = pre_json.get(field_name);
+            let pre_json_value: Option<&Value> = pre_json.get(field_name);
             // Check field value.
             if pre_json_value.is_none() {
                 Err(format!(
@@ -279,7 +285,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 ))?
             }
             //
-            let pre_json_value: &serde_json::value::Value = pre_json_value.unwrap();
+            let pre_json_value: &Value = pre_json_value.unwrap();
             let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
             let widget_type: &str = &final_widget.widget.clone()[..];
 
@@ -332,16 +338,16 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             }
                             final_widget.value = String::new();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = if widget_type != "inputPassword" {
-                        mongodb::bson::Bson::String(field_value.clone())
+                        Bson::String(field_value.clone())
                     } else {
-                        mongodb::bson::Bson::Null
+                        Bson::Null
                     };
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
@@ -457,10 +463,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         // Generate password hash and add to result document.
                                         let password_hash: String =
                                             Self::create_password_hash(field_value)?;
-                                        final_doc.insert(
-                                            field_name,
-                                            mongodb::bson::Bson::String(password_hash),
-                                        );
+                                        final_doc.insert(field_name, Bson::String(password_hash));
                                     }
                                 }
                             }
@@ -498,12 +501,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
                     }
                     //
-                    let bson_field_value = mongodb::bson::Bson::String(slug_str);
+                    let bson_field_value = Bson::String(slug_str);
                     // Validation of `unique`.
                     if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
@@ -544,7 +547,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                             final_widget.value = String::new();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                         continue;
@@ -642,7 +645,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
 
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
-                    let dt_value_bson = mongodb::bson::Bson::DateTime(dt_value);
+                    let dt_value_bson = Bson::DateTime(dt_value);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -682,22 +685,22 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         )
                                         .unwrap();
                                     }
-                                    mongodb::bson::Bson::String(val)
+                                    Bson::String(val)
                                 }
                                 "selectI32" | "selectI32Dyn" => {
                                     let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
                                     final_widget.value = val.to_string();
-                                    mongodb::bson::Bson::Int32(val)
+                                    Bson::Int32(val)
                                 }
                                 "selectU32" | "selectI64" | "selectU32Dyn" | "selectI64Dyn" => {
                                     let val = pre_json_value.as_i64().unwrap();
                                     final_widget.value = val.to_string();
-                                    mongodb::bson::Bson::Int64(val)
+                                    Bson::Int64(val)
                                 }
                                 "selectF64" | "selectF64Dyn" => {
                                     let val = pre_json_value.as_f64().unwrap();
                                     final_widget.value = val.to_string();
-                                    mongodb::bson::Bson::Double(val)
+                                    Bson::Double(val)
                                 }
                                 _ => Err(format!(
                                     "Model: `{}` > Field: `{}` > Method: `check()` -> \
@@ -713,7 +716,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                     }
@@ -731,46 +734,38 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .as_array()
                                         .unwrap()
                                         .iter()
-                                        .map(|item| {
-                                            mongodb::bson::Bson::String(
-                                                item.as_str().unwrap().into(),
-                                            )
-                                        })
-                                        .collect::<Vec<mongodb::bson::Bson>>();
-                                    mongodb::bson::Bson::Array(val)
+                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                        .collect::<Vec<Bson>>();
+                                    Bson::Array(val)
                                 }
-                                "selectI32Mult" | "selectI32MultDyn" => mongodb::bson::Bson::Array(
+                                "selectI32Mult" | "selectI32MultDyn" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
                                         .map(|item| {
-                                            mongodb::bson::Bson::Int32(
+                                            Bson::Int32(
                                                 i32::try_from(item.as_i64().unwrap()).unwrap(),
                                             )
                                         })
-                                        .collect::<Vec<mongodb::bson::Bson>>(),
+                                        .collect::<Vec<Bson>>(),
                                 ),
                                 "selectU32Mult" | "selectI64Mult" | "selectU32MultDyn"
-                                | "selectI64MultDyn" => mongodb::bson::Bson::Array(
+                                | "selectI64MultDyn" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
-                                        .map(|item| {
-                                            mongodb::bson::Bson::Int64(item.as_i64().unwrap())
-                                        })
-                                        .collect::<Vec<mongodb::bson::Bson>>(),
+                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
                                 ),
-                                "selectF64Mult" | "selectF64MultDyn" => mongodb::bson::Bson::Array(
+                                "selectF64Mult" | "selectF64MultDyn" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
-                                        .map(|item| {
-                                            mongodb::bson::Bson::Double(item.as_f64().unwrap())
-                                        })
-                                        .collect::<Vec<mongodb::bson::Bson>>(),
+                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
                                 ),
                                 _ => Err(format!(
                                     "Model: `{}` > Field: `{}` > Method: `check()` -> \
@@ -787,7 +782,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                     }
@@ -812,7 +807,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     final_widget.value.as_str(),
                                     false,
                                 )?;
-                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                                final_doc.insert(field_name, Bson::Null);
                             }
                         }
                         serde_json::from_str::<FileData>(obj_str)?
@@ -837,7 +832,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 // Trying to apply the value default.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
                             } else {
-                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                                final_doc.insert(field_name, Bson::Null);
                                 continue;
                             }
                         } else {
@@ -908,7 +903,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     final_widget.value.as_str(),
                                     true,
                                 )?;
-                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                                final_doc.insert(field_name, Bson::Null);
                             }
                         }
                         serde_json::from_str::<ImageData>(obj_str)?
@@ -958,7 +953,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     );
                                 }
                             } else {
-                                final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                                final_doc.insert(field_name, Bson::Null);
                                 continue;
                             }
                         } else {
@@ -1080,7 +1075,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                         continue;
@@ -1091,7 +1086,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // state of the field to the user (client).
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = mongodb::bson::Bson::Int32(field_value);
+                    let bson_field_value = Bson::Int32(field_value);
 
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
@@ -1138,7 +1133,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                         continue;
@@ -1149,7 +1144,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // state of the field to the user (client).
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = mongodb::bson::Bson::Int64(field_value);
+                    let bson_field_value = Bson::Int64(field_value);
 
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
@@ -1194,7 +1189,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
                         } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
                         continue;
@@ -1206,7 +1201,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // state of the field to the user (client).
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = mongodb::bson::Bson::Double(field_value);
+                    let bson_field_value = Bson::Double(field_value);
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -1265,7 +1260,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        let bson_field_value = mongodb::bson::Bson::Boolean(field_value);
+                        let bson_field_value = Bson::Boolean(field_value);
                         final_doc.insert(field_name, bson_field_value);
                     }
                 }
@@ -1281,10 +1276,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             if !is_err_symptom {
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 if !is_update {
-                    final_doc.insert("created_at", mongodb::bson::Bson::DateTime(dt));
-                    final_doc.insert("updated_at", mongodb::bson::Bson::DateTime(dt));
+                    final_doc.insert("created_at", Bson::DateTime(dt));
+                    final_doc.insert("updated_at", Bson::DateTime(dt));
                 } else {
-                    final_doc.insert("updated_at", mongodb::bson::Bson::DateTime(dt));
+                    final_doc.insert("updated_at", Bson::DateTime(dt));
                 }
             }
         }
@@ -1385,9 +1380,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     // *********************************************************************************************
     fn save(
         &mut self,
-        options_insert: Option<mongodb::options::InsertOneOptions>,
-        options_update: Option<mongodb::options::UpdateOptions>,
-    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+        options_insert: Option<InsertOneOptions>,
+        options_update: Option<UpdateOptions>,
+    ) -> Result<OutputDataForm, Box<dyn Error>> {
         // Run hooks.
         if self.get_hash().is_none() {
             self.pre_create();
@@ -1406,10 +1401,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             // Get Model metadata.
             let meta: Meta = form_cache.meta;
             // Get widget map.
-            let mut final_map_widgets: std::collections::HashMap<String, Widget> =
-                verified_data.to_wig();
+            let mut final_map_widgets: HashMap<String, Widget> = verified_data.to_wig();
             let is_update: bool = self.get_hash().is_some();
-            let coll: mongodb::sync::Collection = client_cache
+            let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
@@ -1430,7 +1424,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 let final_doc = verified_data.to_doc();
                 if !is_update {
                     // Create document.
-                    let result: mongodb::results::InsertOneResult =
+                    let result: InsertOneResult =
                         coll.insert_one(final_doc, options_insert.clone())?;
                     self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
                     // Run hook.
@@ -1446,11 +1440,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         ))?
                     }
                     //
-                    let object_id: mongodb::bson::oid::ObjectId =
-                        mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
-                    let query: mongodb::bson::document::Document =
-                        mongodb::bson::doc! {"_id": object_id};
-                    let update: mongodb::bson::document::Document = mongodb::bson::doc! {
+                    let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
+                    let query = doc! {"_id": object_id};
+                    let update = doc! {
                         "$set": final_doc,
                     };
                     //
@@ -1495,10 +1487,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// }
     /// ```
     ///
-    fn delete(
-        &self,
-        options: Option<mongodb::options::DeleteOptions>,
-    ) -> Result<OutputDataForm, Box<dyn std::error::Error>> {
+    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputDataForm, Box<dyn Error>> {
         // Run hook.
         self.pre_delete();
         // Get cached Model data.
@@ -1529,10 +1518,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     meta.model_name
                 ))?
             }
-            let object_id: mongodb::bson::oid::ObjectId =
-                mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
+            let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
             // Create query.
-            let query: mongodb::bson::document::Document = mongodb::bson::doc! {"_id": object_id};
+            let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
                 for (field_name, widget_name) in meta.map_widget_type.iter() {
@@ -1636,7 +1624,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// println!("{}", user_profile.create_password_hash(field_value)?);
     /// ```
     ///
-    fn create_password_hash(field_value: &str) -> Result<String, Box<dyn std::error::Error>> {
+    fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
         const CHARSET: &[u8] =
             b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&+=*!~)(";
         const SALT_LEN: usize = 12;
@@ -1668,14 +1656,14 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     fn verify_password(
         &self,
         password: &str,
-        options: Option<mongodb::options::FindOneOptions>,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+        options: Option<FindOneOptions>,
+    ) -> Result<bool, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Access the collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get hash-line of Model.
@@ -1688,10 +1676,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             ))?
         }
         // Convert hash-line to ObjectId.
-        let object_id: mongodb::bson::oid::ObjectId =
-            mongodb::bson::oid::ObjectId::with_string(hash.unwrap().as_str())?;
+        let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
         // Create a filter to search for a document.
-        let filter: mongodb::bson::document::Document = mongodb::bson::doc! {"_id": object_id};
+        let filter = doc! {"_id": object_id};
         // An attempt to find the required document.
         let doc = coll.find_one(filter, options)?;
         // We check that for the given `hash` a document is found in the database.
@@ -1716,7 +1703,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // Get password hash or empty string.
         let password_hash = password_hash.unwrap();
         //
-        let password_hash = if password_hash != &mongodb::bson::Bson::Null {
+        let password_hash = if password_hash.element_type() != ElementType::Null {
             password_hash.as_str().unwrap()
         } else {
             ""
@@ -1741,9 +1728,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         &self,
         old_password: &str,
         new_password: &str,
-        options_find_old: Option<mongodb::options::FindOneOptions>,
-        options_update: Option<mongodb::options::UpdateOptions>,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+        options_find_old: Option<FindOneOptions>,
+        options_update: Option<UpdateOptions>,
+    ) -> Result<bool, Box<dyn Error>> {
         // Validation current password.
         if !self.verify_password(old_password, options_find_old)? {
             return Ok(false);
@@ -1754,19 +1741,18 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // Get Model metadata.
         let meta: Meta = form_cache.meta;
         // Access the collection.
-        let coll: mongodb::sync::Collection = client_cache
+        let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get hash-line of Model.
         let hash = self.get_hash().unwrap();
         // Convert hash-line to ObjectId.
-        let object_id: mongodb::bson::oid::ObjectId =
-            mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
+        let object_id = ObjectId::with_string(hash.as_str())?;
         // Create a filter to search for a document.
-        let query: mongodb::bson::document::Document = mongodb::bson::doc! {"_id": object_id};
+        let query = doc! {"_id": object_id};
         let new_password_hash = Self::create_password_hash(new_password)?;
-        let doc = mongodb::bson::doc! {"password": new_password_hash};
-        let update: mongodb::bson::document::Document = mongodb::bson::doc! {
+        let doc = doc! {"password": new_password_hash};
+        let update = doc! {
             "$set": doc,
         };
         // Update password.
