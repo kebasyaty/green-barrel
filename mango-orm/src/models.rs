@@ -10,13 +10,20 @@ use crate::{
     models::validation::{AdditionalValidation, ValidationModel},
     widgets::{html_controls::HtmlControls, Widget},
 };
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    sync::Client,
+};
+use serde::Deserialize;
+use serde_json::value::Value;
+use std::{collections::HashMap, error::Error};
 
 // MODEL
 // #################################################################################################
 /// Metadata
 /// ( model parameters )
 // *************************************************************************************************
-#[derive(serde::Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Meta {
     pub model_name: String,
     pub project_name: String,
@@ -74,12 +81,12 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn std::error::Error>>;
+    fn meta() -> Result<Meta, Box<dyn Error>>;
 
     /// Get map of widgets for model fields.
     /// Hint: <field name, Widget>
     // ---------------------------------------------------------------------------------------------
-    fn widgets() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>>;
+    fn widgets() -> Result<HashMap<String, Widget>, Box<dyn Error>>;
 
     // Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
@@ -88,17 +95,17 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
 
     /// Serialize an instance of the Model to a hash-line.
     // ---------------------------------------------------------------------------------------------
-    fn self_to_json(&self) -> Result<serde_json::value::Value, Box<dyn std::error::Error>>;
+    fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
 
     /// Convert hash-line to MongoDB ID.
     // ---------------------------------------------------------------------------------------------
-    fn hash_to_id(hash: &str) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
-        Ok(mongodb::bson::oid::ObjectId::with_string(hash)?)
+    fn hash_to_id(hash: &str) -> Result<ObjectId, Box<dyn Error>> {
+        Ok(ObjectId::with_string(hash)?)
     }
 
     /// Convert MongoDB ID to hash-line.
     // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(id: mongodb::bson::oid::ObjectId) -> String {
+    fn id_to_hash(id: ObjectId) -> String {
         id.to_hex()
     }
 
@@ -108,9 +115,9 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
         project_name: &str,
         unique_project_key: &str,
         collection_name: &str,
-        client: &mongodb::sync::Client,
-        map_widgets: &mut std::collections::HashMap<String, Widget>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+        client: &Client,
+        map_widgets: &mut HashMap<String, Widget>,
+    ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
         let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic widgets.
@@ -118,7 +125,7 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
             .database(&db_mango_tech)
             .collection("dynamic_widgets");
         // Filter for searching a document.
-        let filter = mongodb::bson::doc! {
+        let filter = doc! {
             "collection": collection_name
         };
         // Get a document with values for dynamic widgets.
