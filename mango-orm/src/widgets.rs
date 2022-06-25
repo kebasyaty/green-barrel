@@ -3,11 +3,14 @@
 pub mod html_controls;
 pub mod output_data;
 
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+
 // CONTROLS FOR MODEL FIELDS.
 // #################################################################################################
 /// Helper structures for inputFile widgets.
 // *************************************************************************************************
-#[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
     #[serde(default)]
     pub path: String,
@@ -20,7 +23,7 @@ pub struct FileData {
 }
 
 /// Helper structures for inputImage widgets.
-#[derive(Default, serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
+#[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct ImageData {
     #[serde(default)]
     pub path: String, // max size = original
@@ -55,7 +58,7 @@ pub struct ImageData {
 /// Widget
 /// ( field attributes.)
 // *************************************************************************************************
-#[derive(serde::Serialize, serde::Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name"
     pub label: String, // Web form field name.
@@ -126,7 +129,7 @@ impl Default for Widget {
 
 /// For transporting of Widgets map to implementation of methods.
 /// Hint: <field name, Widget>
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct TransMapWidgets {
-    pub map_widgets: std::collections::HashMap<String, Widget>,
+    pub map_widgets: HashMap<String, Widget>,
 }
