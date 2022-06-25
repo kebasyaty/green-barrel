@@ -1,7 +1,10 @@
 //! Global store of settings and metadata for models.
 
+use crate::{models::Meta, widgets::Widget};
 use lazy_static::lazy_static;
+use mongodb::sync::Client;
 use regex::{Regex, RegexBuilder};
+use std::collections::HashMap;
 use std::sync::RwLock;
 
 // GLOBAL STORAGE
@@ -9,8 +12,8 @@ use std::sync::RwLock;
 /// Structure for caching map of widgets, json and html, for mango models.
 #[derive(Default, Clone, Debug)]
 pub struct FormCache {
-    pub meta: crate::models::Meta,
-    pub map_widgets: std::collections::HashMap<String, crate::widgets::Widget>,
+    pub meta: Meta,
+    pub map_widgets: HashMap<String, Widget>,
     pub form_json: String,
     pub form_html: String,
 }
@@ -19,13 +22,13 @@ pub struct FormCache {
 lazy_static! {
     // Storage of settings for mango models
     // ---------------------------------------------------------------------------------------------
-    pub static ref FORM_STORE: RwLock<std::collections::HashMap<String, FormCache>> = {
-        RwLock::new(std::collections::HashMap::new())
+    pub static ref FORM_STORE: RwLock<HashMap<String, FormCache>> = {
+        RwLock::new(HashMap::new())
     };
     // Caching clients MongoDB
     // ---------------------------------------------------------------------------------------------
-    pub static ref MONGODB_CLIENT_STORE: RwLock<std::collections::HashMap<String, mongodb::sync::Client>> = {
-        RwLock::new(std::collections::HashMap::new())
+    pub static ref MONGODB_CLIENT_STORE: RwLock<HashMap<String, Client>> = {
+        RwLock::new(HashMap::new())
     };
     // Regular expressions
     // ---------------------------------------------------------------------------------------------
