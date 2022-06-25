@@ -4,7 +4,16 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use serde::Serialize;
-use syn::{parse_macro_input, Attribute, AttributeArgs, DeriveInput, MetaNameValue, NestedMeta};
+use syn::{
+    parse2, parse_macro_input, Attribute, AttributeArgs,
+    Data::Struct,
+    DeriveInput,
+    Fields::Named,
+    Lit::{Bool, Float, Int, Str},
+    Meta::{List, NameValue},
+    MetaNameValue, NestedMeta,
+    Type::Path,
+};
 
 // MODEL - MACRO FOR CONVERTING STRUCTURE TO MANGO-ORM MODEL
 // #################################################################################################
@@ -281,12 +290,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
     // Get fields of Model.
     // *********************************************************************************************
-    if let syn::Data::Struct(ref mut data) = &mut ast.data {
-        if let syn::Fields::Named(ref mut fields) = &mut data.fields {
+    if let Struct(ref mut data) = &mut ast.data {
+        if let Named(ref mut fields) = &mut data.fields {
             let fields = &mut fields.named;
 
             // Add new field `hash`.
-            let new_field: syn::FieldsNamed = syn::parse2(quote! {
+            let new_field: syn::FieldsNamed = parse2(quote! {
                 {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub hash: Option<String>}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
@@ -322,7 +331,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     trans_meta.fields_name.push(field_name.clone());
                 }
                 // Get field type.
-                if let syn::Type::Path(ty) = &field.ty {
+                if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let cap = &re_clear_field_type
                         .captures_iter(field_type.as_str())
@@ -356,10 +365,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 if attrs.is_some() {
                     match attrs.unwrap().parse_meta() {
                         Ok(meta) => {
-                            if let syn::Meta::List(meta_list) = meta {
+                            if let List(meta_list) = meta {
                                 for nested_meta in meta_list.nested {
                                     if let NestedMeta::Meta(meta) = nested_meta {
-                                        if let syn::Meta::NameValue(mnv) = meta {
+                                        if let NameValue(mnv) = meta {
                                             let attr_name =
                                                 &mnv.path.get_ident().unwrap().to_string()[..];
                                             get_param_value(
@@ -971,7 +980,7 @@ fn get_param_value<'a>(
 ) {
     match attr_name {
         "label" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.label = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -983,7 +992,7 @@ fn get_param_value<'a>(
             }
         }
         "accept" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.accept = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -995,7 +1004,7 @@ fn get_param_value<'a>(
             }
         }
         "widget" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 let widget_name = lit_str.value();
                 let widget_info = get_widget_info(widget_name.as_ref()).unwrap_or_else(|err| {
                     panic!(
@@ -1026,7 +1035,7 @@ fn get_param_value<'a>(
         }
         "value" => match field_type {
             "i32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.value = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1038,7 +1047,7 @@ fn get_param_value<'a>(
                 }
             }
             "u32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.value = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1050,7 +1059,7 @@ fn get_param_value<'a>(
                 }
             }
             "i64" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.value = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1062,7 +1071,7 @@ fn get_param_value<'a>(
                 }
             }
             "f64" => {
-                if let syn::Lit::Float(lit_float) = &mnv.lit {
+                if let Float(lit_float) = &mnv.lit {
                     widget.value = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1074,7 +1083,7 @@ fn get_param_value<'a>(
                 }
             }
             "String" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     widget.value = lit_str.value().trim().to_string()
                 } else {
                     panic!(
@@ -1094,7 +1103,7 @@ fn get_param_value<'a>(
             ),
         },
         "placeholder" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.placeholder = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -1106,7 +1115,7 @@ fn get_param_value<'a>(
             }
         }
         "pattern" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.pattern = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -1118,7 +1127,7 @@ fn get_param_value<'a>(
             }
         }
         "minlength" => {
-            if let syn::Lit::Int(lit_int) = &mnv.lit {
+            if let Int(lit_int) = &mnv.lit {
                 widget.minlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
@@ -1130,7 +1139,7 @@ fn get_param_value<'a>(
             }
         }
         "maxlength" => {
-            if let syn::Lit::Int(lit_int) = &mnv.lit {
+            if let Int(lit_int) = &mnv.lit {
                 widget.maxlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
@@ -1142,7 +1151,7 @@ fn get_param_value<'a>(
             }
         }
         "required" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.required = lit_bool.value;
             } else {
                 panic!(
@@ -1154,7 +1163,7 @@ fn get_param_value<'a>(
             }
         }
         "checked" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.checked = lit_bool.value;
             } else {
                 panic!(
@@ -1166,7 +1175,7 @@ fn get_param_value<'a>(
             }
         }
         "unique" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.unique = lit_bool.value;
             } else {
                 panic!(
@@ -1178,7 +1187,7 @@ fn get_param_value<'a>(
             }
         }
         "disabled" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.disabled = lit_bool.value;
             } else {
                 panic!(
@@ -1190,7 +1199,7 @@ fn get_param_value<'a>(
             }
         }
         "readonly" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.readonly = lit_bool.value;
             } else {
                 panic!(
@@ -1203,7 +1212,7 @@ fn get_param_value<'a>(
         }
         "step" => match field_type {
             "i32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.step = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1215,7 +1224,7 @@ fn get_param_value<'a>(
                 }
             }
             "u32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.step = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1227,7 +1236,7 @@ fn get_param_value<'a>(
                 }
             }
             "i64" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.step = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1239,7 +1248,7 @@ fn get_param_value<'a>(
                 }
             }
             "f64" => {
-                if let syn::Lit::Float(lit_float) = &mnv.lit {
+                if let Float(lit_float) = &mnv.lit {
                     widget.step = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1251,7 +1260,7 @@ fn get_param_value<'a>(
                 }
             }
             "String" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     widget.step = lit_str.value().trim().to_string()
                 } else {
                     panic!(
@@ -1270,7 +1279,7 @@ fn get_param_value<'a>(
         },
         "min" => match field_type {
             "i32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.min = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1282,7 +1291,7 @@ fn get_param_value<'a>(
                 }
             }
             "u32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.min = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1294,7 +1303,7 @@ fn get_param_value<'a>(
                 }
             }
             "i64" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.min = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1306,7 +1315,7 @@ fn get_param_value<'a>(
                 }
             }
             "f64" => {
-                if let syn::Lit::Float(lit_float) = &mnv.lit {
+                if let Float(lit_float) = &mnv.lit {
                     widget.min = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1318,7 +1327,7 @@ fn get_param_value<'a>(
                 }
             }
             "String" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     widget.min = lit_str.value().trim().to_string();
                 } else {
                     panic!(
@@ -1337,7 +1346,7 @@ fn get_param_value<'a>(
         },
         "max" => match field_type {
             "i32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.max = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1349,7 +1358,7 @@ fn get_param_value<'a>(
                 }
             }
             "u32" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.max = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1361,7 +1370,7 @@ fn get_param_value<'a>(
                 }
             }
             "i64" => {
-                if let syn::Lit::Int(lit_int) = &mnv.lit {
+                if let Int(lit_int) = &mnv.lit {
                     widget.max = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1373,7 +1382,7 @@ fn get_param_value<'a>(
                 }
             }
             "f64" => {
-                if let syn::Lit::Float(lit_float) = &mnv.lit {
+                if let Float(lit_float) = &mnv.lit {
                     widget.max = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
@@ -1385,7 +1394,7 @@ fn get_param_value<'a>(
                 }
             }
             "String" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     widget.max = lit_str.value().trim().to_string();
                 } else {
                     panic!(
@@ -1404,7 +1413,7 @@ fn get_param_value<'a>(
         },
         "options" => match field_type {
             "i32" | "Vec < i32 >" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     let json = lit_str.value().replace('_', "");
                     let raw_options: Vec<(i32, String)> = if json.matches("[").count() > 1 {
                         serde_json::from_str(json.as_str()).unwrap()
@@ -1427,7 +1436,7 @@ fn get_param_value<'a>(
                 }
             }
             "u32" | "Vec < u32 >" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     let json = lit_str.value().replace('_', "");
                     let raw_options: Vec<(u32, String)> = if json.matches("[").count() > 1 {
                         serde_json::from_str(json.as_str()).unwrap()
@@ -1450,7 +1459,7 @@ fn get_param_value<'a>(
                 }
             }
             "i64" | "Vec < i64 >" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     let json = lit_str.value().replace('_', "");
                     let raw_options: Vec<(i64, String)> = if json.matches("[").count() > 1 {
                         serde_json::from_str(json.as_str()).unwrap()
@@ -1473,7 +1482,7 @@ fn get_param_value<'a>(
                 }
             }
             "f64" | "Vec < f64 >" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     let json = lit_str.value().replace('_', "");
                     let raw_options: Vec<(f64, String)> = if json.matches("[").count() > 1 {
                         serde_json::from_str(json.as_str()).unwrap()
@@ -1496,7 +1505,7 @@ fn get_param_value<'a>(
                 }
             }
             "String" | "Vec < String >" => {
-                if let syn::Lit::Str(lit_str) = &mnv.lit {
+                if let Str(lit_str) = &mnv.lit {
                     let json = lit_str.value();
                     widget.options = if json.matches("[").count() > 1 {
                         serde_json::from_str(json.as_str()).unwrap()
@@ -1526,7 +1535,7 @@ fn get_param_value<'a>(
             ),
         },
         "thumbnails" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 let json = lit_str.value().replace('_', "");
                 let mut sizes = serde_json::from_str::<Vec<(String, u32)>>(json.as_str()).unwrap();
                 sizes.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
@@ -1551,7 +1560,7 @@ fn get_param_value<'a>(
             }
         }
         "slug_sources" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 let json = lit_str.value().replace('_', "");
                 widget.slug_sources = serde_json::from_str::<Vec<String>>(json.as_str()).unwrap();
             } else {
@@ -1564,7 +1573,7 @@ fn get_param_value<'a>(
             }
         }
         "is_hide" => {
-            if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+            if let Bool(lit_bool) = &mnv.lit {
                 widget.is_hide = lit_bool.value;
             } else {
                 panic!(
@@ -1576,7 +1585,7 @@ fn get_param_value<'a>(
             }
         }
         "other_attrs" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.other_attrs = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -1588,7 +1597,7 @@ fn get_param_value<'a>(
             }
         }
         "css_classes" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.css_classes = lit_str.value().trim().to_string();
             } else {
                 panic!(
@@ -1600,7 +1609,7 @@ fn get_param_value<'a>(
             }
         }
         "hint" => {
-            if let syn::Lit::Str(lit_str) = &mnv.lit {
+            if let Str(lit_str) = &mnv.lit {
                 widget.hint = lit_str.value().trim().to_string();
             } else {
                 panic!(
