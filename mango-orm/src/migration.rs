@@ -5,12 +5,13 @@ use crate::{
     store::MONGODB_CLIENT_STORE,
 };
 use mongodb::{
-    bson, bson::document::Document, options::UpdateModifications, sync::Client, sync::Collection,
+    bson::{Bson, doc, de::from_document, document::Document, ser::{to_bson, to_document}},
+    options::UpdateModifications, sync::Client, sync::Collection,
     sync::Cursor, sync::Database,
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{path::Path, error::Error, fs::Metadata,sync::RwLockReadGuard, collections::HashMap};
 
 // MIGRATION
 // #################################################################################################
@@ -34,7 +35,7 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     /// Get the name of the technical database for a project.
     // *********************************************************************************************
-    pub fn mango_tech_name(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn mango_tech_name(&self) -> Result<String, Box<dyn Error>> {
         // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
         // Max size: 21
@@ -69,9 +70,9 @@ impl<'a> Monitor<'a> {
     /// }
     /// ```
     ///
-    fn refresh(&self) -> Result<(), Box<dyn std::error::Error>> {
+    fn refresh(&self) -> Result<(), Box<dyn Error>> {
         // Get cache MongoDB clients.
-        let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
+        let client_store: RwLockReadGuard<HashMap<String, Client>> =
             MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.models.iter() {
@@ -104,13 +105,13 @@ impl<'a> Monitor<'a> {
 
                 while let Some(result) = cursor.next() {
                     let document = result?;
-                    let mut model_state: ModelState = bson::de::from_document(document)?;
+                    let mut model_state: ModelState = from_document(document)?;
                     model_state.status = false;
-                    let query: Document = bson::doc! {
+                    let query: Document = doc! {
                         "database": &model_state.database,
                         "collection": &model_state.collection
                     };
-                    let update = bson::ser::to_document(&model_state)?;
+                    let update = to_document(&model_state)?;
                     collection_models.update_one(query, update, None)?;
                 }
             }
@@ -122,9 +123,9 @@ impl<'a> Monitor<'a> {
     /// Reorganize databases state
     /// (full delete of orphaned collections and databases)
     // *********************************************************************************************
-    fn napalm(&self) -> Result<(), Box<dyn std::error::Error>> {
+    fn napalm(&self) -> Result<(), Box<dyn Error>> {
         // Get cache MongoDB clients.
-        let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
+        let client_store: RwLockReadGuard<HashMap<String, Client>> =
             MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.models.iter() {
@@ -141,7 +142,7 @@ impl<'a> Monitor<'a> {
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
             for result in results {
                 let document = result?;
-                let model_state: ModelState = bson::de::from_document(document)?;
+                let model_state: ModelState = from_document(document)?;
                 if !model_state.status {
                     // Delete Collection (left without a model).
                     client
@@ -150,7 +151,7 @@ impl<'a> Monitor<'a> {
                         .drop(None)?;
                     // Delete a document with a record about the state of
                     // the model from the technical base.
-                    let query: Document = bson::doc! {
+                    let query: Document = doc! {
                         "database": &model_state.database,
                         "collection": &model_state.collection
                     };
@@ -166,11 +167,11 @@ impl<'a> Monitor<'a> {
     /// Migrating Models -
     // *********************************************************************************************
     /// Check the changes in the models and (if necessary) apply to the database.
-    pub fn migrat(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn migrat(&self) -> Result<(), Box<dyn Error>> {
         // Run refresh models state.
         self.refresh()?;
         // Get cache MongoDB clients.
-        let client_store: std::sync::RwLockReadGuard<HashMap<String, Client>> =
+        let client_store: RwLockReadGuard<HashMap<String, Client>> =
             MONGODB_CLIENT_STORE.read()?;
 
         // Get model metadata
@@ -221,7 +222,7 @@ impl<'a> Monitor<'a> {
             // -------------------------------------------------------------------------------------
             // Get a list of current model field names from the technical database
             // `mango_orm_keyword`.
-            let filter: Document = mongodb::bson::doc! {
+            let filter: Document = doc! {
                 "database": &meta.database_name,
                 "collection": &meta.collection_name
             };
@@ -234,7 +235,7 @@ impl<'a> Monitor<'a> {
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
                 let monitor_models_fields_name: Vec<String> = {
-                    let fields: Vec<mongodb::bson::Bson> =
+                    let fields: Vec<Bson> =
                         model.get_array("fields")?.to_vec();
                     fields
                         .into_iter()
@@ -266,12 +267,12 @@ impl<'a> Monitor<'a> {
                     let collection: mongodb::sync::Collection =
                         db.collection(&meta.collection_name);
                     // Get cursor to all documents of the current Model.
-                    let mut cursor: mongodb::sync::Cursor = collection.find(None, None)?;
+                    let mut cursor: Cursor = collection.find(None, None)?;
                     // Iterate through all documents in a current (model) collection.
                     while let Some(result) = cursor.next() {
-                        let doc_from_db: mongodb::bson::document::Document = result.unwrap();
+                        let doc_from_db: Document = result.unwrap();
                         // Create temporary blank document.
-                        let mut tmp_doc = mongodb::bson::document::Document::new();
+                        let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
                         for field in fields_name.iter() {
                             if *field == "hash" || ignore_fields.contains(&field) {
@@ -279,7 +280,7 @@ impl<'a> Monitor<'a> {
                             }
                             // If the field exists, get its value.
                             if !changed_fields.contains(field) {
-                                let value_from_db: Option<&mongodb::bson::Bson> =
+                                let value_from_db: Option<&Bson> =
                                     doc_from_db.get(field);
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
@@ -302,9 +303,9 @@ impl<'a> Monitor<'a> {
                                         | "inputSlug" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                mongodb::bson::Bson::String(val)
+                                                Bson::String(val)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "inputDate" => {
@@ -325,9 +326,9 @@ impl<'a> Monitor<'a> {
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, chrono::Utc,
                                                     );
-                                                mongodb::bson::Bson::DateTime(dt)
+                                                Bson::DateTime(dt)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "inputDateTime" => {
@@ -349,20 +350,20 @@ impl<'a> Monitor<'a> {
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, chrono::Utc,
                                                     );
-                                                mongodb::bson::Bson::DateTime(dt)
+                                                Bson::DateTime(dt)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "radioI32" | "numberI32" | "rangeI32" 
                                         | "selectI32" | "hiddenI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                mongodb::bson::Bson::Int32(
+                                                Bson::Int32(
                                                     val.parse::<i32>()?
                                                 )
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "radioU32" | "numberU32" | "rangeU32"
@@ -371,32 +372,32 @@ impl<'a> Monitor<'a> {
                                         | "hiddenU32" | "hiddenI64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                mongodb::bson::Bson::Int64(
+                                                Bson::Int64(
                                                     val.parse::<i64>()?
                                                 )
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "radioF64" | "numberF64" | "rangeF64" 
                                         | "selectF64" | "hiddenF64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                mongodb::bson::Bson::Double(
+                                                Bson::Double(
                                                     val.parse::<f64>()?
                                                 )
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "checkBox" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                mongodb::bson::Bson::Boolean(
+                                                Bson::Boolean(
                                                     val.parse::<bool>()?
                                                 )
                                             } else {
-                                                mongodb::bson::Bson::Boolean(false)
+                                                Bson::Boolean(false)
                                             }
                                         }
                                         "inputFile" => {
@@ -417,7 +418,7 @@ impl<'a> Monitor<'a> {
                                                 }
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
-                                                let f_path = std::path::Path::new(path.as_str());
+                                                let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
                                                                  `migrat()` -> File is missing - {}",
@@ -425,16 +426,16 @@ impl<'a> Monitor<'a> {
                                                     )?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: std::fs::Metadata = f_path.metadata()?;
+                                                let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as u32;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Create doc.
-                                                let result = mongodb::bson::ser::to_document(&file_data)?;
-                                                mongodb::bson::Bson::Document(result)
+                                                let result = to_document(&file_data)?;
+                                                Bson::Document(result)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "inputImage" => {
@@ -455,7 +456,7 @@ impl<'a> Monitor<'a> {
                                                 }
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
-                                                let f_path = std::path::Path::new(path.as_str());
+                                                let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` > Method: \
                                                                  `migrat()` -> File is missing - {}",
@@ -463,7 +464,7 @@ impl<'a> Monitor<'a> {
                                                     ))?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: std::fs::Metadata = f_path.metadata()?;
+                                                let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as u32;
                                                 // Get file name.
@@ -473,32 +474,32 @@ impl<'a> Monitor<'a> {
                                                 file_data.width = dimensions.0;
                                                 file_data.height = dimensions.1;
                                                 // Create doc.
-                                                let result = mongodb::bson::ser::to_document(&file_data)?;
-                                                mongodb::bson::Bson::Document(result)
+                                                let result = to_document(&file_data)?;
+                                                Bson::Document(result)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "selectTextMult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<String>>(val.as_str())?
-                                                    .iter().map(|item| mongodb::bson::Bson::String(item.clone()))
-                                                    .collect::<Vec<mongodb::bson::Bson>>();
-                                                mongodb::bson::Bson::Array(val)
+                                                    .iter().map(|item| Bson::String(item.clone()))
+                                                    .collect::<Vec<Bson>>();
+                                                Bson::Array(val)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "selectI32Mult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<i32>>(val.as_str())?
-                                                    .iter().map(|item| mongodb::bson::Bson::Int32(item.clone()))
-                                                    .collect::<Vec<mongodb::bson::Bson>>();
-                                                mongodb::bson::Bson::Array(val)
+                                                    .iter().map(|item| Bson::Int32(item.clone()))
+                                                    .collect::<Vec<Bson>>();
+                                                Bson::Array(val)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                          "selectU32Mult" | "selectI64Mult"  => {
@@ -507,27 +508,27 @@ impl<'a> Monitor<'a> {
                                                 let val = serde_json::from_str::<Vec<i64>>(val.as_str())?
                                                     .iter().map(|item| mongodb::bson::Bson::Int64(item.clone()))
                                                     .collect::<Vec<mongodb::bson::Bson>>();
-                                                mongodb::bson::Bson::Array(val)
+                                                Bson::Array(val)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "selectF64Mult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<f64>>(val.as_str())?
-                                                    .iter().map(|item| mongodb::bson::Bson::Double(item.clone()))
-                                                    .collect::<Vec<mongodb::bson::Bson>>();
-                                                mongodb::bson::Bson::Array(val)
+                                                    .iter().map(|item| Bson::Double(item.clone()))
+                                                    .collect::<Vec<Bson>>();
+                                                Bson::Array(val)
                                             } else {
-                                                mongodb::bson::Bson::Null
+                                                Bson::Null
                                             }
                                         }
                                         "selectTextDyn" | "selectTextMultDyn" | "selectI32Dyn"
                                         | "selectI32MultDyn" | "selectU32Dyn" | "selectU32MultDyn"
                                         | "selectI64Dyn" | "selectI64MultDyn" | "selectF64Dyn"
                                         | "selectF64MultDyn" => {
-                                            mongodb::bson::Bson::Null
+                                            Bson::Null
                                         }
                                         _ => {
                                             Err(format!("Service: `{}` > Model: `{}` > Method: \
@@ -542,7 +543,7 @@ impl<'a> Monitor<'a> {
                         // Insert the reserved fields.
                         for field in vec!["created_at", "updated_at"] {
                             if doc_from_db.contains_key(field) {
-                                let value_from_db: Option<&mongodb::bson::Bson> =
+                                let value_from_db: Option<&Bson> =
                                     doc_from_db.get(field);
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
@@ -563,7 +564,7 @@ impl<'a> Monitor<'a> {
                             }
                         }
                         // Save updated document.
-                        let query = mongodb::bson::doc! {"_id": doc_from_db.get_object_id("_id")?};
+                        let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
                         collection.update_one(query, tmp_doc, None)?;
                     }
                 }
@@ -596,7 +597,7 @@ impl<'a> Monitor<'a> {
                              no technical database has been created for the project."))?
             } else {
                 let collection: Collection = db.collection("monitor_models");
-                let filter: Document = mongodb::bson::doc! {
+                let filter = doc! {
                     "database": &meta.database_name,
                     "collection": &meta.collection_name
                 };
@@ -605,7 +606,7 @@ impl<'a> Monitor<'a> {
                     "collection": &meta.collection_name,
                     "fields": trunc_list_fields_name.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
-                    "map_widgets": bson::ser::to_bson(&trunc_map_widget_type.clone())?,
+                    "map_widgets": to_bson(&trunc_map_widget_type.clone())?,
                     "status": true
                 };
                 // Check if there is model state in the database.
@@ -629,7 +630,7 @@ impl<'a> Monitor<'a> {
                              no technical database has been created for the project."))?
             } else {
                 let collection: Collection = db.collection("dynamic_widgets");
-                let filter: Document = mongodb::bson::doc! {
+                let filter = doc! {
                     "database": &meta.database_name,
                     "collection": &meta.collection_name
                 };
@@ -637,16 +638,16 @@ impl<'a> Monitor<'a> {
                 // storing the values of dynamic widgets of model.
                 if collection.count_documents(filter.clone(), None)? == 0_i64 {
                     // Init new document.
-                    let mut new_doc: Document = mongodb::bson::doc! {
+                    let mut new_doc = doc! {
                         "database": &meta.database_name,
                         "collection": &meta.collection_name,
                         "fields": {}
                     };
                     // Add empty arrays to the new document.
-                    let mut fields_doc:  Document = mongodb::bson::document::Document::new();
+                    let mut fields_doc = Document::new();
                     for (field, widget) in map_widget_type.clone() {
                         if widget.contains("Dyn") {
-                            fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
+                            fields_doc.insert(field, Bson::Array(Vec::new()));
                         }
                     }
                     // Insert new document.
@@ -670,7 +671,7 @@ impl<'a> Monitor<'a> {
                             // initialize with an empty array.
                             if !dyn_fields_from_db.contains(&field) || 
                                 (widget != *monitor_map_widget_type.get(field.as_str()).unwrap_or(&String::new())) {
-                                fields_doc.insert(field, mongodb::bson::Bson::Array(Vec::new()));
+                                fields_doc.insert(field, Bson::Array(Vec::new()));
                             }
                         }
                     }
