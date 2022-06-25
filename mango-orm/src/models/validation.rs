@@ -4,13 +4,19 @@ use crate::{
     store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
     widgets::Widget,
 };
+use mongodb::{
+    bson::{doc, oid::ObjectId, Bson},
+    sync::Collection,
+};
+use std::collections::HashMap;
+use std::error::Error;
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
 pub trait ValidationModel {
     /// Validation of `minlength`.
     // ---------------------------------------------------------------------------------------------
-    fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if minlength > 0 && value.encode_utf16().count() < minlength {
             Err(format!("Exceeds limit, minlength={}.", minlength))?
         }
@@ -19,7 +25,7 @@ pub trait ValidationModel {
 
     /// Validation of `maxlength`.
     // ---------------------------------------------------------------------------------------------
-    fn check_maxlength(maxlength: usize, value: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn check_maxlength(maxlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if maxlength > 0 && value.encode_utf16().count() > maxlength {
             Err(format!("Exceeds limit, maxlength={}.", maxlength))?
         }
@@ -28,7 +34,7 @@ pub trait ValidationModel {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(widget: &Widget, err: &String) -> Result<String, Box<dyn std::error::Error>> {
+    fn accumula_err(widget: &Widget, err: &String) -> Result<String, Box<dyn Error>> {
         let mut tmp = widget.error.clone();
         tmp = if !tmp.is_empty() {
             format!("{}<br>", tmp)
@@ -40,7 +46,7 @@ pub trait ValidationModel {
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
             "inputEmail" => {
                 if !validator::validate_email(value) {
@@ -100,14 +106,15 @@ pub trait ValidationModel {
     fn check_unique(
         hash: &str,
         field_name: &str,
-        bson_field_value: &mongodb::bson::Bson,
-        coll: &mongodb::sync::Collection,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        let object_id = mongodb::bson::oid::ObjectId::with_string(hash);
-        let mut filter = mongodb::bson::doc! { field_name: bson_field_value };
+        bson_field_value: &Bson,
+        coll: &Collection,
+    ) -> Result<(), Box<dyn Error>> {
+        //
+        let object_id = ObjectId::with_string(hash);
+        let mut filter = doc! { field_name: bson_field_value };
         if let Ok(id) = object_id {
             // If the document is will updated.
-            filter = mongodb::bson::doc! {
+            filter = doc! {
                 "$and": [
                     { "_id": { "$ne": id } },
                     filter
@@ -168,12 +175,9 @@ pub trait ValidationModel {
 ///
 pub trait AdditionalValidation {
     // Default implementation as a stub.
-    fn add_validation<'a>(
-        &self,
-    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // error_map.insert("field_name", "Error message.")
-        let error_map: std::collections::HashMap<&'a str, &'a str> =
-            std::collections::HashMap::new();
+        let error_map: HashMap<&'a str, &'a str> = HashMap::new();
         Ok(error_map)
     }
 }
