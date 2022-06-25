@@ -5,13 +5,18 @@ use crate::{
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
     widgets::Widget,
 };
+use mongodb::{
+    bson::{doc, document::Document, Bson},
+    sync::Client,
+};
+use std::{collections::HashMap, error::Error};
 
 /// Caching information about Models for speed up work.
 // #################################################################################################
 pub trait CachingModel: ToModel {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
-    fn to_cache() -> Result<(), Box<dyn std::error::Error>> {
+    fn to_cache() -> Result<(), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get write access in cache.
@@ -20,9 +25,9 @@ pub trait CachingModel: ToModel {
         let meta: Meta = Self::meta()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client_cache: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
+        let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
         // Get a widget map.
-        let mut map_widgets: std::collections::HashMap<String, Widget> = Self::widgets()?;
+        let mut map_widgets: HashMap<String, Widget> = Self::widgets()?;
         // Enrich the widget map with values for dynamic widgets.
         Self::vitaminize(
             meta.project_name.as_str(),
@@ -53,7 +58,7 @@ pub trait CachingModel: ToModel {
     /// println!("{:?}", widgets_map);
     /// ```
     ///
-    fn to_wig() -> Result<std::collections::HashMap<String, Widget>, Box<dyn std::error::Error>> {
+    fn to_wig() -> Result<HashMap<String, Widget>, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
@@ -89,7 +94,7 @@ pub trait CachingModel: ToModel {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn to_json() -> Result<String, Box<dyn std::error::Error>> {
+    fn to_json() -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
@@ -136,7 +141,7 @@ pub trait CachingModel: ToModel {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn to_json_for_admin() -> Result<String, Box<dyn std::error::Error>> {
+    fn to_json_for_admin() -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -162,7 +167,7 @@ pub trait CachingModel: ToModel {
     /// println!("{}", html);
     /// ```
     ///
-    fn to_html() -> Result<String, Box<dyn std::error::Error>> {
+    fn to_html() -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
@@ -211,8 +216,7 @@ pub trait CachingModel: ToModel {
     /// println!("{:?}", form_cache);
     /// ```
     ///
-    fn get_cache_data_for_query(
-    ) -> Result<(FormCache, mongodb::sync::Client), Box<dyn std::error::Error>> {
+    fn get_cache_data_for_query() -> Result<(FormCache, Client), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key();
         // Get read access from cache.
@@ -232,7 +236,7 @@ pub trait CachingModel: ToModel {
             let meta: &Meta = &form_cache.meta;
             // Get MongoDB client for current model.
             let client_store = MONGODB_CLIENT_STORE.read()?;
-            let client: &mongodb::sync::Client = client_store.get(&meta.db_client_name).unwrap();
+            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             //
             Ok((form_cache.clone(), client.clone()))
         } else {
@@ -262,7 +266,7 @@ pub trait CachingModel: ToModel {
     /// ```
     ///
     // *********************************************************************************************
-    fn db_update_dyn_widgets(json_line: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn db_update_dyn_widgets(json_line: &str) -> Result<(), Box<dyn Error>> {
         // Refresh the state in the technical database.
         // -----------------------------------------------------------------------------------------
         // Validation json-line.
@@ -290,13 +294,12 @@ pub trait CachingModel: ToModel {
         );
         let db = client_cache.database(&mango_tech_keyword);
         let coll = db.collection("dynamic_widgets");
-        let query = mongodb::bson::doc! {
+        let query = doc! {
             "database": meta.database_name.clone(),
             "collection": meta.collection_name.clone()
         };
         let new_dyn_data: serde_json::Value = serde_json::from_str(json_line)?;
-        let new_dyn_data =
-            serde_json::from_value::<mongodb::bson::document::Document>(new_dyn_data)?;
+        let new_dyn_data = serde_json::from_value::<Document>(new_dyn_data)?;
         let mut curr_dyn_date = coll.find_one(query.clone(), None)?.unwrap();
         let dyn_date = curr_dyn_date.get_document_mut("fields").unwrap();
 
@@ -304,7 +307,7 @@ pub trait CachingModel: ToModel {
             dyn_date.insert(field_name.as_str(), bson_val);
         }
 
-        let update = mongodb::bson::doc! {
+        let update = doc! {
             "$set": { "fields": dyn_date.clone() }
         };
         coll.update_one(query, update, None)?;
@@ -333,7 +336,7 @@ pub trait CachingModel: ToModel {
                         .collect();
                     // Selecting widgets with multi-selection support.
                     if widget_type.contains("Mult") {
-                        let mut new_arr_bson = Vec::<mongodb::bson::Bson>::new();
+                        let mut new_arr_bson = Vec::<Bson>::new();
                         if widget_type.contains("Text") {
                             let arr_bson = curr_doc.get_array(field_name.as_str())?;
                             new_arr_bson = arr_bson
@@ -385,10 +388,9 @@ pub trait CachingModel: ToModel {
                         }
                         if is_changed {
                             if !new_arr_bson.is_empty() {
-                                curr_doc
-                                    .insert(field_name, mongodb::bson::Bson::Array(new_arr_bson));
+                                curr_doc.insert(field_name, Bson::Array(new_arr_bson));
                             } else {
-                                curr_doc.insert(field_name, mongodb::bson::Bson::Null);
+                                curr_doc.insert(field_name, Bson::Null);
                             }
                         }
                     } else {
@@ -404,7 +406,7 @@ pub trait CachingModel: ToModel {
                             val = curr_doc.get_f64(field_name.as_str())?.to_string();
                         }
                         if !dyn_vec.contains(&val) {
-                            curr_doc.insert(field_name, mongodb::bson::Bson::Null);
+                            curr_doc.insert(field_name, Bson::Null);
                             is_changed = true;
                         }
                     }
@@ -413,7 +415,7 @@ pub trait CachingModel: ToModel {
             if is_changed {
                 // Update values for dynamic widgets.
                 // ---------------------------------------------------------------------------------
-                let query = mongodb::bson::doc! {"_id": curr_doc.get_object_id("_id")?};
+                let query = doc! {"_id": curr_doc.get_object_id("_id")?};
                 coll.update_one(query, curr_doc, None)?;
             }
         }
