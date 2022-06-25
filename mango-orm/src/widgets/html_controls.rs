@@ -1,17 +1,15 @@
 //! Rendering HTML-controls code for Form.
-//! ( If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc. )
+//! Hint: If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc.
 
 use crate::widgets::Widget;
+use std::collections::HashMap;
 
 pub trait HtmlControls {
     /// Rendering HTML-controls code for Form.
     /// ( If necessary, customize the code generation yourself using html and css from
     /// Bootstrap, Material Design, etc. )
     ///
-    fn generate_html(
-        fields_name: &Vec<String>,
-        map_widgets: std::collections::HashMap<String, Widget>,
-    ) -> String {
+    fn generate_html(fields_name: &Vec<String>, map_widgets: HashMap<String, Widget>) -> String {
         // Controls of Form.
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
