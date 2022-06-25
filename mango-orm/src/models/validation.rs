@@ -8,8 +8,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson},
     sync::Collection,
 };
-use std::collections::HashMap;
-use std::error::Error;
+use std::{collections::HashMap, error::Error};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
