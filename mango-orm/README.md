@@ -540,7 +540,7 @@
 
 ## Changelog
 
-- **v0.9.4-v.0.9.x** _Import optimized._
+- **v0.9.4-v.0.9.15** _Import optimized._
 - **v0.9.0** _Added hook methods. See documentation: **mango_orm > models > hooks > Hooks**._
 - **v0.8.26** _Add find_one_to_wig method. See documentation: **mango_orm > models > db_query_api > commons > QCommons**._
 - **v0.8.0** _Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**._
