@@ -36,7 +36,6 @@ use syn::{
 ///
 /// #[Model(
 ///     is_del_docs = false,
-///     is_use_add_valid = true,
 ///     ignore_fields = "confirm_password"
 /// )]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
