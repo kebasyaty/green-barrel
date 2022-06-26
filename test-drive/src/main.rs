@@ -2,7 +2,7 @@ mod mango_models;
 mod settings;
 
 use mango_orm::*;
-//use mongodb::bson::doc;
+use mongodb::bson::doc;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -58,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     /*
     println!(
         "Result:\n{:?}\n\n",
-        mango_models::UserProfile::find_one_to_wig(doc! {"username": "user_14"}, None)?
+        mango_models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
     );
     */
 
