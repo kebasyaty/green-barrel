@@ -93,12 +93,14 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     fn get_hash(&self) -> Option<String>;
     fn set_hash(&mut self, value: String);
 
-    /// Setter for field `created_at`.
+    /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------
+    fn get_created_at(&self) -> Option<String>;
     fn set_created_at(&mut self, value: String);
 
-    /// Setter for field `updated_at`.
+    /// Getter and Setter for field `updated_at`.
     // ---------------------------------------------------------------------------------------------
+    fn get_updated_at(&self) -> Option<String>;
     fn set_updated_at(&mut self, value: String);
 
     /// Serialize an instance of the Model to a hash-line.

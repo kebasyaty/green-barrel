@@ -734,14 +734,20 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 self.hash = Some(value);
             }
 
-            /// Setter for field `created_at`.
+            /// Getter and Setter for field `created_at`.
             // -------------------------------------------------------------------------------------
+            fn get_created_at(&self) -> Option<String> {
+                self.created_at.clone()
+            }
             fn set_created_at(&mut self, value: String) {
                 self.created_at = Some(value);
             }
 
-            /// Setter for field `updated_at`.
+            /// Getter and Setter for field `updated_at`.
             /// ------------------------------------------------------------------------------------
+            fn get_updated_at(&self) -> Option<String> {
+                self.updated_at.clone()
+            }
             fn set_updated_at(&mut self, value: String) {
                 self.updated_at = Some(value);
             }

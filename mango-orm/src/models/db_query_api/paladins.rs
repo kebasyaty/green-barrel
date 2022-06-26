@@ -1283,11 +1283,18 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 if !is_update {
                     final_doc.insert("created_at", Bson::DateTime(dt));
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    self.set_created_at(dt.to_rfc3339()[..19].into());
-                    self.set_updated_at(dt.to_rfc3339()[..19].into());
+                    let dt_text: String = dt.to_rfc3339()[..19].into();
+                    self.set_created_at(dt_text.clone());
+                    self.set_updated_at(dt_text.clone());
+                    final_map_widgets.get_mut("created_at").unwrap().value = dt_text.clone();
+                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text;
                 } else {
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    self.set_updated_at(dt.to_rfc3339()[..19].into());
+                    let dt_text: String = dt.to_rfc3339()[..19].into();
+                    self.set_updated_at(dt_text.clone());
+                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text;
+                    final_map_widgets.get_mut("created_at").unwrap().value =
+                        self.get_created_at().unwrap_or_default();
                 }
             }
         }
