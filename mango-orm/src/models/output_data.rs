@@ -77,7 +77,7 @@ pub trait Converters {
         ignore_fields: &Vec<String>,
         map_widget_type: &HashMap<String, String>,
         model_name: &str,
-    ) -> Result<Option<T>, mongodb::bson::de::Error>
+    ) -> Result<Option<T>, Box<dyn Error>>
     where
         T: serde::de::DeserializeOwned,
     {

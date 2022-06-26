@@ -504,12 +504,12 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     fn find_one_to_model_instance<T>(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<Option<T>, mongodb::bson::de::Error>
+    ) -> Result<Option<T>, Box<dyn Error>>
     where
         T: serde::de::DeserializeOwned,
     {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query().unwrap();
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
@@ -517,7 +517,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
             .collection(meta.collection_name.as_str());
         // Execute query.
         Self::to_model_instance::<T>(
-            coll.find_one(filter, options).unwrap(),
+            coll.find_one(filter, options)?,
             &meta.ignore_fields,
             &meta.map_widget_type,
             meta.model_name.as_str(),
@@ -647,12 +647,12 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     fn find_one_and_delete_to_model_instance<T>(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<Option<T>, mongodb::bson::de::Error>
+    ) -> Result<Option<T>, Box<dyn Error>>
     where
         T: serde::de::DeserializeOwned,
     {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query().unwrap();
+        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
@@ -664,13 +664,13 @@ pub trait QCommons: ToModel + CachingModel + Converters {
                 .collection(meta.collection_name.as_str());
             // Execute query.
             Self::to_model_instance::<T>(
-                coll.find_one_and_delete(filter, options).unwrap(),
+                coll.find_one_and_delete(filter, options)?,
                 &meta.ignore_fields,
                 &meta.map_widget_type,
                 meta.model_name.as_str(),
             )
         } else {
-            Err("It is forbidden to perform delete.".to_string()).unwrap()
+            Err("It is forbidden to perform delete.".to_string())?
         }
     }
 
