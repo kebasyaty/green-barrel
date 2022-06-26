@@ -60,6 +60,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Result:\n{:?}\n\n",
         mango_models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
     );
+
+    println!(
+        "Result:\n{:?}\n\n",
+        mango_models::UserProfile::find_one_to_model_instance::<mango_models::UserProfile>(
+            doc! {"username": "user_34"},
+            None
+        )?
+    );
     */
 
     // Test model instance.
