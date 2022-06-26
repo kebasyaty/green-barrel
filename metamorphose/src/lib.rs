@@ -294,12 +294,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             let fields = &mut fields.named;
 
             // Add new field `hash`.
-            let new_field: syn::FieldsNamed = parse2(quote! {
+            let new_hash_field: syn::FieldsNamed = parse2(quote! {
                 {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub hash: Option<String>}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let new_field = new_field.named.first().unwrap().to_owned();
-            fields.push(new_field);
+            let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
+            fields.push(new_hash_field);
 
             // Get the number of fields.
             trans_meta.fields_count = fields.len();
