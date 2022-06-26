@@ -295,7 +295,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "hiddenText")] pub hash: Option<String>}
+                {#[serde(default)] #[field_attrs(widget = "hiddenText", disabled = true)] pub hash: Option<String>}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();

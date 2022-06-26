@@ -68,17 +68,17 @@ pub struct Widget {
     pub value: String, // Default value.
     pub accept: String, // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
-    pub pattern: String, // Validating a field using a client-side regex.
+    pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
-    pub required: bool, // Mandatory field.
-    pub checked: bool, // A pre-activated radio button or checkbox.
-    pub unique: bool, // The unique value of a field in a collection.
-    pub disabled: bool, // Blocks access and modification of the element.
-    pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub step: String, // Increment step for numeric fields.
-    pub min: String, // The lower value for entering a number or date.
-    pub max: String, // The top value for entering a number or date.
+    pub required: bool,  // Mandatory field.
+    pub checked: bool,   // A pre-activated radio button or checkbox.
+    pub unique: bool,    // The unique value of a field in a collection.
+    pub disabled: bool,  // Blocks access and modification of the element.
+    pub readonly: bool,  // Specifies that the field cannot be modified by the user.
+    pub step: String,    // Increment step for numeric fields.
+    pub min: String,     // The lower value for entering a number or date.
+    pub max: String,     // The top value for entering a number or date.
     pub options: Vec<(String, String)>, // <option value="value1">Title 1</option> - Example: r#"[[1,"Volvo"], [2,"Saab"]]"#
     pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
     pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#
