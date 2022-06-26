@@ -513,6 +513,14 @@
         let result = user.save(None, None)?;
         println!("Is valid: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        println!(
+            "Created at: {}",
+            user.created_at.clone().unwrap_or_default()
+        );
+        println!(
+            "Updated at: {}",
+            user.updated_at.clone().unwrap_or_default()
+        );
         //
         // Get MongoDB ID from hash-line
         // println!("\nObject Id:\n{:?}\n", result.object_id()?);
