@@ -65,8 +65,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = mango_models::UserProfile {
-        username: Some("user_31".to_string()),
-        email: Some("user_31_@noreply.net".to_string()),
+        username: Some("user_34".to_string()),
+        email: Some("user_34_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -88,6 +88,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid());
     println!("Hash: {}", result.hash()?);
+    println!(
+        "Created at: {}",
+        user.created_at.clone().unwrap_or_default()
+    );
+    println!(
+        "Updated at: {}",
+        user.updated_at.clone().unwrap_or_default()
+    );
     // Printing errors to the console ( for development ).
     if !result.is_valid() {
         result.print_err();
@@ -125,6 +133,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let result = user.save(None, None)?;
         println!("\n\nBoolean: {}", result.is_valid());
         println!("Hash: {}", result.hash()?);
+        println!(
+            "Created at: {}",
+            user.created_at.clone().unwrap_or_default()
+        );
+        println!(
+            "Updated at: {}",
+            user.updated_at.clone().unwrap_or_default()
+        );
         // Printing errors to the console ( for development ).
         if !result.is_valid() {
             result.print_err();

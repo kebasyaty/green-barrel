@@ -88,10 +88,18 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     // ---------------------------------------------------------------------------------------------
     fn widgets() -> Result<HashMap<String, Widget>, Box<dyn Error>>;
 
-    // Getter and Setter for field `hash`.
+    /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
     fn get_hash(&self) -> Option<String>;
     fn set_hash(&mut self, value: String);
+
+    /// Setter for field `created_at`.
+    // ---------------------------------------------------------------------------------------------
+    fn set_created_at(&mut self, value: String);
+
+    /// Setter for field `updated_at`.
+    // ---------------------------------------------------------------------------------------------
+    fn set_updated_at(&mut self, value: String);
 
     /// Serialize an instance of the Model to a hash-line.
     // ---------------------------------------------------------------------------------------------

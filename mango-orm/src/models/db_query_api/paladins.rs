@@ -206,7 +206,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// assert!(result.is_valid());
     /// ```
     ///
-    fn check(&self) -> Result<OutputDataForm, Box<dyn Error>> {
+    fn check(&mut self) -> Result<OutputDataForm, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -265,6 +265,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         for field_name in fields_name {
             // Don't check the `hash` field.
             if field_name == "hash" {
+                //
                 if is_err_symptom {
                     let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
                     if !meta.is_add_docs {
@@ -524,6 +525,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 // Validation of date type fields.
                 // *********************************************************************************
                 "inputDate" | "inputDateTime" => {
+                    // Don't check the `created_at`and updated_at fields.
+                    if field_name == "created_at" || field_name == "updated_at" {
+                        continue;
+                    }
                     // Get field value for validation.
                     let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
@@ -1278,8 +1283,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 if !is_update {
                     final_doc.insert("created_at", Bson::DateTime(dt));
                     final_doc.insert("updated_at", Bson::DateTime(dt));
+                    self.set_created_at(dt.to_rfc3339()[..19].into());
+                    self.set_updated_at(dt.to_rfc3339()[..19].into());
                 } else {
                     final_doc.insert("updated_at", Bson::DateTime(dt));
+                    self.set_updated_at(dt.to_rfc3339()[..19].into());
                 }
             }
         }

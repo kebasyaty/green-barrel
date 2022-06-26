@@ -293,6 +293,32 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         if let Named(ref mut fields) = &mut data.fields {
             let fields = &mut fields.named;
 
+            //
+            for field in fields.clone() {
+                // Get field name.
+                if let Some(ident) = &field.ident {
+                    let field_name = ident.to_string();
+
+                    // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
+                    if field_name == "hash".to_string() {
+                        panic!(
+                            "Model: `{}` -> The field named `hash` is reserved.",
+                            model_name.to_string()
+                        )
+                    } else if field_name == "created_at".to_string() {
+                        panic!(
+                            "Model: `{}` -> The field named `created_at` is reserved.",
+                            model_name.to_string()
+                        )
+                    } else if field_name == "updated_at".to_string() {
+                        panic!(
+                            "Model: `{}` -> The field named `updated_at` is reserved.",
+                            model_name.to_string()
+                        )
+                    }
+                }
+            }
+
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
                 {#[serde(default)] #[field_attrs(widget = "hiddenText", disabled = true)] pub hash: Option<String>}
@@ -300,6 +326,20 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
             fields.push(new_hash_field);
+            // Add new field `created_at`.
+            let new_created_at_field: syn::FieldsNamed = parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true)] pub created_at: Option<String>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_created_at_field = new_created_at_field.named.first().unwrap().to_owned();
+            fields.push(new_created_at_field);
+            // Add new field `updated_at`.
+            let new_updated_at_field: syn::FieldsNamed = parse2(quote! {
+                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true)] pub updated_at: Option<String>}
+            })
+            .unwrap_or_else(|err| panic!("{}", err.to_string()));
+            let new_updated_at_field = new_updated_at_field.named.first().unwrap().to_owned();
+            fields.push(new_updated_at_field);
 
             // Get the number of fields.
             trans_meta.fields_count = fields.len();
@@ -313,20 +353,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Get field name.
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
-
-                    // Check for fields with reserved names - `created_at`, `updated_at`.
-                    if field_name == "created_at".to_string() {
-                        panic!(
-                            "Model: `{}` -> The field named `created_at` is reserved.",
-                            model_name.to_string()
-                        )
-                    } else if field_name == "updated_at".to_string() {
-                        panic!(
-                            "Model: `{}` -> The field named `updated_at` is reserved.",
-                            model_name.to_string()
-                        )
-                    }
-
                     trans_meta.fields_name.push(field_name.clone());
                 }
                 // Get field type.
@@ -706,6 +732,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             }
             fn set_hash(&mut self, value: String) {
                 self.hash = Some(value);
+            }
+
+            /// Setter for field `created_at`.
+            // -------------------------------------------------------------------------------------
+            fn set_created_at(&mut self, value: String) {
+                self.created_at = Some(value);
+            }
+
+            /// Setter for field `updated_at`.
+            /// ------------------------------------------------------------------------------------
+            fn set_updated_at(&mut self, value: String) {
+                self.updated_at = Some(value);
             }
 
             /// Serialize model to json-line.

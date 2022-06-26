@@ -167,7 +167,7 @@ pub trait Converters {
                 prepared_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..16].into())
+                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..19].into())
                     } else {
                         Bson::Null
                     },
