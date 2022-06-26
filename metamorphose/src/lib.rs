@@ -636,24 +636,24 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let output = quote! {
         #ast
 
-        // All methods that directly depend on the macro.
+        /// All methods that directly depend on the macro.
         // *****************************************************************************************
         impl ToModel for #model_name {
-            // Get model key.
-            // (To access data in the cache)
+            /// Get model key.
+            /// Hint: To access data in the cache.
             // -------------------------------------------------------------------------------------
-            fn key() -> String {
-                let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                format!(
+            fn key() -> Result<String, Box<dyn std::error::Error>> {
+                let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])")?;
+                Ok(format!(
                     "{}__{}__{}",
                     SERVICE_NAME.trim(),
                     re.replace_all(stringify!(#model_name), "_$upper_chr"),
                     UNIQUE_PROJECT_KEY.trim().to_string()
                 )
-                .to_lowercase()
+                .to_lowercase())
             }
 
-            // Get metadata of Model.
+            /// Get metadata of Model.
             // -------------------------------------------------------------------------------------
             fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
@@ -692,15 +692,15 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(meta)
             }
 
-            // Get map of widgets for model fields.
-            // Hint: <field name, Widget>
+            /// Get map of widgets for model fields.
+            /// Hint: <field name, Widget>
             // -------------------------------------------------------------------------------------
             fn widgets() -> Result<std::collections::HashMap<String, Widget>,
                 Box<dyn std::error::Error>> {
                 Ok(serde_json::from_str::<TransMapWidgets>(&#trans_map_widgets)?.map_widgets)
             }
 
-            // Getter and Setter for field `hash`.
+            /// Getter and Setter for field `hash`.
             // -------------------------------------------------------------------------------------
             fn get_hash(&self) -> Option<String> {
                 self.hash.clone()
@@ -709,7 +709,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 self.hash = Some(value);
             }
 
-            // Serialize model to json-line.
+            /// Serialize model to json-line.
             // -------------------------------------------------------------------------------------
             fn self_to_json(&self)
                 -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
@@ -717,30 +717,30 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             }
         }
 
-        // Caching information about Models for speed up work.
+        /// Caching information about Models for speed up work.
         // *****************************************************************************************
         impl CachingModel for #model_name {}
 
-        // Validating Model fields for save and update.
+        /// Validating Model fields for save and update.
         // *****************************************************************************************
         impl ValidationModel for #model_name {}
 
-        // A set of methods for custom validation.
+        /// A set of methods for custom validation.
         // *****************************************************************************************
         #add_trait_custom_valid
 
-        // Database Query API
+        /// Database Query API
         // *****************************************************************************************
-        // Output data converters for database queries.
+        /// Output data converters for database queries.
         impl Converters for #model_name {}
-        // Common database query methods.
+        /// Common database query methods.
         impl QCommons for #model_name {}
-        // Query methods for a Model instance.
+        /// Query methods for a Model instance.
         impl QPaladins for #model_name {}
-        // Methods that are called at different stages when accessing the database.
+        /// Methods that are called at different stages when accessing the database.
         #add_trait_hooks
 
-        // Rendering HTML-controls code for Form.
+        /// Rendering HTML-controls code for Form.
         // *****************************************************************************************
         impl HtmlControls for #model_name {}
     };
@@ -751,7 +751,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
 // AUXILIARY STRUCTURES AND FUNCTIONS
 // #################################################################################################
-// Get field attribute.
+/// Get field attribute.
 // *************************************************************************************************
 fn get_field_attr<'a>(field: &'a syn::Field, attr_name: &'a str) -> Option<&'a Attribute> {
     let attr: Option<&Attribute> = field
@@ -761,7 +761,7 @@ fn get_field_attr<'a>(field: &'a syn::Field, attr_name: &'a str) -> Option<&'a A
     attr
 }
 
-// Get ID for Widget.
+/// Get ID for Widget.
 // *************************************************************************************************
 fn get_id(model_name: String, field_name: String) -> String {
     let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
@@ -773,7 +773,7 @@ fn get_id(model_name: String, field_name: String) -> String {
         .to_lowercase()
 }
 
-// Transporting of metadate to implementation of methods.
+/// Transporting of metadate to implementation of methods.
 // *************************************************************************************************
 #[derive(Serialize)]
 struct Meta {
@@ -823,7 +823,7 @@ impl Default for Meta {
     }
 }
 
-// Widget attributes.
+/// Widget attributes.
 // *************************************************************************************************
 #[derive(Serialize)]
 struct Widget {
@@ -894,15 +894,15 @@ impl Default for Widget {
     }
 }
 
-// For transporting of Widgets map to implementation of methods.
-// Hint: <field name, Widget>
+/// For transporting of Widgets map to implementation of methods.
+/// Hint: <field name, Widget>
 // *************************************************************************************************
 #[derive(Default, Serialize)]
 struct TransMapWidgets {
     pub map_widgets: std::collections::HashMap<String, Widget>,
 }
 
-// Get widget info.
+/// Get widget info.
 // *************************************************************************************************
 fn get_widget_info<'a>(
     widget_name: &'a str,
@@ -967,7 +967,7 @@ fn get_widget_info<'a>(
     Ok(info)
 }
 
-// Get parameter value from model field attribute.
+/// Get parameter value from model field attribute.
 // *************************************************************************************************
 fn get_param_value<'a>(
     attr_name: &'a str,

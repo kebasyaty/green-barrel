@@ -152,7 +152,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_STORE.read()?;
         let client_store = MONGODB_CLIENT_STORE.read()?;
-        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()?[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;
@@ -228,7 +228,7 @@ fn test_model_number_i32_fields() -> Result<(), Box<dyn std::error::Error>> {
     {
         let form_store = FORM_STORE.read()?;
         let client_store = MONGODB_CLIENT_STORE.read()?;
-        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()[..]).unwrap();
+        let form_cache: &FormCache = form_store.get(&app_name::TestModel::key()?[..]).unwrap();
         let meta: &Meta = &form_cache.meta;
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let object_id = ObjectId::with_string(test_model.hash.clone().unwrap().as_str())?;

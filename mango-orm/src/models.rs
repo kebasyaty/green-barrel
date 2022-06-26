@@ -77,7 +77,7 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
     /// Get model key
     /// ( to access data in the cache )
     // ---------------------------------------------------------------------------------------------
-    fn key() -> String;
+    fn key() -> Result<String, Box<dyn Error>>;
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------

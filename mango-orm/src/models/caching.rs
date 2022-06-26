@@ -18,7 +18,7 @@ pub trait CachingModel: ToModel {
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::key();
+        let key: String = Self::key()?;
         // Get write access in cache.
         let mut form_store = FORM_STORE.write()?;
         // Create `FormCache` default and add map of widgets and metadata of model.
@@ -60,7 +60,7 @@ pub trait CachingModel: ToModel {
     ///
     fn to_wig() -> Result<HashMap<String, Widget>, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::key();
+        let key: String = Self::key()?;
         // Get read access from cache.
         let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
@@ -96,7 +96,7 @@ pub trait CachingModel: ToModel {
     ///
     fn to_json() -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::key();
+        let key: String = Self::key()?;
         // Get read access from cache.
         let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
@@ -169,7 +169,7 @@ pub trait CachingModel: ToModel {
     ///
     fn to_html() -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::key();
+        let key: String = Self::key()?;
         // Get read access from cache.
         let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
@@ -218,7 +218,7 @@ pub trait CachingModel: ToModel {
     ///
     fn get_cache_data_for_query() -> Result<(FormCache, Client), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
-        let key: String = Self::key();
+        let key: String = Self::key()?;
         // Get read access from cache.
         let mut form_store = FORM_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
