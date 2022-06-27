@@ -1384,7 +1384,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     }
 
     /// Save to database as a new document or update an existing document.
-    /// Hint: Used in conjunction with the `check ()` method.
+    /// Hint: Used in conjunction with the `check()` method.
     ///
     /// # Example:
     ///
