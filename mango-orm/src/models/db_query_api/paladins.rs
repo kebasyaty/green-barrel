@@ -59,6 +59,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 } else if field_json.is_null() {
                     widget.value = String::new();
                 }
+                if field_name == "created_at" || field_name == "updated_at" {
+                    widget.is_hide = false;
+                }
             } else if !hash.is_empty() {
                 widget.widget = "hiddenText".to_string();
                 widget.input_type = "hidden".to_string();

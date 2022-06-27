@@ -150,7 +150,10 @@ pub trait CachingModel: ToModel {
         let mut widget_list: Vec<Widget> = Vec::new();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let widget = map_widgets.get(field_name).unwrap().clone();
+            let mut widget = map_widgets.get(field_name).unwrap().clone();
+            if field_name == "created_at" || field_name == "updated_at" {
+                widget.is_hide = false;
+            }
             widget_list.push(widget);
         }
         //
