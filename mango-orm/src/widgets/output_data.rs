@@ -1,4 +1,4 @@
-//! Output data for QOaladins.
+//! Output data for QPaladins.
 
 use crate::widgets::{html_controls::HtmlControls, Widget};
 use mongodb::bson::{document::Document, oid::ObjectId};
