@@ -297,6 +297,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
                 | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
                 | "hiddenText" => {
+                    // Don't check the `created_at`and updated_at fields.
+                    if field_name == "created_at" || field_name == "updated_at" {
+                        continue;
+                    }
                     // When updating, we skip field password type.
                     if is_update && widget_type == "inputPassword" {
                         final_widget.value = String::new();
@@ -525,10 +529,6 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 // Validation of date type fields.
                 // *********************************************************************************
                 "inputDate" | "inputDateTime" => {
-                    // Don't check the `created_at`and updated_at fields.
-                    if field_name == "created_at" || field_name == "updated_at" {
-                        continue;
-                    }
                     // Get field value for validation.
                     let field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
