@@ -162,10 +162,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "inputDateTime"
-                || field_name == "created_at"
-                || field_name == "updated_at"
-            {
+            } else if widget_type == "inputDateTime" {
                 let bson_val = doc.get(field_name).unwrap();
                 prepared_doc.insert(
                     field_name,

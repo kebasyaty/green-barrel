@@ -328,14 +328,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             fields.push(new_hash_field);
             // Add new field `created_at`.
             let new_created_at_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "hiddenText", disabled = true)] pub created_at: Option<String>}
+                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true)] pub created_at: Option<String>}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_created_at_field = new_created_at_field.named.first().unwrap().to_owned();
             fields.push(new_created_at_field);
             // Add new field `updated_at`.
             let new_updated_at_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "hiddenText", disabled = true)] pub updated_at: Option<String>}
+                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true)] pub updated_at: Option<String>}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_updated_at_field = new_updated_at_field.named.first().unwrap().to_owned();

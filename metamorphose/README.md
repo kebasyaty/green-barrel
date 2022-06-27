@@ -27,7 +27,7 @@
 
 ## Changelog
 
-- **v0.6.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **hiddenText** and **disabled = true**. Updated **README.md**. Updated documentation._
+- **v0.6.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **disabled = true, is_hide = true**. Updated **README.md**. Updated documentation._
 - **v0.5.4** _Fixed ModelName::**key()** method. See documentation: **mango_orm > models > ToModel**._
 - **v0.5.2** _Import optimized._
 - **v0.5.0** _Added model attribute is_use_hooks. See documentation: **mango_orm > models > hooks > Hooks**._
