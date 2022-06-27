@@ -548,7 +548,7 @@
 
 ## Changelog
 
-- **v0.10.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **is_hide = true, readonly = true**. Updated **README.md**. Updated documentation._
+- **v0.10.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **hiddenText** and **disabled = true**. Updated **README.md**. Updated documentation._
 - **v0.9.4-v.0.9.15** _Import optimized._
 - **v0.9.0** _Added hook methods. See documentation: **mango_orm > models > hooks > Hooks**._
 - **v0.8.26** _Add find_one_to_wig method. See documentation: **mango_orm > models > db_query_api > commons > QCommons**._
