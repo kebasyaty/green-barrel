@@ -1441,14 +1441,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             // -------------------------------------------------------------------------------------
             if is_no_error {
                 let final_doc = verified_data.to_doc();
-                if !is_update {
-                    // Create document.
-                    let result: InsertOneResult =
-                        coll.insert_one(final_doc, options_insert.clone())?;
-                    self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
-                    // Run hook.
-                    self.post_create();
-                } else if !final_doc.is_empty() {
+                if is_update {
                     // Update document.
                     let hash: Option<String> = self.get_hash();
                     if hash.is_none() {
@@ -1469,6 +1462,21 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // Run hook.
                     if stop_step == 0 {
                         self.post_update();
+                    }
+                } else {
+                    // Create document.
+                    if !final_doc.is_empty() {
+                        let result: InsertOneResult =
+                            coll.insert_one(final_doc, options_insert.clone())?;
+                        self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
+                        // Run hook.
+                        self.post_create();
+                    } else {
+                        Err(format!(
+                            "Model: `{}` > Method: save() -> \
+                        There is no data in the final document to save.",
+                            meta.model_name
+                        ))?
                     }
                 }
             }
