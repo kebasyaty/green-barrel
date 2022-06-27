@@ -9,7 +9,7 @@ use std::error::Error;
 #[derive(Debug)]
 pub enum OutputDataForm {
     Check((bool, Vec<String>, HashMap<String, Widget>, Document)),
-    Save((bool, Vec<String>, HashMap<String, Widget>, String)),
+    Save((bool, Vec<String>, HashMap<String, Widget>)),
     Delete((bool, String)),
     Stub,
 }

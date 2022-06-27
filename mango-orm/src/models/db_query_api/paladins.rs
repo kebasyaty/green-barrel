@@ -1483,8 +1483,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
 
             // Add hash-line (for document identification).
             // -------------------------------------------------------------------------------------
-            let hash = self.get_hash().unwrap_or_default();
-            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value = hash.clone();
+            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value =
+                self.get_hash().unwrap_or_default();
 
             // Return result.
             // -------------------------------------------------------------------------------------
@@ -1493,7 +1493,6 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     is_no_error,
                     meta.fields_name.clone(),
                     final_map_widgets,
-                    hash,
                 )));
             }
         }
