@@ -2,7 +2,7 @@ mod mango_models;
 mod settings;
 
 use mango_orm::*;
-//use mongodb::bson::doc;
+use mongodb::bson::doc;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -60,21 +60,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Result:\n{:?}\n\n",
         mango_models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
     );
-
+    */
     println!(
         "Result:\n{:?}\n\n",
         mango_models::UserProfile::find_one_to_model_instance::<mango_models::UserProfile>(
-            doc! {"username": "user_34"},
+            doc! {"username": "user_38"},
             None
         )?
     );
-    */
 
     // Test model instance.
     // *********************************************************************************************
     let mut user = mango_models::UserProfile {
-        username: Some("user_38".to_string()),
-        email: Some("user_38_@noreply.net".to_string()),
+        username: Some("user_39".to_string()),
+        email: Some("user_39_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
