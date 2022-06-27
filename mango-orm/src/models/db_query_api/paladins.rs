@@ -1466,9 +1466,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 } else {
                     // Create document.
                     if !final_doc.is_empty() {
-                        let result = coll.insert_one(final_doc, options_insert.clone());
-                        println!("\n\n??? Save Doc: {:?} ???\n\n", result);
-                        self.set_hash(result?.inserted_id.as_object_id().unwrap().to_hex());
+                        let result = coll.insert_one(final_doc, options_insert.clone())?;
+                        self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
                         // Run hook.
                         self.post_create();
                     } else {
