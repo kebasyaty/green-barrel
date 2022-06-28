@@ -2,7 +2,7 @@
 
 use crate::widgets::Widget;
 use crate::{
-    models::{caching::CachingModel, output_data::Converters, Meta, ToModel},
+    models::{caching::CachingModel, converters::Converters, Meta, ToModel},
     widgets::output_data::OutputDataForm,
 };
 use mongodb::{

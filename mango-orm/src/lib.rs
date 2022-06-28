@@ -13,9 +13,9 @@ pub use crate::{
     migration::Monitor,
     models::{
         caching::CachingModel,
+        converters::Converters,
         db_query_api::{commons::QCommons, paladins::QPaladins},
         hooks::Hooks,
-        output_data::Converters,
         validation::{AdditionalValidation, ValidationModel},
         Meta, ToModel,
     },
