@@ -1421,7 +1421,15 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             let meta: Meta = form_cache.meta;
             // Get widget map.
             let mut final_map_widgets: HashMap<String, Widget> = verified_data.to_wig();
-            let is_update: bool = self.get_hash().is_some();
+            //
+            let is_update: bool = {
+                let hash = self.get_hash();
+                if hash.is_some() && !hash.unwrap().is_empty() {
+                    true
+                } else {
+                    false
+                }
+            };
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
@@ -1443,16 +1451,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 let final_doc = verified_data.to_doc();
                 if is_update {
                     // Update document.
-                    let hash: Option<String> = self.get_hash();
-                    if hash.is_none() {
-                        Err(format!(
-                            "Model: `{}` > Method: save() -> \
-                        An empty `hash` field is not allowed when updating.",
-                            meta.model_name
-                        ))?
-                    }
-                    //
-                    let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
+                    let hash = self.get_hash().unwrap();
+                    let object_id = ObjectId::with_string(hash.as_str())?;
                     let query = doc! {"_id": object_id};
                     let update = doc! {
                         "$set": final_doc,
@@ -1465,19 +1465,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     }
                 } else {
                     // Create document.
-                    if !final_doc.is_empty() {
-                        let result: InsertOneResult =
-                            coll.insert_one(final_doc, options_insert.clone())?;
-                        self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
-                        // Run hook.
-                        self.post_create();
-                    } else {
-                        Err(format!(
-                            "Model: `{}` > Method: save() -> \
-                        There is no data in the final document to save.",
-                            meta.model_name
-                        ))?
-                    }
+                    let result: InsertOneResult =
+                        coll.insert_one(final_doc, options_insert.clone())?;
+                    self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
+                    // Run hook.
+                    self.post_create();
                 }
             }
 

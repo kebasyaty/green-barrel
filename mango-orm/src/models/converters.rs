@@ -1,4 +1,4 @@
-//! Output data for QCommons.
+//! Helper methods for converting output data (use in the commons.rs module).
 
 use crate::widgets::Widget;
 use mongodb::bson::document::Document;
