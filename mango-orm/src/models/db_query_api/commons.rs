@@ -3,7 +3,7 @@
 use crate::widgets::Widget;
 use crate::{
     models::{caching::CachingModel, converters::Converters, Meta, ToModel},
-    widgets::output_data::OutputDataForm,
+    widgets::output_data::OutputData,
 };
 use mongodb::{
     bson::{document::Document, Bson},
@@ -93,7 +93,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     fn delete_many(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputDataForm, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -117,7 +117,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         } else {
             false
         };
-        Ok(OutputDataForm::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg)))
     }
 
     /// Deletes up to one document found matching query.
@@ -137,7 +137,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     fn delete_one(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputDataForm, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -161,7 +161,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         } else {
             false
         };
-        Ok(OutputDataForm::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg)))
     }
 
     /// Finds the distinct values of the field specified by field_name across the collection.
@@ -206,7 +206,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
     /// }
     /// ```
     ///
-    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputDataForm, Box<dyn Error>> {
+    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = form_cache.meta;
@@ -229,7 +229,7 @@ pub trait QCommons: ToModel + CachingModel + Converters {
         } else {
             false
         };
-        Ok(OutputDataForm::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg)))
     }
 
     /// Estimates the number of documents in the collection using collection metadata.

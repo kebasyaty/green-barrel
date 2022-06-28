@@ -7,14 +7,14 @@ use std::error::Error;
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]
-pub enum OutputDataForm {
+pub enum OutputData {
     Check((bool, Vec<String>, HashMap<String, Widget>, Document)),
     Save((bool, Vec<String>, HashMap<String, Widget>)),
     Delete((bool, String)),
     Stub,
 }
 
-impl HtmlControls for OutputDataForm {
+impl HtmlControls for OutputData {
     /// Get Html-line
     // ---------------------------------------------------------------------------------------------
     ///
@@ -36,7 +36,7 @@ impl HtmlControls for OutputDataForm {
     }
 }
 
-impl OutputDataForm {
+impl OutputData {
     /// Get Hash-line
     // ---------------------------------------------------------------------------------------------
     fn get_hash(map_widgets: &HashMap<String, Widget>) -> Result<String, Box<dyn Error>> {

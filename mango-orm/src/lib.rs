@@ -20,7 +20,7 @@ pub use crate::{
         Meta, ToModel,
     },
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
-    widgets::{html_controls::HtmlControls, output_data::OutputDataForm, TransMapWidgets, Widget},
+    widgets::{html_controls::HtmlControls, output_data::OutputData, TransMapWidgets, Widget},
 };
 
 pub use crate::test_tool::del_test_db;

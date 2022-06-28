@@ -2,7 +2,7 @@
 
 use crate::{
     models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
-    widgets::{output_data::OutputDataForm, FileData, ImageData, Widget},
+    widgets::{output_data::OutputData, FileData, ImageData, Widget},
 };
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, spec::ElementType, Bson},
@@ -209,7 +209,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// assert!(result.is_valid());
     /// ```
     ///
-    fn check(&mut self) -> Result<OutputDataForm, Box<dyn Error>> {
+    fn check(&mut self) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -1375,7 +1375,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputDataForm::Check((
+        Ok(OutputData::Check((
             !is_err_symptom,
             meta.fields_name.clone(),
             final_map_widgets,
@@ -1401,7 +1401,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputDataForm, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>> {
         // Run hooks.
         if self.get_hash().is_none() {
             self.pre_create();
@@ -1413,7 +1413,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         //
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
-            let verified_data: OutputDataForm = self.check()?;
+            let verified_data: OutputData = self.check()?;
             let is_no_error: bool = verified_data.is_valid();
             // Get cached Model data.
             let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -1489,7 +1489,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             // Return result.
             // -------------------------------------------------------------------------------------
             if num == stop_step {
-                return Ok(OutputDataForm::Save((
+                return Ok(OutputData::Save((
                     is_no_error,
                     meta.fields_name.clone(),
                     final_map_widgets,
@@ -1497,7 +1497,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             }
         }
         //
-        Ok(OutputDataForm::Stub)
+        Ok(OutputData::Stub)
     }
 
     /// Remove document from collection.
@@ -1513,7 +1513,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// }
     /// ```
     ///
-    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputDataForm, Box<dyn Error>> {
+    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>> {
         // Run hook.
         self.pre_delete();
         // Get cached Model data.
@@ -1634,7 +1634,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // Run hook.
         self.post_delete();
         //
-        Ok(OutputDataForm::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg)))
     }
 
     // Operations with passwords.
