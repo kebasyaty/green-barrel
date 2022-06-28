@@ -340,7 +340,6 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     model_name, field_name
                                 ))?
                             }
-                            final_widget.value = String::new();
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
