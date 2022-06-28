@@ -1285,14 +1285,24 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 let dt_text: String = dt.to_rfc3339()[..19].into();
                 if is_update {
-                    // For update
+                    // For update.
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    self.set_updated_at(dt_text.clone());
-                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text;
-                    final_map_widgets.get_mut("created_at").unwrap().value =
-                        self.get_created_at().unwrap_or_default();
+                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text.clone();
+                    self.set_updated_at(dt_text);
+                    // Get the `created_at` value from the database.
+                    let doc = {
+                        let object_id = ObjectId::with_string(hash)?;
+                        let filter = doc! {"_id": object_id};
+                        coll.find_one(filter, None)?.unwrap()
+                    };
+                    let dt = doc.get("created_at").unwrap();
+                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    //
+                    final_doc.insert("created_at", dt);
+                    final_map_widgets.get_mut("created_at").unwrap().value = dt_text.clone();
+                    self.set_created_at(dt_text);
                 } else {
-                    // For create
+                    // For create.
                     final_doc.insert("created_at", Bson::DateTime(dt));
                     final_doc.insert("updated_at", Bson::DateTime(dt));
                     self.set_created_at(dt_text.clone());
