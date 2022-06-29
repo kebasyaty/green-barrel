@@ -552,7 +552,6 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &"Required field.".to_owned())
                                     .unwrap();
-                            final_widget.value = String::new();
                         } else if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
