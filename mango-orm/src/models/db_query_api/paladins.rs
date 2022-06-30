@@ -245,6 +245,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // -----------------------------------------------------------------------------------------
         let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
         let mut final_map_widgets: HashMap<String, Widget> = form_cache.map_widgets.clone();
+
+        // Add hash-line (for document identification, if the document was created).
+        final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value =
+            self.get_hash().unwrap_or_default();
+
         // Apply additional validation.
         {
             let error_map = self.add_validation()?;
@@ -264,6 +269,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 }
             }
         }
+
         // Loop over fields for validation.
         for field_name in fields_name {
             // Don't check the `hash` field.
@@ -1427,8 +1433,6 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
             let meta: Meta = form_cache.meta;
-            // Get widget map.
-            let mut final_map_widgets: HashMap<String, Widget> = verified_data.to_wig();
             //
             let is_update: bool = {
                 let hash = self.get_hash();
@@ -1475,16 +1479,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // Create document.
                     let result: InsertOneResult =
                         coll.insert_one(final_doc, options_insert.clone())?;
+                    // Add hash-line to model instance.
                     self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
                     // Run hook.
                     self.post_create();
                 }
             }
-
-            // Add hash-line (for document identification).
-            // -------------------------------------------------------------------------------------
-            final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value =
-                self.get_hash().unwrap_or_default();
 
             // Return result.
             // -------------------------------------------------------------------------------------
@@ -1492,7 +1492,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 return Ok(OutputData::Save((
                     is_no_error,
                     meta.fields_name.clone(),
-                    final_map_widgets,
+                    verified_data.to_wig(),
                 )));
             }
         }
