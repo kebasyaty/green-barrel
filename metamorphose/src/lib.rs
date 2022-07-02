@@ -1127,7 +1127,16 @@ fn get_param_value<'a>(
             }
             "String" => {
                 if let Str(lit_str) = &mnv.lit {
-                    widget.value = lit_str.value().trim().to_string()
+                    if !(widget.widget == "inputPassword") {
+                        widget.value = lit_str.value().trim().to_string()
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Widget: `{}` -> \
+                        The password field must not have a default value in the `value` parameter. \
+                        Example: \"Some text\"",
+                            model_name, field_name, "inputPassword"
+                        )
+                    }
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} -> \
