@@ -285,7 +285,7 @@ impl<'a> Monitor<'a> {
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
-                                    Err(format!("Service: `{}` > Model: `{}` > Field: `{}` > \
+                                    Err(format!("Service: `{}` > Model: `{}` > Field: `{}` ; \
                                                  Method: `migrat()` -> \
                                                  Can't get field value from database.",
                                         meta.service_name, meta.model_name, field))?;
@@ -313,7 +313,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATE.is_match(&val) {
-                                                    Err(format!("Service: `{}` > Model: `{}` > \
+                                                    Err(format!("Service: `{}` > Model: `{}` ; \
                                                                  Method: `widgets()` -> Incorrect date \
                                                                  format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
@@ -336,7 +336,7 @@ impl<'a> Monitor<'a> {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATETIME.is_match(&val) {
-                                                    Err(format!("Service: `{}` > Model: `{}` > \
+                                                    Err(format!("Service: `{}` > Model: `{}` ; \
                                                                  Method: `widgets()` -> \
                                                                  Incorrect date and time format. \
                                                                  Example: 1970-02-28T00:00",
@@ -410,7 +410,7 @@ impl<'a> Monitor<'a> {
                                                 let is_emty_url = file_data.url.is_empty();
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
-                                                    Err(format!("Model: `{}` > Field: `{}` > Method: \
+                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` -> Check the `path` and `url` \
                                                                  attributes in the `default` field parameter.",
                                                         meta.model_name, field)
@@ -420,7 +420,7 @@ impl<'a> Monitor<'a> {
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
-                                                    Err(format!("Model: `{}` > Field: `{}` > Method: \
+                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` -> File is missing - {}",
                                                         meta.model_name, field, path)
                                                     )?
@@ -448,7 +448,7 @@ impl<'a> Monitor<'a> {
                                                 let is_emty_url = file_data.url.is_empty();
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
-                                                    Err(format!("Model: `{}` > Field: `{}` > Method: \
+                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` -> Check the `path` and `url` \
                                                                  attributes in the `default` field parameter.",
                                                         meta.model_name, field
@@ -458,7 +458,7 @@ impl<'a> Monitor<'a> {
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
-                                                    Err(format!("Model: `{}` > Field: `{}` > Method: \
+                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` -> File is missing - {}",
                                                         meta.model_name, field, path
                                                     ))?
@@ -531,7 +531,7 @@ impl<'a> Monitor<'a> {
                                             Bson::Null
                                         }
                                         _ => {
-                                            Err(format!("Service: `{}` > Model: `{}` > Method: \
+                                            Err(format!("Service: `{}` > Model: `{}` ; Method: \
                                                          `migrat()` -> Invalid Widget type.",
                                                 meta.service_name, meta.model_name
                                             ))?
@@ -548,7 +548,7 @@ impl<'a> Monitor<'a> {
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
-                                    Err(format!("Service: `{}` > Model: `{}` > \
+                                    Err(format!("Service: `{}` > Model: `{}` ; \
                                                  Method: `migrat()` -> \
                                                  Cannot get field value from database for \
                                                  field `{}`.",
@@ -556,7 +556,7 @@ impl<'a> Monitor<'a> {
                                     ))?
                                 }
                             } else {
-                                Err(format!("Service: `{}` > Model: `{}` > Method: `migrat()` -> \
+                                Err(format!("Service: `{}` > Model: `{}` ; Method: `migrat()` -> \
                                              Key `{}` was not found in the document from \
                                              the database.",
                                     meta.service_name, meta.model_name, field

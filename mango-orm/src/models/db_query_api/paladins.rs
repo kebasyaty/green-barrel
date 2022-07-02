@@ -885,10 +885,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let mut tmp_value;
                     // Get selected items.
                     for _ in 0..=1 {
-                        if !pre_json_value.is_null()
-                            && !tmp_json_text.is_empty()
-                            && tmp_json_text != "[]"
-                        {
+                        if !pre_json_value.is_null() && tmp_json_text != "[]" {
                             final_doc.insert(
                                 field_name,
                                 match widget_type {
@@ -975,10 +972,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     //
                     let tmp_json_text = serde_json::to_string(&pre_json_value)?;
                     // Get selected items.
-                    if !pre_json_value.is_null()
-                        && !tmp_json_text.is_empty()
-                        && tmp_json_text != "[]"
-                    {
+                    if !pre_json_value.is_null() && tmp_json_text != "[]" {
                         final_doc.insert(
                             field_name,
                             match widget_type {

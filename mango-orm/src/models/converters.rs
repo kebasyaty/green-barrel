@@ -55,7 +55,7 @@ pub trait Converters {
                                         serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
                                 }
                                 _ => Err(format!(
-                                    "Model: `{}` > Method: `one_doc_to_wig()` \
+                                    "Model: `{}` ; Method: `one_doc_to_wig()` \
                                     -> Invalid Widget type.",
                                     model_name
                                 ))?,
@@ -136,7 +136,7 @@ pub trait Converters {
                         Bson::String(bson_val.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
-                            "Model: `{}` > Field: `hash` > Method: `find_one()` -> \
+                            "Model: `{}` > Field: `hash` ; Method: `find_one()` -> \
                                 Missing document identifier `_id`.",
                             model_name
                         ))?

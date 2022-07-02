@@ -78,7 +78,7 @@ pub trait CachingModel: ToModel {
         } else {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` > Method: `form_wig()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `form_wig()` -> Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -124,7 +124,7 @@ pub trait CachingModel: ToModel {
         } else {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` > Method: `form_json()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `form_json()` -> Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -203,7 +203,7 @@ pub trait CachingModel: ToModel {
         } else {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` > Method: `form_html()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `form_html()` -> Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -245,7 +245,7 @@ pub trait CachingModel: ToModel {
         } else {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` > Method: `get_cache_data_for_query()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `get_cache_data_for_query()` -> Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -279,7 +279,7 @@ pub trait CachingModel: ToModel {
             .unwrap();
         if !re.is_match(json_line) {
             Err(format!(
-                r#"Model: {} > Method: `db_update_dyn_widgets()` -> \
+                r#"Model: {} ; Method: `db_update_dyn_widgets()` -> \
                    The `json_line` parameter was not validation. \
                    Example: {{"field_name":[["value","Title"]]}}"#,
                 Self::meta()?.model_name

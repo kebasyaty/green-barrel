@@ -447,7 +447,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.value.is_empty() {
                         if !re_valid_date.is_match(widget.value.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `default` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `default` -> \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -456,7 +456,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.min.is_empty() {
                         if !re_valid_date.is_match(widget.min.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `min` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `min` -> \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -465,7 +465,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.max.is_empty() {
                         if !re_valid_date.is_match(widget.max.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `max` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `max` -> \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -481,7 +481,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.value.is_empty() {
                         if !re_valid_datetime.is_match(widget.value.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `default` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `default` -> \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -490,7 +490,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.min.is_empty() {
                         if !re_valid_datetime.is_match(widget.min.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `min` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `min` -> \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -499,7 +499,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.max.is_empty() {
                         if !re_valid_datetime.is_match(widget.max.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Parameter: `max` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `max` -> \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -573,14 +573,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         } else if widget.widget.contains("Slug") {
             if !widget.value.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` > Parameter: `value` -> \
+                    "Model: `{}` > Field: `{}` > Attribute: `value` -> \
                     No default value is allowed for fields of type Slug.",
                     model_name, field_name
                 )
             }
             if widget.slug_sources.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` > Parameter: `slug_sources` -> \
+                    "Model: `{}` > Field: `{}` > Attribute: `slug_sources` -> \
                     An empty array is not valid. \
                     Example: [\"title\"] or [\"username\",] or [\"email\", \"first_name\", \"last_name\"]",
                     model_name, field_name

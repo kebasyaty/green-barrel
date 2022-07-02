@@ -161,7 +161,7 @@ pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
             }
         } else {
             Err(format!(
-                "Model: {} > Method: `vitaminize()` -> \
+                "Model: {} ; Method: `vitaminize()` -> \
                 Document with values for dynamic widgets not found.",
                 Self::meta()?.model_name
             ))?
