@@ -140,13 +140,15 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` > Method: `delete_file()` -> Document (info file) not found.",
+                        "Model: `{}` > Field: `{}` ; Method: `delete_file()` -> \
+                        Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `delete_file()` -> Document not found.",
+                    "Model: `{}` > Field: `{}` ; Method: `delete_file()` -> \
+                    Document not found.",
                     model_name, field_name
                 ))?
             }
@@ -162,14 +164,15 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         coll: &Collection,
         field_name: &str,
     ) -> Result<String, Box<dyn Error>> {
+        //
         let hash = self.get_hash().unwrap_or_default();
         let mut result = String::new();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
-                if let Some(file_doc) = document.get(field_name).unwrap().as_document() {
-                    result = serde_json::to_string(file_doc)?;
+                if let Some(doc) = document.get(field_name).unwrap().as_document() {
+                    result = serde_json::to_string(doc)?;
                 }
             }
         }
@@ -258,7 +261,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
                         Err(format!(
-                            "Model: `{}` >  Method: `add_validation()` -> \
+                            "Model: `{}` ;  Method: `add_validation()` -> \
                             The `{}` field is missing from the model.",
                             model_name, field_name
                         ))?
@@ -290,18 +293,18 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             // Check field value.
             if pre_json_value.is_none() {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `check()` -> This field is missing.",
+                    "Model: `{}` > Field: `{}` ; Method: `check()` -> This field is missing.",
                     model_name, field_name
                 ))?
             }
             //
-            let pre_json_value: &Value = pre_json_value.unwrap();
+            let mut pre_json_value: &Value = pre_json_value.unwrap();
             let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
             let widget_type: &str = &final_widget.widget.clone()[..];
 
             // Field validation.
             match widget_type {
-                // Validation of text type fields.
+                // Validation of Text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
                 | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
@@ -312,7 +315,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         continue;
                     }
                     // Get field value for validation.
-                    let field_value: String = if !pre_json_value.is_null() {
+                    let mut field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -331,27 +334,34 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if field_value.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Required field.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
-                                    Required field.",
-                                    model_name, field_name
-                                ))?
+                        if widget_type != "inputPassword" && !final_widget.value.is_empty() {
+                            field_value = final_widget.value.clone();
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
+                                    .unwrap();
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
                             }
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        final_widget.value = String::new();
-                        continue;
                     }
+                    //
+                    final_widget.value = field_value.clone();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = if widget_type != "inputPassword" {
                         Bson::String(field_value.clone())
@@ -372,7 +382,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -389,7 +399,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -416,7 +426,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
+                                "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                 model_name, field_name, msg
                             ))?
                         }
@@ -434,7 +444,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                             .unwrap();
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                         model_name,
                                         field_name,
                                         err.to_string()
@@ -453,7 +463,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` > Method: `check()` -> {}",
+                                "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                 model_name,
                                 field_name,
                                 err.to_string()
@@ -483,7 +493,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         }
                     }
                 }
-                // Validation of slug type fields.
+                // Validation of Slug type fields.
                 // *********************************************************************************
                 "inputSlug" => {
                     let mut slug_str = String::new();
@@ -500,21 +510,45 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             slug_str = format!("{}-{}", slug_str, num);
                         }
                     }
-                    slug_str = slugify(slug_str);
-                    final_widget.value = slug_str.clone();
+                    //
+                    if slug_str.is_empty() {
+                        slug_str = if !pre_json_value.is_null() {
+                            pre_json_value.as_str().unwrap().trim().to_string()
+                        } else {
+                            String::new()
+                        };
+                    }
                     // Validation, if the field is required and empty, accumulate the error.
                     if slug_str.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                        if !final_widget.value.is_empty() {
+                            slug_str = final_widget.value.clone();
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
                                     .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        continue;
                     }
                     //
+                    slug_str = slugify(slug_str);
+                    final_widget.value = slug_str.clone();
                     let bson_field_value = Bson::String(slug_str);
                     // Validation of `unique`.
                     if final_widget.unique {
@@ -538,7 +572,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         continue;
                     }
                     // Get field value for validation.
-                    let field_value: String = if !pre_json_value.is_null() {
+                    let mut field_value: String = if !pre_json_value.is_null() {
                         let clean_data: String =
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
@@ -553,16 +587,31 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if field_value.is_empty() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                        if !final_widget.value.is_empty() {
+                            field_value = final_widget.value.clone();
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
                                     .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        final_widget.value = String::new();
-                        continue;
                     }
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
@@ -678,15 +727,43 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64"
-                | "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
-                | "selectF64Dyn" => {
+                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
+                    //
+                    let tmp_value;
+                    if pre_json_value.is_null() {
+                        if !final_widget.value.is_empty() {
+                            tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                            pre_json_value = &tmp_value;
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
+                                    .unwrap();
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
+                        }
+                    }
                     // Get selected items.
                     if !pre_json_value.is_null() {
                         final_doc.insert(
                             field_name,
                             match widget_type {
-                                "selectText" | "selectTextDyn" => {
+                                "selectText" => {
                                     let val = pre_json_value.as_str().unwrap().to_string();
                                     final_widget.value = val.clone();
                                     if val.is_empty() && final_widget.required {
@@ -699,49 +776,136 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     }
                                     Bson::String(val)
                                 }
-                                "selectI32" | "selectI32Dyn" => {
+                                "selectI32" => {
                                     let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
                                     final_widget.value = val.to_string();
                                     Bson::Int32(val)
                                 }
-                                "selectU32" | "selectI64" | "selectU32Dyn" | "selectI64Dyn" => {
+                                "selectU32" | "selectI64" => {
                                     let val = pre_json_value.as_i64().unwrap();
                                     final_widget.value = val.to_string();
                                     Bson::Int64(val)
                                 }
-                                "selectF64" | "selectF64Dyn" => {
+                                "selectF64" => {
                                     let val = pre_json_value.as_f64().unwrap();
                                     final_widget.value = val.to_string();
                                     Bson::Double(val)
                                 }
-                                _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
+                                _ => panic!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
                                         Unsupported widget type - `{}`.",
                                     model_name, field_name, widget_type
-                                ))?,
+                                ),
                             },
                         );
-                    } else {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
-                        }
-                        final_widget.value = String::new();
                     }
                 }
-                "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
-                | "selectF64Mult" | "selectTextMultDyn" | "selectI32MultDyn"
-                | "selectU32MultDyn" | "selectI64MultDyn" | "selectF64MultDyn" => {
+                //
+                "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
+                | "selectF64Dyn" => {
                     // Get selected items.
                     if !pre_json_value.is_null() {
                         final_doc.insert(
                             field_name,
                             match widget_type {
-                                "selectTextMult" | "selectTextMultDyn" => {
+                                "selectText" => {
+                                    let val = pre_json_value.as_str().unwrap().to_string();
+                                    final_widget.value = val.clone();
+                                    if val.is_empty() && final_widget.required {
+                                        is_err_symptom = true;
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Required field.".to_owned(),
+                                        )
+                                        .unwrap();
+                                    }
+                                    Bson::String(val)
+                                }
+                                "selectI32Dyn" => {
+                                    let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
+                                    final_widget.value = val.to_string();
+                                    Bson::Int32(val)
+                                }
+                                "selectU32Dyn" | "selectI64Dyn" => {
+                                    let val = pre_json_value.as_i64().unwrap();
+                                    final_widget.value = val.to_string();
+                                    Bson::Int64(val)
+                                }
+                                "selectF64Dyn" => {
+                                    let val = pre_json_value.as_f64().unwrap();
+                                    final_widget.value = val.to_string();
+                                    Bson::Double(val)
+                                }
+                                _ => panic!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        Unsupported widget type - `{}`.",
+                                    model_name, field_name, widget_type
+                                ),
+                            },
+                        );
+                    } else {
+                        if final_widget.required {
+                            is_err_symptom = true;
+                            if !final_widget.is_hide {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                panic!(
+                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                    model_name, field_name
+                                )
+                            }
+                        }
+                        if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        final_widget.value = String::new();
+                    }
+                }
+                //
+                "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
+                | "selectF64Mult" => {
+                    //
+                    let tmp_value;
+                    if pre_json_value.is_null() {
+                        if !final_widget.value.is_empty() {
+                            tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                            pre_json_value = &tmp_value;
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
+                                    .unwrap();
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
+                        }
+                    }
+                    // Get selected items.
+                    if !pre_json_value.is_null() {
+                        final_doc.insert(
+                            field_name,
+                            match widget_type {
+                                "selectTextMult" => {
                                     let val = pre_json_value
                                         .as_array()
                                         .unwrap()
@@ -750,7 +914,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .collect::<Vec<Bson>>();
                                     Bson::Array(val)
                                 }
-                                "selectI32Mult" | "selectI32MultDyn" => Bson::Array(
+                                "selectI32Mult" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
@@ -762,8 +926,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         })
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                "selectU32Mult" | "selectI64Mult" | "selectU32MultDyn"
-                                | "selectI64MultDyn" => Bson::Array(
+                                "selectU32Mult" | "selectI64Mult" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
@@ -771,7 +934,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .map(|item| Bson::Int64(item.as_i64().unwrap()))
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                "selectF64Mult" | "selectF64MultDyn" => Bson::Array(
+                                "selectF64Mult" => Bson::Array(
                                     pre_json_value
                                         .as_array()
                                         .unwrap()
@@ -779,21 +942,88 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .map(|item| Bson::Double(item.as_f64().unwrap()))
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                _ => Err(format!(
-                                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
+                                _ => panic!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
                                         Unsupported widget type - `{}`.",
                                     model_name, field_name, widget_type
-                                ))?,
+                                ),
+                            },
+                        );
+                        final_widget.value = serde_json::to_string(&pre_json_value)?;
+                    }
+                }
+                //
+                "selectTextMultDyn" | "selectI32MultDyn" | "selectU32MultDyn"
+                | "selectI64MultDyn" | "selectF64MultDyn" => {
+                    // Get selected items.
+                    if !pre_json_value.is_null() {
+                        final_doc.insert(
+                            field_name,
+                            match widget_type {
+                                "selectTextMultDyn" => {
+                                    let val = pre_json_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                        .collect::<Vec<Bson>>();
+                                    Bson::Array(val)
+                                }
+                                "selectI32MultDyn" => Bson::Array(
+                                    pre_json_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| {
+                                            Bson::Int32(
+                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                            )
+                                        })
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "selectU32MultDyn" | "selectI64MultDyn" => Bson::Array(
+                                    pre_json_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "selectF64MultDyn" => Bson::Array(
+                                    pre_json_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                _ => panic!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        Unsupported widget type - `{}`.",
+                                    model_name, field_name, widget_type
+                                ),
                             },
                         );
                         final_widget.value = serde_json::to_string(&pre_json_value)?;
                     } else {
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
-                                    .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
+                            if !final_widget.is_hide {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Required field.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                panic!(
+                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                    model_name, field_name
+                                )
+                            }
+                        }
+                        if !ignore_fields.contains(&field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
@@ -802,65 +1032,98 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 // Validation of file type fields.
                 // *********************************************************************************
                 "inputFile" => {
+                    //
+                    let mut is_delete = false;
                     // Get field value for validation.
-                    let mut field_value: FileData = if !pre_json_value.is_null() {
+                    let mut _field_value: FileData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_delete) = serde_json::from_str::<
+                        if let Some(is_del) = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
                         .unwrap()
                         .get("is_delete")
                         {
-                            if is_update && is_delete.as_bool().unwrap() {
-                                self.delete_file(
-                                    &coll,
-                                    model_name,
-                                    field_name,
-                                    final_widget.value.as_str(),
-                                    false,
-                                )?;
-                                final_doc.insert(field_name, Bson::Null);
-                            }
+                            is_delete = is_del.as_bool().unwrap();
                         }
                         serde_json::from_str::<FileData>(obj_str)?
                     } else {
                         FileData::default()
                     };
+                    // Delete file.
+                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
+                        if !final_widget.required
+                            || ((!_field_value.path.is_empty() && !_field_value.url.is_empty())
+                                || !final_widget.value.is_empty())
+                        {
+                            self.delete_file(
+                                &coll,
+                                model_name,
+                                field_name,
+                                final_widget.value.as_str(),
+                                false,
+                            )?;
+                        } else {
+                            is_err_symptom = true;
+                            if !final_widget.is_hide {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Upload a new file to delete the previous one.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                panic!(
+                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Upload a new file to delete the previous one.",
+                                    model_name, field_name
+                                )
+                            }
+                        }
+                    }
                     // Get the current information about file from database.
                     let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if !is_update || (final_widget.required && curr_info_file.is_empty()) {
-                            if final_widget.required && final_widget.value.is_empty() {
-                                is_err_symptom = true;
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Required field.".to_owned(),
-                                )
-                                .unwrap();
-                                continue;
-                            } else if !final_widget.value.is_empty() {
-                                // Trying to apply the value default.
-                                field_value = serde_json::from_str(final_widget.value.trim())?;
+                    if _field_value.path.is_empty() && _field_value.url.is_empty() {
+                        if curr_info_file.is_empty() {
+                            if !final_widget.value.is_empty() {
+                                // Get default value.
+                                _field_value = serde_json::from_str(final_widget.value.trim())?;
                             } else {
-                                final_doc.insert(field_name, Bson::Null);
+                                if final_widget.required {
+                                    is_err_symptom = true;
+                                    if !final_widget.is_hide {
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Required field.".to_owned(),
+                                        )
+                                        .unwrap();
+                                    } else {
+                                        panic!(
+                                            "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> Required field.",
+                                            model_name, field_name
+                                        )
+                                    }
+                                }
+                                if !is_update && !ignore_fields.contains(&field_name) {
+                                    final_doc.insert(field_name, Bson::Null);
+                                }
                                 continue;
                             }
                         } else {
-                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
+                            final_widget.value = curr_info_file;
                             continue;
                         }
                     }
                     //
-                    final_widget.value = curr_info_file;
                     // Flags to check.
-                    let is_emty_path = field_value.path.is_empty();
-                    let is_emty_url = field_value.url.is_empty();
+                    let is_emty_path = _field_value.path.is_empty();
+                    let is_emty_url = _field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
+                            "Model: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
@@ -868,11 +1131,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         ))?
                     }
                     // Create path for validation of file.
-                    let path: String = field_value.path.clone();
+                    let path: String = _field_value.path.clone();
                     let f_path = std::path::Path::new(path.as_str());
                     if !f_path.exists() || !f_path.is_file() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
+                            "Model: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}",
                             model_name, field_name, path
                         ))?
@@ -880,64 +1143,82 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    field_value.size = metadata.len() as u32;
+                    _field_value.size = metadata.len() as u32;
                     // Get file name.
-                    field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    _field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !ignore_fields.contains(&field_name) {
                         // Add file data to widget.
-                        final_widget.value = serde_json::to_string(&field_value)?;
+                        final_widget.value = serde_json::to_string(&_field_value)?;
                         //
                         if !is_err_symptom {
                             let bson_field_value =
-                                mongodb::bson::ser::to_bson(&field_value.clone())?;
+                                mongodb::bson::ser::to_bson(&_field_value.clone())?;
                             final_doc.insert(field_name, bson_field_value);
                         }
+                    } else {
+                        final_widget.value = String::new();
                     }
                 }
+                //
                 "inputImage" => {
                     //
+                    let mut is_delete = false;
                     let is_create_thumbnails: bool = !final_widget.thumbnails.is_empty();
                     // Get field value for validation.
                     let mut field_value: ImageData = if !pre_json_value.is_null() {
                         let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_delete) = serde_json::from_str::<
+                        if let Some(is_del) = serde_json::from_str::<
                             serde_json::map::Map<String, serde_json::Value>,
                         >(obj_str)
                         .unwrap()
                         .get("is_delete")
                         {
-                            if is_update && is_delete.as_bool().unwrap() {
-                                self.delete_file(
-                                    &coll,
-                                    model_name,
-                                    field_name,
-                                    final_widget.value.as_str(),
-                                    true,
-                                )?;
-                                final_doc.insert(field_name, Bson::Null);
-                            }
+                            is_delete = is_del.as_bool().unwrap();
                         }
                         serde_json::from_str::<ImageData>(obj_str)?
                     } else {
                         ImageData::default()
                     };
+                    // Delete file.
+                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
+                        if !final_widget.required
+                            || ((!field_value.path.is_empty() && !field_value.url.is_empty())
+                                || !final_widget.value.is_empty())
+                        {
+                            self.delete_file(
+                                &coll,
+                                model_name,
+                                field_name,
+                                final_widget.value.as_str(),
+                                true,
+                            )?;
+                        } else {
+                            is_err_symptom = true;
+                            if !final_widget.is_hide {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"Upload a new file to delete the previous one.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                panic!(
+                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Upload a new file to delete the previous one.",
+                                    model_name, field_name
+                                )
+                            }
+                        }
+                    }
                     // Get the current information about file from database.
                     let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if !is_update || (final_widget.required && curr_info_file.is_empty()) {
-                            if final_widget.required && final_widget.value.is_empty() {
-                                is_err_symptom = true;
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Required field.".to_owned(),
-                                )
-                                .unwrap();
-                                continue;
-                            } else if !final_widget.value.is_empty() {
-                                // Trying to apply the value default.
+                        if curr_info_file.is_empty() {
+                            if !final_widget.value.is_empty() {
+                                // Get default value.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
                                 // Copy the default image to the default section.
                                 if is_create_thumbnails {
@@ -965,23 +1246,39 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     );
                                 }
                             } else {
-                                final_doc.insert(field_name, Bson::Null);
+                                if final_widget.required {
+                                    is_err_symptom = true;
+                                    if !final_widget.is_hide {
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Required field.".to_owned(),
+                                        )
+                                        .unwrap();
+                                    } else {
+                                        panic!(
+                                            "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> Required field.",
+                                            model_name, field_name
+                                        )
+                                    }
+                                }
+                                if !is_update && !ignore_fields.contains(&field_name) {
+                                    final_doc.insert(field_name, Bson::Null);
+                                }
                                 continue;
                             }
                         } else {
-                            final_widget.value = self.db_get_file_info(&coll, field_name)?;
+                            final_widget.value = curr_info_file;
                             continue;
                         }
                     }
-                    //
-                    final_widget.value = curr_info_file;
                     // Flags to check.
                     let is_emty_path = field_value.path.is_empty();
                     let is_emty_url = field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
+                            "Model: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
@@ -992,7 +1289,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let f_path = std::path::Path::new(field_value.path.as_str());
                     if !f_path.exists() || !f_path.is_file() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Method: \
+                            "Model: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}",
                             model_name, field_name, field_value.path
                         ))?
@@ -1069,28 +1366,45 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 mongodb::bson::ser::to_bson(&field_value.clone())?;
                             final_doc.insert(field_name, bson_field_value);
                         }
+                    } else {
+                        final_widget.value = String::new();
                     }
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
                 "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
                     // Get field value for validation.
-                    let field_value: Option<i64> = pre_json_value.as_i64();
+                    let mut field_value: Option<i64> = pre_json_value.as_i64();
 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if pre_json_value.is_null() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                        if !final_widget.value.is_empty() {
+                            field_value = Some(final_widget.value.clone().parse::<i64>()?);
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
                                     .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        final_widget.value = String::new();
-                        continue;
                     }
                     // Get clean data.
                     let field_value = i32::try_from(field_value.unwrap())?;
@@ -1133,22 +1447,37 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
                 | "hiddenU32" | "hiddenI64" => {
                     // Get field value for validation.
-                    let field_value: Option<i64> = pre_json_value.as_i64();
+                    let mut field_value: Option<i64> = pre_json_value.as_i64();
 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if pre_json_value.is_null() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                        if !final_widget.value.is_empty() {
+                            field_value = Some(final_widget.value.clone().parse::<i64>()?);
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
                                     .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        final_widget.value = String::new();
-                        continue;
                     }
                     // Get clean data.
                     let field_value: i64 = field_value.unwrap();
@@ -1189,22 +1518,37 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 }
                 "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
                     // Get field value for validation.
-                    let field_value: Option<f64> = pre_json_value.as_f64();
+                    let mut field_value: Option<f64> = pre_json_value.as_f64();
 
                     // Validation, if the field is required and empty, accumulate the error
                     // ( The default value is used whenever possible ).
                     // -----------------------------------------------------------------------------
                     if pre_json_value.is_null() {
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &"Required field.".to_owned())
+                        if !final_widget.value.is_empty() {
+                            field_value = Some(final_widget.value.clone().parse::<f64>()?);
+                        } else {
+                            if final_widget.required {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                    final_widget.error = Self::accumula_err(
+                                        &final_widget,
+                                        &"Required field.".to_owned(),
+                                    )
                                     .unwrap();
-                        } else if !ignore_fields.contains(&field_name) {
-                            final_doc.insert(field_name, Bson::Null);
+                                } else {
+                                    panic!(
+                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                        model_name, field_name
+                                    )
+                                }
+                            }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
-                        final_widget.value = String::new();
-                        continue;
                     }
                     // Get clean data.
                     let field_value: f64 = field_value.unwrap();
@@ -1254,11 +1598,20 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         // ( The default value is used whenever possible )
                         if final_widget.required {
                             is_err_symptom = true;
-                            final_widget.error = Self::accumula_err(
-                                &final_widget,
-                                &"You must definitely choose.".to_owned(),
-                            )
-                            .unwrap();
+                            if !final_widget.is_hide {
+                                final_widget.error = Self::accumula_err(
+                                    &final_widget,
+                                    &"You must definitely choose.".to_owned(),
+                                )
+                                .unwrap();
+                            } else {
+                                panic!(
+                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> \
+                                        Hiding required fields is not allowed.",
+                                    model_name, field_name
+                                )
+                            }
                             false
                         } else {
                             // Apply the value default.
@@ -1277,7 +1630,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     }
                 }
                 _ => Err(format!(
-                    "Model: `{}` > Field: `{}` > Method: `check()` -> \
+                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
                      Unsupported widget type - `{}`.",
                     model_name, field_name, widget_type
                 ))?,
@@ -1696,7 +2049,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         let hash: Option<String> = self.get_hash();
         if hash.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` -> \
                 An empty `hash` field is not allowed when updating.",
                 meta.model_name
             ))?
@@ -1710,7 +2063,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // We check that for the given `hash` a document is found in the database.
         if doc.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` -> \
                 There is no document in the database for the current `hash` value.",
                 meta.model_name
             ))?
@@ -1721,7 +2074,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         let password_hash = doc.get("password");
         if password_hash.is_none() {
             Err(format!(
-                "Model: `{}` > Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` -> \
                 The password field is missing.",
                 meta.model_name
             ))?
