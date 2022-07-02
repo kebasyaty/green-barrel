@@ -320,10 +320,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             pre_json_value.as_str().unwrap().trim().to_string();
                         // In case of an error, return the current
                         // state of the field to the user (client).
-                        if widget_type != "inputPassword" {
-                            final_widget.value = clean_data.clone();
-                        } else {
-                            final_widget.value = String::new();
+                        if !clean_data.is_empty() {
+                            if widget_type != "inputPassword" {
+                                final_widget.value = clean_data.clone();
+                            } else {
+                                final_widget.value = String::new();
+                            }
                         }
                         clean_data
                     } else {
@@ -360,13 +362,14 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             continue;
                         }
                     }
-                    //
-                    final_widget.value = field_value.clone();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = if widget_type != "inputPassword" {
-                        Bson::String(field_value.clone())
+                    let bson_field_value;
+                    if widget_type != "inputPassword" {
+                        bson_field_value = Bson::String(field_value.clone());
+                        final_widget.value = field_value.clone();
                     } else {
-                        Bson::Null
+                        bson_field_value = Bson::Null;
+                        final_widget.value = String::new();
                     };
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
