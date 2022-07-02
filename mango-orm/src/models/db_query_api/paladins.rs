@@ -349,9 +349,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -536,9 +536,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -603,9 +603,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -732,86 +732,93 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 // *********************************************************************************
                 "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
                     //
-                    let tmp_value;
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            tmp_value = serde_json::to_value(final_widget.value.clone())?;
-                            pre_json_value = &tmp_value;
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
-                                        model_name, field_name
-                                    )
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
-                        }
-                    }
+                    let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
+                    let mut tmp_value;
                     // Get selected items.
-                    if !pre_json_value.is_null() {
-                        final_doc.insert(
-                            field_name,
-                            match widget_type {
-                                "selectText" => {
-                                    let val = pre_json_value.as_str().unwrap().to_string();
-                                    final_widget.value = val.clone();
-                                    if val.is_empty() && final_widget.required {
-                                        is_err_symptom = true;
+                    for _ in 0..=1 {
+                        // Get selected items.
+                        if !pre_json_value.is_null() && !tmp_json_text.is_empty() {
+                            final_doc.insert(
+                                field_name,
+                                match widget_type {
+                                    "selectText" => {
+                                        let val = pre_json_value.as_str().unwrap().to_string();
+                                        final_widget.value = val.clone();
+                                        if val.is_empty() && final_widget.required {
+                                            is_err_symptom = true;
+                                            final_widget.error = Self::accumula_err(
+                                                &final_widget,
+                                                &"Required field.".to_owned(),
+                                            )
+                                            .unwrap();
+                                        }
+                                        Bson::String(val)
+                                    }
+                                    "selectI32" => {
+                                        let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
+                                        final_widget.value = val.to_string();
+                                        Bson::Int32(val)
+                                    }
+                                    "selectU32" | "selectI64" => {
+                                        let val = pre_json_value.as_i64().unwrap();
+                                        final_widget.value = val.to_string();
+                                        Bson::Int64(val)
+                                    }
+                                    "selectF64" => {
+                                        let val = pre_json_value.as_f64().unwrap();
+                                        final_widget.value = val.to_string();
+                                        Bson::Double(val)
+                                    }
+                                    _ => panic!(
+                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        Unsupported widget type - `{}`.\n\n",
+                                        model_name, field_name, widget_type
+                                    ),
+                                },
+                            );
+                            break;
+                        } else {
+                            if !final_widget.value.is_empty() {
+                                tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                                tmp_json_text = serde_json::to_string(&tmp_value)?;
+                                pre_json_value = &tmp_value;
+                            } else {
+                                if final_widget.required {
+                                    is_err_symptom = true;
+                                    if !final_widget.is_hide {
                                         final_widget.error = Self::accumula_err(
                                             &final_widget,
                                             &"Required field.".to_owned(),
                                         )
                                         .unwrap();
+                                    } else {
+                                        panic!(
+                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
+                                            Method: `check()` -> \
+                                            Hiding required fields is not allowed.\n\n",
+                                            model_name, field_name
+                                        )
                                     }
-                                    Bson::String(val)
                                 }
-                                "selectI32" => {
-                                    let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
-                                    final_widget.value = val.to_string();
-                                    Bson::Int32(val)
+                                if !ignore_fields.contains(&field_name) {
+                                    final_doc.insert(field_name, Bson::Null);
                                 }
-                                "selectU32" | "selectI64" => {
-                                    let val = pre_json_value.as_i64().unwrap();
-                                    final_widget.value = val.to_string();
-                                    Bson::Int64(val)
-                                }
-                                "selectF64" => {
-                                    let val = pre_json_value.as_f64().unwrap();
-                                    final_widget.value = val.to_string();
-                                    Bson::Double(val)
-                                }
-                                _ => panic!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
-                                        Unsupported widget type - `{}`.",
-                                    model_name, field_name, widget_type
-                                ),
-                            },
-                        );
+                                break;
+                            }
+                        }
                     }
                 }
                 //
                 "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
                 | "selectF64Dyn" => {
+                    //
+                    let tmp_json_text = serde_json::to_string(&pre_json_value)?;
                     // Get selected items.
-                    if !pre_json_value.is_null() {
+                    if !pre_json_value.is_null() && !tmp_json_text.is_empty() {
                         final_doc.insert(
                             field_name,
                             match widget_type {
-                                "selectText" => {
+                                "selectTextDyn" => {
                                     let val = pre_json_value.as_str().unwrap().to_string();
                                     final_widget.value = val.clone();
                                     if val.is_empty() && final_widget.required {
@@ -840,8 +847,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     Bson::Double(val)
                                 }
                                 _ => panic!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
-                                        Unsupported widget type - `{}`.",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                    Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
                                 ),
                             },
@@ -857,9 +864,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 .unwrap();
                             } else {
                                 panic!(
-                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 )
                             }
@@ -874,92 +881,104 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
                 | "selectF64Mult" => {
                     //
-                    let tmp_value;
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            tmp_value = serde_json::to_value(final_widget.value.clone())?;
-                            pre_json_value = &tmp_value;
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
-                                        model_name, field_name
-                                    )
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
-                        }
-                    }
+                    let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
+                    let mut tmp_value;
                     // Get selected items.
-                    if !pre_json_value.is_null() {
-                        final_doc.insert(
-                            field_name,
-                            match widget_type {
-                                "selectTextMult" => {
-                                    let val = pre_json_value
-                                        .as_array()
-                                        .unwrap()
-                                        .iter()
-                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                        .collect::<Vec<Bson>>();
-                                    Bson::Array(val)
+                    for _ in 0..=1 {
+                        if !pre_json_value.is_null()
+                            && !tmp_json_text.is_empty()
+                            && tmp_json_text != "[]"
+                        {
+                            final_doc.insert(
+                                field_name,
+                                match widget_type {
+                                    "selectTextMult" => {
+                                        let val = pre_json_value
+                                            .as_array()
+                                            .unwrap()
+                                            .iter()
+                                            .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                            .collect::<Vec<Bson>>();
+                                        Bson::Array(val)
+                                    }
+                                    "selectI32Mult" => Bson::Array(
+                                        pre_json_value
+                                            .as_array()
+                                            .unwrap()
+                                            .iter()
+                                            .map(|item| {
+                                                Bson::Int32(
+                                                    i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                                )
+                                            })
+                                            .collect::<Vec<Bson>>(),
+                                    ),
+                                    "selectU32Mult" | "selectI64Mult" => Bson::Array(
+                                        pre_json_value
+                                            .as_array()
+                                            .unwrap()
+                                            .iter()
+                                            .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                            .collect::<Vec<Bson>>(),
+                                    ),
+                                    "selectF64Mult" => Bson::Array(
+                                        pre_json_value
+                                            .as_array()
+                                            .unwrap()
+                                            .iter()
+                                            .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                            .collect::<Vec<Bson>>(),
+                                    ),
+                                    _ => panic!(
+                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        Unsupported widget type - `{}`.\n\n",
+                                        model_name, field_name, widget_type
+                                    ),
+                                },
+                            );
+                            final_widget.value = tmp_json_text;
+                            break;
+                        } else {
+                            if !final_widget.value.is_empty() {
+                                tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                                tmp_json_text = serde_json::to_string(&tmp_value)?;
+                                pre_json_value = &tmp_value;
+                            } else {
+                                if final_widget.required {
+                                    is_err_symptom = true;
+                                    if !final_widget.is_hide {
+                                        final_widget.error = Self::accumula_err(
+                                            &final_widget,
+                                            &"Required field.".to_owned(),
+                                        )
+                                        .unwrap();
+                                    } else {
+                                        panic!(
+                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
+                                            Method: `check()` -> \
+                                            Hiding required fields is not allowed.\n\n",
+                                            model_name, field_name
+                                        )
+                                    }
                                 }
-                                "selectI32Mult" => Bson::Array(
-                                    pre_json_value
-                                        .as_array()
-                                        .unwrap()
-                                        .iter()
-                                        .map(|item| {
-                                            Bson::Int32(
-                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
-                                            )
-                                        })
-                                        .collect::<Vec<Bson>>(),
-                                ),
-                                "selectU32Mult" | "selectI64Mult" => Bson::Array(
-                                    pre_json_value
-                                        .as_array()
-                                        .unwrap()
-                                        .iter()
-                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
-                                        .collect::<Vec<Bson>>(),
-                                ),
-                                "selectF64Mult" => Bson::Array(
-                                    pre_json_value
-                                        .as_array()
-                                        .unwrap()
-                                        .iter()
-                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
-                                        .collect::<Vec<Bson>>(),
-                                ),
-                                _ => panic!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
-                                        Unsupported widget type - `{}`.",
-                                    model_name, field_name, widget_type
-                                ),
-                            },
-                        );
-                        final_widget.value = serde_json::to_string(&pre_json_value)?;
+                                if !ignore_fields.contains(&field_name) {
+                                    final_doc.insert(field_name, Bson::Null);
+                                }
+                                break;
+                            }
+                        }
                     }
                 }
                 //
                 "selectTextMultDyn" | "selectI32MultDyn" | "selectU32MultDyn"
                 | "selectI64MultDyn" | "selectF64MultDyn" => {
+                    //
+                    let tmp_json_text = serde_json::to_string(&pre_json_value)?;
                     // Get selected items.
-                    if !pre_json_value.is_null() {
+                    if !pre_json_value.is_null()
+                        && !tmp_json_text.is_empty()
+                        && tmp_json_text != "[]"
+                    {
                         final_doc.insert(
                             field_name,
                             match widget_type {
@@ -1001,13 +1020,13 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .collect::<Vec<Bson>>(),
                                 ),
                                 _ => panic!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
-                                        Unsupported widget type - `{}`.",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
                                 ),
                             },
                         );
-                        final_widget.value = serde_json::to_string(&pre_json_value)?;
+                        final_widget.value = tmp_json_text;
                     } else {
                         if final_widget.required {
                             is_err_symptom = true;
@@ -1019,9 +1038,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 .unwrap();
                             } else {
                                 panic!(
-                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 )
                             }
@@ -1075,9 +1094,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 .unwrap();
                             } else {
                                 panic!(
-                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Upload a new file to delete the previous one.",
+                                        Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
                                 )
                             }
@@ -1103,8 +1122,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .unwrap();
                                     } else {
                                         panic!(
-                                            "Model: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> Required field.",
+                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> Required field.\n\n",
                                             model_name, field_name
                                         )
                                     }
@@ -1206,9 +1225,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 .unwrap();
                             } else {
                                 panic!(
-                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Upload a new file to delete the previous one.",
+                                        Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
                                 )
                             }
@@ -1259,8 +1278,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .unwrap();
                                     } else {
                                         panic!(
-                                            "Model: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> Required field.",
+                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
+                                        Method: `check()` -> Required field.\n\n",
                                             model_name, field_name
                                         )
                                     }
@@ -1396,9 +1415,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -1469,9 +1488,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -1540,9 +1559,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     .unwrap();
                                 } else {
                                     panic!(
-                                        "Model: `{}` > Field (hidden): `{}` ; \
+                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     )
                                 }
@@ -1609,9 +1628,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 .unwrap();
                             } else {
                                 panic!(
-                                    "Model: `{}` > Field (hidden): `{}` ; \
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
-                                        Hiding required fields is not allowed.",
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 )
                             }
