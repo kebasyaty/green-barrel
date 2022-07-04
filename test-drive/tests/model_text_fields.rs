@@ -15,6 +15,7 @@ mod app_name {
     // Test application settings
     // *********************************************************************************************
     pub const PROJECT_NAME: &str = "project_name";
+    // To generate a key: https://passwordsgenerator.net/
     pub const UNIQUE_PROJECT_KEY: &str = "8JUBHtgyg8gEjk5";
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
