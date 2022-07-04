@@ -13,6 +13,7 @@ pub const PROJECT_NAME: &str = "project_name";
 // Valid characters: a-z A-Z 0-9
 // Size: 8-16
 // Example: "7rzgacfqQB3B7q7T"
+// To generate a key: https://passwordsgenerator.net/
 pub const UNIQUE_PROJECT_KEY: &str = "7rzgacfqQB3B7q7T";
 
 // Default settings.
