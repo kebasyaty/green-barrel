@@ -1147,13 +1147,19 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         ))?
                     }
                     // Create path for validation of file.
-                    let path: String = _field_value.path.clone();
-                    let f_path = std::path::Path::new(path.as_str());
-                    if !f_path.exists() || !f_path.is_file() {
+                    let f_path = std::path::Path::new(_field_value.path.as_str());
+                    if !f_path.exists() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}",
-                            model_name, field_name, path
+                            model_name, field_name, _field_value.path
+                        ))?
+                    }
+                    if !f_path.is_file() {
+                        Err(format!(
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` -> The path does not lead to a file - {}",
+                            model_name, field_name, _field_value.path
                         ))?
                     }
                     // Get file metadata.
@@ -1273,7 +1279,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     } else {
                                         panic!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> Required field.\n\n",
+                                            Method: `check()` -> Required field.\n\n",
                                             model_name, field_name
                                         )
                                     }
@@ -1303,10 +1309,17 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(field_value.path.as_str());
-                    if !f_path.exists() || !f_path.is_file() {
+                    if !f_path.exists() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}",
+                            model_name, field_name, field_value.path
+                        ))?
+                    }
+                    if !f_path.is_file() {
+                        Err(format!(
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` -> The path does not lead to a file - {}",
                             model_name, field_name, field_value.path
                         ))?
                     }
@@ -1818,7 +1831,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             if !is_update {
                 let wig_name = "inputSlug".to_string();
                 for val in form_cache.map_widgets.values() {
-                    if val.widget == wig_name {
+                    if val.widget == wig_name && is_no_error {
                         stop_step = 1;
 
                         break;
