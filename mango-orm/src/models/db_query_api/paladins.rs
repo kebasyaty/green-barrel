@@ -29,7 +29,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// println!("{}", user_profile.json_for_admin()?);
     /// ```
     ///
-    fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+    fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.

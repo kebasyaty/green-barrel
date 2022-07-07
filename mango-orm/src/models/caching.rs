@@ -138,11 +138,11 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::to_json_for_admin()?;
+    /// let json_line = UserProfile::model_to_json_for_admin()?;
     /// println!("{}", json_line);
     /// ```
     ///
-    fn to_json_for_admin() -> Result<String, Box<dyn Error>> {
+    fn model_to_json_for_admin() -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
         let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.

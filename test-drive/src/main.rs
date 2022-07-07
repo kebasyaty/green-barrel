@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
     // println!("{}\n\n", mango_models::UserProfile::to_json()?);
     // println!("{}\n\n", mango_models::UserProfile::to_html()?);
-    //println!("{}\n\n", mango_models::UserProfile::to_json_for_admin()?);
+    // println!("{}\n\n", mango_models::UserProfile::model_to_json_for_admin()?);
     //
     /*
     println!(
@@ -73,8 +73,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = mango_models::UserProfile {
-        username: Some("user_50".to_string()),
-        email: Some("user_50_@noreply.net".to_string()),
+        username: Some("user_51".to_string()),
+        email: Some("user_51_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
