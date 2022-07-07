@@ -1,9 +1,5 @@
 //! Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
-use crate::{
-    widgets::{FileData, ImageData},
-    store::MONGODB_CLIENT_STORE,
-};
 use mongodb::{
     bson::{Bson, doc, de::from_document, document::Document, ser::{to_bson, to_document}},
     options::UpdateModifications, sync::Client, sync::Collection,
@@ -12,6 +8,11 @@ use mongodb::{
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{path::Path, error::Error, fs::Metadata,sync::RwLockReadGuard, collections::HashMap};
+
+use crate::{
+    widgets::{FileData, ImageData},
+    store::MONGODB_CLIENT_STORE,
+};
 
 // MIGRATION
 // #################################################################################################

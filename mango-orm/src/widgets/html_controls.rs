@@ -1,8 +1,9 @@
 //! Rendering HTML-controls code for Form.
 //! Hint: If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc.
 
-use crate::widgets::Widget;
 use std::collections::HashMap;
+
+use crate::widgets::Widget;
 
 pub trait HtmlControls {
     /// Rendering HTML-controls code for Form.

@@ -1,6 +1,5 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
-use crate::widgets::Widget;
 use mongodb::bson::document::Document;
 use mongodb::{
     bson::{de::from_document, spec::ElementType, Bson},
@@ -8,6 +7,8 @@ use mongodb::{
     sync::Collection,
 };
 use std::{collections::HashMap, error::Error};
+
+use crate::widgets::Widget;
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {

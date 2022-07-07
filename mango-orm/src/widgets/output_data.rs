@@ -1,9 +1,10 @@
 //! Output data for QPaladins.
 
-use crate::widgets::{html_controls::HtmlControls, Widget};
 use mongodb::bson::{document::Document, oid::ObjectId};
 use std::collections::HashMap;
 use std::error::Error;
+
+use crate::widgets::{html_controls::HtmlControls, Widget};
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]

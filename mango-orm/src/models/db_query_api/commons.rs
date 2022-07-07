@@ -1,10 +1,5 @@
 //! Common query methods.
 
-use crate::widgets::Widget;
-use crate::{
-    models::{caching::CachingModel, converters::Converters, Meta, ToModel},
-    widgets::output_data::OutputData,
-};
 use mongodb::{
     bson::{document::Document, Bson},
     options::AggregateOptions,
@@ -16,6 +11,11 @@ use mongodb::{
     Namespace,
 };
 use std::{collections::HashMap, error::Error};
+
+use crate::{
+    models::{caching::CachingModel, converters::Converters, Meta, ToModel},
+    widgets::{output_data::OutputData, Widget},
+};
 
 pub trait QCommons: ToModel + CachingModel + Converters {
     /// Runs an aggregation operation.

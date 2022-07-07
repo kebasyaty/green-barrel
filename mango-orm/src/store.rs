@@ -1,11 +1,12 @@
 //! Global store of settings and metadata for models.
 
-use crate::{models::Meta, widgets::Widget};
 use lazy_static::lazy_static;
 use mongodb::sync::Client;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::sync::RwLock;
+
+use crate::{models::Meta, widgets::Widget};
 
 // GLOBAL STORAGE
 // #################################################################################################

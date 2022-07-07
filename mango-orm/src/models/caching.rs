@@ -1,15 +1,16 @@
 //! Caching information about Models for speed up work.
 
-use crate::{
-    models::{Meta, ToModel},
-    store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
-    widgets::Widget,
-};
 use mongodb::{
     bson::{doc, document::Document, Bson},
     sync::Client,
 };
 use std::{collections::HashMap, error::Error};
+
+use crate::{
+    models::{Meta, ToModel},
+    store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
+    widgets::Widget,
+};
 
 /// Caching information about Models for speed up work.
 // #################################################################################################

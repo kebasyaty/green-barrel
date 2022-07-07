@@ -1,14 +1,15 @@
 //! Validating Model fields for save and update.
 
-use crate::{
-    store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
-    widgets::Widget,
-};
 use mongodb::{
     bson::{doc, oid::ObjectId, Bson},
     sync::Collection,
 };
 use std::{collections::HashMap, error::Error};
+
+use crate::{
+    store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
+    widgets::Widget,
+};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************

@@ -1,9 +1,5 @@
 //! Query methods for a Model instance.
 
-use crate::{
-    models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
-    widgets::{output_data::OutputData, FileData, ImageData, Widget},
-};
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, spec::ElementType, Bson},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
@@ -15,6 +11,11 @@ use serde_json::value::Value;
 use slug::slugify;
 use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
+
+use crate::{
+    models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
+    widgets::{output_data::OutputData, FileData, ImageData, Widget},
+};
 
 pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// Json-line for admin panel.

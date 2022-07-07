@@ -1,8 +1,9 @@
 //! Auxiliary tools for testing models.
 
-use crate::{models::Meta, store::MONGODB_CLIENT_STORE};
 use mongodb::sync::Client;
 use std::error::Error;
+
+use crate::{models::Meta, store::MONGODB_CLIENT_STORE};
 
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
