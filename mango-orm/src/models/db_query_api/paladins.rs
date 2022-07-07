@@ -26,7 +26,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     ///
     /// ```
     /// let user_profile = UserProfile{...};
-    /// println!("{}", user_profile.json_for_admin()?);
+    /// println!("{}", user_profile.instance_to_json_for_admin()?);
     /// ```
     ///
     fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
