@@ -261,11 +261,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
-                        Err(format!(
-                            "Model: `{}` ;  Method: `add_validation()` -> \
-                            The `{}` field is missing from the model.",
+                        panic!(
+                            "\n\nModel: `{}` ;  Method: `add_validation()` -> \
+                            The `{}` field is missing from the model.\n\n",
                             model_name, field_name
-                        ))?
+                        )
                     }
                     if let Some(widget) = final_map_widgets.get_mut(&field_name.to_owned()) {
                         widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
@@ -293,10 +293,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             let pre_json_value: Option<&Value> = pre_json.get(field_name);
             // Check field value.
             if pre_json_value.is_none() {
-                Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `check()` -> This field is missing.",
+                panic!(
+                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                    This field is missing.\n\n",
                     model_name, field_name
-                ))?
+                )
             }
             //
             let mut pre_json_value: &Value = pre_json_value.unwrap();
@@ -385,13 +386,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 final_widget.error =
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
-                                Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
+                                panic!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
-                                ))
-                                .unwrap()
+                                )
                             }
                         },
                     );
@@ -402,13 +402,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 final_widget.error =
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
-                                Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
+                                panic!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
-                                ))
-                                .unwrap()
+                                )
                             }
                         },
                     );
@@ -429,10 +428,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         if !widget_type.contains("hidden") && !final_widget.is_hide {
                             final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                         } else {
-                            Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
+                            panic!(
+                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                 model_name, field_name, msg
-                            ))?
+                            )
                         }
                     }
 
@@ -447,13 +446,13 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         Self::accumula_err(&final_widget, &err.to_string())
                                             .unwrap();
                                 } else {
-                                    Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
+                                    panic!(
+                                        "\n\nModel: `{}` > Field: `{}` ; \
+                                        Method: `check()` -> {}\n\n",
                                         model_name,
                                         field_name,
                                         err.to_string()
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             });
                     }
@@ -466,13 +465,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         } else {
-                            Err(format!(
+                            panic!(
                                 "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                 model_name,
                                 field_name,
                                 err.to_string()
-                            ))
-                            .unwrap()
+                            )
                         }
                     });
 
@@ -1139,29 +1137,29 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let is_emty_url = _field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
+                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
-                        ))?
+                        )
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(_field_value.path.as_str());
                     if !f_path.exists() {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` -> File is missing - {}",
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
+                                `check()` -> File is missing - {}\n\n",
                             model_name, field_name, _field_value.path
-                        ))?
+                        )
                     }
                     if !f_path.is_file() {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` -> The path does not lead to a file - {}",
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
+                                `check()` -> The path does not lead to a file - {}\n\n",
                             model_name, field_name, _field_value.path
-                        ))?
+                        )
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
@@ -1300,29 +1298,29 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let is_emty_url = field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}",
+                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
-                        ))?
+                        )
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(field_value.path.as_str());
                     if !f_path.exists() {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` -> File is missing - {}",
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
+                                `check()` -> File is missing - {}\n\n",
                             model_name, field_name, field_value.path
-                        ))?
+                        )
                     }
                     if !f_path.is_file() {
-                        Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` -> The path does not lead to a file - {}",
+                        panic!(
+                            "\n\nModel: `{}` > Field: `{}` ; Method: \
+                                `check()` -> The path does not lead to a file - {}\n\n",
                             model_name, field_name, field_value.path
-                        ))?
+                        )
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
@@ -2005,7 +2003,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Method: `delete()` -> Document not found.",
+                    "Model: `{}` ; Method: `delete()` -> Document not found.",
                     meta.model_name
                 ))?
             }
@@ -2015,7 +2013,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             false
         };
         // Run hook.
-        self.post_delete();
+        if result_bool && err_msg.is_empty() {
+            self.post_delete();
+        }
         //
         Ok(OutputData::Delete((result_bool, err_msg)))
     }
@@ -2103,11 +2103,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // Check for the presence of the `password` field.
         let password_hash = doc.get("password");
         if password_hash.is_none() {
-            Err(format!(
+            panic!(
                 "Model: `{}` ; Method: `verify_password` -> \
-                The password field is missing.",
+                The `password` field is missing.",
                 meta.model_name
-            ))?
+            )
         }
         // Get password hash or empty string.
         let password_hash = password_hash.unwrap();
@@ -2129,7 +2129,9 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// ```
     /// let user = UserProfile {...};
     /// let old_password = "12345678";
-    /// let new_password = "qBfJHCW2C9EH3_RW";
+    /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
+    /// // Size: 8-256
+    /// let new_password = "UUbd+5KXw^756*uj";
     /// assert!(user.create_password_hash(old_password, new_password, None)?);
     /// ```
     ///
