@@ -225,7 +225,6 @@
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
     // Example: "7rzgacfqQB3B7q7T"
-    // To generate a key: https://passwordsgenerator.net/
     pub const UNIQUE_PROJECT_KEY: &str = "bhjRV8ry9X5LQBw";
 
     // Settings for user accounts.
@@ -488,31 +487,31 @@
         //
         // Check.
         // let result = user.check()?;
-        // println!("Is valid: {}", result.is_valid());
+        // println!("Is valid: {}", result.is_valid()?);
         // println!("Hash: {}", result.hash()?);
         //
         // Get MongoDB ID from hash-line
         // println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //
-        // println!("\n\nWidget map:\n{:?}", result.to_wig());
+        // println!("\n\nWidget map:\n{:?}", result.to_wig()?);
         // println!("\n\nJson:\n{}", result.to_json()?);
-        // println!("\n\nHtml:\n{}", result.to_html());
-        // println!("\n\nBSON::Document:\n{:?}", result.to_doc());
+        // println!("\n\nHtml:\n{}", result.to_html()?);
+        // println!("\n\nBSON::Document:\n{:?}", result.to_doc()?);
         //
         // Printing errors to the console ( for development ).
-        // if !result.is_valid() {
-        //     result.print_err();
+        // if !result.is_valid()? {
+        //     result.print_err()?;
         // }
         //
         // Get data for form fields.
-        // println!("Widget map:\n{:?}", result.to_wig());
+        // println!("Widget map:\n{:?}", result.to_wig()?);
         // println!("Json-line:\n{}", result.to_json()?);
-        // println!("Html code:\n{}", result.to_html());
+        // println!("Html code:\n{}", result.to_html()?);
         //
         //
         // Create or update a document in the database ( check() + save() ).
         let result = user.save(None, None)?;
-        println!("Is valid: {}", result.is_valid());
+        println!("Is valid: {}", result.is_valid()?);
         println!("Hash: {}", result.hash()?);
         println!(
             "Created at: {}",
@@ -526,22 +525,22 @@
         // Get MongoDB ID from hash-line
         // println!("\nObject Id:\n{:?}\n", result.object_id()?);
         //
-        println!("\nSlug: {}\n", result.to_wig().get("slug").unwrap().value);
+        println!("\nSlug: {}\n", result.to_wig()?.get("slug").unwrap().value);
         //
         // Printing errors to the console ( for development ).
-        // if !result.is_valid() {
-        //     result.print_err();
+        // if !result.is_valid()? {
+        //     result.print_err()?;
         // }
         // Get data for form fields.
-        // println!("Widget map:\n{:?}", result.to_wig());
+        // println!("Widget map:\n{:?}", result.to_wig()?);
         // println!("Json-line:\n{}", result.to_json()?);
-        // println!("Html code:\n{}", result.to_html());
+        // println!("Html code:\n{}", result.to_html()?);
         //
         //
         // Remove document from collection in database.
         // let output_data  = user.delete(None)?;
-        // if !output_data.is_valid() {
-        //     println!("{}", output_data.err_msg());
+        // if !output_data.is_valid()? {
+        //     println!("{}", output_data.err_msg()?);
         // }
         //
         Ok(())
