@@ -540,7 +540,7 @@ pub trait HtmlControls {
                         }
                     );
                 }
-                _ => panic!("Invalid input type."),
+                _ => Err(format!("Invalid input type.")).unwrap(),
             }
         }
         // Add buttons and Return.

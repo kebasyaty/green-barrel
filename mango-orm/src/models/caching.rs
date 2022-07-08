@@ -138,7 +138,7 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::model_to_json_for_admin()?;
+    /// let json_line = UserProfile::to_json_for_admin()?;
     /// println!("{}", json_line);
     /// ```
     ///

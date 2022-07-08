@@ -261,11 +261,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` ;  Method: `add_validation()` -> \
                             The `{}` field is missing from the model.\n\n",
                             model_name, field_name
-                        )
+                        ))?
                     }
                     if let Some(widget) = final_map_widgets.get_mut(&field_name.to_owned()) {
                         widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
@@ -293,11 +293,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             let pre_json_value: Option<&Value> = pre_json.get(field_name);
             // Check field value.
             if pre_json_value.is_none() {
-                panic!(
+                Err(format!(
                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
                     This field is missing.\n\n",
                     model_name, field_name
-                )
+                ))?
             }
             //
             let mut pre_json_value: &Value = pre_json_value.unwrap();
@@ -350,12 +350,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -386,12 +386,13 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 final_widget.error =
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
-                                )
+                                ))
+                                .unwrap()
                             }
                         },
                     );
@@ -402,12 +403,13 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 final_widget.error =
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
-                                )
+                                ))
+                                .unwrap()
                             }
                         },
                     );
@@ -428,10 +430,10 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                         if !widget_type.contains("hidden") && !final_widget.is_hide {
                             final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                         } else {
-                            panic!(
+                            Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
                                 model_name, field_name, msg
-                            )
+                            ))?
                         }
                     }
 
@@ -446,13 +448,14 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         Self::accumula_err(&final_widget, &err.to_string())
                                             .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; \
                                         Method: `check()` -> {}\n\n",
                                         model_name,
                                         field_name,
                                         err.to_string()
-                                    )
+                                    ))
+                                    .unwrap()
                                 }
                             });
                     }
@@ -465,12 +468,13 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                             final_widget.error =
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         } else {
-                            panic!(
+                            Err(format!(
                                 "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
                                 model_name,
                                 field_name,
                                 err.to_string()
-                            )
+                            ))
+                            .unwrap()
                         }
                     });
 
@@ -534,12 +538,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -601,12 +605,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -768,11 +772,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         final_widget.value = val.to_string();
                                         Bson::Double(val)
                                     }
-                                    _ => panic!(
+                                    _ => Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
                                         Unsupported widget type - `{}`.\n\n",
                                         model_name, field_name, widget_type
-                                    ),
+                                    ))?,
                                 },
                             );
                             break;
@@ -791,12 +795,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         )
                                         .unwrap();
                                     } else {
-                                        panic!(
+                                        Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                             Method: `check()` -> \
                                             Hiding required fields is not allowed.\n\n",
                                             model_name, field_name
-                                        )
+                                        ))?
                                     }
                                 }
                                 if !ignore_fields.contains(&field_name) {
@@ -845,11 +849,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     final_widget.value = val.to_string();
                                     Bson::Double(val)
                                 }
-                                _ => panic!(
+                                _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
                                     Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
-                                ),
+                                ))?,
                             },
                         );
                     } else {
@@ -862,12 +866,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 )
                                 .unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
-                                )
+                                ))?
                             }
                         }
                         if !ignore_fields.contains(&field_name) {
@@ -925,11 +929,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                             .map(|item| Bson::Double(item.as_f64().unwrap()))
                                             .collect::<Vec<Bson>>(),
                                     ),
-                                    _ => panic!(
+                                    _ => Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
-                                        Unsupported widget type - `{}`.\n\n",
+                                            Unsupported widget type - `{}`.\n\n",
                                         model_name, field_name, widget_type
-                                    ),
+                                    ))?,
                                 },
                             );
                             final_widget.value = tmp_json_text;
@@ -949,12 +953,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         )
                                         .unwrap();
                                     } else {
-                                        panic!(
+                                        Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                             Method: `check()` -> \
                                             Hiding required fields is not allowed.\n\n",
                                             model_name, field_name
-                                        )
+                                        ))?
                                     }
                                 }
                                 if !ignore_fields.contains(&field_name) {
@@ -1012,11 +1016,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         .map(|item| Bson::Double(item.as_f64().unwrap()))
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                _ => panic!(
+                                _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
                                         Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
-                                ),
+                                ))?,
                             },
                         );
                         final_widget.value = tmp_json_text;
@@ -1030,12 +1034,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 )
                                 .unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
-                                )
+                                ))?
                             }
                         }
                         if !ignore_fields.contains(&field_name) {
@@ -1086,12 +1090,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 )
                                 .unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
-                                )
+                                ))?
                             }
                         }
                     }
@@ -1114,11 +1118,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         )
                                         .unwrap();
                                     } else {
-                                        panic!(
+                                        Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> Required field.\n\n",
                                             model_name, field_name
-                                        )
+                                        ))?
                                     }
                                 }
                                 if !is_update && !ignore_fields.contains(&field_name) {
@@ -1137,29 +1141,29 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let is_emty_url = _field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
-                        )
+                        ))?
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(_field_value.path.as_str());
                     if !f_path.exists() {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}\n\n",
                             model_name, field_name, _field_value.path
-                        )
+                        ))?
                     }
                     if !f_path.is_file() {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` -> The path does not lead to a file - {}\n\n",
                             model_name, field_name, _field_value.path
-                        )
+                        ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
@@ -1223,12 +1227,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 )
                                 .unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
-                                )
+                                ))?
                             }
                         }
                     }
@@ -1276,11 +1280,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         )
                                         .unwrap();
                                     } else {
-                                        panic!(
+                                        Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                             Method: `check()` -> Required field.\n\n",
                                             model_name, field_name
-                                        )
+                                        ))?
                                     }
                                 }
                                 if !is_update && !ignore_fields.contains(&field_name) {
@@ -1298,29 +1302,29 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     let is_emty_url = field_value.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                             `check()` -> Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
-                        )
+                        ))?
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(field_value.path.as_str());
                     if !f_path.exists() {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` -> File is missing - {}\n\n",
                             model_name, field_name, field_value.path
-                        )
+                        ))?
                     }
                     if !f_path.is_file() {
-                        panic!(
+                        Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` -> The path does not lead to a file - {}\n\n",
                             model_name, field_name, field_value.path
-                        )
+                        ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
@@ -1379,7 +1383,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                         field_value.path_xs = thumb_path;
                                         field_value.url_xs = thumb_url;
                                     }
-                                    _ => {}
+                                    _ => Err(format!(
+                                        "\n\nModel: `{}` > Field: `{}` ; Method: \
+                                            `check()` -> Valid size names -\
+                                             `xs`, `sm`, `md`, `lg`.\n\n",
+                                        model_name, field_name
+                                    ))?,
                                 }
                             };
                         }
@@ -1420,12 +1429,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -1493,12 +1502,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -1564,12 +1573,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                     )
                                     .unwrap();
                                 } else {
-                                    panic!(
+                                    Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
-                                    )
+                                    ))?
                                 }
                             }
                             if !ignore_fields.contains(&field_name) {
@@ -1633,12 +1642,12 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                                 )
                                 .unwrap();
                             } else {
-                                panic!(
+                                Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` -> \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
-                                )
+                                ))?
                             }
                             false
                         } else {
@@ -2103,11 +2112,11 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         // Check for the presence of the `password` field.
         let password_hash = doc.get("password");
         if password_hash.is_none() {
-            panic!(
+            Err(format!(
                 "Model: `{}` ; Method: `verify_password` -> \
                 The `password` field is missing.",
                 meta.model_name
-            )
+            ))?
         }
         // Get password hash or empty string.
         let password_hash = password_hash.unwrap();

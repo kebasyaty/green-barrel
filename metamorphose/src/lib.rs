@@ -1595,7 +1595,7 @@ fn get_param_value<'a>(
                 for size in sizes.iter() {
                     if !valid_size_names.contains(&size.0.as_str()) {
                         panic!(
-                            "Model: `{}` > Field: `{}` -> Valid size names - `xs`, `sm`, `md`, `lg`",
+                            "Model: `{}` > Field: `{}` -> Valid size names - `xs`, `sm`, `md`, `lg`.",
                             model_name, field_name
                         )
                     }
