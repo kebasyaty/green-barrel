@@ -151,12 +151,12 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // radio_text
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("audi", map_to_wigets.get("radio_text").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("volvo", map_to_wigets.get("radio_text").unwrap().value);
@@ -168,7 +168,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_i32
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_i32").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_i32").unwrap().value);
@@ -180,7 +180,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_u32
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_u32").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_u32").unwrap().value);
@@ -192,7 +192,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_i64
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_i64").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_i64").unwrap().value);
@@ -204,7 +204,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_f64
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4.4", map_to_wigets.get("radio_f64").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1.1", map_to_wigets.get("radio_f64").unwrap().value);
@@ -256,13 +256,13 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // radio_text
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("audi", map_to_wigets.get("radio_text").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("volvo", map_to_wigets.get("radio_text").unwrap().value);
@@ -274,7 +274,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_i32
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_i32").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_i32").unwrap().value);
@@ -286,7 +286,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_u32
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_u32").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_u32").unwrap().value);
@@ -298,7 +298,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_i64
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4", map_to_wigets.get("radio_i64").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1", map_to_wigets.get("radio_i64").unwrap().value);
@@ -310,7 +310,7 @@ fn test_model_radio_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio_f64
     // ---------------------------------------------------------------------------------------------
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!("4.4", map_to_wigets.get("radio_f64").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1.1", map_to_wigets.get("radio_f64").unwrap().value);

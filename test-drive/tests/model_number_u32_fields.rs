@@ -100,11 +100,11 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_model.save(None, None)?;
     let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.is_valid());
+    assert!(!result_2.is_valid()?);
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
@@ -114,7 +114,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
         1_i64,
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.to_wig();
+    let map_wigets = result_2.to_wig()?;
     assert_eq!(
         20_i64,
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
@@ -122,7 +122,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     // number
     let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("number").unwrap().value.is_empty());
-    let map_wigets = result_2.to_wig();
+    let map_wigets = result_2.to_wig()?;
     assert_eq!(
         105_i64,
         map_wigets.get("number").unwrap().value.parse::<i64>()?
@@ -133,7 +133,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
         5_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.to_wig();
+    let map_wigets = result_2.to_wig()?;
     assert_eq!(
         9_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
@@ -144,7 +144,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
         3_i64,
         map_wigets.get("hidden").unwrap().value.parse::<i64>()?
     );
-    let map_wigets = result_2.to_wig();
+    let map_wigets = result_2.to_wig()?;
     assert_eq!(
         11_i64,
         map_wigets.get("hidden").unwrap().value.parse::<i64>()?
@@ -175,14 +175,14 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // radio
     let result = test_model.save(None, None)?;
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         20_i64,
         map_wigets.get("radio").unwrap().value.parse::<i64>()?
@@ -194,7 +194,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // number
     let result = test_model.save(None, None)?;
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         105_i64,
         map_wigets.get("number").unwrap().value.parse::<i64>()?
@@ -203,7 +203,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(map_wigets.get("number").unwrap().value.is_empty());
     // range
     let result = test_model.save(None, None)?;
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         9_i64,
         map_wigets.get("range").unwrap().value.parse::<i64>()?
@@ -215,7 +215,7 @@ fn test_model_number_u32_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // hidden
     let result = test_model.save(None, None)?;
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         11_i64,
         map_wigets.get("hidden").unwrap().value.parse::<i64>()?

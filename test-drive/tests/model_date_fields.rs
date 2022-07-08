@@ -91,16 +91,16 @@ fn test_model_date_fields() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_model.save(None, None)?;
     let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.is_valid());
+    assert!(!result_2.is_valid()?);
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // date
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "1970-02-27".to_string(),
         map_to_wigets.get("date").unwrap().value
@@ -110,7 +110,7 @@ fn test_model_date_fields() -> Result<(), Box<dyn std::error::Error>> {
         "1970-02-28".to_string(),
         map_to_wigets.get("date").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "1970-02-27".to_string(),
         map_to_wigets.get("date").unwrap().value

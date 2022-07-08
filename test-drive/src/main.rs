@@ -94,7 +94,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create document in database.
     let result = user.save(None, None)?;
-    println!("Boolean: {}", result.is_valid());
+    println!("Boolean: {}", result.is_valid()?);
     println!("Hash: {}", result.hash()?);
     println!(
         "Created at: {}",
@@ -105,7 +105,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         user.updated_at.clone().unwrap_or_default()
     );
     // Printing errors to the console ( for development ).
-    if !result.is_valid() {
+    if !result.is_valid()? {
         result.print_err();
     }
     //
@@ -134,12 +134,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
     // Update document in database.
-    if result.is_valid() {
+    if result.is_valid()? {
         // user.username = Some("user_x".to_string());
         //user.file = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
         //user.image = Some(r#"{"path":"","url":"","is_delete":true}"#.to_string());
         let result = user.save(None, None)?;
-        println!("\n\nBoolean: {}", result.is_valid());
+        println!("\n\nBoolean: {}", result.is_valid()?);
         println!("Hash: {}", result.hash()?);
         println!(
             "Created at: {}",
@@ -150,15 +150,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             user.updated_at.clone().unwrap_or_default()
         );
         // Printing errors to the console ( for development ).
-        if !result.is_valid() {
-            result.print_err();
+        if !result.is_valid()? {
+            result.print_err()?;
         }
         //println!("Remove document: {:?}", user.delete(None)?);
         //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-        // println!("\n\nWidget map:\n{:?}", result.to_wig());
+        //println!("\n\nWidget map:\n{:?}", result.to_wig()?);
         //println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
         //println!("\n\nJson:\n{}", result.to_json()?);
-        //println!("\n\nHtml:\n{}", result.to_html());
+        //println!("\n\nHtml:\n{}", result.to_html()?);
         //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
         /*
         println!(

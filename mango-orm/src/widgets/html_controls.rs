@@ -2,6 +2,7 @@
 //! Hint: If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc.
 
 use std::collections::HashMap;
+use std::error::Error;
 
 use crate::widgets::Widget;
 
@@ -9,8 +10,12 @@ pub trait HtmlControls {
     /// Rendering HTML-controls code for Form.
     /// ( If necessary, customize the code generation yourself using html and css from
     /// Bootstrap, Material Design, etc. )
-    ///
-    fn generate_html(fields_name: &Vec<String>, map_widgets: HashMap<String, Widget>) -> String {
+    //
+    fn generate_html(
+        fields_name: &Vec<String>,
+        map_widgets: HashMap<String, Widget>,
+    ) -> Result<String, Box<dyn Error>> {
+        //
         // Controls of Form.
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
@@ -540,18 +545,21 @@ pub trait HtmlControls {
                         }
                     );
                 }
-                _ => Err(format!("Invalid input type.")).unwrap(),
+                _ => Err(format!("Invalid input type."))?,
             }
         }
         // Add buttons and Return.
         // -----------------------------------------------------------------------------------------
-        format!("{}<p><input type=\"submit\" value=\"Save\"></p>", controls)
+        let reset_btn = r#"<p><input type="reset" value="Reset"></p>"#;
+        let submit_btn = r#"<p><input type="submit" value="Save"></p>"#;
+        //
+        Ok(format!("{}{}{}", controls, reset_btn, submit_btn))
     }
 
-    // Get Html-line for `OutputDataForm`.
+    // Get Html-line for `OutputData`.
     // *********************************************************************************************
-    fn to_html(&self) -> String {
-        // Stub.
-        String::new()
+    fn to_html(&self) -> Result<String, Box<dyn Error>> {
+        // Stub
+        Ok(String::new())
     }
 }

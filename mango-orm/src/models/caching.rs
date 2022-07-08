@@ -194,7 +194,7 @@ pub trait CachingModel: ToModel {
                 let html = Self::generate_html(
                     &form_cache.meta.fields_name,
                     form_cache.map_widgets.clone(),
-                );
+                )?;
                 let mut new_form_cache = form_cache.clone();
                 new_form_cache.form_html = html.clone();
                 form_store.insert(key, new_form_cache);

@@ -151,11 +151,11 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     let result = test_model.save(None, None)?;
     let result_2 = test_model_2.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validation of `unique`
-    assert!(!result_2.is_valid());
+    assert!(!result_2.is_valid()?);
     // Validation of `hash`
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
@@ -165,7 +165,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_to_wigets.get("text").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("text").unwrap().value
@@ -176,7 +176,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Hidden lorem ipsum".to_string(),
         map_to_wigets.get("hidden_text").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "Hidden lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("hidden_text").unwrap().value
@@ -187,7 +187,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_to_wigets.get("radio").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("radio").unwrap().value
@@ -198,7 +198,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "#000000".to_string(),
         map_to_wigets.get("color").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "#ffffff".to_string(),
         map_to_wigets.get("color").unwrap().value
@@ -206,7 +206,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // email
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("email").unwrap().value);
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "no_reply@email.net".to_string(),
         map_to_wigets.get("email").unwrap().value
@@ -214,12 +214,12 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // password
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
     // phone
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("phone").unwrap().value);
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "+00000000000".to_string(),
         map_to_wigets.get("phone").unwrap().value
@@ -227,7 +227,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // url
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("url").unwrap().value);
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "https://www.google.com/".to_string(),
         map_to_wigets.get("url").unwrap().value
@@ -238,7 +238,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "127.0.0.1".to_string(),
         map_to_wigets.get("ip").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "172.217.14.196".to_string(),
         map_to_wigets.get("ip").unwrap().value
@@ -249,7 +249,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "127.0.0.1".to_string(),
         map_to_wigets.get("ipv4").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "172.217.14.196".to_string(),
         map_to_wigets.get("ipv4").unwrap().value
@@ -260,7 +260,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "::ffff:7f00:1".to_string(),
         map_to_wigets.get("ipv6").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "::ffff:acd9:ec4".to_string(),
         map_to_wigets.get("ipv6").unwrap().value
@@ -271,7 +271,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
         "Lorem ipsum".to_string(),
         map_to_wigets.get("textarea").unwrap().value
     );
-    let map_to_wigets = result_2.to_wig();
+    let map_to_wigets = result_2.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("textarea").unwrap().value
@@ -316,13 +316,13 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------------------------
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values
     // text
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("text").unwrap().value
@@ -334,7 +334,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // hidden_text
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "Hidden lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("hidden_text").unwrap().value
@@ -346,7 +346,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // radio
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("radio").unwrap().value
@@ -370,7 +370,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // email
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "no_reply@email.net".to_string(),
         map_to_wigets.get("email").unwrap().value
@@ -379,13 +379,13 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(String::new(), map_to_wigets.get("email").unwrap().value);
     // password
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
     let map_to_wigets = app_name::TestModel::to_wig()?;
     assert_eq!(String::new(), map_to_wigets.get("password").unwrap().value);
     // phone
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "+00000000000".to_string(),
         map_to_wigets.get("phone").unwrap().value
@@ -394,7 +394,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(String::new(), map_to_wigets.get("phone").unwrap().value);
     // url
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "https://www.google.com/".to_string(),
         map_to_wigets.get("url").unwrap().value
@@ -403,7 +403,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(String::new(), map_to_wigets.get("url").unwrap().value);
     // ip
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "172.217.14.196".to_string(),
         map_to_wigets.get("ip").unwrap().value
@@ -415,7 +415,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // ipv4
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "172.217.14.196".to_string(),
         map_to_wigets.get("ipv4").unwrap().value
@@ -427,7 +427,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // ipv6
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "::ffff:acd9:ec4".to_string(),
         map_to_wigets.get("ipv6").unwrap().value
@@ -439,7 +439,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // textarea
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "Lorem ipsum dolor sit amet".to_string(),
         map_to_wigets.get("textarea").unwrap().value

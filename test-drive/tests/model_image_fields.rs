@@ -98,12 +98,12 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
     };
     let result = test_model.save(None, None)?;
     // Validating create
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     // Validating values in widgets
     // image
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         map_wigets.get("image").unwrap().value,
         serde_json::to_string(&image_data)?
@@ -146,13 +146,13 @@ fn test_model_image_fields() -> Result<(), Box<dyn std::error::Error>> {
     let tmp_hash = test_model.hash.clone().unwrap();
     let result = test_model.save(None, None)?;
     // Validating update
-    assert!(result.is_valid(), "{}", result.hash()?);
+    assert!(result.is_valid()?, "{}", result.hash()?);
     // Validation of `hash`
     assert!(test_model.hash.is_some());
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // image
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         map_wigets.get("image").unwrap().value,
         serde_json::to_string(&image_data)?

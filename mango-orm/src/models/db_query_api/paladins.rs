@@ -1818,7 +1818,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
             let verified_data: OutputData = self.check()?;
-            let is_no_error: bool = verified_data.is_valid();
+            let is_no_error: bool = verified_data.is_valid()?;
             // Get cached Model data.
             let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
@@ -1850,7 +1850,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             // Save to database.
             // -------------------------------------------------------------------------------------
             if is_no_error {
-                let final_doc = verified_data.to_doc();
+                let final_doc = verified_data.to_doc()?;
                 if is_update {
                     // Update document.
                     let hash = self.get_hash().unwrap();
@@ -1882,7 +1882,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                 return Ok(OutputData::Save((
                     is_no_error,
                     meta.fields_name.clone(),
-                    verified_data.to_wig(),
+                    verified_data.to_wig()?,
                 )));
             }
         }

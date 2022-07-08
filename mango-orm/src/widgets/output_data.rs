@@ -28,11 +28,11 @@ impl HtmlControls for OutputData {
     /// println!("{}", output_data.to_html());
     /// ```
     ///
-    fn to_html(&self) -> String {
+    fn to_html(&self) -> Result<String, Box<dyn Error>> {
         match self {
             Self::Check(data) => Self::generate_html(&data.1, data.2.clone()),
             Self::Save(data) => Self::generate_html(&data.1, data.2.clone()),
-            _ => panic!("Invalid output type."),
+            _ => Err("Invalid output type.")?,
         }
     }
 }
@@ -58,7 +58,7 @@ impl OutputData {
         match self {
             Self::Check(data) => Ok(Self::get_hash(&data.2)?),
             Self::Save(data) => Ok(Self::get_hash(&data.2)?),
-            _ => panic!("Invalid output type."),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -88,11 +88,17 @@ impl OutputData {
     /// println!("{}", output_data.print_err());
     /// ```
     ///
-    pub fn print_err(&self) {
+    pub fn print_err(&self) -> Result<(), Box<dyn Error>> {
         match self {
-            Self::Check(data) => Self::print_to_console(&data.2),
-            Self::Save(data) => Self::print_to_console(&data.2),
-            _ => panic!("Invalid output type."),
+            Self::Check(data) => {
+                Self::print_to_console(&data.2);
+                Ok(())
+            }
+            Self::Save(data) => {
+                Self::print_to_console(&data.2);
+                Ok(())
+            }
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -112,7 +118,7 @@ impl OutputData {
         match self {
             Self::Check(data) => Ok(ObjectId::with_string(Self::get_hash(&data.2)?.as_str())?),
             Self::Save(data) => Ok(ObjectId::with_string(Self::get_hash(&data.2)?.as_str())?),
-            _ => panic!("Invalid output type."),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -126,14 +132,14 @@ impl OutputData {
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
-    /// println!("{:?}", output_data.to_wig());
+    /// println!("{:?}", output_data.to_wig()?);
     /// ```
     ///
-    pub fn to_wig(&self) -> HashMap<String, Widget> {
+    pub fn to_wig(&self) -> Result<HashMap<String, Widget>, Box<dyn Error>> {
         match self {
-            Self::Check(data) => data.2.clone(),
-            Self::Save(data) => data.2.clone(),
-            _ => panic!("Invalid output type."),
+            Self::Check(data) => Ok(data.2.clone()),
+            Self::Save(data) => Ok(data.2.clone()),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -153,7 +159,7 @@ impl OutputData {
         match self {
             Self::Check(data) => Ok(serde_json::to_string(&data.2)?),
             Self::Save(data) => Ok(serde_json::to_string(&data.2)?),
-            _ => panic!("Invalid output type."),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -172,7 +178,7 @@ impl OutputData {
     pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         let data = match self {
             Self::Save(data) => data,
-            _ => panic!("Invalid output type."),
+            _ => Err("Invalid output type.")?,
         };
         let map_widgets = data.2.clone();
         let mut widget_list: Vec<Widget> = Vec::new();
@@ -206,12 +212,12 @@ impl OutputData {
     /// assert!(result.is_valid());
     /// ```
     ///
-    pub fn is_valid(&self) -> bool {
+    pub fn is_valid(&self) -> Result<bool, Box<dyn Error>> {
         match self {
-            Self::Check(data) => data.0,
-            Self::Save(data) => data.0,
-            Self::Delete(data) => data.0,
-            _ => panic!("Invalid output type."),
+            Self::Check(data) => Ok(data.0),
+            Self::Save(data) => Ok(data.0),
+            Self::Delete(data) => Ok(data.0),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -223,13 +229,13 @@ impl OutputData {
     /// ```
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
-    /// println!("{:?}", user_profile.to_doc());
+    /// println!("{:?}", user_profile.to_doc()?);
     /// ```
     ///
-    pub fn to_doc(&self) -> Document {
+    pub fn to_doc(&self) -> Result<Document, Box<dyn Error>> {
         match self {
-            Self::Check(data) => data.3.clone(),
-            _ => panic!("Invalid output type."),
+            Self::Check(data) => Ok(data.3.clone()),
+            _ => Err("Invalid output type.")?,
         }
     }
 
@@ -246,10 +252,10 @@ impl OutputData {
     /// println!("{}", output_data.err_msg());
     /// ```
     ///
-    pub fn err_msg(&self) -> String {
+    pub fn err_msg(&self) -> Result<String, Box<dyn Error>> {
         match self {
-            Self::Delete(data) => data.1.clone(),
-            _ => panic!("Invalid output type."),
+            Self::Delete(data) => Ok(data.1.clone()),
+            _ => Err("Invalid output type.")?,
         }
     }
 }
