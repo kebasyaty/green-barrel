@@ -100,7 +100,7 @@ fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert!(test_model_2.hash.is_none());
     // Validating values in widgets
     // date
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
@@ -110,7 +110,7 @@ fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
         "1970-02-28T00:00".to_string(),
         map_wigets.get("date").unwrap().value
     );
-    let map_wigets = result_2.to_wig();
+    let map_wigets = result_2.to_wig()?;
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value
@@ -148,7 +148,7 @@ fn test_model_datetime_fields() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(tmp_hash, test_model.hash.clone().unwrap());
     // Validating values
     // date
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         "1970-02-27T00:00".to_string(),
         map_wigets.get("date").unwrap().value

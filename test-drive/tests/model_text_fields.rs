@@ -358,7 +358,7 @@ fn test_model_text_fields() -> Result<(), Box<dyn std::error::Error>> {
     );
     // color
     let result = test_model.save(None, None)?;
-    let map_to_wigets = result.to_wig();
+    let map_to_wigets = result.to_wig()?;
     assert_eq!(
         "#ffffff".to_string(),
         map_to_wigets.get("color").unwrap().value

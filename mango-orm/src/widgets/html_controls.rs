@@ -558,7 +558,7 @@ pub trait HtmlControls {
 
     // Get Html-line for `OutputData`.
     // *********************************************************************************************
-    fn to_html(&self) -> Result<String, Box<dyn Error>> {
+    fn output_data_to_html(&self) -> Result<String, Box<dyn Error>> {
         // Stub
         Ok(String::new())
     }

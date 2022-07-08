@@ -50,10 +50,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test model.
     // *********************************************************************************************
-    // println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
-    // println!("{}\n\n", mango_models::UserProfile::to_json()?);
-    // println!("{}\n\n", mango_models::UserProfile::to_html()?);
-    // println!("{}\n\n", mango_models::UserProfile::model_to_json_for_admin()?);
+    println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
+    println!("{}\n\n", mango_models::UserProfile::to_json()?);
+    println!("{}\n\n", mango_models::UserProfile::to_html()?);
+    println!(
+        "{}\n\n",
+        mango_models::UserProfile::model_to_json_for_admin()?
+    );
     //
     /*
     println!(
@@ -83,14 +86,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Check.
     /*
-    let result = user.check()?;
-    println!("Boolean: {}", result.is_valid());
-    println!("\n\nbson::Document:\n{:?}", result.to_doc());
+        let result = user.check()?;
+        println!("Boolean: {}", result.is_valid()?);
+        println!("\n\nbson::Document:\n{:?}", result.to_doc()?);
     */
     //println!("Object Id: {:?}", result.object_id()?);
-    //println!("\n\nWidget map:\n{:?}", result.to_wig());
+    //println!("\n\nWidget map:\n{:?}", result.to_wig()?);
     //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}", result.to_html());
+    //println!("\n\nHtml:\n{}", result.to_html()?);
 
     // Create document in database.
     let result = user.save(None, None)?;
@@ -106,14 +109,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     // Printing errors to the console ( for development ).
     if !result.is_valid()? {
-        result.print_err();
+        result.print_err()?;
     }
     //
     //println!("\nObject Id:\n{:?}\n", result.object_id()?);
-    // println!("\n\nWidget map:\n{:?}", result.to_wig());
-    //println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
+    //println!("\n\nWidget map:\n{:?}", result.to_wig());
+    //println!("\n\nSlug:\n{}", result.to_wig()?.get("slug").unwrap().value);
     //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}\n", result.to_html());
+    //println!("\n\nHtml:\n{}\n", result.to_html()?);
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
     /*
     println!(

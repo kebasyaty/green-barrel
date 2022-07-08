@@ -451,7 +451,7 @@ fn test_model_select_fields() -> Result<(), Box<dyn std::error::Error>> {
         .is_empty());
     // select_f64
     // ---------------------------------------------------------------------------------------------
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!("4.4", map_wigets.get("select_f64").unwrap().value);
     let map_wigets = app_name::TestModel::to_wig()?;
     assert_eq!("1.1", map_wigets.get("select_f64").unwrap().value);
@@ -462,13 +462,13 @@ fn test_model_select_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("select_f64").unwrap().options
     );
     // select_f64_dyn
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert!(map_wigets.get("select_f64_dyn").unwrap().value.is_empty());
     let map_wigets = app_name::TestModel::to_wig()?;
     assert!(map_wigets.get("select_f64_dyn").unwrap().value.is_empty());
     assert!(map_wigets.get("select_f64_dyn").unwrap().options.is_empty());
     // select_f64_mult
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert_eq!(
         map_wigets.get("select_f64_mult").unwrap().value,
         "[2.2,4.4]"
@@ -482,7 +482,7 @@ fn test_model_select_fields() -> Result<(), Box<dyn std::error::Error>> {
         map_wigets.get("select_f64_mult").unwrap().options
     );
     // select_f64_mult_dyn
-    let map_wigets = result.to_wig();
+    let map_wigets = result.to_wig()?;
     assert!(map_wigets
         .get("select_f64_mult_dyn")
         .unwrap()
