@@ -13,7 +13,7 @@ pub trait HtmlControls {
     //
     fn generate_html(
         fields_name: &Vec<String>,
-        map_widgets: HashMap<String, Widget>,
+        map_widgets: &HashMap<String, Widget>,
     ) -> Result<String, Box<dyn Error>> {
         //
         // Controls of Form.

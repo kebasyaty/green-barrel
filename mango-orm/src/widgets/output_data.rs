@@ -16,28 +16,19 @@ pub enum OutputData {
 }
 
 impl HtmlControls for OutputData {
-    /// Get Html-line
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let user_profile = UserProfile {...};
-    /// let output_data = user_profile.check()?;
-    /// let output_data = user_profile.save(None, None)?;
-    /// println!("{}", output_data.output_data_to_html());
-    /// ```
-    ///
+    //
+    /// This is an intermediate method for the to_html() method.
     fn output_data_to_html(&self) -> Result<String, Box<dyn Error>> {
         match self {
-            Self::Check(data) => Self::generate_html(&data.1, data.2.clone()),
-            Self::Save(data) => Self::generate_html(&data.1, data.2.clone()),
+            Self::Check(data) => Self::generate_html(&data.1, &data.2),
+            Self::Save(data) => Self::generate_html(&data.1, &data.2),
             _ => Err("Invalid output type.")?,
         }
     }
 }
 
 impl OutputData {
+    //
     /// Get Hash-line
     // ---------------------------------------------------------------------------------------------
     fn get_hash(map_widgets: &HashMap<String, Widget>) -> Result<String, Box<dyn Error>> {
@@ -51,53 +42,13 @@ impl OutputData {
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
-    /// println!("{}", output_data.hash());
+    /// println!("{}", output_data.hash()?);
     /// ```
     ///
     pub fn hash(&self) -> Result<String, Box<dyn Error>> {
         match self {
             Self::Check(data) => Ok(Self::get_hash(&data.2)?),
             Self::Save(data) => Ok(Self::get_hash(&data.2)?),
-            _ => Err("Invalid output type.")?,
-        }
-    }
-
-    /// Printing errors to the console ( for development ).
-    // ---------------------------------------------------------------------------------------------
-    fn print_to_console(map_widgets: &HashMap<String, Widget>) {
-        let mut errors = String::new();
-        for (field_name, widget) in map_widgets {
-            let tmp = errors.clone();
-            if !widget.error.is_empty() {
-                errors = format!("{}\nField: `{}` -> {}", tmp, field_name, widget.error);
-            }
-        }
-        if !errors.is_empty() {
-            errors = errors.replace("<br>", " | ");
-            println!("\nErrors:{}\n", errors);
-        }
-    }
-
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let user_profile = UserProfile {...};
-    /// let output_data = user_profile.check()?;
-    /// let output_data = user_profile.save(None, None)?;
-    /// println!("{}", output_data.print_err());
-    /// ```
-    ///
-    pub fn print_err(&self) -> Result<(), Box<dyn Error>> {
-        match self {
-            Self::Check(data) => {
-                Self::print_to_console(&data.2);
-                Ok(())
-            }
-            Self::Save(data) => {
-                Self::print_to_console(&data.2);
-                Ok(())
-            }
             _ => Err("Invalid output type.")?,
         }
     }
@@ -163,6 +114,22 @@ impl OutputData {
         }
     }
 
+    /// Get Html-line
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
+    /// println!("{}", output_data.to_html()?);
+    /// ```
+    ///
+    pub fn to_html(&self) -> Result<String, Box<dyn Error>> {
+        self.output_data_to_html()
+    }
+
     /// Json-line for admin panel.
     // ---------------------------------------------------------------------------------------------
     /// ( converts a widget map to a list, in the order of the Model fields )
@@ -209,7 +176,7 @@ impl OutputData {
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
     /// let output_data = user_profile.delete()?;
-    /// assert!(result.is_valid());
+    /// assert!(result.is_valid()?);
     /// ```
     ///
     pub fn is_valid(&self) -> Result<bool, Box<dyn Error>> {
@@ -239,6 +206,46 @@ impl OutputData {
         }
     }
 
+    /// Printing errors to the console ( for development ).
+    // ---------------------------------------------------------------------------------------------
+    fn print_to_console(map_widgets: &HashMap<String, Widget>) {
+        let mut errors = String::new();
+        for (field_name, widget) in map_widgets {
+            let tmp = errors.clone();
+            if !widget.error.is_empty() {
+                errors = format!("{}\nField: `{}` -> {}", tmp, field_name, widget.error);
+            }
+        }
+        if !errors.is_empty() {
+            errors = errors.replace("<br>", " | ");
+            println!("\nErrors:{}\n", errors);
+        }
+    }
+
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let user_profile = UserProfile {...};
+    /// let output_data = user_profile.check()?;
+    /// let output_data = user_profile.save(None, None)?;
+    /// println!("{}", output_data.print_err()?);
+    /// ```
+    ///
+    pub fn print_err(&self) -> Result<(), Box<dyn Error>> {
+        match self {
+            Self::Check(data) => {
+                Self::print_to_console(&data.2);
+                Ok(())
+            }
+            Self::Save(data) => {
+                Self::print_to_console(&data.2);
+                Ok(())
+            }
+            _ => Err("Invalid output type.")?,
+        }
+    }
+
     /// A description of the error if the document was not deleted.
     // ---------------------------------------------------------------------------------------------
     /// (Main use for admin panel.)
@@ -249,7 +256,7 @@ impl OutputData {
     /// let user_profile = UserProfile {...};
     /// user_profile.save(None, None)?;
     /// let output_data = user_profile.delete()?;
-    /// println!("{}", output_data.err_msg());
+    /// println!("{}", output_data.err_msg()?);
     /// ```
     ///
     pub fn err_msg(&self) -> Result<String, Box<dyn Error>> {
