@@ -548,6 +548,7 @@
 
 ## Changelog
 
+- **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._
 - **v0.10.20** _Removed the ability to change the created_at field of a model instance._
 - **v0.10.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **disabled = true, is_hide = true**. Updated **README.md**. Updated documentation._
 - **v0.9.4-v.0.9.15** _Import optimized._
