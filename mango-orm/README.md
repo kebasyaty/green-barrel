@@ -486,33 +486,33 @@
         //
         //
         // Check.
-        // let result = user.check()?;
-        // println!("Is valid: {}", result.is_valid()?);
-        // println!("Hash: {}", result.hash()?);
+        // let output_data = user.check()?;
+        // println!("Is valid: {}", output_data.is_valid()?);
+        // println!("Hash: {}", output_data.hash()?);
         //
         // Get MongoDB ID from hash-line
-        // println!("\nObject Id:\n{:?}\n", result.object_id()?);
+        // println!("\nObject Id:\n{:?}\n", output_data.object_id()?);
         //
-        // println!("\n\nWidget map:\n{:?}", result.to_wig()?);
-        // println!("\n\nJson:\n{}", result.to_json()?);
-        // println!("\n\nHtml:\n{}", result.to_html()?);
-        // println!("\n\nBSON::Document:\n{:?}", result.to_doc()?);
+        // println!("\n\nWidget map:\n{:?}", output_data.to_wig()?);
+        // println!("\n\nJson:\n{}", output_data.to_json()?);
+        // println!("\n\nHtml:\n{}", output_data.to_html()?);
+        // println!("\n\nBSON::Document:\n{:?}", output_data.to_doc()?);
         //
         // Printing errors to the console ( for development ).
-        // if !result.is_valid()? {
-        //     result.print_err()?;
+        // if !output_data.is_valid()? {
+        //     output_data.print_err()?;
         // }
         //
         // Get data for form fields.
-        // println!("Widget map:\n{:?}", result.to_wig()?);
-        // println!("Json-line:\n{}", result.to_json()?);
-        // println!("Html code:\n{}", result.to_html()?);
+        // println!("Widget map:\n{:?}", output_data.to_wig()?);
+        // println!("Json-line:\n{}", output_data.to_json()?);
+        // println!("Html code:\n{}", output_data.to_html()?);
         //
         //
         // Create or update a document in the database ( check() + save() ).
-        let result = user.save(None, None)?;
-        println!("Is valid: {}", result.is_valid()?);
-        println!("Hash: {}", result.hash()?);
+        let output_data = user.save(None, None)?;
+        println!("Is valid: {}", output_data.is_valid()?);
+        println!("Hash: {}", output_data.hash()?);
         println!(
             "Created at: {}",
             user.created_at.clone().unwrap_or_default()
@@ -523,18 +523,18 @@
         );
         //
         // Get MongoDB ID from hash-line
-        // println!("\nObject Id:\n{:?}\n", result.object_id()?);
+        // println!("\nObject Id:\n{:?}\n", output_data.object_id()?);
         //
-        println!("\nSlug: {}\n", result.to_wig()?.get("slug").unwrap().value);
+        println!("\nSlug: {}\n", output_data.to_wig()?.get("slug").unwrap().value);
         //
         // Printing errors to the console ( for development ).
-        // if !result.is_valid()? {
-        //     result.print_err()?;
+        // if !output_data.is_valid()? {
+        //     output_data.print_err()?;
         // }
         // Get data for form fields.
-        // println!("Widget map:\n{:?}", result.to_wig()?);
-        // println!("Json-line:\n{}", result.to_json()?);
-        // println!("Html code:\n{}", result.to_html()?);
+        // println!("Widget map:\n{:?}", output_data.to_wig()?);
+        // println!("Json-line:\n{}", output_data.to_json()?);
+        // println!("Html code:\n{}", output_data.to_html()?);
         //
         //
         // Remove document from collection in database.
