@@ -136,6 +136,7 @@ pub struct TransMapWidgets {
 // Enums for the HTML-controls module.
 // *************************************************************************************************
 /// The HTTP method to submit the form with. Possible (case insensitive) values: GET and POST.
+/// Default -> HttpMethod::GET
 #[derive(Debug)]
 pub enum HttpMethod {
     GET,
@@ -159,6 +160,7 @@ impl HttpMethod {
 
 /// If the value of the method attribute is post, enctype is the MIME type of the form submission.
 /// Possible values: application/x-www-form-urlencoded | multipart/form-data | text/plain.
+/// Default -> Enctype::Application
 #[derive(Debug)]
 pub enum Enctype {
     Application,
