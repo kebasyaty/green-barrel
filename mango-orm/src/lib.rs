@@ -21,5 +21,8 @@ pub use crate::{
     },
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
     test_tool::del_test_db,
-    widgets::{html_controls::HtmlControls, output_data::OutputData, TransMapWidgets, Widget},
+    widgets::{
+        html_controls::HtmlControls, output_data::OutputData, Enctype, HttpMethod, TransMapWidgets,
+        Widget,
+    },
 };

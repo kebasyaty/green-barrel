@@ -1,17 +1,20 @@
 //! Rendering HTML-controls code for Form.
-//! Hint: If necessary, customize the code generation yourself using html and css from Bootstrap, Material Design, etc.
 
 use std::collections::HashMap;
 use std::error::Error;
 
-use crate::widgets::Widget;
+use crate::widgets::{Enctype, HttpMethod, Widget};
 
 pub trait HtmlControls {
     /// Rendering HTML-controls code for Form.
     /// ( If necessary, customize the code generation yourself using html and css from
     /// Bootstrap, Material Design, etc. )
-    //
     fn generate_html(
+        url_action: Option<&str>,
+        http_method: Option<HttpMethod>,
+        enctype: Option<Enctype>,
+        service_name: &str,
+        model_name: &str,
         fields_name: &Vec<String>,
         map_widgets: &HashMap<String, Widget>,
     ) -> Result<String, Box<dyn Error>> {
@@ -548,17 +551,40 @@ pub trait HtmlControls {
                 _ => Err(format!("Invalid input type."))?,
             }
         }
-        // Add buttons and Return.
+        // Add form and buttons
         // -----------------------------------------------------------------------------------------
+        let service_name = service_name
+            .split('_')
+            .map(|word| {
+                let mut chr: Vec<char> = word.chars().collect();
+                chr[0] = chr[0].to_uppercase().nth(0).unwrap();
+                chr.into_iter().collect::<String>()
+            })
+            .collect::<Vec<String>>()
+            .join("");
         let reset_btn = r#"<p><input type="reset" value="Reset"></p>"#;
         let submit_btn = r#"<p><input type="submit" value="Save"></p>"#;
+        let form = format!(
+            r#"<form id="{}-{}-Form" action="{}" method="{}" enctype="{}">{}</form>"#,
+            service_name,
+            model_name,
+            url_action.unwrap_or("/"),
+            http_method.unwrap_or_default().value(),
+            enctype.unwrap_or_default().value(),
+            format!("{}{}{}", controls, reset_btn, submit_btn)
+        );
         //
-        Ok(format!("{}{}{}", controls, reset_btn, submit_btn))
+        Ok(form)
     }
 
     // Get Html-line for `OutputData`.
     // *********************************************************************************************
-    fn output_data_to_html(&self) -> Result<String, Box<dyn Error>> {
+    fn output_data_to_html(
+        &self,
+        _action: Option<&str>,
+        _method: Option<HttpMethod>,
+        _enctype: Option<Enctype>,
+    ) -> Result<String, Box<dyn Error>> {
         // Stub
         Ok(String::new())
     }

@@ -9,7 +9,7 @@ use std::{collections::HashMap, error::Error};
 use crate::{
     models::{Meta, ToModel},
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
-    widgets::Widget,
+    widgets::{Enctype, HttpMethod, Widget},
 };
 
 /// Caching information about Models for speed up work.
@@ -167,11 +167,17 @@ pub trait CachingModel: ToModel {
     /// # Example:
     ///
     /// ```
-    /// let html = UserProfile::to_html()?;
+    /// let html = UserProfile::to_html(None, None, None)?;
+    /// // OR
+    /// let html = UserProfile::to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?;
     /// println!("{}", html);
     /// ```
     ///
-    fn to_html() -> Result<String, Box<dyn Error>> {
+    fn to_html(
+        action: Option<&str>,
+        method: Option<HttpMethod>,
+        enctype: Option<Enctype>,
+    ) -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
@@ -191,8 +197,15 @@ pub trait CachingModel: ToModel {
                 drop(form_store);
                 let mut form_store = FORM_STORE.write()?;
                 let form_cache = form_store.get(key.as_str()).unwrap();
-                let html =
-                    Self::generate_html(&form_cache.meta.fields_name, &form_cache.map_widgets)?;
+                let html = Self::generate_html(
+                    action,
+                    method,
+                    enctype,
+                    form_cache.meta.service_name.as_str(),
+                    form_cache.meta.model_name.as_str(),
+                    &form_cache.meta.fields_name,
+                    &form_cache.map_widgets,
+                )?;
                 let mut new_form_cache = form_cache.clone();
                 new_form_cache.form_html = html.clone();
                 form_store.insert(key, new_form_cache);

@@ -4,13 +4,22 @@ use mongodb::bson::{document::Document, oid::ObjectId};
 use std::collections::HashMap;
 use std::error::Error;
 
-use crate::widgets::{html_controls::HtmlControls, Widget};
+use crate::widgets::{html_controls::HtmlControls, Enctype, HttpMethod, Widget};
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]
 pub enum OutputData {
-    Check((bool, Vec<String>, HashMap<String, Widget>, Document)),
-    Save((bool, Vec<String>, HashMap<String, Widget>)),
+    Check(
+        (
+            bool,
+            Vec<String>,
+            HashMap<String, Widget>,
+            Document,
+            String,
+            String,
+        ),
+    ),
+    Save((bool, Vec<String>, HashMap<String, Widget>, String, String)),
     Delete((bool, String)),
     Stub,
 }
@@ -18,10 +27,31 @@ pub enum OutputData {
 impl HtmlControls for OutputData {
     //
     /// This is an intermediate method for the to_html() method.
-    fn output_data_to_html(&self) -> Result<String, Box<dyn Error>> {
+    fn output_data_to_html(
+        &self,
+        action: Option<&str>,
+        method: Option<HttpMethod>,
+        enctype: Option<Enctype>,
+    ) -> Result<String, Box<dyn Error>> {
         match self {
-            Self::Check(data) => Self::generate_html(&data.1, &data.2),
-            Self::Save(data) => Self::generate_html(&data.1, &data.2),
+            Self::Check(data) => Self::generate_html(
+                action,
+                method,
+                enctype,
+                data.4.as_str(),
+                data.5.as_str(),
+                &data.1,
+                &data.2,
+            ),
+            Self::Save(data) => Self::generate_html(
+                action,
+                method,
+                enctype,
+                data.3.as_str(),
+                data.4.as_str(),
+                &data.1,
+                &data.2,
+            ),
             _ => Err("Invalid output type.")?,
         }
     }
@@ -114,7 +144,7 @@ impl OutputData {
         }
     }
 
-    /// Get Html-line
+    /// Get Html-code
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -123,11 +153,19 @@ impl OutputData {
     /// let user_profile = UserProfile {...};
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
-    /// println!("{}", output_data.to_html()?);
+    /// //
+    /// println!("{}", output_data.to_html(None, None, None)?);
+    /// // OR
+    /// println!("{}", output_data.to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?);
     /// ```
     ///
-    pub fn to_html(&self) -> Result<String, Box<dyn Error>> {
-        self.output_data_to_html()
+    pub fn to_html(
+        &self,
+        action: Option<&str>,
+        method: Option<HttpMethod>,
+        enctype: Option<Enctype>,
+    ) -> Result<String, Box<dyn Error>> {
+        self.output_data_to_html(action, method, enctype)
     }
 
     /// Json-line for admin panel.

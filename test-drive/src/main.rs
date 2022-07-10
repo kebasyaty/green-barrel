@@ -1,4 +1,4 @@
-mod mango_models;
+mod models;
 mod settings;
 
 use mango_orm::*;
@@ -24,10 +24,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        models: vec![
-            mango_models::Dynamic::meta()?,
-            mango_models::UserProfile::meta()?,
-        ],
+        models: vec![models::Dynamic::meta()?, models::UserProfile::meta()?],
     };
     monitor.migrat()?;
 
@@ -36,9 +33,9 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
     // Admin panel: https://github.com/kebasyaty/mango-panel
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     /*
-    mango_models::Dynamic::to_cache()?;
-    mango_models::User::to_cache()?;
-    mango_models::UserProfile::to_cache()?;
+    models::Dynamic::to_cache()?;
+    models::User::to_cache()?;
+    models::UserProfile::to_cache()?;
     */
     //
     Ok(())
@@ -50,20 +47,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test model.
     // *********************************************************************************************
-    //println!("{:?}\n\n", mango_models::UserProfile::to_wig()?);
-    //println!("{}\n\n", mango_models::UserProfile::to_json()?);
-    //println!("{}\n\n", mango_models::UserProfile::to_html()?);
-    //println!("{}\n\n", mango_models::UserProfile::model_to_json_for_admin()?);
+    //println!("{:?}\n\n", models::UserProfile::to_wig()?);
+    //println!("{}\n\n", models::UserProfile::to_json()?);
+    /*
+    println!(
+        "Html code:\n{}",
+        models::UserProfile::to_html(
+            Some("/login"),
+            Some(HttpMethod::POST),
+            Some(Enctype::Multipart)
+        )?
+    );
+    */
+    //println!("{}\n\n", models::UserProfile::model_to_json_for_admin()?);
     //
     /*
     println!(
         "Result:\n{:?}\n\n",
-        mango_models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
+        models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
     );
 
     println!(
         "Result:\n{:?}\n\n",
-        mango_models::UserProfile::find_one_to_model_instance::<mango_models::UserProfile>(
+        models::UserProfile::find_one_to_model_instance::<models::UserProfile>(
             doc! {"username": "user_38"},
             None
         )?
@@ -72,7 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test model instance.
     // *********************************************************************************************
-    let mut user = mango_models::UserProfile {
+    let mut user = models::UserProfile {
         username: Some("user_53".to_string()),
         email: Some("user_53_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
@@ -90,8 +96,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("Object Id: {:?}", result.object_id()?);
     //println!("\n\nWidget map:\n{:?}", result.to_wig()?);
     //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}", result.to_html()?);
-
+    /*
+        println!(
+            "\n\nHtml:\n{}",
+            result.to_html(
+                Some("/login"),
+                Some(HttpMethod::POST),
+                Some(Enctype::Multipart)
+            )?
+        );
+    */
     // Create document in database.
     let result = user.save(None, None)?;
     println!("Boolean: {}", result.is_valid()?);
@@ -113,7 +127,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nWidget map:\n{:?}", result.to_wig());
     //println!("\n\nSlug:\n{}", result.to_wig()?.get("slug").unwrap().value);
     //println!("\n\nJson:\n{}", result.to_json()?);
-    //println!("\n\nHtml:\n{}\n", result.to_html()?);
+    /*
+    println!(
+        "\n\nHtml:\n{}\n",
+        result.to_html(
+            Some("/login"),
+            Some(HttpMethod::POST),
+            Some(Enctype::Multipart)
+        )?
+    );
+    */
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
     /*
     println!(
@@ -128,8 +151,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get Model instance.
     println!(
         "Model instance:\n{:?}\n\n",
-        mango_models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?
-            .model::<mango_models::UserProfile>()?
+        models::UserProfile::find_one(Some(doc! {"username": "Rust"}), None)?
+            .model::<models::UserProfile>()?
     );
     */
 
@@ -158,7 +181,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //println!("\n\nWidget map:\n{:?}", result.to_wig()?);
         //println!("\n\nSlug:\n{}", result.to_wig().get("slug").unwrap().value);
         //println!("\n\nJson:\n{}", result.to_json()?);
-        //println!("\n\nHtml:\n{}", result.to_html()?);
+        /*
+        println!(
+            "\n\nHtml:\n{}",
+            result.to_html(
+                Some("/login"),
+                Some(HttpMethod::POST),
+                Some(Enctype::Multipart)
+            )?
+        );
+        */
         //println!("/nJson for admin: {}/n", result.to_json_for_admin()?);
         /*
         println!(
@@ -187,7 +219,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get count of documents.
     println!(
         "Estimated count of documents: {}",
-        mango_models::UserProfile::estimated_document_count(None)?
+        models::UserProfile::estimated_document_count(None)?
     );
     */
 

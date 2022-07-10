@@ -1784,6 +1784,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
             meta.fields_name.clone(),
             final_map_widgets,
             final_doc,
+            meta.service_name.clone(),
+            meta.model_name.clone(),
         )))
     }
 
@@ -1801,7 +1803,7 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
     /// ```
     ///
     // *********************************************************************************************
-    fn save(
+    fn save<'a>(
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
@@ -1883,6 +1885,8 @@ pub trait QPaladins: ToModel + CachingModel + Hooks {
                     is_no_error,
                     meta.fields_name.clone(),
                     verified_data.to_wig()?,
+                    meta.service_name.clone(),
+                    meta.model_name.clone(),
                 )));
             }
         }

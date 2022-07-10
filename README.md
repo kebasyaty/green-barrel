@@ -469,6 +469,20 @@
         // Run migration.
         migration::mango_migration()?;
 
+        // Get data for form fields.
+        // println!("Widget map:\n{:?}", models::UserProfile::to_wig()?);
+        // println!("Json-line:\n{}", models::UserProfile::to_json()?);
+        /*
+        println!(
+            "Html code:\n{}",
+            mango_models::UserProfile::to_html(
+                Some("/login"),
+                Some(HttpMethod::POST),
+                Some(Enctype::Multipart)
+            )?
+        );
+        */
+
         //
         let mut user = models::UserProfile {
             username: Some("user_1".to_string()),
@@ -476,39 +490,36 @@
             password: Some("12345678".to_string()),
             confirm_password: Some("12345678".to_string()),
             is_staff: Some(false),
-            ..Default::default() // or initialize the `hash` field - { hash: Some(String::new()) }
+            ..Default::default()
         };
 
-        // Get data for form fields.
-        // println!("Widget map:\n{:?}", models::UserProfile::to_wig()?);
-        // println!("Json-line:\n{}", models::UserProfile::to_json()?);
-        // println!("Html code:\n{}", models::UserProfile::to_html()?);
-        //
-        //
         // Check.
         // let output_data = user.check()?;
         // println!("Is valid: {}", output_data.is_valid()?);
         // println!("Hash: {}", output_data.hash()?);
         //
         // Get MongoDB ID from hash-line
-        // println!("\nObject Id:\n{:?}\n", output_data.object_id()?);
+        // println!("Object Id:\n{:?}\n", output_data.object_id()?);
         //
-        // println!("\n\nWidget map:\n{:?}", output_data.to_wig()?);
-        // println!("\n\nJson:\n{}", output_data.to_json()?);
-        // println!("\n\nHtml:\n{}", output_data.to_html()?);
-        // println!("\n\nBSON::Document:\n{:?}", output_data.to_doc()?);
+        // println!("Widget map:\n{:?}", output_data.to_wig()?);
+        // println!("Json:\n{}", output_data.to_json()?);
+        /*
+        println!(
+            "Html:\n{}",
+            output_data.to_html(
+                Some("/login"),
+                Some(HttpMethod::POST),
+                Some(Enctype::Multipart)
+            )?
+        );
+        */
+        // println!("BSON::Document:\n{:?}", output_data.to_doc()?);
         //
         // Printing errors to the console ( for development ).
         // if !output_data.is_valid()? {
         //     output_data.print_err()?;
         // }
-        //
-        // Get data for form fields.
-        // println!("Widget map:\n{:?}", output_data.to_wig()?);
-        // println!("Json-line:\n{}", output_data.to_json()?);
-        // println!("Html code:\n{}", output_data.to_html()?);
-        //
-        //
+
         // Create or update a document in the database ( check() + save() ).
         let output_data = user.save(None, None)?;
         println!("Is valid: {}", output_data.is_valid()?);
@@ -521,11 +532,11 @@
             "Updated at: {}",
             user.updated_at.clone().unwrap_or_default()
         );
-        //
+
         // Get MongoDB ID from hash-line
-        // println!("\nObject Id:\n{:?}\n", output_data.object_id()?);
+        // println!("Object Id:\n{:?}\n", output_data.object_id()?);
         //
-        println!("\nSlug: {}\n", output_data.to_wig()?.get("slug").unwrap().value);
+        println!("Slug: {}\n", output_data.to_wig()?.get("slug").unwrap().value);
         //
         // Printing errors to the console ( for development ).
         // if !output_data.is_valid()? {
@@ -534,20 +545,29 @@
         // Get data for form fields.
         // println!("Widget map:\n{:?}", output_data.to_wig()?);
         // println!("Json-line:\n{}", output_data.to_json()?);
-        // println!("Html code:\n{}", output_data.to_html()?);
-        //
-        //
+        /*
+        println!(
+            "Html:\n{}",
+            output_data.to_html(
+                Some("/login"),
+                Some(HttpMethod::POST),
+                Some(Enctype::Multipart)
+            )?
+        );
+        */
+
         // Remove document from collection in database.
         // let output_data  = user.delete(None)?;
         // if !output_data.is_valid()? {
         //     println!("{}", output_data.err_msg()?);
         // }
-        //
+
         Ok(())
     }
 
 ## Changelog
 
+- **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
 - **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._
 - **v0.10.20** _Removed the ability to change the created_at field of a model instance._
 - **v0.10.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **disabled = true, is_hide = true**. Updated **README.md**. Updated documentation._
