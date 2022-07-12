@@ -773,6 +773,17 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             }
         }
 
+        /// Rendering HTML-controls code for Form.
+        // *****************************************************************************************
+        #add_trait_generate_html
+
+        /// A set of methods for custom validation.
+        // *****************************************************************************************
+        #add_trait_custom_valid
+
+        /// Methods that are called at different stages when accessing the database.
+        #add_trait_hooks
+
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
         impl CachingModel for #model_name {}
@@ -781,9 +792,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // *****************************************************************************************
         impl ValidationModel for #model_name {}
 
-        /// A set of methods for custom validation.
-        // *****************************************************************************************
-        #add_trait_custom_valid
 
         /// Database Query API
         // *****************************************************************************************
@@ -793,12 +801,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         impl QCommons for #model_name {}
         /// Query methods for a Model instance.
         impl QPaladins for #model_name {}
-        /// Methods that are called at different stages when accessing the database.
-        #add_trait_hooks
 
-        /// Rendering HTML-controls code for Form.
-        // *****************************************************************************************
-        #add_trait_generate_html
     };
 
     // Hand the output tokens back to the compiler.

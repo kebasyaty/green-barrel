@@ -13,6 +13,7 @@ use crate::settings::{
     is_del_docs = false,
     is_use_add_valid = true,
     is_use_hooks = true,
+    //is_use_custom_html = true,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -183,6 +184,8 @@ impl Hooks for UserProfile {
         println!("!!!Post Delet!!!");
     }
 }
+
+//impl GenerateHtmlCode for UserProfile {}
 
 #[Model]
 #[derive(Serialize, Deserialize, Default, Debug)]

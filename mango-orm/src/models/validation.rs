@@ -137,7 +137,15 @@ pub trait ValidationModel {
 /// # Example:
 ///
 /// ```
-/// impl AdditionalValidation for UserProfile {
+/// #[Model(
+///     is_use_add_valid = true,
+/// )]
+/// #[derive(Serialize, Deserialize, Default, Debug)]
+/// pub struct ModelName {
+///     Add your fields ...
+/// }
+///
+/// impl AdditionalValidation for ModelName {
 ///     fn add_validation<'a>(
 ///         &self,
 ///     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {

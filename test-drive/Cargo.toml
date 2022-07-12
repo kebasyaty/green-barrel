@@ -2,7 +2,7 @@
 authors = ["kebasyaty <kebasyaty@gmail.com>"]
 default-run = "test-drive"
 description = "For manual testing and defining dependencies for development."
-edition = "2018"
+edition = "2021"
 name = "test-drive"
 version = "0.1.0"
 

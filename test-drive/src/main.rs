@@ -79,8 +79,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = models::UserProfile {
-        username: Some("user_54".to_string()),
-        email: Some("user_54_@noreply.net".to_string()),
+        username: Some("user_55".to_string()),
+        email: Some("user_55_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -128,14 +128,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("\n\nSlug:\n{}", result.to_wig()?.get("slug").unwrap().value);
     //println!("\n\nJson:\n{}", result.to_json()?);
     /*
-    println!(
-        "\n\nHtml:\n{}\n",
-        result.to_html(
-            Some("/login"),
-            Some(HttpMethod::POST),
-            Some(Enctype::Multipart)
-        )?
-    );
+       println!(
+           "\n\nHtml:\n{}\n",
+           result.to_html(
+               Some("/login"),
+               Some(HttpMethod::POST),
+               Some(Enctype::Multipart)
+           )?
+       );
     */
     //println!("\nJson for admin:\n{}\n", result.to_json_for_admin()?);
     /*

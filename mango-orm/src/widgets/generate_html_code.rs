@@ -9,6 +9,26 @@ pub trait GenerateHtmlCode {
     /// Rendering HTML-controls code for Form.
     /// Hint: If necessary, customize the code generation yourself using html and css from
     /// Bootstrap, Material Design, etc.
+    ///
+    //// # Example:
+    ///
+    /// ```
+    /// // For code customization.
+    /// #[Model(
+    ///     is_use_custom_html = true,
+    /// )]
+    /// #[derive(Serialize, Deserialize, Default, Debug)]
+    /// pub struct ModelName {
+    ///     Add your fields ...
+    /// }
+    ///
+    /// impl GenerateHtmlCode for ModelName {
+    ///     fn generate_html(&self) {
+    ///         Add your custom code...
+    ///    }
+    /// }
+    /// ```
+    ///
     fn generate_html(
         url_action: Option<&str>,
         http_method: Option<HttpMethod>,

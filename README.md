@@ -37,16 +37,17 @@
 
 **_( all attributes are optional )_**
 
-| Attribute:          | Default:     | Description:                                                                |
-| :------------------ | :----------- | :-------------------------------------------------------------------------- |
-| db_client_name      | empty string | Used to connect to a MongoDB cluster.                                       |
-| db_query_docs_limit | 1000         | limiting query results.                                                     |
-| is_add_docs         | true         | Create documents in the database.                                           |
-| is_up_docs          | true         | Update documents in the database.                                           |
-| is_del_docs         | true         | Delete documents from the database.                                         |
-| ignore_fields       | empty string | Fields that are not included in the database (separated by commas).         |
-| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**. |
-| is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                        |
+| Attribute:          | Default:     | Description:                                                                                           |
+| :------------------ | :----------- | :----------------------------------------------------------------------------------------------------- |
+| db_client_name      | empty string | Used to connect to a MongoDB cluster.                                                                  |
+| db_query_docs_limit | 1000         | limiting query results.                                                                                |
+| is_add_docs         | true         | Create documents in the database.                                                                      |
+| is_up_docs          | true         | Update documents in the database.                                                                      |
+| is_del_docs         | true         | Delete documents from the database.                                                                    |
+| ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                    |
+| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                            |
+| is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                   |
+| is_use_custom_html  | false        | Allows the ability to customization html code for web forms - **impl GenerateHtmlCode for ModelName**. |
 
 ## Match field types and widget types
 
@@ -286,6 +287,7 @@
         is_del_docs = false,
         is_use_add_valid = true,
         is_use_hooks = true,
+        //is_use_custom_html = true,
         ignore_fields = "confirm_password"
     )]
     #[derive(Serialize, Deserialize, Default, Debug)]
@@ -396,6 +398,7 @@
         pub is_active: Option<bool>,
     }
 
+    // is_use_add_valid = true
     impl AdditionalValidation for UserProfile {
         fn add_validation<'a>(
             &self,
@@ -431,6 +434,7 @@
         }
     }
 
+    // is_use_hooks = true
     impl Hooks for UserProfile {
         fn pre_create(&self) {
             println!("!!!Pre Create!!!");
@@ -456,6 +460,9 @@
             println!("!!!Post Delet!!!");
         }
     }
+
+    // is_use_custom_html = true
+    //impl GenerateHtmlCode for UserProfile {}
 
 #### src/main.rs
 
@@ -567,7 +574,8 @@
 
 ## Changelog
 
-- **v0.10.93** _Rename trait **ToModel** to **Main**. Rename modul **html_controls** to **generate_html_code**. Rename trait **HtmlControls** to **GenerateHtmlCode**._
+- **v0.10.94** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html()**._
+- **v0.10.93** _Rename trait **ToModel** to **Main**._
 - **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
 - **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._
 - **v0.10.20** _Removed the ability to change the created_at field of a model instance._
