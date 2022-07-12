@@ -5,10 +5,10 @@ use std::error::Error;
 
 use crate::widgets::{Enctype, HttpMethod, Widget};
 
-pub trait HtmlControls {
+pub trait GenerateHtmlCode {
     /// Rendering HTML-controls code for Form.
-    /// ( If necessary, customize the code generation yourself using html and css from
-    /// Bootstrap, Material Design, etc. )
+    /// Hint: If necessary, customize the code generation yourself using html and css from
+    /// Bootstrap, Material Design, etc.
     fn generate_html(
         url_action: Option<&str>,
         http_method: Option<HttpMethod>,

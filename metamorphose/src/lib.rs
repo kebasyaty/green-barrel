@@ -175,6 +175,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let mut trans_map_widgets: TransMapWidgets = Default::default();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
+    let mut add_trait_generate_html = quote! {impl GenerateHtmlCode for #model_name {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -279,6 +280,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         panic!(
                             "Model: `{}` -> Could not determine value for \
                             parameter `is_use_hooks`. Use the `bool` type.",
+                            model_name.to_string(),
+                        )
+                    }
+                } else if mnv.path.is_ident("is_use_custom_html") {
+                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        if lit_bool.value {
+                            add_trait_generate_html = quote! {};
+                        }
+                    } else {
+                        panic!(
+                            "Model: `{}` -> Could not determine value for \
+                            parameter `is_use_custom_html`. Use the `bool` type.",
                             model_name.to_string(),
                         )
                     }
@@ -663,7 +676,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// All methods that directly depend on the macro.
         // *****************************************************************************************
-        impl ToModel for #model_name {
+        impl Main for #model_name {
             /// Get model key.
             /// Hint: To access data in the cache.
             // -------------------------------------------------------------------------------------
@@ -785,7 +798,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// Rendering HTML-controls code for Form.
         // *****************************************************************************************
-        impl HtmlControls for #model_name {}
+        #add_trait_generate_html
     };
 
     // Hand the output tokens back to the compiler.

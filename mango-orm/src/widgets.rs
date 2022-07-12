@@ -1,6 +1,6 @@
 //! For control of fields on the server and client side.
 
-pub mod html_controls;
+pub mod generate_html_code;
 pub mod output_data;
 
 use serde::{Deserialize, Serialize};

@@ -8,7 +8,7 @@ pub mod validation;
 
 use crate::{
     models::validation::{AdditionalValidation, ValidationModel},
-    widgets::{html_controls::HtmlControls, Widget},
+    widgets::Widget,
 };
 use mongodb::{
     bson::{doc, oid::ObjectId},
@@ -73,7 +73,7 @@ impl Default for Meta {
 
 /// Model options and widget map for Form.
 // *************************************************************************************************
-pub trait ToModel: HtmlControls + AdditionalValidation + ValidationModel {
+pub trait Main: AdditionalValidation + ValidationModel {
     /// Get model key
     /// ( to access data in the cache )
     // ---------------------------------------------------------------------------------------------

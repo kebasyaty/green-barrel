@@ -13,11 +13,11 @@ use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    models::{caching::CachingModel, hooks::Hooks, Meta, ToModel},
+    models::{caching::CachingModel, hooks::Hooks, Main, Meta},
     widgets::{output_data::OutputData, FileData, ImageData, Widget},
 };
 
-pub trait QPaladins: ToModel + CachingModel + Hooks {
+pub trait QPaladins: Main + CachingModel + Hooks {
     /// Json-line for admin panel.
     /// ( converts a widget map to a list, in the order of the Model fields )
     // *********************************************************************************************

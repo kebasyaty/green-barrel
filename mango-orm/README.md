@@ -567,6 +567,7 @@
 
 ## Changelog
 
+- **v0.10.93** _Rename trait **ToModel** to **Main**._
 - **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
 - **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._
 - **v0.10.20** _Removed the ability to change the created_at field of a model instance._

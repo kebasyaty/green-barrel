@@ -7,14 +7,14 @@ use mongodb::{
 use std::{collections::HashMap, error::Error};
 
 use crate::{
-    models::{Meta, ToModel},
+    models::{Main, Meta},
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
-    widgets::{Enctype, HttpMethod, Widget},
+    widgets::{generate_html_code::GenerateHtmlCode, Enctype, HttpMethod, Widget},
 };
 
 /// Caching information about Models for speed up work.
 // #################################################################################################
-pub trait CachingModel: ToModel {
+pub trait CachingModel: Main + GenerateHtmlCode {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>> {
