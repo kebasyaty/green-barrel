@@ -462,7 +462,13 @@
     }
 
     // is_use_custom_html = true
-    //impl GenerateHtmlCode for UserProfile {}
+    //impl GenerateHtmlCode for UserProfile {
+        /*
+         fn generate_html(&self) {
+             Add your custom code...
+        }
+        */
+    }
 
 #### src/main.rs
 
