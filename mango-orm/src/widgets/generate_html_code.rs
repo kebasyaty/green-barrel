@@ -5,10 +5,11 @@ use std::error::Error;
 
 use crate::widgets::{Enctype, HttpMethod, Widget};
 
+/// Rendering HTML-controls code for Form.
 pub trait GenerateHtmlCode {
     /// Rendering HTML-controls code for Form.
-    /// Hint: If necessary, customize the code generation yourself using html and css from
-    /// Bootstrap, Material Design, etc.
+    /// Hint: If necessary, customize the code generation yourself using html and
+    /// css классы from Bootstrap, Material Design, etc.
     ///
     //// # Example:
     ///
@@ -595,17 +596,5 @@ pub trait GenerateHtmlCode {
         );
         //
         Ok(form)
-    }
-
-    // Get Html-line for `OutputData`.
-    // *********************************************************************************************
-    fn output_data_to_html(
-        &self,
-        _action: Option<&str>,
-        _method: Option<HttpMethod>,
-        _enctype: Option<Enctype>,
-    ) -> Result<String, Box<dyn Error>> {
-        // Stub
-        Ok(String::new())
     }
 }
