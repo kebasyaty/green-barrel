@@ -175,7 +175,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let mut trans_map_widgets: TransMapWidgets = Default::default();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
-    let mut add_trait_generate_html = quote! {impl GenerateHtmlCode for #model_name {}};
+    let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -786,11 +786,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
-        impl CachingModel for #model_name {}
+        impl Caching for #model_name {}
 
         /// Validating Model fields for save and update.
         // *****************************************************************************************
-        impl ValidationModel for #model_name {}
+        impl Validation for #model_name {}
 
 
         /// Database Query API

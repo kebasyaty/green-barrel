@@ -33,11 +33,11 @@
 - [uuid](https://crates.io/crates/uuid "uuid")
 - [metamorphose](https://crates.io/crates/metamorphose "metamorphose")
 
-## Model attributes
+## Model parameters
 
-**_( all attributes are optional )_**
+**_( all parameters are optional )_**
 
-| Attribute:          | Default:     | Description:                                                                                           |
+| Parameter:          | Default:     | Description:                                                                                           |
 | :------------------ | :----------- | :----------------------------------------------------------------------------------------------------- |
 | db_client_name      | empty string | Used to connect to a MongoDB cluster.                                                                  |
 | db_query_docs_limit | 1000         | limiting query results.                                                                                |
@@ -398,7 +398,7 @@
         pub is_active: Option<bool>,
     }
 
-    // Model attribute: is_use_add_valid = true
+    // Model parameter: is_use_add_valid = true
     impl AdditionalValidation for UserProfile {
         fn add_validation<'a>(
             &self,
@@ -434,7 +434,7 @@
         }
     }
 
-    // Model attribute: is_use_hooks = true
+    // Model parameter: is_use_hooks = true
     impl Hooks for UserProfile {
         fn pre_create(&self) {
             println!("!!!Pre Create!!!");
@@ -461,10 +461,10 @@
         }
     }
 
-    // Model attribute: is_use_custom_html = true
+    // Model parameter: is_use_custom_html = true
     // See documentation: mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
     /*
-    impl GenerateHtmlCode for UserProfile {
+    impl GenerateHtml for UserProfile {
          fn generate_html(&self) {
              Add your custom code...
         }
@@ -581,8 +581,9 @@
 
 ## Changelog
 
+- **м0,10,97** _Added field attribute check - **pattern**._
 - **м0,10,95** _For optimization, the **output_data_to_html** mediator function has been excluded._
-- **v0.10.94** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source**._
+- **v0.10.94** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html > GenerateHtml > generate_html() > source**._
 - **v0.10.93** _Rename trait **ToModel** to **Main**._
 - **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
 - **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._

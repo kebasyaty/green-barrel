@@ -4,6 +4,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson},
     sync::Collection,
 };
+use regex::Regex;
 use std::{collections::HashMap, error::Error};
 
 use crate::{
@@ -13,7 +14,7 @@ use crate::{
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
-pub trait ValidationModel {
+pub trait Validation {
     /// Validation of `minlength`.
     // ---------------------------------------------------------------------------------------------
     fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
@@ -124,6 +125,19 @@ pub trait ValidationModel {
         let count: i64 = coll.count_documents(filter, None)?;
         if count > 0 {
             Err("Is not unique.")?
+        }
+        Ok(())
+    }
+
+    /// Field attribute check - pattern.
+    // ----------------------------------------------------------------------------------------------
+    fn regex_pattern_validation(
+        field_value: &str,
+        regex_pattern: &str,
+    ) -> Result<(), Box<dyn Error>> {
+        let pattern = Regex::new(regex_pattern)?;
+        if !pattern.is_match(field_value) {
+            Err("Does not match the pattern attribute.")?
         }
         Ok(())
     }

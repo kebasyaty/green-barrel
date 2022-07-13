@@ -6,10 +6,7 @@ pub mod db_query_api;
 pub mod hooks;
 pub mod validation;
 
-use crate::{
-    models::validation::{AdditionalValidation, ValidationModel},
-    widgets::Widget,
-};
+use crate::widgets::Widget;
 use mongodb::{
     bson::{doc, oid::ObjectId},
     sync::Client,
@@ -73,7 +70,7 @@ impl Default for Meta {
 
 /// Model options and widget map for Form.
 // *************************************************************************************************
-pub trait Main: AdditionalValidation + ValidationModel {
+pub trait Main {
     /// Get model key
     /// ( to access data in the cache )
     // ---------------------------------------------------------------------------------------------

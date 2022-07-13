@@ -4,7 +4,7 @@ use mongodb::bson::{document::Document, oid::ObjectId};
 use std::collections::HashMap;
 use std::error::Error;
 
-use crate::widgets::{generate_html_code::GenerateHtmlCode, Enctype, HttpMethod, Widget};
+use crate::widgets::{generate_html::GenerateHtml, Enctype, HttpMethod, Widget};
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 #[derive(Debug)]
@@ -24,7 +24,7 @@ pub enum OutputData {
     Stub,
 }
 
-impl GenerateHtmlCode for OutputData {}
+impl GenerateHtml for OutputData {}
 
 impl OutputData {
     //

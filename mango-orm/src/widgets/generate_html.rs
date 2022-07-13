@@ -6,7 +6,7 @@ use std::error::Error;
 use crate::widgets::{Enctype, HttpMethod, Widget};
 
 /// Rendering HTML-controls code for Form.
-pub trait GenerateHtmlCode {
+pub trait GenerateHtml {
     /// Rendering HTML-controls code for Form.
     /// Hint: If necessary, customize the code generation yourself using html and
     /// css классы from Bootstrap, Material Design, etc.
@@ -23,7 +23,7 @@ pub trait GenerateHtmlCode {
     ///     Add your fields ...
     /// }
     ///
-    /// impl GenerateHtmlCode for ModelName {
+    /// impl GenerateHtml for ModelName {
     ///     fn generate_html(&self) {
     ///         Add your custom code...
     ///    }

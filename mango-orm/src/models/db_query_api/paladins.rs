@@ -13,11 +13,16 @@ use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    models::{caching::CachingModel, hooks::Hooks, Main, Meta},
+    models::{
+        caching::Caching,
+        hooks::Hooks,
+        validation::{AdditionalValidation, Validation},
+        Main, Meta,
+    },
     widgets::{output_data::OutputData, FileData, ImageData, Widget},
 };
 
-pub trait QPaladins: Main + CachingModel + Hooks {
+pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
     /// Json-line for admin panel.
     /// ( converts a widget map to a list, in the order of the Model fields )
     // *********************************************************************************************
@@ -25,8 +30,8 @@ pub trait QPaladins: Main + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user_profile = UserProfile{...};
-    /// println!("{}", user_profile.instance_to_json_for_admin()?);
+    /// let model_name = ModelName{...};
+    /// println!("{}", model_name.instance_to_json_for_admin()?);
     /// ```
     ///
     fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
@@ -208,9 +213,10 @@ pub trait QPaladins: Main + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user  = UserProfile {...}
-    /// let result = user.check()?;
-    /// assert!(result.is_valid());
+    /// let model_name  = ModelName {...}
+    /// if !output_data.is_valid()? {
+    ///     output_data.print_err()?;
+    /// }
     /// ```
     ///
     fn check(&mut self) -> Result<OutputData, Box<dyn Error>> {
@@ -375,6 +381,28 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                     };
                     // Convert to &str
                     let field_value: &str = field_value.as_str();
+
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(field_value, final_widget.pattern.as_str())
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                    final_widget.error =
+                                        Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap();
+                                } else {
+                                    Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                    .unwrap()
+                                }
+                            });
+                    }
 
                     // Validation in regular expression.
                     // Checking `minlength`, `maxlength`, `min length`, `max length`.
@@ -555,7 +583,30 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                     //
                     slug_str = slugify(slug_str);
                     final_widget.value = slug_str.clone();
-                    let bson_field_value = Bson::String(slug_str);
+                    let bson_field_value = Bson::String(slug_str.clone());
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            slug_str.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                     // Validation of `unique`.
                     if final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
@@ -810,6 +861,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                             }
                         }
                     }
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                 }
                 //
                 "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
@@ -878,6 +952,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
+                    }
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
                     }
                 }
                 //
@@ -968,6 +1065,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                             }
                         }
                     }
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                 }
                 //
                 "selectTextMultDyn" | "selectI32MultDyn" | "selectU32MultDyn"
@@ -1046,6 +1166,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         final_widget.value = String::new();
+                    }
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
                     }
                 }
                 // Validation of file type fields.
@@ -1450,7 +1593,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = Bson::Int32(field_value);
-
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -1461,7 +1626,6 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
-
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: i32 = final_widget.min.parse().unwrap_or_default();
@@ -1523,7 +1687,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = Bson::Int64(field_value);
-
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -1534,7 +1720,6 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             });
                     }
-
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
                     let min: i64 = final_widget.min.parse().unwrap_or_default();
@@ -1595,6 +1780,29 @@ pub trait QPaladins: Main + CachingModel + Hooks {
                     final_widget.value = field_value.to_string();
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value = Bson::Double(field_value);
+                    // Field attribute check - `pattern`.
+                    // -----------------------------------------------------------------------------
+                    if !final_widget.pattern.is_empty() {
+                        Self::regex_pattern_validation(
+                            final_widget.value.as_str(),
+                            final_widget.pattern.as_str(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                final_widget.error =
+                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
+                    }
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if final_widget.unique {
@@ -1795,10 +2003,10 @@ pub trait QPaladins: Main + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user  = UserProfile {...}
-    /// let result = user.save(None, None)?;
-    /// if !result.is_valid() {
-    ///     result.print_err();
+    /// let model_name  = ModelName {...}
+    /// let output_data = user.save(None, None)?;
+    /// if !output_data.is_valid()? {
+    ///     output_data.print_err()?;
     /// }
     /// ```
     ///
@@ -1900,10 +2108,10 @@ pub trait QPaladins: Main + CachingModel + Hooks {
     /// # Example:
     ///
     /// ```
-    /// let user  = UserProfile {...}
-    /// let result = user.delete(None)?;
-    /// if !result.is_valid() {
-    ///     println!("{}", result.err_msg());
+    /// let model_name = ModelName {...}
+    /// let output_data = model_name.delete(None)?;
+    /// if !output_data.is_valid()? {
+    ///     output_data.print_err()?;
     /// }
     /// ```
     ///
@@ -2145,7 +2353,7 @@ pub trait QPaladins: Main + CachingModel + Hooks {
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
     /// let new_password = "UUbd+5KXw^756*uj";
-    /// assert!(user.create_password_hash(old_password, new_password, None)?);
+    /// assert!(user.update_password(old_password, new_password, None)?);
     /// ```
     ///
     fn update_password(
@@ -2180,9 +2388,17 @@ pub trait QPaladins: Main + CachingModel + Hooks {
             "$set": doc,
         };
         // Update password.
-        Ok(coll
+        let result_bool = coll
             .update_one(query, update, options_update)?
             .modified_count
-            == 1_i64)
+            == 1_i64;
+        if !result_bool {
+            Err(format!(
+                "Model: `{}` ; Method: `update_password` => \
+                The password has not been updated.",
+                meta.model_name
+            ))?
+        }
+        Ok(result_bool)
     }
 }

@@ -9,12 +9,12 @@ use std::{collections::HashMap, error::Error};
 use crate::{
     models::{Main, Meta},
     store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
-    widgets::{generate_html_code::GenerateHtmlCode, Enctype, HttpMethod, Widget},
+    widgets::{generate_html::GenerateHtml, Enctype, HttpMethod, Widget},
 };
 
 /// Caching information about Models for speed up work.
 // #################################################################################################
-pub trait CachingModel: Main + GenerateHtmlCode {
+pub trait Caching: Main + GenerateHtml {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>> {

@@ -13,11 +13,11 @@ use mongodb::{
 use std::{collections::HashMap, error::Error};
 
 use crate::{
-    models::{caching::CachingModel, converters::Converters, Main, Meta},
+    models::{caching::Caching, converters::Converters, Main, Meta},
     widgets::{output_data::OutputData, Widget},
 };
 
-pub trait QCommons: Main + CachingModel + Converters {
+pub trait QCommons: Main + Caching + Converters {
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
     /// See the documentation https://docs.mongodb.com/manual/aggregation/ for more information on aggregations.
