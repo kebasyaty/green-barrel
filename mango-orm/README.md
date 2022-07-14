@@ -47,7 +47,7 @@
 | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                    |
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                            |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                   |
-| is_use_custom_html  | false        | Allows the ability to customization html code for web forms - **impl GenerateHtmlCode for ModelName**. |
+| is_use_custom_html  | false        | Allows the ability to customization html code for web forms - **impl GenerateHtml for ModelName**. |
 
 ## Match field types and widget types
 
