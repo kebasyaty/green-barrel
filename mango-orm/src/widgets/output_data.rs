@@ -21,6 +21,7 @@ pub enum OutputData {
     ),
     Save((bool, Vec<String>, HashMap<String, Widget>, String, String)),
     Delete((bool, String)),
+    UpdatePassword((bool, String)),
     Stub,
 }
 
@@ -193,7 +194,7 @@ impl OutputData {
         }
     }
 
-    /// Get validation status (boolean)
+    /// Get validation status (boolean).
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -203,6 +204,7 @@ impl OutputData {
     /// let output_data = user_profile.check()?;
     /// let output_data = user_profile.save(None, None)?;
     /// let output_data = user_profile.delete()?;
+    /// let output_data = user_profile.update_password()?;
     /// assert!(result.is_valid()?);
     /// ```
     ///
@@ -211,6 +213,7 @@ impl OutputData {
             Self::Check(data) => Ok(data.0),
             Self::Save(data) => Ok(data.0),
             Self::Delete(data) => Ok(data.0),
+            Self::UpdatePassword(data) => Ok(data.0),
             _ => Err("Invalid output type.")?,
         }
     }
@@ -273,7 +276,7 @@ impl OutputData {
         }
     }
 
-    /// A description of the error if the document was not deleted.
+    /// Description of the error if the document was not deleted or the password was not updated.
     // ---------------------------------------------------------------------------------------------
     /// (Main use for admin panel.)
     ///
@@ -289,6 +292,7 @@ impl OutputData {
     pub fn err_msg(&self) -> Result<String, Box<dyn Error>> {
         match self {
             Self::Delete(data) => Ok(data.1.clone()),
+            Self::UpdatePassword(data) => Ok(data.1.clone()),
             _ => Err("Invalid output type.")?,
         }
     }

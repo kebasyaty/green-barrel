@@ -2111,7 +2111,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// let model_name = ModelName {...}
     /// let output_data = model_name.delete(None)?;
     /// if !output_data.is_valid()? {
-    ///     output_data.print_err()?;
+    ///     println!("{}", output_data.err_msg()?);
     /// }
     /// ```
     ///
@@ -2353,7 +2353,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
     /// let new_password = "UUbd+5KXw^756*uj";
-    /// assert!(user.update_password(old_password, new_password, None)?);
+    /// let output_data = user.update_password(old_password, new_password, None)?;
+    /// if !output_data.is_valid()? {
+    ///     println!("{}", output_data.err_msg()?);
+    /// }
     /// ```
     ///
     fn update_password(
@@ -2362,43 +2365,43 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         new_password: &str,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<bool, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>> {
+        //
+        let mut result_bool = false;
+        let mut err_msg = String::new();
         // Validation current password.
         if !self.verify_password(old_password, options_find_old)? {
-            return Ok(false);
+            err_msg = String::from("The old password does not match.");
+        } else {
+            // Get cached Model data.
+            let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+            // Get Model metadata.
+            let meta: Meta = form_cache.meta;
+            // Access the collection.
+            let coll: Collection = client_cache
+                .database(meta.database_name.as_str())
+                .collection(meta.collection_name.as_str());
+            // Get hash-line of Model.
+            let hash = self.get_hash().unwrap();
+            // Convert hash-line to ObjectId.
+            let object_id = ObjectId::with_string(hash.as_str())?;
+            // Create a filter to search for a document.
+            let query = doc! {"_id": object_id};
+            let new_password_hash = Self::create_password_hash(new_password)?;
+            let doc = doc! {"password": new_password_hash};
+            let update = doc! {
+                "$set": doc,
+            };
+            // Update password.
+            result_bool = coll
+                .update_one(query, update, options_update)?
+                .modified_count
+                == 1_i64;
+            if !result_bool {
+                err_msg = format!("An error occurred while updating the password.")
+            }
         }
         //
-        // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = form_cache.meta;
-        // Access the collection.
-        let coll: Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Get hash-line of Model.
-        let hash = self.get_hash().unwrap();
-        // Convert hash-line to ObjectId.
-        let object_id = ObjectId::with_string(hash.as_str())?;
-        // Create a filter to search for a document.
-        let query = doc! {"_id": object_id};
-        let new_password_hash = Self::create_password_hash(new_password)?;
-        let doc = doc! {"password": new_password_hash};
-        let update = doc! {
-            "$set": doc,
-        };
-        // Update password.
-        let result_bool = coll
-            .update_one(query, update, options_update)?
-            .modified_count
-            == 1_i64;
-        if !result_bool {
-            Err(format!(
-                "Model: `{}` ; Method: `update_password` => \
-                The password has not been updated.",
-                meta.model_name
-            ))?
-        }
-        Ok(result_bool)
+        Ok(OutputData::UpdatePassword((result_bool, err_msg)))
     }
 }
