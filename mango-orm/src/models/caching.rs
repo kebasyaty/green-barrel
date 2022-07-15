@@ -174,8 +174,8 @@ pub trait Caching: Main + GenerateHtml {
     /// ```
     ///
     fn to_html(
-        action: Option<&str>,
-        method: Option<HttpMethod>,
+        url_action: Option<&str>,
+        http_method: Option<HttpMethod>,
         enctype: Option<Enctype>,
     ) -> Result<String, Box<dyn Error>> {
         // Get a key to access Model data in the cache.
@@ -198,8 +198,8 @@ pub trait Caching: Main + GenerateHtml {
                 let mut form_store = FORM_STORE.write()?;
                 let form_cache = form_store.get(key.as_str()).unwrap();
                 let html = Self::generate_html(
-                    action,
-                    method,
+                    url_action,
+                    http_method,
                     enctype,
                     form_cache.meta.service_name.as_str(),
                     form_cache.meta.model_name.as_str(),
