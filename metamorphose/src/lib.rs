@@ -823,13 +823,16 @@ fn get_field_attr<'a>(field: &'a syn::Field, attr_name: &'a str) -> Option<&'a A
 /// Get ID for Widget.
 // *************************************************************************************************
 fn get_id(model_name: String, field_name: String) -> String {
-    let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-    format!(
-        "{}--{}",
-        re.replace_all(model_name.as_ref(), "-$upper_chr"),
-        field_name.replace('_', "-")
-    )[1..]
-        .to_lowercase()
+    let field_name_upper = field_name
+        .split('_')
+        .map(|word| {
+            let mut chr: Vec<char> = word.chars().collect();
+            chr[0] = chr[0].to_uppercase().nth(0).unwrap();
+            chr.into_iter().collect::<String>()
+        })
+        .collect::<Vec<String>>()
+        .join("");
+    format!("{}-{}", model_name, field_name_upper)
 }
 
 /// Transporting of metadate to implementation of methods.
