@@ -37,16 +37,16 @@
 
 **_( all parameters are optional )_**
 
-| Parameter:          | Default:     | Description:                                                                                           |
-| :------------------ | :----------- | :----------------------------------------------------------------------------------------------------- |
-| db_client_name      | empty string | Used to connect to a MongoDB cluster.                                                                  |
-| db_query_docs_limit | 1000         | limiting query results.                                                                                |
-| is_add_docs         | true         | Create documents in the database.                                                                      |
-| is_up_docs          | true         | Update documents in the database.                                                                      |
-| is_del_docs         | true         | Delete documents from the database.                                                                    |
-| ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                    |
-| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                            |
-| is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                   |
+| Parameter:          | Default:     | Description:                                                                                       |
+| :------------------ | :----------- | :------------------------------------------------------------------------------------------------- |
+| db_client_name      | empty string | Used to connect to a MongoDB cluster.                                                              |
+| db_query_docs_limit | 1000         | limiting query results.                                                                            |
+| is_add_docs         | true         | Create documents in the database.                                                                  |
+| is_up_docs          | true         | Update documents in the database.                                                                  |
+| is_del_docs         | true         | Delete documents from the database.                                                                |
+| ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                |
+| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                        |
+| is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                               |
 | is_use_custom_html  | false        | Allows the ability to customization html code for web forms - **impl GenerateHtml for ModelName**. |
 
 ## Match field types and widget types

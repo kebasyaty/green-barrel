@@ -589,7 +589,7 @@ pub trait GenerateHtml {
             r#"<form id="{}-{}-Form" action="{}" method="{}" enctype="{}">{}</form>"#,
             service_name,
             model_name,
-            url_action.unwrap_or("/"),
+            url_action.unwrap_or("#"),
             http_method.unwrap_or_default().value(),
             enctype.unwrap_or_default().value(),
             format!("{}{}{}", controls, reset_btn, submit_btn)
