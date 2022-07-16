@@ -2,7 +2,7 @@ mod models;
 mod settings;
 
 use mango_orm::*;
-//use mongodb::bson::doc;
+use mongodb::bson::doc;
 
 // Migration Service `Mango`.
 fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -62,20 +62,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}\n\n", models::UserProfile::model_to_json_for_admin()?);
     //
     /*
-    println!(
-        "Result:\n{:?}\n\n",
-        models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
-    );
-
-    println!(
-        "Result:\n{:?}\n\n",
-        models::UserProfile::find_one_to_model_instance::<models::UserProfile>(
-            doc! {"username": "user_38"},
-            None
-        )?
-    );
+       println!(
+           "Result:\n{:?}\n\n",
+           models::UserProfile::find_one_to_wig(doc! {"username": "user_34"}, None)?
+       );
     */
-
+    /*
+        println!(
+            "Result:\n{:?}\n\n",
+            models::UserProfile::find_one_to_model_instance(doc! {"username": "user_38"}, None)?
+        );
+    */
     // Test model instance.
     // *********************************************************************************************
     let mut user = models::UserProfile {

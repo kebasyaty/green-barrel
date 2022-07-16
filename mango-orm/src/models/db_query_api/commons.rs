@@ -495,18 +495,18 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_to_model_instance::<UserProfile>(filter, None);
+    /// let result  = ModelName::find_one_to_model_instance(filter, None);
     /// if result.is_ok() {
     ///     println!("{:?}", result.unwrap());
     /// }
     /// ```
     ///
-    fn find_one_to_model_instance<T>(
+    fn find_one_to_model_instance(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<Option<T>, Box<dyn Error>>
+    ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        T: serde::de::DeserializeOwned,
+        Self: serde::de::DeserializeOwned + Sized,
     {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -516,7 +516,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        Self::to_model_instance::<T>(
+        Self::to_model_instance(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
             &meta.map_widget_type,
@@ -638,18 +638,18 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_and_delete_to_model_instance::<UserProfile>(filter, None)?;
+    /// let result  = ModelName::find_one_and_delete_to_model_instance(filter, None)?;
     /// if result.is_some() {
     ///     println!("{}", result.unwrap());
     /// }
     /// ```
     ///
-    fn find_one_and_delete_to_model_instance<T>(
+    fn find_one_and_delete_to_model_instance(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<Option<T>, Box<dyn Error>>
+    ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        T: serde::de::DeserializeOwned,
+        Self: serde::de::DeserializeOwned + Sized,
     {
         // Get cached Model data.
         let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -663,7 +663,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
-            Self::to_model_instance::<T>(
+            Self::to_model_instance(
                 coll.find_one_and_delete(filter, options)?,
                 &meta.ignore_fields,
                 &meta.map_widget_type,

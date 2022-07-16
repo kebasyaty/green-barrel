@@ -73,14 +73,14 @@ pub trait Converters {
 
     /// Get model instance from document.
     /// Hint: For the `save`, `update`, `delete` operations.
-    fn to_model_instance<T>(
+    fn to_model_instance(
         doc: Option<Document>,
         ignore_fields: &Vec<String>,
         map_widget_type: &HashMap<String, String>,
         model_name: &str,
-    ) -> Result<Option<T>, Box<dyn Error>>
+    ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        T: serde::de::DeserializeOwned,
+        Self: serde::de::DeserializeOwned + Sized,
     {
         if doc.is_some() {
             let doc =
@@ -108,7 +108,7 @@ pub trait Converters {
                     prepared_doc.insert(field_name, bson_val);
                 }
             }
-            Ok(Some(from_document::<T>(prepared_doc)?))
+            Ok(Some(from_document::<Self>(prepared_doc)?))
         } else {
             Ok(None)
         }
