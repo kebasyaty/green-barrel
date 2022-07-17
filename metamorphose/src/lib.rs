@@ -792,7 +792,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // *****************************************************************************************
         impl Validation for #model_name {}
 
-
         /// Database Query API
         // *****************************************************************************************
         /// Output data converters for database queries.
@@ -801,6 +800,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         impl QCommons for #model_name {}
         /// Query methods for a Model instance.
         impl QPaladins for #model_name {}
+
+        /// Helper methods for the admin panel.
+        // *****************************************************************************************
+        impl Administrator for #model_name {}
 
     };
 

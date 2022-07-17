@@ -27,6 +27,7 @@
 
 ## Changelog
 
+- **v0.7.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
 - **v0.6.10** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html()**._
 - **v0.6.9** _Rename trait **ToModel** to **Main**._
 - **v0.6.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **disabled = true, is_hide = true**. Updated **README.md**. Updated documentation._

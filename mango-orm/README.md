@@ -197,8 +197,8 @@
 #### Cargo.toml
 
     [dependencies]
-    mango-orm = "0.10"
-    metamorphose = "0.6"
+    mango-orm = "0.11"
+    metamorphose = "0.7"
     regex = "1.5.6"
     serde_json = "1.0.81"
 
@@ -581,9 +581,10 @@
 
 ## Changelog
 
-- **м0,10,100** _Added new type **UpdatePassword** to enum **OutputData**. Updated documentation._
-- **м0,10,97** _Added field attribute check - **pattern**._
-- **м0,10,95** _For optimization, the **output_data_to_html** mediator function has been excluded._
+- **v0.11.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
+- **v0.10.100** _Added new type **UpdatePassword** to enum **OutputData**. Updated documentation._
+- **v0.10.97** _Added field attribute check - **pattern**._
+- **v0.10.95** _For optimization, the **output_data_to_html** mediator function has been excluded._
 - **v0.10.94** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html > GenerateHtml > generate_html() > source**._
 - **v0.10.93** _Rename trait **ToModel** to **Main**._
 - **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
