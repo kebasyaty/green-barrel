@@ -582,6 +582,7 @@
 
 ## Changelog
 
+- **v0.11.2** _Renamed methods in trait **Administrator** - **instance_for_admin** to **actix_instance_for_admin** and **result_for_admin** to **actix_result_for_admin**._
 - **v0.11.1** _Added enum **OutputDataAdmin** for easier registration of Models in the administration panel._
 - **v0.11.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
 - **v0.10.100** _Added new type **UpdatePassword** to enum **OutputData**. Updated documentation._

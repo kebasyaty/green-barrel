@@ -75,9 +75,9 @@ pub trait Administrator: QCommons + QPaladins {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    /// Get the model instance for the admin panel.
+    /// Get the model instance for actix-mango-panel.
     // *********************************************************************************************
-    fn instance_for_admin(
+    fn actix_instance_for_admin(
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
         filter: Option<&Document>,
@@ -134,9 +134,9 @@ pub trait Administrator: QCommons + QPaladins {
         }
     }
 
-    /// Get result for admin panel.
+    /// Get result for actix-mango-panel.
     // *********************************************************************************************
-    fn result_for_admin(
+    fn actix_result_for_admin(
         &mut self,
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
