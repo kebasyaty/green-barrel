@@ -15,7 +15,7 @@
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") ). For those who use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel") - Follow our updates.**
+**[Actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") ). For those who use [actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") - Follow our updates.**
 
 ## Requirements
 
