@@ -11,6 +11,12 @@ use crate::{
     widgets::Widget,
 };
 
+/// The output data for the admin panel.
+pub enum OutputDataAdmin<T> {
+    Instance(Option<T>),
+    EarlyResult(String),
+}
+
 /// Helper methods for the admin panel.
 pub trait Administrator: QCommons + QPaladins {
     /// Json-line for admin panel.
@@ -75,31 +81,50 @@ pub trait Administrator: QCommons + QPaladins {
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
         filter: Option<&Document>,
-    ) -> Result<Option<Self>, Box<dyn Error>>
+        options_json: Option<&str>,
+    ) -> Result<OutputDataAdmin<Self>, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized,
     {
         //
         if doc_hash.is_some() {
             // For - Get document
-            let object_id = ObjectId::with_string(doc_hash.unwrap());
-            if object_id.is_ok() {
-                let object_id = object_id.unwrap();
-                let filter = doc! {"_id": object_id};
-                Self::find_one_to_model_instance(filter, None)
-            } else {
+            let doc_hash = doc_hash.unwrap();
+            if doc_hash.is_empty() {
+                return Ok(OutputDataAdmin::EarlyResult(
+                    Self::model_to_json_for_admin()?
+                ));
+            }
+            let object_id = ObjectId::with_string(doc_hash);
+            if object_id.is_err() {
                 Err(format!(
                     "Model: `{}` > \
-                    Method: `instance_for_admin` => Wrong document hash.",
+                    Method: `instance_for_admin` => Invalid document hash.",
                     Self::key()?
                 ))?
             }
+            let object_id = object_id.unwrap();
+            let filter = doc! {"_id": object_id};
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
+                filter, None,
+            )?))
         } else if bytes.is_some() {
             // For - Save document
-            Ok(Some(serde_json::from_slice::<Self>(&bytes.unwrap())?))
+            Ok(OutputDataAdmin::Instance(Some(serde_json::from_slice::<
+                Self,
+            >(
+                &bytes.unwrap()
+            )?)))
         } else if filter.is_some() {
             // For - Delete document
-            Self::find_one_to_model_instance(filter.unwrap().clone(), None)
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
+                filter.unwrap().clone(),
+                None,
+            )?))
+        } else if options_json.is_some() {
+            // Update dynamic widget data
+            Self::db_update_dyn_widgets(options_json.unwrap())?;
+            return Ok(OutputDataAdmin::EarlyResult(String::new()));
         } else {
             Err(format!(
                 "Model: `{}` > \

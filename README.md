@@ -582,6 +582,7 @@
 
 ## Changelog
 
+- **v0.11.1** _Added enum **OutputDataAdmin** for easier registration of Models in the administration panel._
 - **v0.11.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
 - **v0.10.100** _Added new type **UpdatePassword** to enum **OutputData**. Updated documentation._
 - **v0.10.97** _Added field attribute check - **pattern**._

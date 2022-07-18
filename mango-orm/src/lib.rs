@@ -14,7 +14,11 @@ pub use crate::{
     models::{
         caching::Caching,
         converters::Converters,
-        db_query_api::{administrator::Administrator, commons::QCommons, paladins::QPaladins},
+        db_query_api::{
+            administrator::{Administrator, OutputDataAdmin},
+            commons::QCommons,
+            paladins::QPaladins,
+        },
         hooks::Hooks,
         validation::{AdditionalValidation, Validation},
         Main, Meta,
