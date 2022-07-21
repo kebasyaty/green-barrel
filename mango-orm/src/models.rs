@@ -1,5 +1,6 @@
 //! Adapts the Structure for database queries using a programmatic or web interface.
 
+pub mod administrator;
 pub mod caching;
 pub mod converters;
 pub mod db_query_api;

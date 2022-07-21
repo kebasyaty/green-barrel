@@ -12,13 +12,10 @@ pub mod widgets;
 pub use crate::{
     migration::Monitor,
     models::{
+        administrator::{Administrator, OutputDataAdmin},
         caching::Caching,
         converters::Converters,
-        db_query_api::{
-            administrator::{Administrator, OutputDataAdmin},
-            commons::QCommons,
-            paladins::QPaladins,
-        },
+        db_query_api::{commons::QCommons, paladins::QPaladins},
         hooks::Hooks,
         validation::{AdditionalValidation, Validation},
         Main, Meta,
