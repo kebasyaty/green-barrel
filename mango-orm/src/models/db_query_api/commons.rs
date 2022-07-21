@@ -13,8 +13,8 @@ use mongodb::{
 use std::{collections::HashMap, error::Error};
 
 use crate::{
-    models::{caching::Caching, converters::Converters, Main, Meta},
-    widgets::{output_data::OutputData, Widget},
+    models::{caching::Caching, converters::Converters, output_data::OutputData, Main, Meta},
+    widgets::Widget,
 };
 
 pub trait QCommons: Main + Caching + Converters {

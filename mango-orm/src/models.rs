@@ -5,6 +5,7 @@ pub mod caching;
 pub mod converters;
 pub mod db_query_api;
 pub mod hooks;
+pub mod output_data;
 pub mod validation;
 
 use crate::widgets::Widget;

@@ -16,10 +16,11 @@ use crate::{
     models::{
         caching::Caching,
         hooks::Hooks,
+        output_data::OutputData,
         validation::{AdditionalValidation, Validation},
         Main, Meta,
     },
-    widgets::{output_data::OutputData, FileData, ImageData, Widget},
+    widgets::{FileData, ImageData, Widget},
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {

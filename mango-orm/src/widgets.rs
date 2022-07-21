@@ -1,7 +1,6 @@
 //! For control of fields on the server and client side.
 
 pub mod generate_html;
-pub mod output_data;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
