@@ -37,10 +37,10 @@ pub struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
-    pub map_field_type: std::collections::HashMap<String, String>,
-    pub map_widget_type: std::collections::HashMap<String, String>,
+    pub field_type_map: std::collections::HashMap<String, String>,
+    pub widget_type_map: std::collections::HashMap<String, String>,
     // <field_name, (widget_type, value)>.
-    pub map_default_values: std::collections::HashMap<String, (String, String)>,
+    pub default_value_map: std::collections::HashMap<String, (String, String)>,
     // List of field names that will not be saved to the database.
     pub ignore_fields: Vec<String>,
 }
@@ -61,9 +61,9 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
-            map_field_type: std::collections::HashMap::new(),
-            map_widget_type: std::collections::HashMap::new(),
-            map_default_values: std::collections::HashMap::new(),
+            field_type_map: std::collections::HashMap::new(),
+            widget_type_map: std::collections::HashMap::new(),
+            default_value_map: std::collections::HashMap::new(),
             // List of field names that will not be saved to the database.
             ignore_fields: Vec::new(),
         }
@@ -89,17 +89,17 @@ pub trait Main {
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
-    fn get_hash(&self) -> Option<String>;
+    fn get_hash(&self) -> String;
     fn set_hash(&mut self, value: String);
 
     /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_created_at(&self) -> Option<String>;
+    fn get_created_at(&self) -> String;
     fn set_created_at(&mut self, value: String);
 
     /// Getter and Setter for field `updated_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_updated_at(&self) -> Option<String>;
+    fn get_updated_at(&self) -> String;
     fn set_updated_at(&mut self, value: String);
 
     /// Serialize an instance of the Model to a hash-line.
@@ -114,8 +114,8 @@ pub trait Main {
 
     /// Convert MongoDB ID to hash-line.
     // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(id: ObjectId) -> String {
-        id.to_hex()
+    fn id_to_hash(object_id: ObjectId) -> String {
+        object_id.to_hex()
     }
 
     /// Enrich the widget map with values for dynamic widgets.
@@ -160,7 +160,7 @@ pub trait Main {
             }
         } else {
             Err(format!(
-                "Model: {} ; Method: `vitaminize()` -> \
+                "Model: {} ; Method: `vitaminize()` => \
                 Document with values for dynamic widgets not found.",
                 Self::meta()?.model_name
             ))?

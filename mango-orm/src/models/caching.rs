@@ -1,4 +1,4 @@
-//! Caching information about Models for speed up work.
+//! Caching inmodelation about Models for speed up work.
 
 use mongodb::{
     bson::{doc, document::Document, Bson},
@@ -7,44 +7,44 @@ use mongodb::{
 use std::{collections::HashMap, error::Error};
 
 use crate::{
-    models::{Main, Meta},
-    store::{FormCache, FORM_STORE, MONGODB_CLIENT_STORE},
+    models::{converters::Converters, Main, Meta},
+    store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
     widgets::{generate_html::GenerateHtml, Enctype, HttpMethod, Widget},
 };
 
-/// Caching information about Models for speed up work.
+/// Caching inmodelation about Models for speed up work.
 // #################################################################################################
-pub trait Caching: Main + GenerateHtml {
+pub trait Caching: Main + GenerateHtml + Converters {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get write access in cache.
-        let mut form_store = FORM_STORE.write()?;
-        // Create `FormCache` default and add map of widgets and metadata of model.
+        let mut model_store = MODEL_STORE.write()?;
+        // Create `ModelCache` default and add map of widgets and metadata of model.
         let meta: Meta = Self::meta()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
         // Get a widget map.
-        let mut map_widgets: HashMap<String, Widget> = Self::widgets()?;
+        let mut widget_map: HashMap<String, Widget> = Self::widgets()?;
         // Enrich the widget map with values for dynamic widgets.
         Self::vitaminize(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
-            &mut map_widgets,
+            &mut widget_map,
         )?;
-        // Init new FormCache.
-        let new_form_cache = FormCache {
+        // Init new ModelCache.
+        let new_model_cache = ModelCache {
             meta,
-            map_widgets,
+            widget_map,
             ..Default::default()
         };
-        // Save structure `FormCache` to store.
-        form_store.insert(key, new_form_cache);
+        // Save structure `ModelCache` to store.
+        model_store.insert(key, new_model_cache);
         //
         Ok(())
     }
@@ -63,29 +63,31 @@ pub trait Caching: Main + GenerateHtml {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
-        let mut form_store = FORM_STORE.read()?;
+        let mut model_store = MODEL_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
+        if !model_store.contains_key(key.as_str()) {
             // Unlock.
-            drop(form_store);
+            drop(model_store);
             // Add metadata and widgects map to cache.
             Self::to_cache()?;
             // Reaccess.
-            form_store = FORM_STORE.read()?;
+            model_store = MODEL_STORE.read()?;
         }
-        // Get data and return the result.
-        if let Some(form_cache) = form_store.get(key.as_str()) {
-            Ok(form_cache.map_widgets.clone())
-        } else {
+        // Get model_cache.
+        let model_cache = model_store.get(key.as_str());
+        if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `form_wig()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `to_wig()` => \
+                Failed to get data from cache.",
                 meta.model_name
             ))?
         }
+        // Get data and return the result.
+        Ok(model_cache.unwrap().widget_map.clone())
     }
 
-    /// Get Form attributes in Json format for page templates.
+    /// Get field attributes in Json modelat for page templates.
     // *********************************************************************************************
     ///
     /// # Example:
@@ -99,36 +101,41 @@ pub trait Caching: Main + GenerateHtml {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
-        let mut form_store = FORM_STORE.read()?;
+        let mut model_store = MODEL_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
+        if !model_store.contains_key(key.as_str()) {
             // Unlock.
-            drop(form_store);
+            drop(model_store);
             // Add metadata and widgects map to cache.
             Self::to_cache()?;
             // Reaccess.
-            form_store = FORM_STORE.read()?;
+            model_store = MODEL_STORE.read()?;
         }
-        // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(key.as_str()) {
-            if form_cache.form_json.is_empty() {
-                drop(form_store);
-                let mut form_store = FORM_STORE.write()?;
-                let form_cache = form_store.get(key.as_str()).unwrap();
-                let json = serde_json::to_string(&form_cache.map_widgets.clone())?;
-                let mut new_form_cache = form_cache.clone();
-                new_form_cache.form_json = json.clone();
-                form_store.insert(key, new_form_cache);
-                return Ok(json);
-            }
-            Ok(form_cache.form_json.clone())
-        } else {
+        // Get model_cache.
+        let model_cache = model_store.get(key.as_str());
+        if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `form_json()` -> Failed to get data from cache.",
+                "Model: `{}` ; Method: `model_json()` => \
+                Failed to get data from cache.",
                 meta.model_name
             ))?
         }
+        // Generate data and return the result.
+        let model_cache = model_cache.unwrap();
+        if model_cache.form_json.is_empty() {
+            drop(model_store);
+            let mut model_store = MODEL_STORE.write()?;
+            let model_cache = model_store.get(key.as_str()).unwrap();
+            let widget_map = model_cache.widget_map.clone();
+            let json = Self::widget_map_to_json(widget_map)?;
+            let mut new_model_cache = model_cache.clone();
+            new_model_cache.form_json = json.clone();
+            model_store.insert(key, new_model_cache);
+            return Ok(json);
+        }
+        //
+        Ok(model_cache.form_json.clone())
     }
 
     /// Json-line for admin panel.
@@ -144,14 +151,14 @@ pub trait Caching: Main + GenerateHtml {
     ///
     fn model_to_json_for_admin() -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
-        let map_widgets = form_cache.map_widgets.clone();
+        let meta: Meta = model_cache.meta;
+        let widget_map = model_cache.widget_map.clone();
         let mut widget_list: Vec<Widget> = Vec::new();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = map_widgets.get(field_name).unwrap().clone();
+            let mut widget = widget_map.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
                 widget.is_hide = false;
             }
@@ -161,7 +168,7 @@ pub trait Caching: Main + GenerateHtml {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    /// Get Html Form of Model for page templates.
+    /// Get Html model of Model for page templates.
     // *********************************************************************************************
     ///
     /// # Example:
@@ -181,44 +188,47 @@ pub trait Caching: Main + GenerateHtml {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
-        let mut form_store = FORM_STORE.read()?;
+        let mut model_store = MODEL_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
+        if !model_store.contains_key(key.as_str()) {
             // Unlock.
-            drop(form_store);
+            drop(model_store);
             // Add metadata and widgects map to cache.
             Self::to_cache()?;
             // Reaccess.
-            form_store = FORM_STORE.read()?;
+            model_store = MODEL_STORE.read()?;
         }
-        // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(key.as_str()) {
-            if form_cache.form_html.is_empty() {
-                drop(form_store);
-                let mut form_store = FORM_STORE.write()?;
-                let form_cache = form_store.get(key.as_str()).unwrap();
-                let html = Self::generate_html(
-                    url_action,
-                    http_method,
-                    enctype,
-                    form_cache.meta.service_name.as_str(),
-                    form_cache.meta.model_name.as_str(),
-                    &form_cache.meta.fields_name,
-                    &form_cache.map_widgets,
-                )?;
-                let mut new_form_cache = form_cache.clone();
-                new_form_cache.form_html = html.clone();
-                form_store.insert(key, new_form_cache);
-                return Ok(html);
-            }
-            Ok(form_cache.form_html.clone())
-        } else {
+        // Get model_cache.
+        let model_cache = model_store.get(key.as_str());
+        if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `form_html()` -> Failed to get data from cache.",
+                "Model: `{}` > Method: `to_html` => Failed to get data from cache.",
                 meta.model_name
             ))?
         }
+        // Generate data and return the result.
+        let model_cache = model_cache.unwrap();
+        if model_cache.form_html.is_empty() {
+            drop(model_store);
+            let mut model_store = MODEL_STORE.write()?;
+            let model_cache = model_store.get(key.as_str()).unwrap();
+            let html = Self::generate_html(
+                url_action,
+                http_method,
+                enctype,
+                model_cache.meta.service_name.as_str(),
+                model_cache.meta.model_name.as_str(),
+                &model_cache.meta.fields_name,
+                &model_cache.widget_map,
+            )?;
+            let mut new_model_cache = model_cache.clone();
+            new_model_cache.form_html = html.clone();
+            model_store.insert(key, new_model_cache);
+            return Ok(html);
+        }
+        //
+        Ok(model_cache.form_html.clone())
     }
 
     /// Get cached Model data.
@@ -227,40 +237,43 @@ pub trait Caching: Main + GenerateHtml {
     /// # Example:
     ///
     /// ```
-    /// let (form_cache, client_cache) = UserProfile::get_cache_data_for_query()?;
-    /// println!("{:?}", form_cache);
+    /// let (model_cache, client_cache) = UserProfile::get_cache_data_for_query()?;
+    /// println!("{:?}", model_cache);
     /// ```
     ///
-    fn get_cache_data_for_query() -> Result<(FormCache, Client), Box<dyn Error>> {
+    fn get_cache_data_for_query() -> Result<(ModelCache, Client), Box<dyn Error>> {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
-        let mut form_store = FORM_STORE.read()?;
+        let mut model_store = MODEL_STORE.read()?;
         // Check if there is metadata for the Model in the cache.
-        if !form_store.contains_key(key.as_str()) {
+        if !model_store.contains_key(key.as_str()) {
             // Unlock.
-            drop(form_store);
+            drop(model_store);
             // Add metadata and widgects map to cache.
             Self::to_cache()?;
             // Reaccess.
-            form_store = FORM_STORE.read()?;
+            model_store = MODEL_STORE.read()?;
         }
-        // Generate data and return the result.
-        if let Some(form_cache) = form_store.get(key.as_str()) {
-            // Get model metadata from cache.
-            let meta: &Meta = &form_cache.meta;
-            // Get MongoDB client for current model.
-            let client_store = MONGODB_CLIENT_STORE.read()?;
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            //
-            Ok((form_cache.clone(), client.clone()))
-        } else {
+        // Get model_cache.
+        let model_cache = model_store.get(key.as_str());
+        if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `get_cache_data_for_query()` -> Failed to get data from cache.",
+                "Model: `{}` > Method: `get_cache_data_for_query` => \
+                Failed to get data from cache.",
                 meta.model_name
             ))?
         }
+        //
+        let model_cache = model_cache.unwrap();
+        // Get model metadata from cache.
+        let meta: &Meta = &model_cache.meta;
+        // Get MongoDB client for current model.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client: &Client = client_store.get(&meta.db_client_name).unwrap();
+        //
+        Ok((model_cache.clone(), client.clone()))
     }
 
     /// Accepts json-line to update data, for dynamic widgets.
@@ -269,15 +282,15 @@ pub trait Caching: Main + GenerateHtml {
     /// # Example:
     ///
     /// ```
-    /// let json-line =  r#"{"field_name":[["value","Title"], ...]}"#;
+    /// let json_line =  r#"{"field_name":[["value","Title"], ...]}"#;
     /// // or
-    /// let json-line = r#"{
+    /// let json_line = r#"{
     ///        "field_name":[["value","Title"], ...],
     ///        "field_name_2":[["value","Title 2"], ...],
     ///        "field_name_3":[["value","Title 3"], ...]
     ///     }"#;
     ///
-    /// assert!(Dynamic::db_update_dyn_widgets(json-line).is_ok());
+    /// assert!(Dynamic::db_update_dyn_widgets(json_line).is_ok());
     /// ```
     ///
     // *********************************************************************************************
@@ -291,7 +304,7 @@ pub trait Caching: Main + GenerateHtml {
             .unwrap();
         if !re.is_match(json_line) {
             Err(format!(
-                r#"Model: {} ; Method: `db_update_dyn_widgets()` -> \
+                r#"Model: {} > Method: `db_update_dyn_widgets` => \
                    The `json_line` parameter was not validation. \
                    Example: {{"field_name":[["value","Title"]]}}"#,
                 Self::meta()?.model_name
@@ -299,9 +312,9 @@ pub trait Caching: Main + GenerateHtml {
         }
 
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
+        let meta: Meta = model_cache.meta;
         let mango_tech_keyword = format!(
             "mango_tech__{}__{}",
             meta.project_name.clone(),
@@ -337,7 +350,7 @@ pub trait Caching: Main + GenerateHtml {
             let mut is_changed = false;
             let mut curr_doc = db_doc.clone()?;
             // Iterate over all fields in the document.
-            for (field_name, widget_type) in meta.map_widget_type.clone() {
+            for (field_name, widget_type) in meta.widget_type_map.clone() {
                 // Choosing the only dynamic widgets.
                 if widget_type.contains("Dyn") {
                     if curr_doc.is_null(field_name.as_str()) {

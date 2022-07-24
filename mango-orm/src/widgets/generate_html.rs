@@ -37,14 +37,14 @@ pub trait GenerateHtml {
         service_name: &str,
         model_name: &str,
         fields_name: &Vec<String>,
-        map_widgets: &HashMap<String, Widget>,
+        widget_map: &HashMap<String, Widget>,
     ) -> Result<String, Box<dyn Error>> {
         //
         // Controls of Form.
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         for field_name in fields_name {
-            let attrs = map_widgets.get(field_name).unwrap();
+            let attrs = widget_map.get(field_name).unwrap();
             // Messages common to the entire Form - Is required.
             // Hint: alternatively use in popup.
             if !attrs.common_msg.is_empty() {

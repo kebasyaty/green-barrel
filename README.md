@@ -484,13 +484,14 @@
         // Run migration.
         migration::mango_migration()?;
 
-        // Get data for form fields.
-        // println!("Widget map:\n{:?}", models::UserProfile::to_wig()?);
-        // println!("Json-line:\n{}", models::UserProfile::to_json()?);
+        // Convert Model.
+        // -----------------------------------------------------------------------------------------
+        //println!("{:?}", models::UserProfile::to_wig()?);
+        //println!("{}", models::UserProfile::to_json()?);
         /*
         println!(
             "Html code:\n{}",
-            mango_models::UserProfile::to_html(
+            models::UserProfile::to_html(
                 Some("/login"),
                 Some(HttpMethod::POST),
                 Some(Enctype::Multipart)
@@ -498,7 +499,8 @@
         );
         */
 
-        //
+        // Create model instance.
+        // -----------------------------------------------------------------------------------------
         let mut user = models::UserProfile {
             username: Some("user_1".to_string()),
             email: Some("user_1@@noreply.net".to_string()),
@@ -508,19 +510,28 @@
             ..Default::default()
         };
 
-        // Check.
-        // let output_data = user.check()?;
-        // println!("Is valid: {}", output_data.is_valid()?);
-        // println!("Hash: {}", output_data.hash()?);
+        // Check model.
+        // -----------------------------------------------------------------------------------------
+        /*
+        let output_data = user.check()?;
+        println!("Boolean: {}", output_data.is_valid());
+        println!("Hash: {}", output_data.hash());
+        println!("Object Id: {:?}", output_data.object_id());
+        println!("Created at: {}", user.get_created_at());
+        println!("Updated at: {}", user.get_updated_at());
+        // Printing errors to the console ( for development ).
+        if !output_data.is_valid() {
+            output_data.print_err();
+        }
         //
-        // Get MongoDB ID from hash-line
-        // println!("Object Id:\n{:?}\n", output_data.object_id()?);
+        //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
         //
-        // println!("Widget map:\n{:?}", output_data.to_wig()?);
-        // println!("Json:\n{}", output_data.to_json()?);
+        //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
+        //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
+        //println!("Json:\n{}\n\n", output_data.to_json()?);
         /*
         println!(
-            "Html:\n{}",
+            "Html:\n{}\n\n",
             output_data.to_html(
                 Some("/login"),
                 Some(HttpMethod::POST),
@@ -528,41 +539,29 @@
             )?
         );
         */
-        // println!("BSON::Document:\n{:?}", output_data.to_doc()?);
-        //
-        // Printing errors to the console ( for development ).
-        // if !output_data.is_valid()? {
-        //     output_data.print_err()?;
-        // }
+        */
 
         // Create or update a document in the database ( check() + save() ).
+        // -----------------------------------------------------------------------------------------
         let output_data = user.save(None, None)?;
-        println!("Is valid: {}", output_data.is_valid()?);
-        println!("Hash: {}", output_data.hash()?);
-        println!(
-            "Created at: {}",
-            user.created_at.clone().unwrap_or_default()
-        );
-        println!(
-            "Updated at: {}",
-            user.updated_at.clone().unwrap_or_default()
-        );
-
-        // Get MongoDB ID from hash-line
-        // println!("Object Id:\n{:?}\n", output_data.object_id()?);
-        //
-        println!("Slug: {}\n", output_data.to_wig()?.get("slug").unwrap().value);
-        //
+        println!("Boolean: {}", output_data.is_valid());
+        println!("Hash: {}", output_data.hash());
+        println!("Object Id: {:?}", output_data.object_id());
+        println!("Created at: {}", user.get_created_at());
+        println!("Updated at: {}", user.get_updated_at());
         // Printing errors to the console ( for development ).
-        // if !output_data.is_valid()? {
-        //     output_data.print_err()?;
-        // }
-        // Get data for form fields.
-        // println!("Widget map:\n{:?}", output_data.to_wig()?);
-        // println!("Json-line:\n{}", output_data.to_json()?);
+        if !output_data.is_valid() {
+            output_data.print_err();
+        }
+        //
+        //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
+        //
+        //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
+        //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
+        //println!("Json:\n{}\n\n", output_data.to_json()?);
         /*
         println!(
-            "Html:\n{}",
+            "Html:\n{}\n\n",
             output_data.to_html(
                 Some("/login"),
                 Some(HttpMethod::POST),
@@ -572,17 +571,21 @@
         */
 
         // Remove document from collection in database.
-        // let output_data  = user.delete(None)?;
-        // if !output_data.is_valid()? {
-        //     println!("{}", output_data.err_msg()?);
-        // }
+        // -----------------------------------------------------------------------------------------
+        /*
+        let output_data  = user.delete(None)?;
+        if !output_data.is_valid() {
+            println!("{}", output_data.err_msg());
+        }
+        */
 
         Ok(())
     }
 
 ## Changelog
 
-- **v0.11.4** _**output_data.rs** module moved from **widgets** directory to **models**._
+- **v0.12.0** _Deep modernization of the **input_data** module and related modules._
+- **v0.11.4** _**output_data** module moved from **widgets** directory to **models**._
 - **v0.11.3** _**administrator** module moved from **db_query api** directory to **models**._
 - **v0.11.2** _Renamed methods in trait **Administrator** - **instance_for_admin** to **actix_instance_for_admin** and **result_for_admin** to **actix_result_for_admin**._
 - **v0.11.1** _Added enum **OutputDataAdmin** for easier registration of Models in the administration panel._

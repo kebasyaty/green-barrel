@@ -32,14 +32,14 @@ pub trait Administrator: QCommons + QPaladins {
     ///
     fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, _client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
+        let meta: Meta = model_cache.meta;
         //
-        let map_widgets = form_cache.map_widgets.clone();
+        let map_widgets = model_cache.widget_map.clone();
         let model_json = self.self_to_json()?;
         let mut widget_list: Vec<Widget> = Vec::new();
-        let hash = self.get_hash().unwrap_or_default();
+        let hash = self.get_hash();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
             let mut widget = map_widgets.get(field_name).unwrap().clone();
@@ -99,7 +99,8 @@ pub trait Administrator: QCommons + QPaladins {
             if object_id.is_err() {
                 Err(format!(
                     "Model: `{}` > \
-                    Method: `instance_for_admin` => Invalid document hash.",
+                    Method: `instance_for_admin` => \
+                    Invalid document hash.",
                     Self::key()?
                 ))?
             }
@@ -128,7 +129,8 @@ pub trait Administrator: QCommons + QPaladins {
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `instance_for_admin` => No match on function arguments.",
+                Method: `instance_for_admin` => \
+                No match on function arguments.",
                 Self::key()?
             ))?
         }
@@ -153,13 +155,14 @@ pub trait Administrator: QCommons + QPaladins {
         } else if filter.is_some() {
             // Delete document
             let output_data = self.delete(None)?;
-            if !output_data.is_valid()? {
-                return output_data.err_msg();
+            if !output_data.is_valid() {
+                return Ok(output_data.err_msg());
             }
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `result_for_admin` => No match on function arguments.",
+                Method: `result_for_admin` => \
+                No match on function arguments.",
                 Self::key()?
             ))?
         }

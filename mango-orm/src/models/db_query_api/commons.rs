@@ -26,8 +26,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let pipeline = doc!{};
-    /// let documents  = UserProfile::aggregate(pipeline, None)?;
+    /// use mongodb::bson::doc;
+    ///
+    /// let pipeline = vec![doc! {}];
+    /// let documents  = ModelName::aggregate(pipeline, None)?;
     /// println!("{:?}", documents);
     /// ```
     ///
@@ -36,8 +38,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<AggregateOptions>,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -56,8 +58,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
+    /// use mongodb::bson::doc;
+    ///
     /// let filter = doc!{};
-    /// let count  = UserProfile::count_documents(Some(filter), None)?;
+    /// let count  = ModelName::count_documents(Some(filter), None)?;
     /// println!("{}", count);
     /// ```
     ///
@@ -66,8 +70,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<CountOptions>,
     ) -> Result<i64, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -83,8 +87,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
+    /// use mongodb::bson::doc;
+    ///
     /// let query = doc!{};
-    /// let output_data  = UserProfile::delete_many(query, None)?;
+    /// let output_data  = ModelName::delete_many(query, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -95,8 +101,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -106,18 +112,20 @@ pub trait QCommons: Main + Caching + Converters {
         } else {
             "It is forbidden to perform delete.".to_string()
         };
-        // Get a logical result.
+        //
+        let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
-            coll.delete_many(query, options).is_ok()
+            deleted_count = coll.delete_many(query, options)?.deleted_count;
+            true
         } else {
             false
         };
-        Ok(OutputData::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
     /// Deletes up to one document found matching query.
@@ -127,8 +135,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
+    /// use mongodb::bson::doc;
+    ///
     /// let query = doc!{};
-    /// let output_data  = UserProfile::delete_one(query, None)?;
+    /// let output_data  = ModelName::delete_one(query, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -139,8 +149,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -150,18 +160,20 @@ pub trait QCommons: Main + Caching + Converters {
         } else {
             "It is forbidden to perform delete.".to_string()
         };
-        // Get a logical result.
+        //
+        let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
-            coll.delete_one(query, options).is_ok()
+            deleted_count = coll.delete_one(query, options)?.deleted_count;
+            true
         } else {
             false
         };
-        Ok(OutputData::Delete((result_bool, err_msg)))
+        Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
     /// Finds the distinct values of the field specified by field_name across the collection.
@@ -171,9 +183,11 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
+    /// use mongodb::bson::doc;
+    ///
     /// let field_name = "";
     /// let filter = doc!{};
-    /// let output_data  = UserProfile::distinct(field_name, Some(filter), None)?;
+    /// let output_data  = ModelName::distinct(field_name, Some(filter), None)?;
     /// println!("{:?}", output_data);
     /// ```
     ///
@@ -183,8 +197,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<DistinctOptions>,
     ) -> Result<Vec<Bson>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -200,7 +214,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let output_data  = UserProfile::drop(None)?;
+    /// let output_data  = ModelName::drop(None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -208,8 +222,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -229,7 +243,8 @@ pub trait QCommons: Main + Caching + Converters {
         } else {
             false
         };
-        Ok(OutputData::Delete((result_bool, err_msg)))
+        let deleted_count = if result_bool { 1_i64 } else { 0_i64 };
+        Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
     /// Estimates the number of documents in the collection using collection metadata.
@@ -239,7 +254,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let count  = UserProfile::estimated_document_count(None)?;
+    /// let count  = ModelName::estimated_document_count(None)?;
     /// println!("{}", count);
     /// ```
     ///
@@ -247,8 +262,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<EstimatedDocumentCountOptions>,
     ) -> Result<i64, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -265,7 +280,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = UserProfile::find_many_to_doc(None, None)?;
+    /// let result = ModelName::find_many_to_doc(None, None)?;
     /// if result.is_some() {
     ///     println!("{:?}", result.unwrap());
     /// }
@@ -276,8 +291,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOptions>,
     ) -> Result<Option<Vec<Document>>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -296,19 +311,11 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        let docs = Self::many_to_docs(
-            filter,
-            Some(options),
-            coll,
-            &meta.ignore_fields,
-            &meta.map_widget_type,
-            meta.model_name.as_str(),
-        )?;
-        if !docs.is_empty() {
-            Ok(Some(docs))
-        } else {
-            Ok(None)
+        let docs = Self::many_to_doc(filter, Some(options), coll)?;
+        if docs.is_empty() {
+            return Ok(None);
         }
+        Ok(Some(docs))
     }
 
     /// Finds the documents in the collection matching filter and
@@ -319,7 +326,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = UserProfile::find_many_to_json(None, None);
+    /// let result = ModelName::find_many_to_json(None, None);
     /// if result.is_ok() {
     ///     println!("{}", result?);
     /// }
@@ -330,8 +337,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOptions>,
     ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -355,7 +362,7 @@ pub trait QCommons: Main + Caching + Converters {
             Some(options),
             coll,
             &meta.ignore_fields,
-            &meta.map_widget_type,
+            &meta.widget_type_map,
             meta.model_name.as_str(),
         )
     }
@@ -369,8 +376,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_to_doc(filter, None)?;
+    /// let filter = doc!{"username": "user_1"};
+    /// let result  = ModelName::find_one_to_doc(filter, None)?;
     /// if result.is_some() {
     ///     println!("{:?}", result.unwrap());
     /// }
@@ -381,24 +388,14 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        let doc = coll.find_one(filter, options)?;
-        if doc.is_some() {
-            Ok(Some(Self::to_prepared_doc(
-                doc.unwrap(),
-                &meta.ignore_fields,
-                &meta.map_widget_type,
-                meta.model_name.as_str(),
-            )?))
-        } else {
-            Ok(None)
-        }
+        Ok(coll.find_one(filter, options)?)
     }
 
     /// Finds a single document in the collection matching filter and
@@ -410,8 +407,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_to_json(filter, None);
+    /// let filter = doc!{"username": "user_1"};
+    /// let result  = ModelName::find_one_to_json(filter, None);
     /// if result.is_ok() {
     ///     println!("{}", result);
     /// }
@@ -422,8 +419,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -432,19 +429,16 @@ pub trait QCommons: Main + Caching + Converters {
         let widget_map = Self::one_to_wig(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
-            &meta.map_widget_type,
+            &meta.widget_type_map,
             &meta.model_name,
             &meta.fields_name,
-            form_cache.map_widgets.clone(),
+            model_cache.widget_map.clone(),
         )?;
 
-        if widget_map.is_some() {
-            let json = serde_json::to_value(widget_map.unwrap())?;
-            let json = serde_json::to_string(&json)?;
-            Ok(json)
-        } else {
-            Ok(String::new())
+        if widget_map.is_none() {
+            return Ok(String::new());
         }
+        Self::widget_map_to_json(widget_map.unwrap())
     }
 
     /// Finds a single document in the collection matching filter and
@@ -456,8 +450,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_to_wig(filter, None)?;
+    /// let filter = doc!{"username": "user_1"};
+    /// let result  = ModelName::find_one_to_wig(filter, None)?;
     /// if result.is_some()) {
     ///     println!("{:?}", result.unwrap());
     /// }
@@ -468,8 +462,8 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneOptions>,
     ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -478,10 +472,10 @@ pub trait QCommons: Main + Caching + Converters {
         Self::one_to_wig(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
-            &meta.map_widget_type,
+            &meta.widget_type_map,
             &meta.model_name,
             &meta.fields_name,
-            form_cache.map_widgets.clone(),
+            model_cache.widget_map.clone(),
         )
     }
 
@@ -494,7 +488,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
+    /// let filter = doc!{"username": "user_1"};
     /// let result  = ModelName::find_one_to_model_instance(filter, None);
     /// if result.is_ok() {
     ///     println!("{:?}", result.unwrap());
@@ -509,8 +503,8 @@ pub trait QCommons: Main + Caching + Converters {
         Self: serde::de::DeserializeOwned + Sized,
     {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -519,7 +513,7 @@ pub trait QCommons: Main + Caching + Converters {
         Self::to_model_instance(
             coll.find_one(filter, options)?,
             &meta.ignore_fields,
-            &meta.map_widget_type,
+            &meta.widget_type_map,
             meta.model_name.as_str(),
         )
     }
@@ -535,8 +529,8 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_and_delete_to_doc(filter, None);
+    /// let filter = doc!{"username": "user_1"};
+    /// let result  = ModelName::find_one_and_delete_to_doc(filter, None);
     /// if result.is_ok() {
     ///     println!("{:?}", result.unwrap());
     /// }
@@ -547,31 +541,20 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
-        if is_permission_delete {
-            // Access collection.
-            let coll: Collection = client_cache
-                .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
-            // Execute query.
-            let doc = coll.find_one_and_delete(filter, options)?;
-            if doc.is_some() {
-                Ok(Some(Self::to_prepared_doc(
-                    doc.unwrap(),
-                    &meta.ignore_fields,
-                    &meta.map_widget_type,
-                    meta.model_name.as_str(),
-                )?))
-            } else {
-                Ok(None)
-            }
-        } else {
+        if !is_permission_delete {
             Err("It is forbidden to perform delete.".to_string())?
         }
+        // Access collection.
+        let coll: Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        Ok(coll.find_one_and_delete(filter, options)?)
     }
 
     /// Atomically finds up to one document in the collection matching filter and
@@ -585,8 +568,8 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
-    /// let result  = UserProfile::find_one_and_delete_to_json(filter, None);
+    /// let filter = doc!{"username": "user_1"};
+    /// let result  = ModelName::find_one_and_delete_to_json(filter, None);
     /// if result.is_ok() {
     ///     println!("{}", result);
     /// }
@@ -597,33 +580,35 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
-        if is_permission_delete {
-            // Access collection.
-            let coll: Collection = client_cache
-                .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
-            // Execute query.
-            let doc = coll.find_one_and_delete(filter, options)?;
-            if doc.is_some() {
-                Ok(Bson::Document(Self::to_prepared_doc(
-                    doc.unwrap(),
-                    &meta.ignore_fields,
-                    &meta.map_widget_type,
-                    meta.model_name.as_str(),
-                )?)
-                .into_relaxed_extjson()
-                .to_string())
-            } else {
-                Ok(String::new())
-            }
-        } else {
+        if !is_permission_delete {
             Err("It is forbidden to perform delete.".to_string())?
         }
+        // Access collection.
+        let coll: Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        let doc = coll.find_one_and_delete(filter, options)?;
+        if doc.is_none() {
+            return Ok(String::new());
+        }
+        let widget_map = Self::one_to_wig(
+            doc,
+            &meta.ignore_fields,
+            &meta.widget_type_map,
+            &meta.model_name,
+            &meta.fields_name,
+            model_cache.widget_map.clone(),
+        )?;
+        if widget_map.is_none() {
+            return Ok(String::new());
+        }
+        Self::widget_map_to_json(widget_map.unwrap())
     }
 
     /// Atomically finds up to one document in the collection matching filter and
@@ -637,7 +622,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// ```
     /// use mongodb::bson::doc;
-    /// let filter = doc!{"username", "user_1"};
+    /// let filter = doc!{"username": "user_1"};
     /// let result  = ModelName::find_one_and_delete_to_model_instance(filter, None)?;
     /// if result.is_some() {
     ///     println!("{}", result.unwrap());
@@ -652,26 +637,25 @@ pub trait QCommons: Main + Caching + Converters {
         Self: serde::de::DeserializeOwned + Sized,
     {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
-        if is_permission_delete {
-            // Access collection.
-            let coll: Collection = client_cache
-                .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
-            // Execute query.
-            Self::to_model_instance(
-                coll.find_one_and_delete(filter, options)?,
-                &meta.ignore_fields,
-                &meta.map_widget_type,
-                meta.model_name.as_str(),
-            )
-        } else {
+        if !is_permission_delete {
             Err("It is forbidden to perform delete.".to_string())?
         }
+        // Access collection.
+        let coll: Collection = client_cache
+            .database(meta.database_name.as_str())
+            .collection(meta.collection_name.as_str());
+        // Execute query.
+        Self::to_model_instance(
+            coll.find_one_and_delete(filter, options)?,
+            &meta.ignore_fields,
+            &meta.widget_type_map,
+            meta.model_name.as_str(),
+        )
     }
 
     /// Gets the name of the Collection.
@@ -681,14 +665,14 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = UserProfile::name()?;
+    /// let name  = ModelName::name()?;
     /// println!("{}", name);
     /// ```
     ///
     fn name() -> Result<String, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
@@ -704,14 +688,14 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = UserProfile::namespace()?;
+    /// let name  = ModelName::namespace()?;
     /// println!("{:?}", name);
     /// ```
     ///
     fn namespace() -> Result<Namespace, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = form_cache.meta;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         // Access collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())

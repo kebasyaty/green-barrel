@@ -16,7 +16,7 @@ use crate::{
     models::{
         caching::Caching,
         hooks::Hooks,
-        output_data::OutputData,
+        output_data::{OutputData, OutputDataCheck},
         validation::{AdditionalValidation, Validation},
         Main, Meta,
     },
@@ -35,7 +35,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         is_image: bool,
     ) -> Result<(), Box<dyn Error>> {
         //
-        let hash = self.get_hash().unwrap_or_default();
+        let hash = self.get_hash();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
@@ -91,14 +91,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` ; Method: `delete_file()` -> \
+                        "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
                         Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `delete_file()` -> \
+                    "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
                     Document not found.",
                     model_name, field_name
                 ))?
@@ -116,7 +116,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         field_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
-        let hash = self.get_hash().unwrap_or_default();
+        let hash = self.get_hash();
         let mut result = String::new();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
@@ -159,16 +159,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let model_name  = ModelName {...}
-    /// if !output_data.is_valid()? {
-    ///     output_data.print_err()?;
+    /// let output_data = model_name.check()?;
+    /// if !output_data.is_valid() {
+    ///     output_data.print_err();
     /// }
     /// ```
     ///
-    fn check(&mut self) -> Result<OutputData, Box<dyn Error>> {
+    fn check(&mut self) -> Result<OutputDataCheck, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
+        let meta: Meta = model_cache.meta;
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
         // User input error detection symptom.
@@ -178,7 +179,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             false
         };
         // Determines the mode of accessing the database (insert or update).
-        let hash = self.get_hash().unwrap_or_default();
+        let hash = self.get_hash();
         let hash = hash.as_str();
         let is_update: bool = !hash.is_empty();
         // Get a list of fields that should not be included in the document.
@@ -199,11 +200,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
         let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
-        let mut final_map_widgets: HashMap<String, Widget> = form_cache.map_widgets.clone();
+        let mut final_widget_map: HashMap<String, Widget> = model_cache.widget_map.clone();
 
         // Add hash-line (for document identification, if the document was created).
-        final_map_widgets.get_mut(&"hash".to_owned()).unwrap().value =
-            self.get_hash().unwrap_or_default();
+        final_widget_map.get_mut(&"hash".to_owned()).unwrap().value = self.get_hash();
 
         // Apply additional validation.
         {
@@ -213,12 +213,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 for (field_name, err_msg) in error_map {
                     if !fields_name.contains(&field_name) {
                         Err(format!(
-                            "\n\nModel: `{}` ;  Method: `add_validation()` -> \
+                            "\n\nModel: `{}` ;  Method: `add_validation()` => \
                             The `{}` field is missing from the model.\n\n",
                             model_name, field_name
                         ))?
                     }
-                    if let Some(widget) = final_map_widgets.get_mut(&field_name.to_owned()) {
+                    if let Some(widget) = final_widget_map.get_mut(&field_name.to_owned()) {
                         widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
                     }
                 }
@@ -231,7 +231,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if field_name == "hash" {
                 //
                 if is_err_symptom {
-                    let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
+                    let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
                     if !meta.is_add_docs {
                         final_widget.common_msg = "It is forbidden to perform saves.".to_string();
                     } else if !meta.is_up_docs {
@@ -245,14 +245,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Check field value.
             if pre_json_value.is_none() {
                 Err(format!(
-                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                     This field is missing.\n\n",
                     model_name, field_name
                 ))?
             }
             //
             let mut pre_json_value: &Value = pre_json_value.unwrap();
-            let final_widget: &mut Widget = final_map_widgets.get_mut(field_name).unwrap();
+            let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
             let widget_type: &str = &final_widget.widget.clone()[..];
 
             // Field validation.
@@ -303,7 +303,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -339,7 +339,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             .unwrap();
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -360,7 +360,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -377,7 +377,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -397,14 +397,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if max > 0_usize && (len < min || len > max) {
                         is_err_symptom = true;
                         let msg = format!(
-                            "Length {} is out of range (min={} <> max={}).",
+                            "Length {} is out of range (min={} <-> max={}).",
                             len, min, max
                         );
                         if !widget_type.contains("hidden") && !final_widget.is_hide {
                             final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
                         } else {
                             Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                 model_name, field_name, msg
                             ))?
                         }
@@ -423,7 +423,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; \
-                                        Method: `check()` -> {}\n\n",
+                                        Method: `check()` => {}\n\n",
                                         model_name,
                                         field_name,
                                         err.to_string()
@@ -442,7 +442,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` -> {}",
+                                "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
                                 model_name,
                                 field_name,
                                 err.to_string()
@@ -513,7 +513,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -543,7 +543,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -603,7 +603,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -769,7 +769,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         Bson::Double(val)
                                     }
                                     _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                         Unsupported widget type - `{}`.\n\n",
                                         model_name, field_name, widget_type
                                     ))?,
@@ -793,7 +793,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` -> \
+                                            Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
                                             model_name, field_name
                                         ))?
@@ -820,7 +820,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -869,7 +869,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Bson::Double(val)
                                 }
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
                                 ))?,
@@ -887,7 +887,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 ))?
@@ -912,7 +912,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -972,7 +972,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             .collect::<Vec<Bson>>(),
                                     ),
                                     _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                             Unsupported widget type - `{}`.\n\n",
                                         model_name, field_name, widget_type
                                     ))?,
@@ -997,7 +997,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` -> \
+                                            Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
                                             model_name, field_name
                                         ))?
@@ -1024,7 +1024,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -1082,7 +1082,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         .collect::<Vec<Bson>>(),
                                 ),
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> \
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                         Unsupported widget type - `{}`.\n\n",
                                     model_name, field_name, widget_type
                                 ))?,
@@ -1101,7 +1101,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 ))?
@@ -1126,7 +1126,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -1180,7 +1180,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
                                 ))?
@@ -1208,7 +1208,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> Required field.\n\n",
+                                        Method: `check()` => Required field.\n\n",
                                             model_name, field_name
                                         ))?
                                     }
@@ -1231,7 +1231,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` -> Incorrectly filled field. \
+                            `check()` => Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
@@ -1242,14 +1242,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !f_path.exists() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` -> File is missing - {}\n\n",
+                                `check()` => File is missing - {}\n\n",
                             model_name, field_name, _field_value.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` -> The path does not lead to a file - {}\n\n",
+                                `check()` => The path does not lead to a file - {}\n\n",
                             model_name, field_name, _field_value.path
                         ))?
                     }
@@ -1317,7 +1317,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name
                                 ))?
@@ -1370,7 +1370,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` -> Required field.\n\n",
+                                            Method: `check()` => Required field.\n\n",
                                             model_name, field_name
                                         ))?
                                     }
@@ -1392,7 +1392,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` -> Incorrectly filled field. \
+                            `check()` => Incorrectly filled field. \
                             Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
                             Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
                             model_name, field_name
@@ -1403,14 +1403,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !f_path.exists() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` -> File is missing - {}\n\n",
+                                `check()` => File is missing - {}\n\n",
                             model_name, field_name, field_value.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` -> The path does not lead to a file - {}\n\n",
+                                `check()` => The path does not lead to a file - {}\n\n",
                             model_name, field_name, field_value.path
                         ))?
                     }
@@ -1473,7 +1473,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     }
                                     _ => Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                            `check()` -> Valid size names -\
+                                            `check()` => Valid size names -\
                                              `xs`, `sm`, `md`, `lg`.\n\n",
                                         model_name, field_name
                                     ))?,
@@ -1519,7 +1519,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -1578,7 +1578,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (min != 0_i32 || max != 0_i32) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
-                            "Number {} is out of range (min={} <> max={}).",
+                            "Number {} is out of range (min={} <-> max={}).",
                             field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
@@ -1613,7 +1613,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -1646,7 +1646,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -1672,7 +1672,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (min != 0_i64 || max != 0_i64) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
-                            "Number {} is out of range (min={} <> max={}).",
+                            "Number {} is out of range (min={} <-> max={}).",
                             field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
@@ -1705,7 +1705,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name
                                     ))?
@@ -1739,7 +1739,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Self::accumula_err(&final_widget, &err.to_string()).unwrap();
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
@@ -1765,7 +1765,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (min != 0_f64 || max != 0_f64) && (field_value < min || field_value > max) {
                         is_err_symptom = true;
                         let msg = format!(
-                            "Number {} is out of range (min={} <> max={}).",
+                            "Number {} is out of range (min={} <-> max={}).",
                             field_value, min, max
                         );
                         final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
@@ -1797,7 +1797,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` -> \
+                                        Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                     model_name, field_name
                                 ))?
@@ -1820,7 +1820,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 _ => Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `check()` -> \
+                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
                      Unsupported widget type - `{}`.",
                     model_name, field_name, widget_type
                 ))?,
@@ -1834,7 +1834,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 if is_update {
                     // For update.
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text.clone();
+                    final_widget_map.get_mut("updated_at").unwrap().value = dt_text.clone();
                     self.set_updated_at(dt_text);
                     // Get the `created_at` value from the database.
                     let doc = {
@@ -1846,7 +1846,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
                     //
                     final_doc.insert("created_at", dt);
-                    final_map_widgets.get_mut("created_at").unwrap().value = dt_text.clone();
+                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
                     self.set_created_at(dt_text);
                 } else {
                     // For create.
@@ -1854,19 +1854,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert("updated_at", Bson::DateTime(dt));
                     self.set_created_at(dt_text.clone());
                     self.set_updated_at(dt_text.clone());
-                    final_map_widgets.get_mut("created_at").unwrap().value = dt_text.clone();
-                    final_map_widgets.get_mut("updated_at").unwrap().value = dt_text;
+                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
+                    final_widget_map.get_mut("updated_at").unwrap().value = dt_text;
                 }
             }
         }
 
         // If the validation is negative, delete the orphaned files.
         if is_err_symptom && !is_update {
-            let map_default_values = meta.map_default_values;
-            for (field, widget) in final_map_widgets.iter_mut() {
+            let default_value_map = meta.default_value_map;
+            for (field, widget) in final_widget_map.iter_mut() {
                 match widget.widget.as_str() {
                     "inputFile" if !widget.value.is_empty() => {
-                        let default_value = map_default_values.get(field).unwrap().1.as_str();
+                        let default_value = default_value_map.get(field).unwrap().1.as_str();
                         let default_path = if !default_value.is_empty() {
                             serde_json::from_str::<FileData>(default_value)?.path
                         } else {
@@ -1883,7 +1883,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     "inputImage" if !widget.value.is_empty() => {
-                        let default_value = map_default_values.get(field).unwrap().1.as_str();
+                        let default_value = default_value_map.get(field).unwrap().1.as_str();
                         let default_path = if !default_value.is_empty() {
                             serde_json::from_str::<ImageData>(default_value)?.path
                         } else {
@@ -1927,19 +1927,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
-            &mut final_map_widgets,
+            &mut final_widget_map,
         )?;
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputData::Check((
+        Ok(OutputDataCheck::from(
             !is_err_symptom,
-            meta.fields_name.clone(),
-            final_map_widgets,
-            final_doc,
-            meta.service_name.clone(),
-            meta.model_name.clone(),
-        )))
+            Some(final_doc),
+            final_widget_map,
+            meta.service_name,
+            meta.model_name,
+            meta.fields_name,
+        ))
     }
 
     /// Save to database as a new document or update an existing document.
@@ -1949,9 +1949,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let model_name  = ModelName {...}
-    /// let output_data = user.save(None, None)?;
-    /// if !output_data.is_valid()? {
-    ///     output_data.print_err()?;
+    /// let output_data = model_name.save(None, None)?;
+    /// if !output_data.is_valid() {
+    ///     output_data.print_err();
     /// }
     /// ```
     ///
@@ -1960,9 +1960,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
+    ) -> Result<OutputDataCheck, Box<dyn Error>> {
         // Run hooks.
-        if self.get_hash().is_none() {
+        if self.get_hash().is_empty() {
             self.pre_create();
         } else {
             self.pre_update();
@@ -1972,31 +1972,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
-            let verified_data: OutputData = self.check()?;
-            let is_no_error: bool = verified_data.is_valid()?;
+            let mut verified_data = self.check()?;
+            let is_no_error: bool = verified_data.is_valid();
+            let final_doc = verified_data.get_doc().unwrap();
             // Get cached Model data.
-            let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+            let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
-            let meta: Meta = form_cache.meta;
+            let meta: Meta = model_cache.meta;
             //
-            let is_update: bool = {
-                let hash = self.get_hash();
-                if hash.is_some() && !hash.unwrap().is_empty() {
-                    true
-                } else {
-                    false
-                }
-            };
+            let is_update: bool = !self.get_hash().is_empty();
+            //
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
-            if !is_update {
-                let wig_name = "inputSlug".to_string();
-                for val in form_cache.map_widgets.values() {
-                    if val.widget == wig_name && is_no_error {
+            if is_no_error && !is_update {
+                let wig_name = String::from("inputSlug");
+                let hash = String::from("hash");
+                for val in model_cache.widget_map.values() {
+                    if val.widget == wig_name && val.slug_sources.contains(&hash) {
                         stop_step = 1;
-
                         break;
                     }
                 }
@@ -2005,16 +2000,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Save to database.
             // -------------------------------------------------------------------------------------
             if is_no_error {
-                let final_doc = verified_data.to_doc()?;
+                let hash_line;
                 if is_update {
                     // Update document.
-                    let hash = self.get_hash().unwrap();
-                    let object_id = ObjectId::with_string(hash.as_str())?;
-                    let query = doc! {"_id": object_id};
+                    hash_line = self.get_hash();
+                    let object_id = ObjectId::with_string(hash_line.as_str())?;
+                    let query = doc! {"_id": object_id.clone()};
                     let update = doc! {
-                        "$set": final_doc,
+                        "$set": final_doc.clone(),
                     };
-                    //
+                    // Update doc.
                     coll.update_one(query, update, options_update.clone())?;
                     // Run hook.
                     if stop_step == 0 {
@@ -2023,28 +2018,35 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 } else {
                     // Create document.
                     let result: InsertOneResult =
-                        coll.insert_one(final_doc, options_insert.clone())?;
+                        coll.insert_one(final_doc.clone(), options_insert.clone())?;
+                    // Get hash-line.
+                    hash_line = result.inserted_id.as_object_id().unwrap().to_hex();
                     // Add hash-line to model instance.
-                    self.set_hash(result.inserted_id.as_object_id().unwrap().to_hex());
+                    self.set_hash(hash_line.clone());
                     // Run hook.
                     self.post_create();
                 }
+                // Mute document.
+                verified_data.set_doc(None);
+                // Add hash-line to final widget map.
+                let mut final_widget_map = verified_data.to_wig();
+                final_widget_map.get_mut("hash").unwrap().value = hash_line;
+                verified_data.set_wig(final_widget_map);
             }
 
             // Return result.
             // -------------------------------------------------------------------------------------
             if num == stop_step {
-                return Ok(OutputData::Save((
-                    is_no_error,
-                    meta.fields_name.clone(),
-                    verified_data.to_wig()?,
-                    meta.service_name.clone(),
-                    meta.model_name.clone(),
-                )));
+                return Ok(verified_data);
             }
         }
         //
-        Ok(OutputData::Stub)
+        let meta = Self::meta()?;
+        Err(format!(
+            "Model: `{}` > Method: `save` => \
+            !!!-Stub-!!!",
+            meta.model_name
+        ))?
     }
 
     /// Remove document from collection.
@@ -2064,9 +2066,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Run hook.
         self.pre_delete();
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
+        let meta: Meta = model_cache.meta;
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -2074,7 +2076,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let err_msg = if is_permission_delete {
             String::new()
         } else {
-            "It is forbidden to perform delete.".to_string()
+            String::from("It is forbidden to perform delete.")
         };
         // Get a logical result.
         let result_bool = if is_permission_delete {
@@ -2083,20 +2085,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get Model hash  for ObjectId.
-            let hash: Option<String> = self.get_hash();
-            if hash.is_none() {
+            let hash = self.get_hash();
+            if hash.is_empty() {
                 Err(format!(
-                    "Model: `{}` > Field: `hash` -> \
+                    "Model: `{}` > Field: `hash` => \
                         An empty `hash` field is not allowed when deleting.",
                     meta.model_name
                 ))?
             }
-            let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
+            let object_id = ObjectId::with_string(hash.as_str())?;
             // Create query.
             let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
-                for (field_name, widget_name) in meta.map_widget_type.iter() {
+                for (field_name, widget_name) in meta.widget_type_map.iter() {
                     if !document.is_null(field_name) {
                         match widget_name.as_str() {
                             "inputFile" => {
@@ -2105,7 +2107,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 {
                                     let path = info_file.get_str("path")?;
                                     let default_value =
-                                        meta.map_default_values.get(field_name).unwrap().1.as_str();
+                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
                                     let default_path = if !default_value.is_empty() {
                                         serde_json::from_str::<FileData>(default_value)?.path
                                     } else {
@@ -2120,7 +2122,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` -> Document (info file) not found.",
+                                         Method: `delete()` => Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -2131,7 +2133,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 {
                                     let path = info_file.get_str("path")?;
                                     let default_value =
-                                        meta.map_default_values.get(field_name).unwrap().1.as_str();
+                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
                                     let default_path = if !default_value.is_empty() {
                                         serde_json::from_str::<ImageData>(default_value)?.path
                                     } else {
@@ -2158,7 +2160,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` -> Document (info file) not found.",
+                                         Method: `delete()` => Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -2169,7 +2171,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` ; Method: `delete()` -> Document not found.",
+                    "Model: `{}` ; Method: `delete()` => Document not found.",
                     meta.model_name
                 ))?
             }
@@ -2183,7 +2185,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             self.post_delete();
         }
         //
-        Ok(OutputData::Delete((result_bool, err_msg)))
+        let deleted_count = if result_bool { 1_i64 } else { 0_i64 };
+        Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
     // Operations with passwords.
@@ -2234,24 +2237,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         options: Option<FindOneOptions>,
     ) -> Result<bool, Box<dyn Error>> {
         // Get cached Model data.
-        let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = form_cache.meta;
+        let meta: Meta = model_cache.meta;
         // Access the collection.
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get hash-line of Model.
-        let hash: Option<String> = self.get_hash();
-        if hash.is_none() {
+        let hash = self.get_hash();
+        if hash.is_empty() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` => \
                 An empty `hash` field is not allowed when updating.",
                 meta.model_name
             ))?
         }
         // Convert hash-line to ObjectId.
-        let object_id = ObjectId::with_string(hash.unwrap().as_str())?;
+        let object_id = ObjectId::with_string(hash.as_str())?;
         // Create a filter to search for a document.
         let filter = doc! {"_id": object_id};
         // An attempt to find the required document.
@@ -2259,7 +2262,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // We check that for the given `hash` a document is found in the database.
         if doc.is_none() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` => \
                 There is no document in the database for the current `hash` value.",
                 meta.model_name
             ))?
@@ -2270,7 +2273,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let password_hash = doc.get("password");
         if password_hash.is_none() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` -> \
+                "Model: `{}` ; Method: `verify_password` => \
                 The `password` field is missing.",
                 meta.model_name
             ))?
@@ -2319,15 +2322,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             err_msg = String::from("The old password does not match.");
         } else {
             // Get cached Model data.
-            let (form_cache, client_cache) = Self::get_cache_data_for_query()?;
+            let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
-            let meta: Meta = form_cache.meta;
+            let meta: Meta = model_cache.meta;
             // Access the collection.
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get hash-line of Model.
-            let hash = self.get_hash().unwrap();
+            let hash = self.get_hash();
             // Convert hash-line to ObjectId.
             let object_id = ObjectId::with_string(hash.as_str())?;
             // Create a filter to search for a document.

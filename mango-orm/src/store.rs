@@ -12,9 +12,9 @@ use crate::{models::Meta, widgets::Widget};
 // #################################################################################################
 /// Structure for caching map of widgets, json and html, for mango models.
 #[derive(Default, Clone, Debug)]
-pub struct FormCache {
+pub struct ModelCache {
     pub meta: Meta,
-    pub map_widgets: HashMap<String, Widget>,
+    pub widget_map: HashMap<String, Widget>,
     pub form_json: String,
     pub form_html: String,
 }
@@ -23,7 +23,7 @@ pub struct FormCache {
 lazy_static! {
     // Storage of settings for mango models
     // ---------------------------------------------------------------------------------------------
-    pub static ref FORM_STORE: RwLock<HashMap<String, FormCache>> = {
+    pub static ref MODEL_STORE: RwLock<HashMap<String, ModelCache>> = {
         RwLock::new(HashMap::new())
     };
     // Caching clients MongoDB
