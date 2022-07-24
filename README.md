@@ -198,7 +198,7 @@
 #### Cargo.toml
 
     [dependencies]
-    mango-orm = "0.11"
+    mango-orm = "0.12"
     metamorphose = "0.7"
     regex = "1.5.6"
     serde_json = "1.0.81"
