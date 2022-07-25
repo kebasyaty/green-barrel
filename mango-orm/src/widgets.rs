@@ -25,7 +25,7 @@ pub struct FileData {
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct ImageData {
     #[serde(default)]
-    pub path: String, // max size = original
+    pub path: String, // max size == original
     #[serde(default)]
     pub path_xs: String,
     #[serde(default)]
@@ -35,7 +35,7 @@ pub struct ImageData {
     #[serde(default)]
     pub path_lg: String,
     #[serde(default)]
-    pub url: String, // max size = original
+    pub url: String, // max size == original
     #[serde(default)]
     pub url_xs: String,
     #[serde(default)]
@@ -58,7 +58,7 @@ pub struct ImageData {
 // *************************************************************************************************
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct Widget {
-    pub id: String, // The value is determined automatically. Format: "model-name--field-name"
+    pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub widget: String, // Widget name.
     pub input_type: String, // The value is determined automatically.
@@ -77,16 +77,16 @@ pub struct Widget {
     pub step: String,    // Increment step for numeric fields.
     pub min: String,     // The lower value for entering a number or date.
     pub max: String,     // The top value for entering a number or date.
-    pub options: Vec<(String, String)>, // <option value="value1">Title 1</option> - Example: r#"[[1,"Volvo"], [2,"Saab"]]"#
-    pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#
-    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#
+    pub options: Vec<(String, String)>, // <option value="value1">Title 1</option> - Example: r#"[[1,"Volvo"], [2,"Saab"]]"#.
+    pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#. Hint: An Intel i7-4770 processor or better is recommended.
+    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#.
     pub is_hide: bool,             // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some number""#
-    pub css_classes: String, // Example: "class-name-1 class-name-2"
+    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some number""#.
+    pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub common_msg: String, // Messages common to the entire Form. The value is determined automatically.
+    pub alert: String, // Alert message for the entire web form. The value is determined automatically.
 }
 
 impl Default for Widget {
@@ -120,7 +120,7 @@ impl Default for Widget {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            common_msg: String::new(),
+            alert: String::new(),
         }
     }
 }

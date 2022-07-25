@@ -122,37 +122,37 @@
 
 **_( all attributes are optional )_**
 
-| Attribute:   | Default:     | Description:                                                                                      |
-| :----------- | :----------- | :------------------------------------------------------------------------------------------------ |
-| id           | empty string | The value is determined automatically. Format: "model-name--field-name".                          |
-| label        | empty string | Web form field name.                                                                              |
-| widget       | "inputText"  | Widget name.                                                                                      |
-| input_type   | "text"       | The value is determined automatically.                                                            |
-| name         | empty string | The value is determined automatically.                                                            |
-| value        | empty string | Default value.                                                                                    |
-| accept       | empty string | Example: "image/jpeg,image/png,image/gif"                                                         |
-| placeholder  | empty string | Displays prompt text.                                                                             |
-| pattern      | empty string | Validating a field using a client-side regex.                                                     |
-| minlength    | 0            | The minimum number of characters allowed in the text.                                             |
-| maxlength    | 256          | The maximum number of characters allowed in the text.                                             |
-| required     | false        | Mandatory field.                                                                                  |
-| checked      | false        | A pre-activated radio button or checkbox.                                                         |
-| unique       | false        | The unique value of a field in a collection.                                                      |
-| disabled     | false        | Blocks access and modification of the element.                                                    |
-| readonly     | false        | Specifies that the field cannot be modified by the user.                                          |
-| step         | "1"          | Increment step for numeric fields.                                                                |
-| min          | empty string | The lower value for entering a number or date.                                                    |
-| max          | empty string | The top value for entering a number or date.                                                      |
-| options      | empty array  | Example: r#"[[1,"Volvo"], [2,"Saab"]]"#                                                           |
-| thumbnails   | empty array  | From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#          |
-| slug_sources | empty array  | Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"# |
-| is_hide      | false        | Hide field from user.                                                                             |
-| other_attrs  | empty string | Example: r# "autofocus tabindex="some number" size="some number""#                                |
-| css_classes  | empty string | Example: "class-name-1 class-name-2"                                                              |
-| hint         | empty string | Additional explanation for the user.                                                              |
-| warning      | empty string | The value is determined automatically.                                                            |
-| error        | empty string | The value is determined automatically.                                                            |
-| common_msg   | empty string | Messages common to the entire Form. The value is determined automatically.                        |
+| Attribute:   | Default:     | Description:                                                                                                                                         |
+| :----------- | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id           | empty string | The value is determined automatically. Format: "model-name--field-name".                                                                             |
+| label        | empty string | Web form field name.                                                                                                                                 |
+| widget       | "inputText"  | Widget name.                                                                                                                                         |
+| input_type   | "text"       | The value is determined automatically.                                                                                                               |
+| name         | empty string | The value is determined automatically.                                                                                                               |
+| value        | empty string | Default value.                                                                                                                                       |
+| accept       | empty string | Example: "image/jpeg,image/png,image/gif".                                                                                                           |
+| placeholder  | empty string | Displays prompt text.                                                                                                                                |
+| pattern      | empty string | Validating a field using a client-side regex.                                                                                                        |
+| minlength    | 0            | The minimum number of characters allowed in the text.                                                                                                |
+| maxlength    | 256          | The maximum number of characters allowed in the text.                                                                                                |
+| required     | false        | Mandatory field.                                                                                                                                     |
+| checked      | false        | A pre-activated radio button or checkbox.                                                                                                            |
+| unique       | false        | The unique value of a field in a collection.                                                                                                         |
+| disabled     | false        | Blocks access and modification of the element.                                                                                                       |
+| readonly     | false        | Specifies that the field cannot be modified by the user.                                                                                             |
+| step         | "1"          | Increment step for numeric fields.                                                                                                                   |
+| min          | empty string | The lower value for entering a number or date.                                                                                                       |
+| max          | empty string | The top value for entering a number or date.                                                                                                         |
+| options      | empty array  | Example: r#"[[1,"Volvo"], [2,"Saab"]]"#.                                                                                                             |
+| thumbnails   | empty array  | From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#. Hint: An Intel i7-4770 processor or better is recommended. |
+| slug_sources | empty array  | Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#.                                                   |
+| is_hide      | false        | Hide field from user.                                                                                                                                |
+| other_attrs  | empty string | Example: r# "autofocus tabindex="some number" size="some number""#.                                                                                  |
+| css_classes  | empty string | Example: "class-name-1 class-name-2".                                                                                                                |
+| hint         | empty string | Additional explanation for the user.                                                                                                                 |
+| warning      | empty string | The value is determined automatically.                                                                                                               |
+| error        | empty string | The value is determined automatically.                                                                                                               |
+| alert        | empty string | Alert message for the entire web form. The value is determined automatically.                                                                        |
 
 ## Install mongodb (if not installed)
 

@@ -45,10 +45,10 @@ pub trait GenerateHtml {
         let mut controls = String::new();
         for field_name in fields_name {
             let attrs = widget_map.get(field_name).unwrap();
-            // Messages common to the entire Form - Is required.
+            // Alert message for the entire web form - Is required.
             // Hint: alternatively use in popup.
-            if !attrs.common_msg.is_empty() {
-                controls = format!("<p class=\"warning\">{}</p>{}", attrs.common_msg, controls);
+            if !attrs.alert.is_empty() {
+                controls = format!("<p class=\"warning\">{}</p>{}", attrs.alert, controls);
             }
             match attrs.input_type.as_str() {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {

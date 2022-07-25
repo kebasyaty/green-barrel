@@ -233,9 +233,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 if is_err_symptom {
                     let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
                     if !meta.is_add_docs {
-                        final_widget.common_msg = "It is forbidden to perform saves.".to_string();
+                        final_widget.alert = "It is forbidden to perform saves.".to_string();
                     } else if !meta.is_up_docs {
-                        final_widget.common_msg = "It is forbidden to perform updates.".to_string();
+                        final_widget.alert = "It is forbidden to perform updates.".to_string();
                     }
                 }
                 continue;
