@@ -27,6 +27,7 @@
 
 ## Changelog
 
+- **v0.7.8** _Fixed validation for multi-select fields._
 - **v0.7.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
 - **v0.6.10** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html()**._
 - **v0.6.9** _Rename trait **ToModel** to **Main**._

@@ -164,7 +164,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let model_name = &ast.ident;
     if model_name.to_string().len() > 31 {
         panic!(
-            "Model: `{}` -> Model name - Max size: 31 characters.",
+            "Model: `{}` => Model name - Max size: 31 characters.",
             model_name.to_string()
         )
     }
@@ -187,7 +187,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.database_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `database`. Use the `&str` type.",
                             model_name.to_string()
                         )
@@ -197,7 +197,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_client_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_client_name`. Use the `&str` type.",
                             model_name.to_string(),
                         )
@@ -207,7 +207,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_query_docs_limit`. Use the `&str` type.",
                             model_name.to_string(),
                         )
@@ -217,7 +217,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_add_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_add_docs`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -227,7 +227,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_up_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_up_docs`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -237,7 +237,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_del_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_del_docs`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -253,7 +253,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .collect();
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `ignore_fields`. Use the type `&str` in \
                             the format - <field_name, field_name>.",
                             model_name.to_string(),
@@ -266,7 +266,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_add_valid`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -278,7 +278,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_hooks`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -290,7 +290,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{}` -> Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_custom_html`. Use the `bool` type.",
                             model_name.to_string(),
                         )
@@ -315,17 +315,17 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
                     if field_name == "hash".to_string() {
                         panic!(
-                            "Model: `{}` -> The field named `hash` is reserved.",
+                            "Model: `{}` => The field named `hash` is reserved.",
                             model_name.to_string()
                         )
                     } else if field_name == "created_at".to_string() {
                         panic!(
-                            "Model: `{}` -> The field named `created_at` is reserved.",
+                            "Model: `{}` => The field named `created_at` is reserved.",
                             model_name.to_string()
                         )
                     } else if field_name == "updated_at".to_string() {
                         panic!(
-                            "Model: `{}` -> The field named `updated_at` is reserved.",
+                            "Model: `{}` => The field named `updated_at` is reserved.",
                             model_name.to_string()
                         )
                     }
@@ -378,7 +378,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         field_type = cap.as_ref().unwrap()[1].to_string();
                     } else {
                         panic!(
-                            "Model: `{}` > Field: `{}` -> Change field type to `Option < {} >`.",
+                            "Model: `{}` > Field: `{}` => Change field type to `Option < {} >`.",
                             model_name.to_string(),
                             field_name,
                             field_type
@@ -432,7 +432,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     let widget_name = widget.widget.clone();
                     let widget_info = get_widget_info(&widget_name).unwrap_or_else(|err| {
                         panic!(
-                            "Model: `{}` > Field: `{}` -> {}",
+                            "Model: `{}` > Field: `{}` => {}",
                             model_name.to_string(),
                             field_name,
                             err.to_string()
@@ -460,7 +460,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.value.is_empty() {
                         if !re_valid_date.is_match(widget.value.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `default` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `default` => \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -469,7 +469,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.min.is_empty() {
                         if !re_valid_date.is_match(widget.min.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `min` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `min` => \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -478,7 +478,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.max.is_empty() {
                         if !re_valid_date.is_match(widget.max.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `max` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `max` => \
                                 Incorrect date format. Example: \"1970-02-28\"",
                                 model_name, field_name
                             )
@@ -494,7 +494,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.value.is_empty() {
                         if !re_valid_datetime.is_match(widget.value.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `default` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `default` => \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -503,7 +503,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.min.is_empty() {
                         if !re_valid_datetime.is_match(widget.min.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `min` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `min` => \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -512,7 +512,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if !widget.max.is_empty() {
                         if !re_valid_datetime.is_match(widget.max.as_str()) {
                             panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `max` -> \
+                                "Model: `{}` > Field: `{}` > Attribute: `max` => \
                                 Incorrect date and time format. Example: \"1970-02-28T00:00\"",
                                 model_name, field_name
                             )
@@ -534,7 +534,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             }
         } else {
             panic!(
-                "Model: `{}` -> Expected a struct with named fields.",
+                "Model: `{}` => Expected a struct with named fields.",
                 model_name.to_string()
             )
         }
@@ -546,7 +546,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
-                "Model: `{}` -> Model does not have an ignored field named `{}`.",
+                "Model: `{}` => Model does not have an ignored field named `{}`.",
                 model_name.to_string(),
                 field_name,
             )
@@ -562,21 +562,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         if widget.widget.contains("Dyn") {
             if !widget.value.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     For dynamic widgets, it is unacceptable to use default values.",
                     model_name.to_string(),
                     field_name,
                 )
             } else if !widget.options.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     For dynamic widgets, it is unacceptable to use `select` parameter.",
                     model_name.to_string(),
                     field_name,
                 )
             } else if trans_meta.ignore_fields.contains(&widget.name) {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Dynamic widgets for ignored fields are not allowed.",
                     model_name.to_string(),
                     field_name,
@@ -586,23 +586,23 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         } else if widget.widget.contains("Slug") {
             if !widget.value.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` > Attribute: `value` -> \
+                    "Model: `{}` > Field: `{}` > Attribute: `value` => \
                     No default value is allowed for fields of type Slug.",
                     model_name, field_name
                 )
             }
             if widget.slug_sources.is_empty() {
                 panic!(
-                    "Model: `{}` > Field: `{}` > Attribute: `slug_sources` -> \
+                    "Model: `{}` > Field: `{}` > Attribute: `slug_sources` => \
                     An empty array is not valid. \
-                    Example: [\"title\"] or [\"username\",] or [\"email\", \"first_name\", \"last_name\"]",
+                    Example: r#\"[\"title\"]\"# or r#\"[\"username\",]\"# or r#\"[\"email\", \"first_name\", \"last_name\"]\"#",
                     model_name, field_name
                 )
             } else {
                 for source_field in widget.slug_sources.iter() {
                     if !trans_meta.fields_name.contains(source_field) {
                         panic!(
-                            "Model: `{}` > Field: `{}` > Attribute: `slug_sources` -> \
+                            "Model: `{}` > Field: `{}` > Attribute: `slug_sources` => \
                             The field `{}` is missing.",
                             model_name.to_string(),
                             field_name,
@@ -616,7 +616,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             && trans_meta.ignore_fields.contains(field_name)
         {
             panic!(
-                "Model: `{}` > Field: `{}` -> \
+                "Model: `{}` > Field: `{}` => \
                      Ignored fields are incompatible with fields of type `file`.",
                 model_name.to_string(),
                 field_name,
@@ -624,20 +624,74 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // For widgets of the `select` type,
         // the default value must correspond to one of the proposed options.
         } else if widget.widget.contains("select") {
-            if !widget.value.is_empty()
-                && widget
+            if !widget.value.is_empty() && widget.options.is_empty() {
+                panic!(
+                    "Model: `{}` > Field: `{}` => \
+                    For select fields, do not set the `value` attribute unless \
+                    the `options` attribute is set.",
+                    model_name.to_string(),
+                    field_name,
+                )
+            }
+            if !widget.value.is_empty() && !widget.options.is_empty() {
+                if widget.widget.contains("Mult") {
+                    let result = if widget.widget.contains("U32")
+                        || widget.widget.contains("I32")
+                        || widget.widget.contains("I64")
+                    {
+                        let arr = serde_json::from_str::<Vec<i64>>(widget.value.as_str()).unwrap();
+                        widget
+                            .options
+                            .iter()
+                            .map(|item| (item.0.parse::<i64>().unwrap(), item.1.clone()))
+                            .collect::<Vec<(i64, String)>>()
+                            .iter()
+                            .filter(|item| arr.contains(&item.0))
+                            .count()
+                            != arr.len()
+                    } else if widget.widget.contains("F64") {
+                        let arr = serde_json::from_str::<Vec<f64>>(widget.value.as_str()).unwrap();
+                        widget
+                            .options
+                            .iter()
+                            .map(|item| (item.0.parse::<f64>().unwrap(), item.1.clone()))
+                            .collect::<Vec<(f64, String)>>()
+                            .iter()
+                            .filter(|item| arr.contains(&item.0))
+                            .count()
+                            != arr.len()
+                    } else {
+                        let arr =
+                            serde_json::from_str::<Vec<String>>(widget.value.as_str()).unwrap();
+                        widget
+                            .options
+                            .iter()
+                            .filter(|item| arr.contains(&item.0))
+                            .count()
+                            != arr.len()
+                    };
+                    if result {
+                        panic!(
+                            "Model: `{}` > Field: `{}` => \
+                            There is no default value in the `options` parameter.",
+                            model_name.to_string(),
+                            field_name,
+                        )
+                    }
+                } else if widget
                     .options
                     .iter()
                     .filter(|item| item.0 == widget.value)
                     .count()
-                    == 0
-            {
-                panic!(
-                    "Model: `{}` > Field: `{}` -> \
-                    There is no default value in the `options` parameter.",
-                    model_name.to_string(),
-                    field_name,
-                )
+                    == 0_usize
+                {
+                    panic!(
+                        "Model: `{}` > Field: `{}` => \
+                        There is no default value in the `options` parameter.",
+                        model_name.to_string(),
+                        field_name,
+                    )
+                }
             }
         // For widgets with support for u32 numbers, parameter min = 0
         } else if widget.widget.contains("U32") {
@@ -661,12 +715,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     // ---------------------------------------------------------------------------------------------
     let trans_meta: String = match serde_json::to_string(&trans_meta) {
         Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{}` -> {}", model_name.to_string(), err),
+        Err(err) => panic!("Model: `{}` => {}", model_name.to_string(), err),
     };
     // TransMapWidgets to Json-line.
     let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
         Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{}` -> {}", model_name.to_string(), err.to_string()),
+        Err(err) => panic!("Model: `{}` => {}", model_name.to_string(), err.to_string()),
     };
 
     // Implementation of methods.
@@ -1049,7 +1103,7 @@ fn get_param_value<'a>(
                 widget.label = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `label`. \
                     Example: \"Some text\"",
                     model_name, field_name
@@ -1061,7 +1115,7 @@ fn get_param_value<'a>(
                 widget.accept = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `accept`. \
                     Example: \"image/jpeg,image/png\"",
                     model_name, field_name
@@ -1073,7 +1127,7 @@ fn get_param_value<'a>(
                 let widget_name = lit_str.value();
                 let widget_info = get_widget_info(widget_name.as_ref()).unwrap_or_else(|err| {
                     panic!(
-                        "Model: `{}` > Field: `{}` -> {}",
+                        "Model: `{}` > Field: `{}` => {}",
                         model_name,
                         field_name,
                         err.to_string()
@@ -1081,7 +1135,7 @@ fn get_param_value<'a>(
                 });
                 if widget_info.0 != field_type {
                     panic!(
-                        "Model: `{}` > Field: `{}` -> \
+                        "Model: `{}` > Field: `{}` => \
                         The widget type is not the same as the field type.",
                         model_name, field_name,
                     )
@@ -1091,7 +1145,7 @@ fn get_param_value<'a>(
                 *check_field_type = false;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `widget`. \
                     Example: \"inputEmail\"",
                     model_name, field_name
@@ -1104,9 +1158,40 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `value`. \
-                        Example: 10",
+                        Example: 5",
+                        model_name, field_name, field_type
+                    )
+                }
+            }
+            "Vec < i32 >" => {
+                if let Str(lit_str) = &mnv.lit {
+                    let json = lit_str.value().replace('_', "");
+                    let arr = serde_json::from_str::<Vec<i32>>(json.as_str());
+                    if arr.is_ok() {
+                        if arr.unwrap().is_empty() {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Type: {} => \
+                                An empty array is not allowed for the `value` parameter. \
+                                Example: \"[10, 20]\"",
+                                model_name, field_name, field_type
+                            )
+                        }
+                        widget.value = json;
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Could not determine value for parameter `value`. \
+                            Example: \"[10, 20]\"",
+                            model_name, field_name, field_type
+                        )
+                    }
+                } else {
+                    panic!(
+                        "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
                 }
@@ -1116,9 +1201,40 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `value`. \
-                        Example: 10",
+                        Example: 5",
+                        model_name, field_name, field_type
+                    )
+                }
+            }
+            "Vec < u32 >" => {
+                if let Str(lit_str) = &mnv.lit {
+                    let json = lit_str.value().replace('_', "");
+                    let arr = serde_json::from_str::<Vec<u32>>(json.as_str());
+                    if arr.is_ok() {
+                        if arr.unwrap().is_empty() {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Type: {} => \
+                                An empty array is not allowed for the `value` parameter. \
+                                Example: \"[10, 20]\"",
+                                model_name, field_name, field_type
+                            )
+                        }
+                        widget.value = json;
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10, 20]\"",
+                            model_name, field_name, field_type
+                        )
+                    }
+                } else {
+                    panic!(
+                        "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
                 }
@@ -1128,9 +1244,40 @@ fn get_param_value<'a>(
                     widget.value = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `value`. \
-                        Example: 10",
+                        Example: 5",
+                        model_name, field_name, field_type
+                    )
+                }
+            }
+            "Vec < i64 >" => {
+                if let Str(lit_str) = &mnv.lit {
+                    let json = lit_str.value().replace('_', "");
+                    let arr = serde_json::from_str::<Vec<i64>>(json.as_str());
+                    if arr.is_ok() {
+                        if arr.unwrap().is_empty() {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Type: {} => \
+                                An empty array is not allowed for the `value` parameter. \
+                                Example: \"[10, 20]\"",
+                                model_name, field_name, field_type
+                            )
+                        }
+                        widget.value = json;
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Could not determine value for parameter `value`. \
+                            Example: \"[10, 20]\"",
+                            model_name, field_name, field_type
+                        )
+                    }
+                } else {
+                    panic!(
+                        "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
                 }
@@ -1140,9 +1287,40 @@ fn get_param_value<'a>(
                     widget.value = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `value`. \
-                        Example: 10.2",
+                        Example: 5.2",
+                        model_name, field_name, field_type
+                    )
+                }
+            }
+            "Vec < f64 >" => {
+                if let Str(lit_str) = &mnv.lit {
+                    let json = lit_str.value().replace('_', "");
+                    let arr = serde_json::from_str::<Vec<f64>>(json.as_str());
+                    if arr.is_ok() {
+                        if arr.unwrap().is_empty() {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Type: {} => \
+                                An empty array is not allowed for the `value` parameter. \
+                                Example: \"[10, 20]\"",
+                                model_name, field_name, field_type
+                            )
+                        }
+                        widget.value = json;
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10.1, 20.2]\"",
+                            model_name, field_name, field_type
+                        )
+                    }
+                } else {
+                    panic!(
+                        "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: \"[10.1, 20.2]\"",
                         model_name, field_name, field_type
                     )
                 }
@@ -1153,24 +1331,55 @@ fn get_param_value<'a>(
                         widget.value = lit_str.value().trim().to_string()
                     } else {
                         panic!(
-                            "Model: `{}` > Field: `{}` > Widget: `{}` -> \
-                        The password field must not have a default value in the `value` parameter. \
-                        Example: \"\"",
+                            "Model: `{}` > Field: `{}` > Widget: `{}` => \
+                            The password field must not have a \
+                            default value in the `value` parameter.",
                             model_name, field_name, "inputPassword"
                         )
                     }
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `value`. \
                         Example: \"Some text\"",
                         model_name, field_name, field_type
                     )
                 }
             }
+            "Vec < String >" => {
+                if let Str(lit_str) = &mnv.lit {
+                    let json = lit_str.value().replace('_', "");
+                    let arr = serde_json::from_str::<Vec<String>>(json.as_str());
+                    if arr.is_ok() {
+                        if arr.unwrap().is_empty() {
+                            panic!(
+                                "Model: `{}` > Field: `{}` > Type: {} => \
+                                An empty array is not allowed for the `value` parameter. \
+                                Example: \"[10, 20]\"",
+                                model_name, field_name, field_type
+                            )
+                        }
+                        widget.value = json;
+                    } else {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Could not determine value for parameter `value`. \
+                            Example: r#\"[\"Some text\", \"Some text\"]\"#",
+                            model_name, field_name, field_type
+                        )
+                    }
+                } else {
+                    panic!(
+                        "Model: `{}` > Field: `{}` > Type: {} => \
+                        Could not determine value for parameter `value`. \
+                        Example: r#\"[\"Some text\", \"Some text\"]\"#",
+                        model_name, field_name, field_type
+                    )
+                }
+            }
             _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} -> \
-                Unsupported field type for `default` parameter.",
+                "Model: `{}` > Field: `{}` > Type: {} => \
+                Unsupported field type for `value` parameter.",
                 model_name.to_string(),
                 field_name,
                 field_type
@@ -1181,7 +1390,7 @@ fn get_param_value<'a>(
                 widget.placeholder = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `placeholder`. \
                     Example: \"Some text\"",
                     model_name, field_name
@@ -1193,7 +1402,7 @@ fn get_param_value<'a>(
                 widget.pattern = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `pattern`. \
                     Example: \"some regular expression\"",
                     model_name, field_name
@@ -1205,7 +1414,7 @@ fn get_param_value<'a>(
                 widget.minlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `minlength`. \
                     Example: 10",
                     model_name, field_name
@@ -1217,7 +1426,7 @@ fn get_param_value<'a>(
                 widget.maxlength = lit_int.base10_parse::<usize>().unwrap();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `maxlength`. \
                     Example: 10",
                     model_name, field_name
@@ -1229,7 +1438,7 @@ fn get_param_value<'a>(
                 widget.required = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `required`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1241,7 +1450,7 @@ fn get_param_value<'a>(
                 widget.checked = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `checked`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1253,7 +1462,7 @@ fn get_param_value<'a>(
                 widget.unique = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `unique`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1265,7 +1474,7 @@ fn get_param_value<'a>(
                 widget.disabled = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `disabled`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1277,7 +1486,7 @@ fn get_param_value<'a>(
                 widget.readonly = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `readonly`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1290,7 +1499,7 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `step`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1302,7 +1511,7 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `step`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1314,7 +1523,7 @@ fn get_param_value<'a>(
                     widget.step = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `step`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1326,7 +1535,7 @@ fn get_param_value<'a>(
                     widget.step = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `step`. \
                         Example: 10.2",
                         model_name, field_name, field_type
@@ -1338,7 +1547,7 @@ fn get_param_value<'a>(
                     widget.step = lit_str.value().trim().to_string()
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `step`.
                         Example: not supported.",
                         model_name, field_name, field_type
@@ -1346,7 +1555,7 @@ fn get_param_value<'a>(
                 }
             }
             _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} -> \
+                "Model: `{}` > Field: `{}` > Type: {} => \
                 Unsupported field type for `step` parameter.",
                 model_name, field_name, field_type
             ),
@@ -1357,7 +1566,7 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `min`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1369,7 +1578,7 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `min`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1381,7 +1590,7 @@ fn get_param_value<'a>(
                     widget.min = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `min`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1393,7 +1602,7 @@ fn get_param_value<'a>(
                     widget.min = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `min`. \
                         Example: 10.2",
                         model_name, field_name, field_type
@@ -1405,7 +1614,7 @@ fn get_param_value<'a>(
                     widget.min = lit_str.value().trim().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `min`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_name, field_name, field_type
@@ -1413,7 +1622,7 @@ fn get_param_value<'a>(
                 }
             }
             _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} -> \
+                "Model: `{}` > Field: `{}` > Type: {} => \
                 Unsupported field type for `min` parameter.",
                 model_name, field_name, field_type
             ),
@@ -1424,7 +1633,7 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<i32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `max`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1436,7 +1645,7 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<u32>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `max`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1448,7 +1657,7 @@ fn get_param_value<'a>(
                     widget.max = lit_int.base10_parse::<i64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `max`. \
                         Example: 10",
                         model_name, field_name, field_type
@@ -1460,7 +1669,7 @@ fn get_param_value<'a>(
                     widget.max = lit_float.base10_parse::<f64>().unwrap().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `max`. \
                         Example: 10.2",
                         model_name, field_name, field_type,
@@ -1472,7 +1681,7 @@ fn get_param_value<'a>(
                     widget.max = lit_str.value().trim().to_string();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `max`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_name, field_name, field_type
@@ -1480,7 +1689,7 @@ fn get_param_value<'a>(
                 }
             }
             _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} -> \
+                "Model: `{}` > Field: `{}` > Type: {} => \
                 Unsupported field type for `max` parameter.",
                 model_name, field_name, field_type
             ),
@@ -1501,10 +1710,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
-                        Example: [10, 20, ...]",
+                        Example: 5 or \
+                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
+                        Example: r#\"[10, 20]\"#",
                         model_name, field_name, field_type
                     )
                 }
@@ -1524,10 +1734,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
-                        Example: [10, 20, ...]",
+                        Example: 5 or \
+                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
+                        Example: r#\"[10, 20]\"#",
                         model_name, field_name, field_type
                     )
                 }
@@ -1547,10 +1758,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `options`. \
-                        Example: [[10, \"Title 1\"], [20, \"Title 2\"], ...] OR \
-                        Example: [10, 20, ...]",
+                        Example: 5 or \
+                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
+                        Example: r#\"[10, 20]\"#",
                         model_name, field_name, field_type
                     )
                 }
@@ -1570,10 +1782,11 @@ fn get_param_value<'a>(
                         .collect();
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `options`. \
-                        Example: [[10.1, \"Title 1\"], [20.2, \"Title 2\"], ...] OR \
-                        Example: [10.1, 20.2, ...]",
+                        Example: 5.5 or \
+                        Example: r#\"[[10.1, \"Title 1\"], [20.2, \"Title 2\"]]\"# or \
+                        Example: r#\"[10.1, 20.2]\"#",
                         model_name, field_name, field_type
                     )
                 }
@@ -1594,16 +1807,17 @@ fn get_param_value<'a>(
                     };
                 } else {
                     panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} -> \
+                        "Model: `{}` > Field: `{}` > Type: {} => \
                         Could not determine value for parameter `options`. \
-                        Example: [[\"value\", \"Title 1\"], [value, \"Title 2\"], ...] OR \
-                        Example: [\"Item\", \"Item 2\", ...]",
+                        Example: \"Some text\" or \
+                        Example: r#\"[[\"value 1\", \"Title 1\"], [\"value 2\", \"Title 2\"]]\"# or \
+                        Example: r#\"[\"Item 1\", \"Item 2\"]\"#",
                         model_name, field_name, field_type
                     )
                 }
             }
             _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} -> \
+                "Model: `{}` > Field: `{}` > Type: {} => \
                 Unsupported field type for `options` parameter.",
                 model_name, field_name, field_type
             ),
@@ -1617,7 +1831,7 @@ fn get_param_value<'a>(
                 for size in sizes.iter() {
                     if !valid_size_names.contains(&size.0.as_str()) {
                         panic!(
-                            "Model: `{}` > Field: `{}` -> Valid size names - `xs`, `sm`, `md`, `lg`.",
+                            "Model: `{}` > Field: `{}` => Valid size names - `xs`, `sm`, `md`, `lg`.",
                             model_name, field_name
                         )
                     }
@@ -1625,9 +1839,9 @@ fn get_param_value<'a>(
                 widget.thumbnails = sizes;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `thumbnails`. \
-                    Example: [[\"xs\",150],[\"sm\",300],[\"md\",600],[\"lg\",1200]] \
+                    Example: r#\"[[\"xs\",150], [\"sm\",300], [\"md\",600], [\"lg\",1200]]\"# \
                     from one to four inclusive",
                     model_name, field_name
                 )
@@ -1639,9 +1853,9 @@ fn get_param_value<'a>(
                 widget.slug_sources = serde_json::from_str::<Vec<String>>(json.as_str()).unwrap();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `slug_sources`. \
-                    Example: [\"title\"] or [\"title\", \"hash\"]",
+                    Example: r#\"[\"title\"]\"# or r#\"[\"title\", \"hash\"]\"#",
                     model_name, field_name
                 )
             }
@@ -1651,7 +1865,7 @@ fn get_param_value<'a>(
                 widget.is_hide = lit_bool.value;
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `is_hide`. \
                     Example: true. Default = false.",
                     model_name, field_name
@@ -1663,9 +1877,9 @@ fn get_param_value<'a>(
                 widget.other_attrs = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `other_attrs`. \
-                    Example: \"autofocus multiple size=\\\"some number\\\"\"",
+                    Example: \"autofocus multiple size=\\\"some number\\\"",
                     model_name, field_name
                 )
             }
@@ -1675,7 +1889,7 @@ fn get_param_value<'a>(
                 widget.css_classes = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `css_classes`. \
                     Example: \"class_name, class_name\"",
                     model_name, field_name
@@ -1687,7 +1901,7 @@ fn get_param_value<'a>(
                 widget.hint = lit_str.value().trim().to_string();
             } else {
                 panic!(
-                    "Model: `{}` > Field: `{}` -> \
+                    "Model: `{}` > Field: `{}` => \
                     Could not determine value for parameter `hint`. \
                     Example: \"Some text\".",
                     model_name, field_name
@@ -1695,27 +1909,27 @@ fn get_param_value<'a>(
             }
         }
         "id" => panic!(
-            "Model: `{}` > Field: `{}` -> The `id` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `id` parameter is determined automatically.",
             model_name, field_name
         ),
         "name" => panic!(
-            "Model: `{}` > Field: `{}` -> The `name` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `name` parameter is determined automatically.",
             model_name, field_name
         ),
         "input_type" => panic!(
-            "Model: `{}` > Field: `{}` -> The `input_type` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `input_type` parameter is determined automatically.",
             model_name, field_name
         ),
         "warning" => panic!(
-            "Model: `{}` > Field: `{}` -> The `warning` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `warning` parameter is determined automatically.",
             model_name, field_name
         ),
         "error" => panic!(
-            "Model: `{}` > Field: `{}` -> The `error` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `error` parameter is determined automatically.",
             model_name, field_name
         ),
         _ => panic!(
-            "Model: `{}` > Field: `{}` -> Undefined field attribute `{}`.",
+            "Model: `{}` > Field: `{}` => Undefined field attribute `{}`.",
             model_name.to_string(),
             field_name,
             attr_name

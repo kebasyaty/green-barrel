@@ -201,11 +201,12 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectTextMult",
+            value = r#"["volvo", "saab"]"#,
             options = r#"[
-                ["volvo","Volvo"],
-                ["saab","Saab"],
-                ["mercedes","Mercedes"],
-                ["audi","Audi"]
+                ["volvo", "Volvo"],
+                ["saab", "Saab"],
+                ["mercedes", "Mercedes"],
+                ["audi", "Audi"]
             ]"#
         )]
         pub select_text_mult: Option<Vec<String>>,
@@ -234,6 +235,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI32Mult",
+            value = "[1, 2]",
             options = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
@@ -266,6 +268,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectU32Mult",
+            value = "[1, 2]",
             options = r#"[
                 [1,"Volvo"],
                 [2,"Saab"],
@@ -299,11 +302,12 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectI64Mult",
+            value = "[1, 2]",
             options = r#"[
-                [1,"Volvo"],
-                [2,"Saab"],
-                [3,"Mercedes"],
-                [4,"Audi"]
+                [1, "Volvo"],
+                [2, "Saab"],
+                [3, "Mercedes"],
+                [4, "Audi"]
             ]"#
         )]
         pub select_i64_mult: Option<Vec<i64>>,
@@ -332,11 +336,12 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "selectF64Mult",
+            value = "[0.0, 1.0]",
             options = r#"[
-                [1.1,"Volvo"],
-                [2.2,"Saab"],
-                [3.3,"Mercedes"],
-                [4.4,"Audi"]
+                [0.0, "Volvo"],
+                [1.0, "Saab"],
+                [2.2, "Mercedes"],
+                [3.3, "Audi"]
             ]"#
         )]
         pub select_f64_mult: Option<Vec<f64>>,
