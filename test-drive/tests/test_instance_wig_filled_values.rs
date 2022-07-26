@@ -1,7 +1,6 @@
 use mango_orm::test_tool::del_test_db;
 use mango_orm::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, sync::Client};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -16,7 +15,7 @@ mod app_name {
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "testBqLY3xfFL8wz";
+    pub const UNIQUE_PROJECT_KEY: &str = "test474l8gCy44C4";
     //
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
@@ -29,7 +28,7 @@ mod app_name {
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
         #[serde(default)]
-        #[field_attrs(widget = "checkBox")]
+        #[field_attrs(widget = "checkBox", checked = true)]
         pub checkbox: Option<bool>,
         //
         #[serde(default)]
@@ -54,8 +53,8 @@ mod app_name {
         #[field_attrs(
             widget = "inputFile",
             value = r#"{
-                "path":"./media/hello_world.odt",
-                "url":"/media/hello_world.odt"
+               "path":"./media/hello_world.odt",
+              "url":"/media/hello_world.odt"
             }"#
         )]
         pub file: Option<String>,
@@ -84,15 +83,15 @@ mod app_name {
         pub radio_f64: Option<f64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "numberF64", unique = true)]
+        #[field_attrs(widget = "numberF64", value = 1.1)]
         pub number_f64: Option<f64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "rangeF64", value = 5.0, min = 1.0, max = 12.0)]
+        #[field_attrs(widget = "rangeF64", value = 1.1, min = 1.0, max = 12.0)]
         pub range_f64: Option<f64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "hiddenF64", value = 3.0, min = 1.0, max = 12.0)]
+        #[field_attrs(widget = "hiddenF64", value = 1.1, min = 1.0, max = 12.0)]
         pub hidden_f64: Option<f64>,
         //
         #[serde(default)]
@@ -109,14 +108,14 @@ mod app_name {
         pub radio_i32: Option<i32>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "numberI32", unique = true)]
+        #[field_attrs(widget = "numberI32", value = 1)]
         pub number_i32: Option<i32>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "rangeI32", value = 5, min = 1, max = 12)]
+        #[field_attrs(widget = "rangeI32", value = 1, min = 1, max = 12)]
         pub range_i32: Option<i32>,
         //
-        #[field_attrs(widget = "hiddenI32", value = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenI32", value = 1, min = 1, max = 12)]
         pub hidden_i32: Option<i32>,
         //
         #[serde(default)]
@@ -133,15 +132,15 @@ mod app_name {
         pub radio_i64: Option<i64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "numberI64", unique = true)]
+        #[field_attrs(widget = "numberI64", value = 1, min = 1, max = 12)]
         pub number_i64: Option<i64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "rangeI64", value = 5, min = 1, max = 12)]
+        #[field_attrs(widget = "rangeI64", value = 1, min = 1, max = 12)]
         pub range_i64: Option<i64>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "hiddenI64", value = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenI64", value = 1, min = 1, max = 12)]
         pub hidden_i64: Option<i64>,
         //
         #[serde(default)]
@@ -158,15 +157,15 @@ mod app_name {
         pub radio_u32: Option<u32>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "numberU32", unique = true)]
+        #[field_attrs(widget = "numberU32", value = 1, min = 1, max = 12)]
         pub number_u32: Option<u32>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "rangeU32", value = 5, min = 1, max = 12, unique = true)]
+        #[field_attrs(widget = "rangeU32", value = 1, min = 1, max = 12)]
         pub range_u32: Option<u32>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "hiddenU32", value = 3, min = 1, max = 12)]
+        #[field_attrs(widget = "hiddenU32", value = 1, min = 1, max = 12)]
         pub hidden_u32: Option<u32>,
         //
         #[serde(default)]
@@ -349,17 +348,20 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(
             widget = "inputText",
-            value = "Lorem ipsum",
+            value = "Some text",
             minlength = 2,
-            maxlength = 60,
-            unique = true
+            maxlength = 60
         )]
         pub text: Option<String>,
         //
         #[serde(default)]
+        #[field_attrs(widget = "inputSlug", slug_sources = r#"["email"]"#)]
+        pub slug: Option<String>,
+        //
+        #[serde(default)]
         #[field_attrs(
             widget = "hiddenText",
-            value = "Hidden lorem ipsum",
+            value = "Some text",
             minlength = 2,
             maxlength = 60
         )]
@@ -370,7 +372,12 @@ mod app_name {
         pub color: Option<String>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "inputEmail", maxlength = 74)]
+        #[field_attrs(
+            widget = "inputEmail",
+            maxlength = 320,
+            unique = true,
+            value = "brebroiquippammei-6985@yopmail.com"
+        )]
         pub email: Option<String>,
         //
         #[serde(default)]
@@ -378,7 +385,7 @@ mod app_name {
         pub password: Option<String>,
         //
         #[serde(default)]
-        #[field_attrs(widget = "inputPhone")]
+        #[field_attrs(widget = "inputPhone", value = "+1-726-771-2413")]
         pub phone: Option<String>,
         //
         #[serde(default)]
@@ -436,7 +443,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_all_fields() -> Result<(), Box<dyn Error>> {
+fn test_instance_wig_filled_values() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     app_name::mango_migration()?;
@@ -445,103 +452,148 @@ fn test_model_all_fields() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = app_name::TestModel;
     //
-    // Module: mango-orm/src/models/caching.rs
+    // Test model instance.
+    // *********************************************************************************************
+    let mut test_model = TestModel {
+        ..Default::default()
+    };
+    //
+    // Module: mango-orm/src/models/db_query_api/paladins.rs
+    // *********************************************************************************************
+    // Check
     // ---------------------------------------------------------------------------------------------
-    // to_wig
-    assert!(!TestModel::to_wig()?.is_empty());
-    // to_json
-    assert!(!TestModel::to_json()?.is_empty());
-    // model_to_json_for_admin
-    assert!(!TestModel::model_to_json_for_admin()?.is_empty());
-    // to_html
-    assert!(!TestModel::to_html(None, None, None)?.is_empty());
-    assert!(!TestModel::to_html(
-        Some("/login"),
-        Some(HttpMethod::POST),
-        Some(Enctype::Multipart)
-    )?
-    .is_empty());
-    // Get cached Model data
-    let _cache_data: (ModelCache, Client) = TestModel::get_cache_data_for_query()?;
-    // Update data for dynamic widgets
-    let json_line = r#"{
-            "field_name":[["value","Title"]],
-            "field_name_2":[["value","Title 2"]],
-            "field_name_3":[["value","Title 3"]]
-         }"#;
-    assert!(TestModel::db_update_dyn_widgets(json_line).is_ok());
+    let output_data = test_model.check()?;
+    assert!(output_data.is_valid(), "Check - is_valid");
+    assert!(output_data.hash().is_empty(), "Check - hash.is_empty");
+    assert!(output_data.object_id().is_err(), "Check - object_id.is_err");
+    assert!(
+        !test_model.get_created_at().is_empty(),
+        "Check - get_created_at.is_empty"
+    );
+    assert!(
+        !test_model.get_updated_at().is_empty(),
+        "Check - get_updated_at.is_empty"
+    );
+    assert!(output_data.get_doc().is_some(), "Check - get_doc.is_some");
+    assert!(
+        !output_data.get_doc().unwrap().is_empty(),
+        "Check - get_updated_at.is_empty"
+    );
+    assert!(!output_data.to_wig().is_empty(), "Check - to_wig.is_empty");
+    assert!(output_data.to_json().is_ok(), "Check - to_json.is_ok");
+    assert!(
+        !output_data.to_json()?.is_empty(),
+        "Check - to_json.is_empty"
+    );
+    assert!(
+        output_data.to_json_for_admin().is_ok(),
+        "Check - to_json_for_admin.is_ok"
+    );
+    assert!(
+        !output_data.to_json_for_admin()?.is_empty(),
+        "Check - to_json_for_admin.is_empty"
+    );
+    assert!(
+        output_data.to_html(None, None, None).is_ok(),
+        "Check - to_html.is_ok"
+    );
+    assert!(
+        !output_data.to_html(None, None, None)?.is_empty(),
+        "Check - to_html.is_empty"
+    );
     //
     //
-    // Module: mango-orm/src/models/db_query_api/commons.rs
+    // Create document in database
     // ---------------------------------------------------------------------------------------------
-    // aggregate
-    let pipeline = vec![doc! {}];
-    let result = TestModel::aggregate(pipeline, None);
-    assert!(result.is_err());
-    // count_documents
-    let result = TestModel::count_documents(None, None)?;
-    assert_eq!(result, 0_i64);
-    // delete_many
-    let query = doc! {};
-    let result = TestModel::delete_many(query, None)?;
-    assert!(result.is_valid());
-    assert!(result.err_msg().is_empty());
-    assert!(result.deleted_count()? == 0);
-    // delete_one
-    let query = doc! {};
-    let result = TestModel::delete_one(query, None)?;
-    assert!(result.is_valid());
-    assert!(result.err_msg().is_empty());
-    assert!(result.deleted_count()? == 0);
-    // distinct
-    let field_name = "checkbox";
-    let filter = doc! {};
-    let result = TestModel::distinct(field_name, Some(filter), None)?;
-    assert!(result.is_empty());
-    // estimated_document_count
-    let result = TestModel::estimated_document_count(None)?;
-    assert_eq!(result, 0_i64);
-    // find_many_to_doc
-    let result = TestModel::find_many_to_doc(None, None)?;
-    assert!(result.is_none());
-    // find_many_to_json
-    let result = TestModel::find_many_to_json(None, None)?;
-    assert!(result.is_empty());
-    // find_one_to_doc
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_doc(filter, None)?;
-    assert!(result.is_none());
-    // find_one_to_json
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json(filter, None)?;
-    assert!(result.is_empty());
-    // find_one_to_wig
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_wig(filter, None)?;
-    assert!(result.is_none());
-    // find_one_to_model_instance
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_model_instance(filter, None)?;
-    assert!(result.is_none());
-    // find_one_and_delete_to_doc
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_doc(filter, None)?;
-    assert!(result.is_none());
-    // find_one_and_delete_to_json
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_json(filter, None)?;
-    assert!(result.is_empty());
-    // find_one_and_delete_to_model_instance
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_model_instance(filter, None)?;
-    assert!(result.is_none());
-    // name
-    let result = TestModel::name()?;
-    assert!(!result.is_empty());
-    // namespace
-    let result = TestModel::namespace()?;
-    assert!(!result.db.is_empty());
-    assert!(!result.coll.is_empty());
+    let output_data = test_model.save(None, None)?;
+    assert!(output_data.is_valid(), "Check - is_valid");
+    let hash_1 = output_data.hash();
+    assert!(!output_data.hash().is_empty(), "Create doc - hash.is_empty");
+    assert!(
+        output_data.object_id().is_ok(),
+        "Create doc - object_id.is_ok"
+    );
+    assert!(
+        !test_model.get_created_at().is_empty(),
+        "Create doc - get_created_at.is_empty"
+    );
+    assert!(
+        !test_model.get_updated_at().is_empty(),
+        "Create doc - get_updated_at.is_empty"
+    );
+    assert!(
+        output_data.get_doc().is_none(),
+        "Create doc - get_doc.is_some"
+    );
+    assert!(!output_data.to_wig().is_empty(), "Check - to_wig.is_empty");
+    assert!(output_data.to_json().is_ok(), "Check - to_json.is_ok");
+    assert!(
+        !output_data.to_json()?.is_empty(),
+        "Create doc - to_json.is_empty"
+    );
+    assert!(
+        output_data.to_json_for_admin().is_ok(),
+        "Create doc - to_json_for_admin.is_ok"
+    );
+    assert!(
+        !output_data.to_json_for_admin()?.is_empty(),
+        "Create doc - to_json_for_admin.is_empty"
+    );
+    assert!(
+        output_data.to_html(None, None, None).is_ok(),
+        "Create doc - to_html.is_ok"
+    );
+    assert!(
+        !output_data.to_html(None, None, None)?.is_empty(),
+        "Create doc - to_html.is_empty"
+    );
+    //
+    //
+    // Update document in database
+    // ---------------------------------------------------------------------------------------------
+    let output_data = test_model.save(None, None)?;
+    assert!(output_data.is_valid(), "Update doc - is_valid");
+    let hash_2 = output_data.hash();
+    assert_eq!(hash_1, hash_2, "hash_1 == hash_2");
+    assert!(!output_data.hash().is_empty(), "Update doc - hash.is_empty");
+    assert!(
+        output_data.object_id().is_ok(),
+        "Update doc - object_id.is_ok"
+    );
+    assert!(
+        !test_model.get_created_at().is_empty(),
+        "Update doc - get_created_at.is_empty"
+    );
+    assert!(
+        !test_model.get_updated_at().is_empty(),
+        "Update doc - get_updated_at.is_empty"
+    );
+    assert!(
+        output_data.get_doc().is_none(),
+        "Update doc - get_doc.is_some"
+    );
+    assert!(!output_data.to_wig().is_empty(), "Update doc - to_wig");
+    assert!(output_data.to_json().is_ok(), "Update doc - to_json.is_ok");
+    assert!(
+        !output_data.to_json()?.is_empty(),
+        "Update doc - to_json.is_empty"
+    );
+    assert!(
+        output_data.to_json_for_admin().is_ok(),
+        "Update doc - to_json_for_admin.is_ok"
+    );
+    assert!(
+        !output_data.to_json_for_admin()?.is_empty(),
+        "Update doc - to_json_for_admin.is_empty"
+    );
+    assert!(
+        output_data.to_html(None, None, None).is_ok(),
+        "Update doc - to_html.is_ok"
+    );
+    assert!(
+        !output_data.to_html(None, None, None)?.is_empty(),
+        "Update doc - to_html.is_empty"
+    );
 
     // Delete test database
     // =============================================================================================

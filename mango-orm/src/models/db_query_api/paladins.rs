@@ -778,7 +778,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             break;
                         } else {
                             if !final_widget.value.is_empty() {
-                                tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                                if widget_type == "selectText" {
+                                    tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                                } else {
+                                    tmp_value = serde_json::from_str(final_widget.value.as_str())?;
+                                }
                                 tmp_json_text = serde_json::to_string(&tmp_value)?;
                                 pre_json_value = &tmp_value;
                             } else {
@@ -982,7 +986,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             break;
                         } else {
                             if !final_widget.value.is_empty() {
-                                tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                                tmp_value = serde_json::from_str(final_widget.value.as_str())?;
                                 tmp_json_text = serde_json::to_string(&tmp_value)?;
                                 pre_json_value = &tmp_value;
                             } else {

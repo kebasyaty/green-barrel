@@ -1155,7 +1155,7 @@ fn get_param_value<'a>(
                         panic!(
                             "Model: `{}` > Field: `{}` > Widget: `{}` -> \
                         The password field must not have a default value in the `value` parameter. \
-                        Example: \"Some text\"",
+                        Example: \"\"",
                             model_name, field_name, "inputPassword"
                         )
                     }

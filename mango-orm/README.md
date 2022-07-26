@@ -584,6 +584,7 @@
 
 ## Changelog
 
+- **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._
 - **v0.12.0** _Deep modernization of the **input_data** module and related modules._
 - **v0.11.4** _**output_data** module moved from **widgets** directory to **models**._
 - **v0.11.3** _**administrator** module moved from **db_query api** directory to **models**._
