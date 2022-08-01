@@ -1,16 +1,25 @@
 //! Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
 use mongodb::{
-    bson::{Bson, doc, de::from_document, document::Document, ser::{to_bson, to_document}},
-    options::UpdateModifications, sync::Client, sync::Collection,
-    sync::Cursor, sync::Database,
+    bson::{
+        de::from_document,
+        doc,
+        document::Document,
+        ser::{to_bson, to_document},
+        Bson,
+    },
+    options::UpdateModifications,
+    sync::Client,
+    sync::Collection,
+    sync::Cursor,
+    sync::Database,
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{path::Path, error::Error, fs::Metadata,sync::RwLockReadGuard, collections::HashMap};
+use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
 
 use crate::{
-    widgets::{FileData, ImageData},
+    helpers::{FileData, ImageData},
     store::MONGODB_CLIENT_STORE,
 };
 
@@ -42,9 +51,11 @@ impl<'a> Monitor<'a> {
         // Max size: 21
         let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$")?;
         if !re.is_match(self.project_name) {
-            Err(format!("PROJECT_NAME => Valid characters: _ a-z A-Z 0-9 and \
+            Err(format!(
+                "PROJECT_NAME => Valid characters: _ a-z A-Z 0-9 and \
                          Max size: 21 ; \
-                         First character: a-z A-Z"))?
+                         First character: a-z A-Z"
+            ))?
         }
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
@@ -53,11 +64,16 @@ impl<'a> Monitor<'a> {
         // Example: "7rzgacfqQB3B7q7T"
         let re = Regex::new(r"^[a-zA-Z\d]{8,16}$")?;
         if !re.is_match(self.unique_project_key) {
-            Err(format!("UNIQUE_PROJECT_KEY => Valid characters: a-z A-Z 0-9 and \
-                         Size: 8-16."))?
+            Err(format!(
+                "UNIQUE_PROJECT_KEY => Valid characters: a-z A-Z 0-9 and \
+                         Size: 8-16."
+            ))?
         }
         //
-        Ok(format!("mango_tech__{}__{}", self.project_name, self.unique_project_key))
+        Ok(format!(
+            "mango_tech__{}__{}",
+            self.project_name, self.unique_project_key
+        ))
     }
 
     /// Refresh models state.
@@ -73,8 +89,7 @@ impl<'a> Monitor<'a> {
     ///
     fn refresh(&self) -> Result<(), Box<dyn Error>> {
         // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> =
-            MONGODB_CLIENT_STORE.read()?;
+        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
@@ -82,7 +97,7 @@ impl<'a> Monitor<'a> {
             let db_mango_tech: String = self.mango_tech_name()?;
             // Collection for monitoring the state of Models.
             let collection_models_name: &str = "monitor_models";
-            // Used to store selection items, for 
+            // Used to store selection items, for
             // widgets like selectTextDyn, selectTextMultDyn, etc.
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
             //Get a list of databases.
@@ -101,7 +116,8 @@ impl<'a> Monitor<'a> {
             } else {
                 // Reset models state information.
                 let mango_tech_db: Database = client.database(&db_mango_tech);
-                let collection_models: Collection = mango_tech_db.collection(collection_models_name);
+                let collection_models: Collection =
+                    mango_tech_db.collection(collection_models_name);
                 let mut cursor: Cursor = collection_models.find(None, None)?;
 
                 while let Some(result) = cursor.next() {
@@ -126,8 +142,7 @@ impl<'a> Monitor<'a> {
     // *********************************************************************************************
     fn napalm(&self) -> Result<(), Box<dyn Error>> {
         // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> =
-            MONGODB_CLIENT_STORE.read()?;
+        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
@@ -137,7 +152,8 @@ impl<'a> Monitor<'a> {
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
             let mango_tech_db: Database = client.database(&db_mango_tech);
             let collection_models: Collection = mango_tech_db.collection(collection_models_name);
-            let collection_dyn_widgets: Collection = mango_tech_db.collection(collection_dyn_widgets_name);
+            let collection_dyn_widgets: Collection =
+                mango_tech_db.collection(collection_dyn_widgets_name);
             // Delete orphaned Collections.
             let cursor: Cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
@@ -172,20 +188,31 @@ impl<'a> Monitor<'a> {
         // Run refresh models state.
         self.refresh()?;
         // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> =
-            MONGODB_CLIENT_STORE.read()?;
+        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
 
         // Get model metadata
         for meta in self.models.iter() {
             // Service_name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$").unwrap().is_match(meta.service_name.as_str()) {
-                Err(format!("Model: `{}` > SERVICE_NAME => Valid characters: _ a-z A-Z 0-9 \
-                             ; Max size: 31 ; First character: _ a-z A-Z", meta.model_name))?;
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$")
+                .unwrap()
+                .is_match(meta.service_name.as_str())
+            {
+                Err(format!(
+                    "Model: `{}` > SERVICE_NAME => Valid characters: _ a-z A-Z 0-9 \
+                             ; Max size: 31 ; First character: _ a-z A-Z",
+                    meta.model_name
+                ))?;
             }
             // Database name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$").unwrap().is_match(meta.database_name.as_str()) {
-                Err(format!("Model: `{}` > DATABASE_NAME => Valid characters: _ a-z A-Z 0-9 \
-                             ; Max size: 21 ; First character: _ a-z A-Z", meta.model_name))?;
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$")
+                .unwrap()
+                .is_match(meta.database_name.as_str())
+            {
+                Err(format!(
+                    "Model: `{}` > DATABASE_NAME => Valid characters: _ a-z A-Z 0-9 \
+                             ; Max size: 21 ; First character: _ a-z A-Z",
+                    meta.model_name
+                ))?;
             }
             //
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
@@ -213,7 +240,9 @@ impl<'a> Monitor<'a> {
             let map_widget_type = meta.widget_type_map.clone();
             // Get truncated map of widgets types.
             let trunc_map_widget_type: HashMap<String, String> = map_widget_type.clone();
-            trunc_map_widget_type.clone().retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+            trunc_map_widget_type
+                .clone()
+                .retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
             // Get a map of widgets from the technical database,
             // from the `monitor_models` collection for current Model.
             let monitor_map_widget_type: HashMap<String, String>;
@@ -236,8 +265,7 @@ impl<'a> Monitor<'a> {
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
                 let monitor_models_fields_name: Vec<String> = {
-                    let fields: Vec<Bson> =
-                        model.get_array("fields")?.to_vec();
+                    let fields: Vec<Bson> = model.get_array("fields")?.to_vec();
                     fields
                         .into_iter()
                         .map(|item| item.as_str().unwrap().to_string())
@@ -246,8 +274,10 @@ impl<'a> Monitor<'a> {
                 // Get a map of widgets from the technical database,
                 // from the `monitor_models` collection for current Model.
                 monitor_map_widget_type = {
-                    model.get_document("map_widgets")
-                        .unwrap().iter()
+                    model
+                        .get_document("map_widgets")
+                        .unwrap()
+                        .iter()
                         .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
                         .collect()
                 };
@@ -255,9 +285,12 @@ impl<'a> Monitor<'a> {
                 // the current Model needs to be updated.
                 let mut changed_fields: Vec<&str> = Vec::new();
                 for field in trunc_list_fields_name.iter() {
-                    if !monitor_models_fields_name.contains(&field.to_string()) || 
-                        (trunc_map_widget_type.get(*field).unwrap() != 
-                            monitor_map_widget_type.get(*field).unwrap_or(&String::new())) {
+                    if !monitor_models_fields_name.contains(&field.to_string())
+                        || (trunc_map_widget_type.get(*field).unwrap()
+                            != monitor_map_widget_type
+                                .get(*field)
+                                .unwrap_or(&String::new()))
+                    {
                         changed_fields.push(field);
                     }
                 }
@@ -281,15 +314,16 @@ impl<'a> Monitor<'a> {
                             }
                             // If the field exists, get its value.
                             if !changed_fields.contains(field) {
-                                let value_from_db: Option<&Bson> =
-                                    doc_from_db.get(field);
+                                let value_from_db: Option<&Bson> = doc_from_db.get(field);
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
-                                    Err(format!("Service: `{}` > Model: `{}` > Field: `{}` ; \
+                                    Err(format!(
+                                        "Service: `{}` > Model: `{}` > Field: `{}` ; \
                                                  Method: `migrat()` => \
                                                  Can't get field value from database.",
-                                        meta.service_name, meta.model_name, field))?;
+                                        meta.service_name, meta.model_name, field
+                                    ))?;
                                 }
                             } else {
                                 // If no field exists, get default value.
@@ -411,8 +445,8 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => Check the `path` and `url` \
-                                                                 attributes in the `default` field parameter.",
+                                                    `migrat()` => Check the `path` and `url` \
+                                                    attributes in the `default` field parameter.",
                                                         meta.model_name, field)
                                                     )?
                                                 }
@@ -420,8 +454,8 @@ impl<'a> Monitor<'a> {
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
-                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => File is missing - {}",
+                                                    Err(format!("Model: `{}` > Field: `{}` ; \
+                                                    Method: `migrat()` => File is missing - {}",
                                                         meta.model_name, field, path)
                                                     )?
                                                 }
@@ -542,12 +576,12 @@ impl<'a> Monitor<'a> {
                         // Insert the reserved fields.
                         for field in vec!["created_at", "updated_at"] {
                             if doc_from_db.contains_key(field) {
-                                let value_from_db: Option<&Bson> =
-                                    doc_from_db.get(field);
+                                let value_from_db: Option<&Bson> = doc_from_db.get(field);
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field.to_string(), value_from_db.unwrap());
                                 } else {
-                                    Err(format!("Service: `{}` > Model: `{}` ; \
+                                    Err(format!(
+                                        "Service: `{}` > Model: `{}` ; \
                                                  Method: `migrat()` => \
                                                  Cannot get field value from database for \
                                                  field `{}`.",
@@ -555,7 +589,8 @@ impl<'a> Monitor<'a> {
                                     ))?
                                 }
                             } else {
-                                Err(format!("Service: `{}` > Model: `{}` ; Method: `migrat()` => \
+                                Err(format!(
+                                    "Service: `{}` > Model: `{}` ; Method: `migrat()` => \
                                              Key `{}` was not found in the document from \
                                              the database.",
                                     meta.service_name, meta.model_name, field
@@ -577,7 +612,9 @@ impl<'a> Monitor<'a> {
             let db: Database = client.database(&meta.database_name);
             // If there is no collection for the current Model, create it.
             if !database_names.contains(&meta.database_name)
-                || !db.list_collection_names(None)?.contains(&meta.collection_name)
+                || !db
+                    .list_collection_names(None)?
+                    .contains(&meta.collection_name)
             {
                 db.create_collection(&meta.collection_name, None)?;
             }
@@ -590,10 +627,14 @@ impl<'a> Monitor<'a> {
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
             if !database_names.contains(&db_mango_tech)
-                || !db.list_collection_names(None)?.contains(&"monitor_models".to_owned())
+                || !db
+                    .list_collection_names(None)?
+                    .contains(&"monitor_models".to_owned())
             {
-                Err(format!("In the `refresh()` method, \
-                             no technical database has been created for the project."))?
+                Err(format!(
+                    "In the `refresh()` method, \
+                             no technical database has been created for the project."
+                ))?
             } else {
                 let collection: Collection = db.collection("monitor_models");
                 let filter = doc! {
@@ -609,7 +650,7 @@ impl<'a> Monitor<'a> {
                     "status": true
                 };
                 // Check if there is model state in the database.
-                if collection.count_documents(filter.clone(), None)?  == 0_i64 {
+                if collection.count_documents(filter.clone(), None)? == 0_i64 {
                     // Add model state information.
                     collection.insert_one(doc, None)?;
                 } else {
@@ -623,66 +664,75 @@ impl<'a> Monitor<'a> {
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
             if !database_names.contains(&db_mango_tech)
-                || !db.list_collection_names(None)?.contains(&"dynamic_widgets".to_owned())
+                || !db
+                    .list_collection_names(None)?
+                    .contains(&"dynamic_widgets".to_owned())
             {
-                Err(format!("In the `refresh()` method, \
-                             no technical database has been created for the project."))?
-            } else {
-                let collection: Collection = db.collection("dynamic_widgets");
-                let filter = doc! {
+                Err(format!(
+                    "In the `refresh()` method, \
+                             no technical database has been created for the project."
+                ))?
+            }
+            //
+            let collection: Collection = db.collection("dynamic_widgets");
+            let filter = doc! {
+                "database": &meta.database_name,
+                "collection": &meta.collection_name
+            };
+            // Check if there is a document in the database for
+            // storing the values of dynamic widgets of model.
+            if collection.count_documents(filter.clone(), None)? == 0_i64 {
+                // Init new document.
+                let mut new_doc = doc! {
                     "database": &meta.database_name,
-                    "collection": &meta.collection_name
+                    "collection": &meta.collection_name,
+                    "fields": {}
                 };
-                // Check if there is a document in the database for 
-                // storing the values of dynamic widgets of model.
-                if collection.count_documents(filter.clone(), None)? == 0_i64 {
-                    // Init new document.
-                    let mut new_doc = doc! {
-                        "database": &meta.database_name,
-                        "collection": &meta.collection_name,
-                        "fields": {}
-                    };
-                    // Add empty arrays to the new document.
-                    let mut fields_doc = Document::new();
-                    for (field, widget) in map_widget_type.clone() {
-                        if widget.contains("Dyn") {
+                // Add empty arrays to the new document.
+                let mut fields_doc = Document::new();
+                for (field, widget) in map_widget_type.clone() {
+                    if widget.contains("Dyn") {
+                        fields_doc.insert(field, Bson::Array(Vec::new()));
+                    }
+                }
+                // Insert new document.
+                new_doc.insert("fields".to_string(), fields_doc);
+                collection.insert_one(new_doc, None)?;
+            } else {
+                // Get an existing document.
+                let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
+                // Get a document with `dynamic_widgets` fields.
+                let fields_doc = exist_doc.get_document_mut("fields")?;
+                // Get a list of fields from the technical database,
+                // from the `dynamic_widgets` collection for current Model.
+                let dyn_fields_from_db: Vec<String> =
+                    fields_doc.keys().map(|item| item.into()).collect();
+                // Create an empty list for fields with dynamic widget types.
+                let mut dyn_fields_from_model: Vec<String> = Vec::new();
+                // Add new (if any) fields in `fields_doc`.
+                for (field, widget) in trunc_map_widget_type.clone() {
+                    if widget.contains("Dyn") {
+                        dyn_fields_from_model.push(field.clone());
+                        // If the new field or widgets do not match,
+                        // initialize with an empty array.
+                        if !dyn_fields_from_db.contains(&field)
+                            || (widget
+                                != *monitor_map_widget_type
+                                    .get(field.as_str())
+                                    .unwrap_or(&String::new()))
+                        {
                             fields_doc.insert(field, Bson::Array(Vec::new()));
                         }
                     }
-                    // Insert new document.
-                    new_doc.insert("fields".to_string(), fields_doc);
-                    collection.insert_one(new_doc, None)?;
-                } else {
-                    // Get an existing document.
-                    let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
-                    // Get a document with `dynamic_widgets` fields.
-                    let fields_doc = exist_doc.get_document_mut("fields")?;
-                    // Get a list of fields from the technical database,
-                    // from the `dynamic_widgets` collection for current Model.
-                    let dyn_fields_from_db: Vec<String> = fields_doc.keys().map(|item| item.into()).collect();
-                    // Create an empty list for fields with dynamic widget types.
-                    let mut dyn_fields_from_model: Vec<String> = Vec::new();
-                    // Add new (if any) fields in `fields_doc`.
-                    for (field, widget) in trunc_map_widget_type.clone() {
-                        if widget.contains("Dyn") {
-                            dyn_fields_from_model.push(field.clone());
-                            // If the new field or widgets do not match,
-                            // initialize with an empty array.
-                            if !dyn_fields_from_db.contains(&field) || 
-                                (widget != *monitor_map_widget_type.get(field.as_str()).unwrap_or(&String::new())) {
-                                fields_doc.insert(field, Bson::Array(Vec::new()));
-                            }
-                        }
-                    }
-                    // Remove orphaned fields.
-                    for field in dyn_fields_from_db {
-                        if !dyn_fields_from_model.contains(&field) {
-                            fields_doc.remove(&field).unwrap();
-                        }
-                    }
-                    // Full update existing document.
-                    collection.update_one(filter, exist_doc, None)?;
                 }
+                // Remove orphaned fields.
+                for field in dyn_fields_from_db {
+                    if !dyn_fields_from_model.contains(&field) {
+                        fields_doc.remove(&field).unwrap();
+                    }
+                }
+                // Full update existing document.
+                collection.update_one(filter, exist_doc, None)?;
             }
         }
 
