@@ -404,8 +404,7 @@ impl<'a> Monitor<'a> {
                                         "inputFile" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                let mut file_data = 
-                                                    serde_json::from_str::<FileData>(val.as_str())?;
+                                                let mut file_data = serde_json::from_str::<FileData>(val.as_str())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
@@ -442,8 +441,7 @@ impl<'a> Monitor<'a> {
                                         "inputImage" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
-                                                let mut file_data = 
-                                                    serde_json::from_str::<ImageData>(val.as_str())?;
+                                                let mut file_data = serde_json::from_str::<ImageData>(val.as_str())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
