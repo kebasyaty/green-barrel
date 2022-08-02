@@ -156,431 +156,443 @@
 
 ## Install mongodb (if not installed)
 
-    ### Ubuntu, Mint:
-    $ sudo apt install mongodb
-    ## OR
-    ### Ubuntu 20.04, Mint 20.x:
-    $ sudo apt update
-    $ sudo apt install dirmngr gnupg apt-transport-https ca-certificates
-    $ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-    $ sudo add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse'
-    $ sudo apt update
-    $ sudo apt install mongodb-org
-    $ sudo systemctl enable --now mongod
-    # For check
-    $ mongod --version
-    $ mongo --eval 'db.runCommand({ connectionStatus: 1 })'
-    $ reboot
-    #
-    ### Configuration file:
-    $ sudo nano /etc/mongod.conf
-    #
-    ### Systemd:
-    $ sudo systemctl status mongod
-    $ sudo systemctl start mongod
-    $ sudo systemctl stop mongod
-    $ sudo systemctl restart mongod
-    $ sudo systemctl enable mongod
-    $ sudo systemctl disable mongod
-    #
-    ### Uninstall:
-    $ sudo systemctl stop mongod
-    $ sudo systemctl disable mongod
-    $ sudo apt --purge remove mongodb\*  # OR (for mongodb-org) - $ sudo apt --purge remove mongodb-org\**
-    $ sudo rm -r /var/log/mongodb
-    $ sudo rm -r /var/lib/mongodb
-    $ sudo rm -f /etc/mongod.conf
-    $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
-    $ sudo apt update
+```shell
+### Ubuntu, Mint:
+$ sudo apt install mongodb
+## OR
+### Ubuntu 20.04, Mint 20.x:
+$ sudo apt update
+$ sudo apt install dirmngr gnupg apt-transport-https ca-certificates
+$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+$ sudo add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse'
+$ sudo apt update
+$ sudo apt install mongodb-org
+$ sudo systemctl enable --now mongod
+# For check
+$ mongod --version
+$ mongo --eval 'db.runCommand({ connectionStatus: 1 })'
+$ reboot
+#
+### Configuration file:
+$ sudo nano /etc/mongod.conf
+#
+### Systemd:
+$ sudo systemctl status mongod
+$ sudo systemctl start mongod
+$ sudo systemctl stop mongod
+$ sudo systemctl restart mongod
+$ sudo systemctl enable mongod
+$ sudo systemctl disable mongod
+#
+### Uninstall:
+$ sudo systemctl stop mongod
+$ sudo systemctl disable mongod
+$ sudo apt --purge remove mongodb\*  # OR (for mongodb-org) - $ sudo apt --purge remove mongodb-org\**
+$ sudo rm -r /var/log/mongodb
+$ sudo rm -r /var/lib/mongodb
+$ sudo rm -f /etc/mongod.conf
+$ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
+$ sudo apt update
+```
 
 ## Example Usage:
 
 #### Cargo.toml
 
-    [dependencies]
-    mango-orm = "0.12"
-    metamorphose = "0.7"
-    regex = "1.5.6"
-    serde_json = "1.0.81"
+```toml
+[dependencies]
+mango-orm = "0.12"
+metamorphose = "0.7"
+regex = "1.5.6"
+serde_json = "1.0.81"
 
-    [dependencies.mongodb]
-    default-features = false
-    features = ["sync"]
-    version = "1.2.5"
+[dependencies.mongodb]
+default-features = false
+features = ["sync"]
+version = "1.2.5"
 
-    [dependencies.serde]
-    features = ["derive"]
-    version = "1.0.137"
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.137"
+```
 
 #### src/settings.rs
 
-    // General settings for the project.
-    // Project name.
-    // Hint: PROJECT_NAM it is recommended not to change.
+```rust
+// General settings for the project.
+// Project name.
+// Hint: PROJECT_NAM it is recommended not to change.
+// Valid characters: _ a-z A-Z 0-9
+// Max size: 21
+// First character: a-z A-Z
+pub const PROJECT_NAME: &str = "store";
+
+// Unique project key.
+// Hint: UNIQUE_PROJECT_KEY it is recommended not to change.
+// Valid characters: a-z A-Z 0-9
+// Size: 8-16
+// Example: "7rzgacfqQB3B7q7T"
+pub const UNIQUE_PROJECT_KEY: &str = "bhjRV8ry9X5LQBw";
+
+// Settings for user accounts.
+pub mod users {
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 31
+    // First character: a-z A-Z
+    pub const SERVICE_NAME: &str = "accounts";
     // Valid characters: _ a-z A-Z 0-9
     // Max size: 21
     // First character: a-z A-Z
-    pub const PROJECT_NAME: &str = "store";
-
-    // Unique project key.
-    // Hint: UNIQUE_PROJECT_KEY it is recommended not to change.
-    // Valid characters: a-z A-Z 0-9
-    // Size: 8-16
-    // Example: "7rzgacfqQB3B7q7T"
-    pub const UNIQUE_PROJECT_KEY: &str = "bhjRV8ry9X5LQBw";
-
-    // Settings for user accounts.
-    pub mod users {
-        // Valid characters: _ a-z A-Z 0-9
-        // Max size: 31
-        // First character: a-z A-Z
-        pub const SERVICE_NAME: &str = "accounts";
-        // Valid characters: _ a-z A-Z 0-9
-        // Max size: 21
-        // First character: a-z A-Z
-        pub const DATABASE_NAME: &str = "accounts";
-        pub const DB_CLIENT_NAME: &str = "default";
-        pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
-    }
+    pub const DATABASE_NAME: &str = "accounts";
+    pub const DB_CLIENT_NAME: &str = "default";
+    pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+}
+```
 
 #### src/migration.rs
 
-    use crate::{models, settings};
-    use mango_orm::{Monitor, ToModel, MONGODB_CLIENT_STORE};
+```rust
+use crate::{models, settings};
+use mango_orm::{Monitor, ToModel, MONGODB_CLIENT_STORE};
 
-    // Migration Service `Mango`.
-    pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
-        // Caching MongoDB clients.
-        {
-            let mut client_store = MONGODB_CLIENT_STORE.write()?;
-            client_store.insert(
-                "default".to_string(),
-                mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-            );
-        }
-        // Monitor initialization.
-        let monitor = Monitor {
-            project_name: settings::PROJECT_NAME,
-            unique_project_key: settings::UNIQUE_PROJECT_KEY,
-            // Register models.
-            models: vec![models::UserProfile::meta()?],
-        };
-        // Run migration
-        monitor.migrat()?;
-        //
-        Ok(())
+// Migration Service `Mango`.
+pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
+    // Caching MongoDB clients.
+    {
+        let mut client_store = MONGODB_CLIENT_STORE.write()?;
+        client_store.insert(
+            "default".to_string(),
+            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+        );
     }
+    // Monitor initialization.
+    let monitor = Monitor {
+        project_name: settings::PROJECT_NAME,
+        unique_project_key: settings::UNIQUE_PROJECT_KEY,
+        // Register models.
+        models: vec![models::UserProfile::meta()?],
+    };
+    // Run migration
+    monitor.migrat()?;
+    //
+    Ok(())
+}
+```
 
 #### src/models.rs
 
-    use mango_orm::*;
-    use metamorphose::Model;
-    use regex::RegexBuilder;
-    use serde::{Deserialize, Serialize};
+```rust
+use mango_orm::*;
+use metamorphose::Model;
+use regex::RegexBuilder;
+use serde::{Deserialize, Serialize};
 
-    use crate::settings::{
-        users::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
-        PROJECT_NAME, UNIQUE_PROJECT_KEY,
-    };
+use crate::settings::{
+    users::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
+    PROJECT_NAME, UNIQUE_PROJECT_KEY,
+};
 
-    // User profiles
-    #[Model(
-        is_del_docs = false,
-        is_use_add_valid = true,
-        is_use_hooks = true,
-        //is_use_custom_html = true,
-        ignore_fields = "confirm_password"
+// User profiles
+#[Model(
+    is_del_docs = false,
+    is_use_add_valid = true,
+    is_use_hooks = true,
+    //is_use_custom_html = true,
+    ignore_fields = "confirm_password"
+)]
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct UserProfile {
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputText",
+        label = "Username",
+        placeholder = "Enter your username",
+        unique = true,
+        required = true,
+        maxlength = 150,
+        hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
     )]
-    #[derive(Serialize, Deserialize, Default, Debug)]
-    pub struct UserProfile {
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputText",
-            label = "Username",
-            placeholder = "Enter your username",
-            unique = true,
-            required = true,
-            maxlength = 150,
-            hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
-        )]
-        pub username: Option<String>,
+    pub username: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputSlug",
+        label = "Slug",
+        unique = true,
+        readonly = true,
+        is_hide = true,
+        hint = "To create a human readable url",
+        slug_sources = r#"["hash", "username"]"#
+    )]
+    pub slug: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputText",
+        label = "First name",
+        placeholder = "Enter your First name",
+        maxlength = 150
+    )]
+    pub first_name: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputText",
+        label = "Last name",
+        placeholder = "Enter your Last name",
+        maxlength = 150
+    )]
+    pub last_name: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputEmail",
+        label = "E-mail",
+        placeholder = "Please enter your email",
+        required = true,
+        unique = true,
+        maxlength = 320,
+        hint = "Your actual E-mail"
+    )]
+    pub email: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputPhone",
+        label = "Phone number",
+        placeholder = "Please enter your phone number",
+        unique = true,
+        maxlength = 30,
+        hint = "Your actual phone number"
+    )]
+    pub phone: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputPassword",
+        label = "Password",
+        placeholder = "Enter your password",
+        required = true,
+        minlength = 8,
+        hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
+    )]
+    pub password: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "inputPassword",
+        label = "Confirm password",
+        placeholder = "Repeat your password",
+        required = true,
+        minlength = 8,
+        hint = "Repeat your password"
+    )]
+    pub confirm_password: Option<String>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "checkBox",
+        label = "is staff?",
+        checked = true,
+        hint = "User can access the admin site?"
+    )]
+    pub is_staff: Option<bool>,
+    //
+    #[serde(default)]
+    #[field_attrs(
+        widget = "checkBox",
+        label = "is active?",
+        checked = true,
+        hint = "Is this an active account?"
+    )]
+    pub is_active: Option<bool>,
+}
+
+// Model parameter: is_use_add_valid = true
+impl AdditionalValidation for UserProfile {
+    fn add_validation<'a>(
+        &self,
+    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+        // Hint: error_map.insert("field_name", "Error message.")
+        let mut error_map: std::collections::HashMap<&'a str, &'a str> =
+            std::collections::HashMap::new();
+
+        // Get clean data
+        let hash = self.hash.clone().unwrap_or_default();
+        let password = self.password.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.clone().unwrap_or_default();
+        let username = self.username.clone().unwrap_or_default();
+
+        // Fields validation
+        if hash.is_empty() && password != confirm_password {
+            error_map.insert("confirm_password", "Password confirmation does not match.");
+        }
+        if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
+            .case_insensitive(true)
+            .build()
+            .unwrap()
+            .is_match(username.as_str())
+        {
+            error_map.insert(
+                "username",
+                "Invalid characters present.<br>\
+                    Valid characters: a-z A-Z 0-9 _ @ + .",
+            );
+        }
         //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputSlug",
-            label = "Slug",
-            unique = true,
-            readonly = true,
-            is_hide = true,
-            hint = "To create a human readable url",
-            slug_sources = r#"["hash", "username"]"#
-        )]
-        pub slug: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputText",
-            label = "First name",
-            placeholder = "Enter your First name",
-            maxlength = 150
-        )]
-        pub first_name: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputText",
-            label = "Last name",
-            placeholder = "Enter your Last name",
-            maxlength = 150
-        )]
-        pub last_name: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputEmail",
-            label = "E-mail",
-            placeholder = "Please enter your email",
-            required = true,
-            unique = true,
-            maxlength = 320,
-            hint = "Your actual E-mail"
-        )]
-        pub email: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputPhone",
-            label = "Phone number",
-            placeholder = "Please enter your phone number",
-            unique = true,
-            maxlength = 30,
-            hint = "Your actual phone number"
-        )]
-        pub phone: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputPassword",
-            label = "Password",
-            placeholder = "Enter your password",
-            required = true,
-            minlength = 8,
-            hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
-        )]
-        pub password: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "inputPassword",
-            label = "Confirm password",
-            placeholder = "Repeat your password",
-            required = true,
-            minlength = 8,
-            hint = "Repeat your password"
-        )]
-        pub confirm_password: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "checkBox",
-            label = "is staff?",
-            checked = true,
-            hint = "User can access the admin site?"
-        )]
-        pub is_staff: Option<bool>,
-        //
-        #[serde(default)]
-        #[field_attrs(
-            widget = "checkBox",
-            label = "is active?",
-            checked = true,
-            hint = "Is this an active account?"
-        )]
-        pub is_active: Option<bool>,
+        Ok(error_map)
     }
+}
 
-    // Model parameter: is_use_add_valid = true
-    impl AdditionalValidation for UserProfile {
-        fn add_validation<'a>(
-            &self,
-        ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
-            // Hint: error_map.insert("field_name", "Error message.")
-            let mut error_map: std::collections::HashMap<&'a str, &'a str> =
-                std::collections::HashMap::new();
-
-            // Get clean data
-            let hash = self.hash.clone().unwrap_or_default();
-            let password = self.password.clone().unwrap_or_default();
-            let confirm_password = self.confirm_password.clone().unwrap_or_default();
-            let username = self.username.clone().unwrap_or_default();
-
-            // Fields validation
-            if hash.is_empty() && password != confirm_password {
-                error_map.insert("confirm_password", "Password confirmation does not match.");
-            }
-            if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
-                .case_insensitive(true)
-                .build()
-                .unwrap()
-                .is_match(username.as_str())
-            {
-                error_map.insert(
-                    "username",
-                    "Invalid characters present.<br>\
-                     Valid characters: a-z A-Z 0-9 _ @ + .",
-                );
-            }
-            //
-            Ok(error_map)
-        }
+// Model parameter: is_use_hooks = true
+impl Hooks for UserProfile {
+    fn pre_create(&self) {
+        println!("!!!Pre Create!!!");
     }
-
-    // Model parameter: is_use_hooks = true
-    impl Hooks for UserProfile {
-        fn pre_create(&self) {
-            println!("!!!Pre Create!!!");
-        }
-        //
-        fn post_create(&self) {
-            println!("!!!Post Create!!!");
-        }
-        //
-        fn pre_update(&self) {
-            println!("!!!Pre Update!!!");
-        }
-        //
-        fn post_update(&self) {
-            println!("!!!Post Update!!!");
-        }
-        //
-        fn pre_delete(&self) {
-            println!("!!!Pre Delet!!!");
-        }
-        //
-        fn post_delete(&self) {
-            println!("!!!Post Delet!!!");
-        }
+    //
+    fn post_create(&self) {
+        println!("!!!Post Create!!!");
     }
-
-    // Model parameter: is_use_custom_html = true
-    // See documentation: mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
-    /*
-    impl GenerateHtml for UserProfile {
-         fn generate_html(&self) {
-             Add your custom code...
-        }
+    //
+    fn pre_update(&self) {
+        println!("!!!Pre Update!!!");
     }
-    */
+    //
+    fn post_update(&self) {
+        println!("!!!Post Update!!!");
+    }
+    //
+    fn pre_delete(&self) {
+        println!("!!!Pre Delet!!!");
+    }
+    //
+    fn post_delete(&self) {
+        println!("!!!Post Delet!!!");
+    }
+}
+
+// Model parameter: is_use_custom_html = true
+// See documentation: mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
+/*
+impl GenerateHtml for UserProfile {
+        fn generate_html(&self) {
+            Add your custom code...
+    }
+}
+*/
+```
 
 #### src/main.rs
 
-    mod migration;
-    mod models;
-    mod settings;
+```rust
+mod migration;
+mod models;
+mod settings;
 
-    use mango_orm::*;
+use mango_orm::*;
 
-    fn main() -> Result<(), Box<dyn std::error::Error>> {
-        // Run migration.
-        migration::mango_migration()?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Run migration.
+    migration::mango_migration()?;
 
-        // Convert Model.
-        // -----------------------------------------------------------------------------------------
-        //println!("{:?}", models::UserProfile::to_wig()?);
-        //println!("{}", models::UserProfile::to_json()?);
-        /*
-        println!(
-            "Html code:\n{}",
-            models::UserProfile::to_html(
-                Some("/login"),
-                Some(HttpMethod::POST),
-                Some(Enctype::Multipart)
-            )?
-        );
-        */
+    // Convert Model.
+    // -----------------------------------------------------------------------------------------
+    //println!("{:?}", models::UserProfile::to_wig()?);
+    //println!("{}", models::UserProfile::to_json()?);
+    /*
+    println!(
+        "Html code:\n{}",
+        models::UserProfile::to_html(
+            Some("/login"),
+            Some(HttpMethod::POST),
+            Some(Enctype::Multipart)
+        )?
+    );
+    */
 
-        // Create model instance.
-        // -----------------------------------------------------------------------------------------
-        let mut user = models::UserProfile {
-            username: Some("user_1".to_string()),
-            email: Some("user_1@@noreply.net".to_string()),
-            password: Some("12345678".to_string()),
-            confirm_password: Some("12345678".to_string()),
-            is_staff: Some(false),
-            ..Default::default()
-        };
+    // Create model instance.
+    // -----------------------------------------------------------------------------------------
+    let mut user = models::UserProfile {
+        username: Some("user_1".to_string()),
+        email: Some("user_1@@noreply.net".to_string()),
+        password: Some("12345678".to_string()),
+        confirm_password: Some("12345678".to_string()),
+        is_staff: Some(false),
+        ..Default::default()
+    };
 
-        // Check model.
-        // -----------------------------------------------------------------------------------------
-        /*
-        let output_data = user.check()?;
-        println!("Boolean: {}", output_data.is_valid());
-        println!("Hash: {}", output_data.hash());
-        println!("Object Id: {:?}", output_data.object_id());
-        println!("Created at: {}", user.get_created_at());
-        println!("Updated at: {}", user.get_updated_at());
-        // Printing errors to the console ( for development ).
-        if !output_data.is_valid() {
-            output_data.print_err();
-        }
-        //
-        //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
-        //
-        //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
-        //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
-        //println!("Json:\n{}\n\n", output_data.to_json()?);
-        /*
-        println!(
-            "Html:\n{}\n\n",
-            output_data.to_html(
-                Some("/login"),
-                Some(HttpMethod::POST),
-                Some(Enctype::Multipart)
-            )?
-        );
-        */
-        */
-
-        // Create or update a document in the database ( check() + save() ).
-        // -----------------------------------------------------------------------------------------
-        let output_data = user.save(None, None)?;
-        println!("Boolean: {}", output_data.is_valid());
-        println!("Hash: {}", output_data.hash());
-        println!("Object Id: {:?}", output_data.object_id());
-        println!("Created at: {}", user.get_created_at());
-        println!("Updated at: {}", user.get_updated_at());
-        // Printing errors to the console ( for development ).
-        if !output_data.is_valid() {
-            output_data.print_err();
-        }
-        //
-        //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
-        //
-        //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
-        //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
-        //println!("Json:\n{}\n\n", output_data.to_json()?);
-        /*
-        println!(
-            "Html:\n{}\n\n",
-            output_data.to_html(
-                Some("/login"),
-                Some(HttpMethod::POST),
-                Some(Enctype::Multipart)
-            )?
-        );
-        */
-
-        // Remove document from collection in database.
-        // -----------------------------------------------------------------------------------------
-        /*
-        let output_data  = user.delete(None)?;
-        if !output_data.is_valid() {
-            println!("{}", output_data.err_msg());
-        }
-        */
-
-        Ok(())
+    // Check model.
+    // -----------------------------------------------------------------------------------------
+    /*
+    let output_data = user.check()?;
+    println!("Boolean: {}", output_data.is_valid());
+    println!("Hash: {}", output_data.hash());
+    println!("Object Id: {:?}", output_data.object_id());
+    println!("Created at: {}", user.get_created_at());
+    println!("Updated at: {}", user.get_updated_at());
+    // Printing errors to the console ( for development ).
+    if !output_data.is_valid() {
+        output_data.print_err();
     }
+    //
+    //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
+    //
+    //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
+    //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
+    //println!("Json:\n{}\n\n", output_data.to_json()?);
+    /*
+    println!(
+        "Html:\n{}\n\n",
+        output_data.to_html(
+            Some("/login"),
+            Some(HttpMethod::POST),
+            Some(Enctype::Multipart)
+        )?
+    );
+    */
+    */
+
+    // Create or update a document in the database ( check() + save() ).
+    // -----------------------------------------------------------------------------------------
+    let output_data = user.save(None, None)?;
+    println!("Boolean: {}", output_data.is_valid());
+    println!("Hash: {}", output_data.hash());
+    println!("Object Id: {:?}", output_data.object_id());
+    println!("Created at: {}", user.get_created_at());
+    println!("Updated at: {}", user.get_updated_at());
+    // Printing errors to the console ( for development ).
+    if !output_data.is_valid() {
+        output_data.print_err();
+    }
+    //
+    //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
+    //
+    //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
+    //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
+    //println!("Json:\n{}\n\n", output_data.to_json()?);
+    /*
+    println!(
+        "Html:\n{}\n\n",
+        output_data.to_html(
+            Some("/login"),
+            Some(HttpMethod::POST),
+            Some(Enctype::Multipart)
+        )?
+    );
+    */
+
+    // Remove document from collection in database.
+    // -----------------------------------------------------------------------------------------
+    /*
+    let output_data  = user.delete(None)?;
+    if !output_data.is_valid() {
+        println!("{}", output_data.err_msg());
+    }
+    */
+
+    Ok(())
+}
+```
 
 ## Changelog
 
