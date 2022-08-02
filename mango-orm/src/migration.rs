@@ -445,8 +445,8 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => Check the `path` and `url` \
-                                                                 attributes in the `default` field parameter.",
+                                                    `migrat()` => Check the `path` and `url` \
+                                                    attributes in the `default` field parameter.",
                                                         meta.model_name, field)
                                                     )?
                                                 }
@@ -454,8 +454,8 @@ impl<'a> Monitor<'a> {
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
-                                                    Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => File is missing - {}",
+                                                    Err(format!("Model: `{}` > Field: `{}` ; \
+                                                    Method: `migrat()` => File is missing - {}",
                                                         meta.model_name, field, path)
                                                     )?
                                                 }
@@ -672,67 +672,67 @@ impl<'a> Monitor<'a> {
                     "In the `refresh()` method, \
                              no technical database has been created for the project."
                 ))?
-            } else {
-                let collection: Collection = db.collection("dynamic_widgets");
-                let filter = doc! {
+            }
+            //
+            let collection: Collection = db.collection("dynamic_widgets");
+            let filter = doc! {
+                "database": &meta.database_name,
+                "collection": &meta.collection_name
+            };
+            // Check if there is a document in the database for
+            // storing the values of dynamic widgets of model.
+            if collection.count_documents(filter.clone(), None)? == 0_i64 {
+                // Init new document.
+                let mut new_doc = doc! {
                     "database": &meta.database_name,
-                    "collection": &meta.collection_name
+                    "collection": &meta.collection_name,
+                    "fields": {}
                 };
-                // Check if there is a document in the database for
-                // storing the values of dynamic widgets of model.
-                if collection.count_documents(filter.clone(), None)? == 0_i64 {
-                    // Init new document.
-                    let mut new_doc = doc! {
-                        "database": &meta.database_name,
-                        "collection": &meta.collection_name,
-                        "fields": {}
-                    };
-                    // Add empty arrays to the new document.
-                    let mut fields_doc = Document::new();
-                    for (field, widget) in map_widget_type.clone() {
-                        if widget.contains("Dyn") {
+                // Add empty arrays to the new document.
+                let mut fields_doc = Document::new();
+                for (field, widget) in map_widget_type.clone() {
+                    if widget.contains("Dyn") {
+                        fields_doc.insert(field, Bson::Array(Vec::new()));
+                    }
+                }
+                // Insert new document.
+                new_doc.insert("fields".to_string(), fields_doc);
+                collection.insert_one(new_doc, None)?;
+            } else {
+                // Get an existing document.
+                let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
+                // Get a document with `dynamic_widgets` fields.
+                let fields_doc = exist_doc.get_document_mut("fields")?;
+                // Get a list of fields from the technical database,
+                // from the `dynamic_widgets` collection for current Model.
+                let dyn_fields_from_db: Vec<String> =
+                    fields_doc.keys().map(|item| item.into()).collect();
+                // Create an empty list for fields with dynamic widget types.
+                let mut dyn_fields_from_model: Vec<String> = Vec::new();
+                // Add new (if any) fields in `fields_doc`.
+                for (field, widget) in trunc_map_widget_type.clone() {
+                    if widget.contains("Dyn") {
+                        dyn_fields_from_model.push(field.clone());
+                        // If the new field or widgets do not match,
+                        // initialize with an empty array.
+                        if !dyn_fields_from_db.contains(&field)
+                            || (widget
+                                != *monitor_map_widget_type
+                                    .get(field.as_str())
+                                    .unwrap_or(&String::new()))
+                        {
                             fields_doc.insert(field, Bson::Array(Vec::new()));
                         }
                     }
-                    // Insert new document.
-                    new_doc.insert("fields".to_string(), fields_doc);
-                    collection.insert_one(new_doc, None)?;
-                } else {
-                    // Get an existing document.
-                    let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
-                    // Get a document with `dynamic_widgets` fields.
-                    let fields_doc = exist_doc.get_document_mut("fields")?;
-                    // Get a list of fields from the technical database,
-                    // from the `dynamic_widgets` collection for current Model.
-                    let dyn_fields_from_db: Vec<String> =
-                        fields_doc.keys().map(|item| item.into()).collect();
-                    // Create an empty list for fields with dynamic widget types.
-                    let mut dyn_fields_from_model: Vec<String> = Vec::new();
-                    // Add new (if any) fields in `fields_doc`.
-                    for (field, widget) in trunc_map_widget_type.clone() {
-                        if widget.contains("Dyn") {
-                            dyn_fields_from_model.push(field.clone());
-                            // If the new field or widgets do not match,
-                            // initialize with an empty array.
-                            if !dyn_fields_from_db.contains(&field)
-                                || (widget
-                                    != *monitor_map_widget_type
-                                        .get(field.as_str())
-                                        .unwrap_or(&String::new()))
-                            {
-                                fields_doc.insert(field, Bson::Array(Vec::new()));
-                            }
-                        }
-                    }
-                    // Remove orphaned fields.
-                    for field in dyn_fields_from_db {
-                        if !dyn_fields_from_model.contains(&field) {
-                            fields_doc.remove(&field).unwrap();
-                        }
-                    }
-                    // Full update existing document.
-                    collection.update_one(filter, exist_doc, None)?;
                 }
+                // Remove orphaned fields.
+                for field in dyn_fields_from_db {
+                    if !dyn_fields_from_model.contains(&field) {
+                        fields_doc.remove(&field).unwrap();
+                    }
+                }
+                // Full update existing document.
+                collection.update_one(filter, exist_doc, None)?;
             }
         }
 
