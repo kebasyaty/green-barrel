@@ -9,7 +9,7 @@ version = "0.1.0"
 [dependencies]
 chrono = "0.4.19"
 lazy_static = "1.4.0"
-mango-orm = {path = "../mango-orm"}
+green-barrel = {path = "../green-barrel"}
 metamorphose = {path = "../metamorphose"}
 rand = "0.8.5"
 regex = "1.5.6"
