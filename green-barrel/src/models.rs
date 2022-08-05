@@ -130,10 +130,10 @@ pub trait Main {
         widget_map: &mut HashMap<String, Widget>,
     ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
-        let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
+        let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic widgets.
         let collection = client
-            .database(&db_mango_tech)
+            .database(&db_green_tech)
             .collection("dynamic_widgets");
         // Filter for searching a document.
         let filter = doc! {

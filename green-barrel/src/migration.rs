@@ -45,7 +45,7 @@ pub struct Monitor<'a> {
 impl<'a> Monitor<'a> {
     /// Get the name of the technical database for a project.
     // *********************************************************************************************
-    pub fn mango_tech_name(&self) -> Result<String, Box<dyn Error>> {
+    pub fn green_tech_name(&self) -> Result<String, Box<dyn Error>> {
         // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
         // Max size: 21
@@ -71,7 +71,7 @@ impl<'a> Monitor<'a> {
         }
         //
         Ok(format!(
-            "mango_tech__{}__{}",
+            "green_tech__{}__{}",
             self.project_name, self.unique_project_key
         ))
     }
@@ -94,7 +94,7 @@ impl<'a> Monitor<'a> {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
-            let db_mango_tech: String = self.mango_tech_name()?;
+            let db_green_tech: String = self.green_tech_name()?;
             // Collection for monitoring the state of Models.
             let collection_models_name: &str = "monitor_models";
             // Used to store selection items, for
@@ -103,21 +103,21 @@ impl<'a> Monitor<'a> {
             //Get a list of databases.
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Create a technical database for the project if it doesn't exist.
-            if !database_names.contains(&db_mango_tech) {
+            if !database_names.contains(&db_green_tech) {
                 // Create a collection for models.
                 client
-                    .database(&db_mango_tech)
+                    .database(&db_green_tech)
                     .create_collection(collection_models_name, None)?;
                 // Create a collection for widget types of `select`.
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
-                    .database(&db_mango_tech)
+                    .database(&db_green_tech)
                     .create_collection(collection_dyn_widgets_name, None)?;
             } else {
                 // Reset models state information.
-                let mango_tech_db: Database = client.database(&db_mango_tech);
+                let green_tech_db: Database = client.database(&db_green_tech);
                 let collection_models: Collection =
-                    mango_tech_db.collection(collection_models_name);
+                    green_tech_db.collection(collection_models_name);
                 let mut cursor: Cursor = collection_models.find(None, None)?;
 
                 while let Some(result) = cursor.next() {
@@ -147,13 +147,13 @@ impl<'a> Monitor<'a> {
         for meta in self.models.iter() {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
-            let db_mango_tech: String = self.mango_tech_name()?;
+            let db_green_tech: String = self.green_tech_name()?;
             let collection_models_name: &str = "monitor_models";
             let collection_dyn_widgets_name: &str = "dynamic_widgets";
-            let mango_tech_db: Database = client.database(&db_mango_tech);
-            let collection_models: Collection = mango_tech_db.collection(collection_models_name);
+            let green_tech_db: Database = client.database(&db_green_tech);
+            let collection_models: Collection = green_tech_db.collection(collection_models_name);
             let collection_dyn_widgets: Collection =
-                mango_tech_db.collection(collection_dyn_widgets_name);
+                green_tech_db.collection(collection_dyn_widgets_name);
             // Delete orphaned Collections.
             let cursor: Cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
@@ -230,7 +230,7 @@ impl<'a> Monitor<'a> {
                 .map(|item| *item)
                 .collect();
             // Get the name of the technical database for a project.
-            let db_mango_tech: String = self.mango_tech_name()?;
+            let db_green_tech: String = self.green_tech_name()?;
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (widget_type, value)>
@@ -257,7 +257,7 @@ impl<'a> Monitor<'a> {
                 "collection": &meta.collection_name
             };
             let model: Option<Document> = client
-                .database(&db_mango_tech)
+                .database(&db_green_tech)
                 .collection("monitor_models")
                 .find_one(filter, None)?;
             if model.is_some() {
@@ -619,14 +619,14 @@ impl<'a> Monitor<'a> {
                 db.create_collection(&meta.collection_name, None)?;
             }
 
-            // Get the technical database `db_mango_tech` for the current model.
+            // Get the technical database `db_green_tech` for the current model.
             // -------------------------------------------------------------------------------------
-            let db: Database = client.database(&db_mango_tech);
+            let db: Database = client.database(&db_green_tech);
 
             // Update the state of models for `models::Monitor`.
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
-            if !database_names.contains(&db_mango_tech)
+            if !database_names.contains(&db_green_tech)
                 || !db
                     .list_collection_names(None)?
                     .contains(&"monitor_models".to_owned())
@@ -663,7 +663,7 @@ impl<'a> Monitor<'a> {
             // Document management to support model fields with dynamic widgets.
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
-            if !database_names.contains(&db_mango_tech)
+            if !database_names.contains(&db_green_tech)
                 || !db
                     .list_collection_names(None)?
                     .contains(&"dynamic_widgets".to_owned())

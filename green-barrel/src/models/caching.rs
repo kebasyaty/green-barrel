@@ -378,12 +378,12 @@ pub trait Caching: Main + GenerateHtml + Converters {
         //
         // Get access to the technical base of the project.
         let coll = {
-            let mango_tech_keyword = format!(
-                "mango_tech__{}__{}",
+            let green_tech_keyword = format!(
+                "green_tech__{}__{}",
                 meta.project_name.clone(),
                 meta.unique_project_key.clone()
             );
-            let db = client_cache.database(&mango_tech_keyword);
+            let db = client_cache.database(&green_tech_keyword);
             db.collection("dynamic_widgets")
         };
         //
