@@ -201,7 +201,7 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "0.12"
+green_barrel = "0.12"
 metamorphose = "0.7"
 regex = "1.5.6"
 serde_json = "1.0.81"
@@ -232,7 +232,8 @@ pub const PROJECT_NAME: &str = "store";
 // Valid characters: a-z A-Z 0-9
 // Size: 8-16
 // Example: "7rzgacfqQB3B7q7T"
-pub const UNIQUE_PROJECT_KEY: &str = "bhjRV8ry9X5LQBw";
+// To generate a key: https://randompasswordgen.com/
+pub const UNIQUE_PROJECT_KEY: &str = "Ugav2731BO7lJz8k";
 
 // Settings for user accounts.
 pub mod users {
@@ -252,7 +253,7 @@ pub mod users {
 #### src/migration.rs
 
 ```rust
-use green-barrel::{Monitor, ToModel, MONGODB_CLIENT_STORE};
+use green_barrel::{Main, Monitor, MONGODB_CLIENT_STORE};
 use crate::{models, settings};
 
 // Migration Service `Mango`.
@@ -282,7 +283,7 @@ pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
 #### src/models.rs
 
 ```rust
-use green-barrel::*;
+use green_barrel::*;
 use metamorphose::Model;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
@@ -489,7 +490,7 @@ mod migration;
 mod models;
 mod settings;
 
-use green-barrel::*;
+use green_barrel::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration.
@@ -514,7 +515,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------------------------
     let mut user = models::UserProfile {
         username: Some("user_1".to_string()),
-        email: Some("user_1@@noreply.net".to_string()),
+        email: Some("user_1@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
         is_staff: Some(false),
@@ -596,6 +597,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Changelog
 
+- **v0.12.14** _Fixed **README.md**._
 - **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
 - **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._
 - **v0.12.0** _Deep modernization of the **input_data** module and related modules._
