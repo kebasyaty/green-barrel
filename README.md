@@ -15,7 +15,7 @@
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [green-barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [actix-green-pane](https://github.com/kebasyaty/actix-green-pane "actix-green-pane") ). For those who use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
+**[Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [green-barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [actix-green-pane](https://github.com/kebasyaty/actix-green-panel "actix-green-pane") ). For those who use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
 
 ## Requirements
 
@@ -252,8 +252,8 @@ pub mod users {
 #### src/migration.rs
 
 ```rust
+use green-barrel::{Monitor, ToModel, MONGODB_CLIENT_STORE};
 use crate::{models, settings};
-use mango_orm::{Monitor, ToModel, MONGODB_CLIENT_STORE};
 
 // Migration Service `Mango`.
 pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -282,7 +282,7 @@ pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
 #### src/models.rs
 
 ```rust
-use mango_orm::*;
+use green-barrel::*;
 use metamorphose::Model;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
@@ -472,7 +472,7 @@ impl Hooks for UserProfile {
 }
 
 // Model parameter: is_use_custom_html = true
-// See documentation: mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
+// See documentation: green-barrel > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
 /*
 impl GenerateHtml for UserProfile {
         fn generate_html(&self) {
@@ -489,7 +489,7 @@ mod migration;
 mod models;
 mod settings;
 
-use mango_orm::*;
+use green-barrel::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration.
