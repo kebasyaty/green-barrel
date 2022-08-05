@@ -1,6 +1,6 @@
 [![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/mango-orm "Logo")
 
-# mango-orm
+# Green Barrel
 
 #### ORM-like API MongoDB for Rust
 

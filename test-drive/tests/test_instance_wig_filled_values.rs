@@ -1,5 +1,5 @@
-use mango_orm::test_tool::del_test_db;
-use mango_orm::*;
+use green_barrel::test_tool::del_test_db;
+use green_barrel::*;
 use metamorphose::Model;
 use serde::{Deserialize, Serialize};
 use std::error::Error;

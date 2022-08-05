@@ -1,4 +1,4 @@
-//! Migrations are mango-orm’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
+//! Migrations are green-barrel’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
 use mongodb::{
     bson::{
@@ -251,7 +251,7 @@ impl<'a> Monitor<'a> {
             // update documents in the current Collection.
             // -------------------------------------------------------------------------------------
             // Get a list of current model field names from the technical database
-            // `mango_orm_keyword`.
+            // `green_barrel_keyword`.
             let filter: Document = doc! {
                 "database": &meta.database_name,
                 "collection": &meta.collection_name

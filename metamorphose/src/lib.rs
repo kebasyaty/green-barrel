@@ -1,5 +1,5 @@
 //! # Macro
-//! For converting structure to mango-orm model.
+//! For converting structure to green-barrel model.
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -15,9 +15,9 @@ use syn::{
     Type::Path,
 };
 
-// MODEL - MACRO FOR CONVERTING STRUCTURE TO MANGO-ORM MODEL
+// MODEL - MACRO FOR CONVERTING STRUCTURE TO GREEN-BARREL MODEL
 // #################################################################################################
-/// Macro for converting Structure to mango-orm Model.
+/// Macro for converting Structure to green-barrel Model.
 /// The model can access the database.
 /// The model can create, update, and delete documents in collections.
 ///

@@ -2,6 +2,6 @@
 
 members = [
   "test-drive",
-  "mango-orm",
+  "green-barrel",
   "metamorphose",
 ]

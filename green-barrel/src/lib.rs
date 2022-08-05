@@ -1,7 +1,5 @@
-//! # Mango-ORM
-//!
+//! # Green Barrel
 //! ORM-like API MongoDB for Rust.
-//!
 
 pub mod helpers;
 pub mod migration;
