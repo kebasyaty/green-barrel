@@ -4,7 +4,7 @@
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel").**
+**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel").**
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
@@ -15,7 +15,7 @@
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [green-barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [actix-green-pane](https://github.com/kebasyaty/actix-green-panel "actix-green-pane") ). For those who use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
+**[Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") ). For those who use [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
 
 ## Requirements
 

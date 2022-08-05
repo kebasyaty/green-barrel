@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 name = "green-barrel"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/green-barrel"
-version = "0.12.14"
+version = "0.12.16"
 
 [dependencies]
 actix-web = "3.3.3"
