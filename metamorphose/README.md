@@ -1,6 +1,6 @@
 ![Logo](https://github.com/kebasyaty/mango-orm/raw/master/metamorphose/images/logo.svg)
 
-# metamorphose
+# Metamorphose
 
 ### Macros collection for converting Structure to Model, for a [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel") project.
 
