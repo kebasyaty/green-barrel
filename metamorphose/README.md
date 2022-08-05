@@ -2,7 +2,7 @@
 
 # metamorphose
 
-### Macros collection for converting Structure to Model, for a [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm") project.
+### Macros collection for converting Structure to Model, for a [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel") project.
 
 ![crates.io](https://img.shields.io/crates/v/metamorphose)
 ![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.52%2B&color=red)
@@ -13,7 +13,7 @@
 
 #### Model
 
-> Macro for converting Structure to mango-orm Model.
+> Macro for converting Structure to green-barrel Model.
 > The model can access the database.
 > The model can create, update, and delete documents in collections.
 
@@ -27,6 +27,7 @@
 
 ## Changelog
 
+- **v0.7.12** _Fixed **README.md**._
 - **v0.7.8** _Fixed validation for multi-select fields._
 - **v0.7.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
 - **v0.6.10** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html_code > GenerateHtmlCode > generate_html()**._
