@@ -201,7 +201,7 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-mango-orm = "0.12"
+green-barrel = "0.12"
 metamorphose = "0.7"
 regex = "1.5.6"
 serde_json = "1.0.81"
