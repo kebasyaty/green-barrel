@@ -303,11 +303,11 @@ fn test_instance_all_default() -> Result<(), Box<dyn Error>> {
     assert!(output_data.hash().is_empty(), "Check - hash.is_empty");
     assert!(output_data.object_id().is_err(), "Check - object_id.is_err");
     assert!(
-        !test_model.get_created_at().is_empty(),
-        "Check - get_created_at.is_empty"
+        test_model.get_created_at().is_empty(),
+        "Check - get_created_at.is_empty",
     );
     assert!(
-        !test_model.get_updated_at().is_empty(),
+        test_model.get_updated_at().is_empty(),
         "Check - get_updated_at.is_empty"
     );
     assert!(output_data.get_doc().is_some(), "Check - get_doc.is_some");
