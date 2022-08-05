@@ -3,7 +3,10 @@
 use std::collections::HashMap;
 use std::error::Error;
 
-use crate::widgets::{Enctype, HttpMethod, Widget};
+use crate::{
+    helpers::{Enctype, HttpMethod},
+    widgets::Widget,
+};
 
 /// Rendering HTML-controls code for Form.
 pub trait GenerateHtml {

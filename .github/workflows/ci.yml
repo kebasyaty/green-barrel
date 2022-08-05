@@ -42,4 +42,3 @@ jobs:
           components: clippy, rustfmt
       - name: Build on nightly
         run: cargo build --all --verbose
-        

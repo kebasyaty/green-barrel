@@ -17,6 +17,7 @@ use crate::{
     widgets::Widget,
 };
 
+/// Common query methods.
 pub trait QCommons: Main + Caching + Converters {
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate

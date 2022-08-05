@@ -19,8 +19,8 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
 
 use crate::{
+    helpers::{FileData, ImageData},
     store::MONGODB_CLIENT_STORE,
-    widgets::{FileData, ImageData},
 };
 
 // MIGRATION

@@ -1,21 +1,21 @@
-[![Logo](https://github.com/kebasyaty/mango-orm/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/mango-orm "Logo")
+[![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/mango-orm "Logo")
 
 # mango-orm
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/mango-orm/tree/master/test-drive/tests "tests"). For maximum convenience use [mango-panel](https://github.com/kebasyaty/mango-panel "mango-panel").**
+**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel").**
 
-[![crates.io](https://img.shields.io/crates/v/mango-orm "crates.io")](https://crates.io/crates/mango-orm "crates.io")
+[![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
-![crates.io](https://img.shields.io/crates/d/mango-orm)
-![crates.io](https://img.shields.io/crates/l/mango-orm)
+![crates.io](https://img.shields.io/crates/d/green-barrel)
+![crates.io](https://img.shields.io/crates/l/green-barrel)
 
 ## Attention
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") is the recommended part of the entire ecosystem ( [mango-orm](https://github.com/kebasyaty/mango-orm "mango-orm"), [metamorphose](https://github.com/kebasyaty/mango-orm/tree/master/metamorphose "metamorphose"), [actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") ). For those who use [actix-mango-panel](https://github.com/kebasyaty/actix-mango-panel "actix-mango-panel") - Follow our updates.**
+**[Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [green-barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [actix-green-pane](https://github.com/kebasyaty/actix-green-pane "actix-green-pane") ). For those who use [actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
 
 ## Requirements
 
@@ -524,7 +524,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Check model.
     // -----------------------------------------------------------------------------------------
     /*
-    let output_data = user.check()?;
+    let output_data = user.check(None)?;
     println!("Boolean: {}", output_data.is_valid());
     println!("Hash: {}", output_data.hash());
     println!("Object Id: {:?}", output_data.object_id());
@@ -596,6 +596,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Changelog
 
+- **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
 - **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._
 - **v0.12.0** _Deep modernization of the **input_data** module and related modules._
 - **v0.11.4** _**output_data** module moved from **widgets** directory to **models**._
@@ -633,4 +634,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## License
 
-#### This project is licensed under the [MIT](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/mango-orm/blob/master/LICENSE-APACHE "Apache Version 2.0")
+#### This project is licensed under the [MIT](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-APACHE "Apache Version 2.0")

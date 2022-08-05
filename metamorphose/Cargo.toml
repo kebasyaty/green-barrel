@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 name = "metamorphose"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/mango-orm/tree/master/metamorphose"
-version = "0.7.8"
+version = "0.7.10"
 
 [lib]
 proc-macro = true

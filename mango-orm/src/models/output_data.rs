@@ -5,8 +5,9 @@ use std::collections::HashMap;
 use std::error::Error;
 
 use crate::{
+    helpers::{Enctype, HttpMethod},
     models::converters::Converters,
-    widgets::{generate_html::GenerateHtml, Enctype, HttpMethod, Widget},
+    widgets::{generate_html::GenerateHtml, Widget},
 };
 
 /// Helper methods for converting output data (use in the paladins.rs module).

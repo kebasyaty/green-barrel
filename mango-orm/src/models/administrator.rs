@@ -1,6 +1,7 @@
 //! Helper methods for the admin panel.
 
 use mongodb::bson::{doc, document::Document, oid::ObjectId};
+use serde_json::Value;
 use std::error::Error;
 
 use crate::{
@@ -81,7 +82,7 @@ pub trait Administrator: QCommons + QPaladins {
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
         filter: Option<&Document>,
-        options_json: Option<&str>,
+        dyn_data: Option<Value>,
     ) -> Result<OutputDataAdmin<Self>, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized,
@@ -122,9 +123,9 @@ pub trait Administrator: QCommons + QPaladins {
                 filter.unwrap().clone(),
                 None,
             )?))
-        } else if options_json.is_some() {
+        } else if dyn_data.is_some() {
             // Update dynamic widget data
-            Self::db_update_dyn_widgets(options_json.unwrap())?;
+            Self::update_dyn_wig(dyn_data.unwrap())?;
             return Ok(OutputDataAdmin::EarlyResult(String::new()));
         } else {
             Err(format!(

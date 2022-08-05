@@ -1,15 +1,17 @@
 //! Caching inmodelation about Models for speed up work.
 
 use mongodb::{
-    bson::{doc, document::Document, Bson},
+    bson::{doc, Bson},
     sync::Client,
 };
-use std::{collections::HashMap, error::Error};
+use serde_json::Value;
+use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::{
+    helpers::{ControlArr, Enctype, HttpMethod},
     models::{converters::Converters, Main, Meta},
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
-    widgets::{generate_html::GenerateHtml, Enctype, HttpMethod, Widget},
+    widgets::{generate_html::GenerateHtml, Widget},
 };
 
 /// Caching inmodelation about Models for speed up work.
@@ -276,180 +278,557 @@ pub trait Caching: Main + GenerateHtml + Converters {
         Ok((model_cache.clone(), client.clone()))
     }
 
-    /// Accepts json-line to update data, for dynamic widgets.
-    /// Hint: Used in conjunction with the admin panel.
+    /// Update data for dynamic widgets.
+    /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/mango-panel
     ///
     /// # Example:
     ///
     /// ```
-    /// let json_line =  r#"{"field_name":[["value","Title"], ...]}"#;
-    /// // or
-    /// let json_line = r#"{
-    ///        "field_name":[["value","Title"], ...],
-    ///        "field_name_2":[["value","Title 2"], ...],
-    ///        "field_name_3":[["value","Title 3"], ...]
-    ///     }"#;
+    /// // Field attributes for "value":
+    /// // minlength - for string type ; Default = 0
+    /// // maxlength - for string type ; Default = 256
+    /// // min - for numeric type
+    /// // max - for numeric type
     ///
-    /// assert!(Dynamic::db_update_dyn_widgets(json_line).is_ok());
+    /// let dyn_data = json!({
+    ///     "field_name": "field_name",
+    ///     "value": 5, // restrict with field attributes
+    ///     "title": "Title", // maximum title length = 150 characters
+    ///     "is_delete": false
+    /// });
+    /// assert!(ModelName::update_dyn_wig(dyn_data).is_ok());
     /// ```
     ///
     // *********************************************************************************************
-    fn db_update_dyn_widgets(json_line: &str) -> Result<(), Box<dyn Error>> {
-        // Refresh the state in the technical database.
-        // -----------------------------------------------------------------------------------------
-        // Validation json-line.
-        let re = regex::RegexBuilder::new(r#"^\{[\s]*(?:"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+","[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+"\])(?:,\["[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+","[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+"\])*)*\]))(?:,[\s]*"[a-z][a-z\d]*(?:_[a-z\d]+)*":(?:\[(?:(?:\["[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+","[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+"\])(?:,\["[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+","[-_.,`@#$%^&+=*!~)(:><?;№|\\/\s\w]+"\])*)*\]))*[\s]*\}$"#)
-            .case_insensitive(true)
-            .build()
-            .unwrap();
-        if !re.is_match(json_line) {
-            Err(format!(
-                r#"Model: {} > Method: `db_update_dyn_widgets` => \
-                   The `json_line` parameter was not validation. \
-                   Example: {{"field_name":[["value","Title"]]}}"#,
-                Self::meta()?.model_name
-            ))?
-        }
-
+    fn update_dyn_wig(dyn_data: Value) -> Result<(), Box<dyn Error>> {
+        //
+        // Define conditional constants.
+        let const_field_name = {
+            if let Some(field_name) = dyn_data["field_name"].as_str() {
+                field_name
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `field_name` => \
+                    The field is missing.",
+                    Self::meta()?.model_name
+                ))?
+            }
+        };
+        let const_title = {
+            if let Some(title) = dyn_data["title"].as_str() {
+                if title.len() > 150 {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `title` => \
+                        The maximum title length is 150 characters.",
+                        Self::meta()?.model_name
+                    ))?
+                }
+                title
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `title` => \
+                    The field is missing.",
+                    Self::meta()?.model_name
+                ))?
+            }
+        };
+        let const_is_delete = {
+            if let Some(is_delete) = dyn_data["is_delete"].as_bool() {
+                is_delete
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `is_delete` => \
+                    The field is missing.",
+                    Self::meta()?.model_name
+                ))?
+            }
+        };
+        //
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
-        let mango_tech_keyword = format!(
-            "mango_tech__{}__{}",
-            meta.project_name.clone(),
-            meta.unique_project_key.clone()
-        );
-        let db = client_cache.database(&mango_tech_keyword);
-        let coll = db.collection("dynamic_widgets");
-        let query = doc! {
+        //
+        // Define conditional constants.
+        // Get widget map and check the field name for belonging to the Model.
+        let const_widget = {
+            if let Some(widget_type) = model_cache.widget_map.get(const_field_name) {
+                widget_type
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` => \
+                    There is no field named `{}` in the model.",
+                    meta.model_name, const_field_name
+                ))?
+            }
+        };
+        let const_widget_type = const_widget.widget.as_str();
+        // Check the Widget type for belonging to dynamic types.
+        if !const_widget_type.contains("Dyn") {
+            Err(format!(
+                "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
+                Widget `{}` is not dynamic.",
+                meta.model_name, const_field_name, const_widget_type
+            ))?
+        }
+        //
+        // Get access to the technical base of the project.
+        let coll = {
+            let mango_tech_keyword = format!(
+                "mango_tech__{}__{}",
+                meta.project_name.clone(),
+                meta.unique_project_key.clone()
+            );
+            let db = client_cache.database(&mango_tech_keyword);
+            db.collection("dynamic_widgets")
+        };
+        //
+        let filter = doc! {
             "database": meta.database_name.clone(),
             "collection": meta.collection_name.clone()
         };
-        let new_dyn_data: serde_json::Value = serde_json::from_str(json_line)?;
-        let new_dyn_data = serde_json::from_value::<Document>(new_dyn_data)?;
-        let mut curr_dyn_date = coll.find_one(query.clone(), None)?.unwrap();
-        let dyn_date = curr_dyn_date.get_document_mut("fields").unwrap();
-
-        for (field_name, bson_val) in new_dyn_data {
-            dyn_date.insert(field_name.as_str(), bson_val);
-        }
-
-        let update = doc! {
-            "$set": { "fields": dyn_date.clone() }
+        // Get the target array from the dynamic data collection.
+        let mut obj_fields_doc = {
+            let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+            curr_dyn_date_doc.get_document("fields").unwrap().clone()
         };
-        coll.update_one(query, update, None)?;
+        let mut target_arr_bson = obj_fields_doc.get_array(const_field_name).unwrap().clone();
 
-        // Clean up orphaned (if any) data.
+        // Update dynamic data.
         // -----------------------------------------------------------------------------------------
-        let db = client_cache.database(meta.database_name.as_str());
-        let coll = db.collection(meta.collection_name.as_str());
-        let mut cursor = coll.find(None, None)?;
-        // Iterate over all documents in the collection.
-        while let Some(db_doc) = cursor.next() {
-            let mut is_changed = false;
-            let mut curr_doc = db_doc.clone()?;
-            // Iterate over all fields in the document.
-            for (field_name, widget_type) in meta.widget_type_map.clone() {
-                // Choosing the only dynamic widgets.
-                if widget_type.contains("Dyn") {
-                    if curr_doc.is_null(field_name.as_str()) {
-                        continue;
+        // 1.Check for a similar value.
+        // 2.Check that the value type is compatible with the widget type.
+        {
+            let is_value_exist = if const_widget_type.contains("Text") {
+                if let Some(val) = dyn_data["value"].as_str() {
+                    let val_len = val.len();
+                    if val_len < const_widget.minlength || val_len > const_widget.maxlength {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        Characters = {} ; Min length = {} ; Max length = {}",
+                            meta.model_name,
+                            val_len,
+                            const_widget.minlength,
+                            const_widget.maxlength
+                        ))?
                     }
-                    // Get a list of values to match.
-                    let dyn_vec: Vec<String> = dyn_date
-                        .get_array(field_name.as_str())?
+                    let arr_vec = target_arr_bson
                         .iter()
-                        .map(|item| item.as_array().unwrap()[0].as_str().unwrap().to_string())
-                        .collect();
-                    // Selecting widgets with multi-selection support.
-                    if widget_type.contains("Mult") {
-                        let mut new_arr_bson = Vec::<Bson>::new();
-                        if widget_type.contains("Text") {
-                            let arr_bson = curr_doc.get_array(field_name.as_str())?;
-                            new_arr_bson = arr_bson
-                                .iter()
-                                .map(|item| item.clone())
-                                .filter(|item| {
-                                    dyn_vec.contains(&item.as_str().unwrap().to_string())
-                                })
-                                .collect();
-                            if new_arr_bson != *arr_bson {
-                                is_changed = true;
-                            }
-                        } else if widget_type.contains("I32") {
-                            let arr_bson = curr_doc.get_array(field_name.as_str())?;
-                            new_arr_bson = arr_bson
-                                .iter()
-                                .map(|item| item.clone())
-                                .filter(|item| {
-                                    dyn_vec.contains(&item.as_i32().unwrap().to_string())
-                                })
-                                .collect();
-                            if new_arr_bson != *arr_bson {
-                                is_changed = true;
-                            }
-                        } else if widget_type.contains("U32") || widget_type.contains("I64") {
-                            let arr_bson = curr_doc.get_array(field_name.as_str())?;
-                            new_arr_bson = arr_bson
-                                .iter()
-                                .map(|item| item.clone())
-                                .filter(|item| {
-                                    dyn_vec.contains(&item.as_i64().unwrap().to_string())
-                                })
-                                .collect();
-                            if new_arr_bson != *arr_bson {
-                                is_changed = true;
-                            }
-                        } else if widget_type.contains("F64") {
-                            let arr_bson = curr_doc.get_array(field_name.as_str())?;
-                            new_arr_bson = arr_bson
-                                .iter()
-                                .map(|item| item.clone())
-                                .filter(|item| {
-                                    dyn_vec.contains(&item.as_f64().unwrap().to_string())
-                                })
-                                .collect();
-                            if new_arr_bson != *arr_bson {
-                                is_changed = true;
-                            }
+                        .map(|item| item.as_array().unwrap()[0].as_str().unwrap())
+                        .collect::<Vec<&str>>();
+                    arr_vec.contains(&val)
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `value` => \
+                    The value is not a `&str` type.",
+                        meta.model_name
+                    ))?
+                }
+            } else if const_widget_type.contains("I32") {
+                if let Some(val) = dyn_data["value"].as_i64() {
+                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<i64>()?)
+                        || (!const_widget.max.is_empty()
+                            && val > const_widget.max.parse::<i64>()?)
+                    {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        Number = {} ; Min = {} ; Max = {}",
+                            meta.model_name, val, const_widget.min, const_widget.max
+                        ))?
+                    }
+                    if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        The value `{}` is not a `i32` type.",
+                            meta.model_name, val
+                        ))?
+                    }
+                    let val = i32::try_from(val)?;
+                    let arr_vec = target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i32().unwrap())
+                        .collect::<Vec<i32>>();
+                    arr_vec.contains(&val)
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `value` => \
+                    The value is not a `i32` type.",
+                        meta.model_name
+                    ))?
+                }
+            } else if const_widget_type.contains("U32") {
+                if let Some(val) = dyn_data["value"].as_i64() {
+                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<i64>()?)
+                        || (!const_widget.max.is_empty()
+                            && val > const_widget.max.parse::<i64>()?)
+                    {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        Number = {} ; Min = {} ; Max = {}",
+                            meta.model_name, val, const_widget.min, const_widget.max
+                        ))?
+                    }
+                    if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        The value `{}` is not a `u32` type.",
+                            meta.model_name, val
+                        ))?
+                    }
+                    let arr_vec = target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
+                        .collect::<Vec<i64>>();
+                    arr_vec.contains(&val)
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `value` => \
+                    The value is not a `u32` type.",
+                        meta.model_name
+                    ))?
+                }
+            } else if const_widget_type.contains("I64") {
+                if let Some(val) = dyn_data["value"].as_i64() {
+                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<i64>()?)
+                        || (!const_widget.max.is_empty()
+                            && val > const_widget.max.parse::<i64>()?)
+                    {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        Number = {} ; Min = {} ; Max = {}",
+                            meta.model_name, val, const_widget.min, const_widget.max
+                        ))?
+                    }
+                    if val < i64::MIN || val > i64::MAX {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        The value `{}` is not a `i64` type.",
+                            meta.model_name, val
+                        ))?
+                    }
+                    let arr_vec = target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
+                        .collect::<Vec<i64>>();
+                    arr_vec.contains(&val)
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `value` => \
+                    The value is not a `i64` type.",
+                        meta.model_name
+                    ))?
+                }
+            } else if const_widget_type.contains("F64") {
+                if let Some(val) = dyn_data["value"].as_f64() {
+                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<f64>()?)
+                        || (!const_widget.max.is_empty()
+                            && val > const_widget.max.parse::<f64>()?)
+                    {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        Number = {} ; Min = {} ; Max = {}",
+                            meta.model_name, val, const_widget.min, const_widget.max
+                        ))?
+                    }
+                    if val < f64::MIN || val > f64::MAX {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` > \
+                        Parameter: `dyn_data` > Field: `value` => \
+                        The value `{}` is not a `f64` type.",
+                            meta.model_name, val
+                        ))?
+                    }
+                    let arr_vec = target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_f64().unwrap())
+                        .collect::<Vec<f64>>();
+                    arr_vec.contains(&val)
+                } else {
+                    Err(format!(
+                        "Model: {} > Method: `update_dyn_wig` > \
+                    Parameter: `dyn_data` > Field: `value` => \
+                    The value is not a `f64` type.",
+                        meta.model_name
+                    ))?
+                }
+            } else {
+                false
+            };
+            if !const_is_delete && is_value_exist {
+                Err(format!(
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
+                Cannot add new value, similar value already exists.",
+                    meta.model_name, const_field_name
+                ))?
+            }
+            if const_is_delete && !is_value_exist {
+                Err(format!(
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
+                The value cannot be deleted, it is missing.",
+                    meta.model_name, const_field_name
+                ))?
+            }
+        }
+        //
+        // Remove or add dynamic value.
+        // -----------------------------------------------------------------------------------------
+        //
+        if const_is_delete {
+            // Remove dynamic value.
+            //
+            let const_target_arr_len = target_arr_bson.len();
+            //
+            for idx in 0..const_target_arr_len {
+                let tmp_arr = target_arr_bson[idx].as_array().unwrap();
+                if tmp_arr[1].as_str().unwrap() == const_title {
+                    if const_widget_type.contains("Text") {
+                        if tmp_arr[0].as_str().unwrap() == dyn_data["value"].as_str().unwrap() {
+                            target_arr_bson.remove(idx);
+                            break;
                         }
-                        if is_changed {
-                            if !new_arr_bson.is_empty() {
-                                curr_doc.insert(field_name, Bson::Array(new_arr_bson));
-                            } else {
-                                curr_doc.insert(field_name, Bson::Null);
-                            }
+                    } else if const_widget_type.contains("I32") {
+                        if tmp_arr[0].as_i32().unwrap()
+                            == i32::try_from(dyn_data["value"].as_i64().unwrap())?
+                        {
+                            target_arr_bson.remove(idx);
+                            break;
+                        }
+                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
+                    {
+                        if tmp_arr[0].as_i64().unwrap() == dyn_data["value"].as_i64().unwrap() {
+                            target_arr_bson.remove(idx);
+                            break;
+                        }
+                    } else if const_widget_type.contains("F64") {
+                        if tmp_arr[0].as_f64().unwrap() == dyn_data["value"].as_f64().unwrap() {
+                            target_arr_bson.remove(idx);
+                            break;
                         }
                     } else {
-                        let mut val = String::new();
-                        // Select widgets with support for one selection.
-                        if widget_type.contains("Text") {
-                            val = curr_doc.get_str(field_name.as_str())?.to_string();
-                        } else if widget_type.contains("I32") {
-                            val = curr_doc.get_i32(field_name.as_str())?.to_string();
-                        } else if widget_type.contains("U32") || widget_type.contains("I64") {
-                            val = curr_doc.get_i64(field_name.as_str())?.to_string();
-                        } else if widget_type.contains("F64") {
-                            val = curr_doc.get_f64(field_name.as_str())?.to_string();
-                        }
-                        if !dyn_vec.contains(&val) {
-                            curr_doc.insert(field_name, Bson::Null);
-                            is_changed = true;
-                        }
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` => \
+                            Invalid data type.",
+                            meta.model_name,
+                        ))?
                     }
                 }
             }
-            if is_changed {
-                // Update values for dynamic widgets.
-                // ---------------------------------------------------------------------------------
-                let query = doc! {"_id": curr_doc.get_object_id("_id")?};
-                coll.update_one(query, curr_doc, None)?;
+        } else {
+            // Add dynamic value.
+            //
+            if const_widget_type.contains("Text") {
+                let val_bson = Bson::String(dyn_data["value"].as_str().unwrap().to_string());
+                let title_bson = Bson::String(const_title.to_string());
+                let arr_bson = Bson::Array(vec![val_bson, title_bson]);
+                target_arr_bson.push(arr_bson);
+            } else if const_widget_type.contains("I32") {
+                let val_bson = Bson::Int32(i32::try_from(dyn_data["value"].as_i64().unwrap())?);
+                let title_bson = Bson::String(const_title.to_string());
+                let arr_bson = Bson::Array(vec![val_bson, title_bson]);
+                target_arr_bson.push(arr_bson);
+            } else if const_widget_type.contains("U32") || const_widget_type.contains("I64") {
+                let val_bson = Bson::Int64(dyn_data["value"].as_i64().unwrap());
+                let title_bson = Bson::String(const_title.to_string());
+                let arr_bson = Bson::Array(vec![val_bson, title_bson]);
+                target_arr_bson.push(arr_bson);
+            } else if const_widget_type.contains("F64") {
+                let val_bson = Bson::Double(dyn_data["value"].as_f64().unwrap());
+                let title_bson = Bson::String(const_title.to_string());
+                let arr_bson = Bson::Array(vec![val_bson, title_bson]);
+                target_arr_bson.push(arr_bson);
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` => \
+                    Invalid data type.",
+                    meta.model_name,
+                ))?
+            }
+        }
+        //
+        // Update dynamic data.
+        {
+            obj_fields_doc.insert(const_field_name, target_arr_bson.clone());
+            let update = doc! {
+                "$set": { "fields": obj_fields_doc}
+            };
+            coll.update_one(filter, update, None)?;
+        }
+
+        // Clean up orphaned (if any) data.
+        // *****************************************************************************************
+        if const_is_delete {
+            //
+            let const_control_arr = if const_widget_type.contains("Text") {
+                ControlArr::Text(
+                    target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_str().unwrap())
+                        .collect::<Vec<&str>>(),
+                )
+            } else if const_widget_type.contains("I32") {
+                ControlArr::I32(
+                    target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i32().unwrap())
+                        .collect::<Vec<i32>>(),
+                )
+            } else if const_widget_type.contains("U32") || const_widget_type.contains("I64") {
+                ControlArr::I64(
+                    target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
+                        .collect::<Vec<i64>>(),
+                )
+            } else if const_widget_type.contains("F64") {
+                ControlArr::F64(
+                    target_arr_bson
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_f64().unwrap())
+                        .collect::<Vec<f64>>(),
+                )
+            } else {
+                Err(format!(
+                    "Model: {} > Method: `update_dyn_wig` => \
+                    Invalid data type.",
+                    meta.model_name,
+                ))?
+            };
+            //
+            let db = client_cache.database(meta.database_name.as_str());
+            let coll = db.collection(meta.collection_name.as_str());
+            let mut cursor = coll.find(None, None)?;
+            // Iterate over all documents in the collection.
+            while let Some(doc_from_db) = cursor.next() {
+                let mut is_changed = false;
+                let mut doc_from_db = doc_from_db?;
+                //
+                // Skip documents if field value Null.
+                if doc_from_db.is_null(const_field_name) {
+                    continue;
+                }
+                // Widgets with support multiple selection.
+                if const_widget_type.contains("Mult") {
+                    let mut truncated_arr_bson = Vec::<Bson>::new();
+                    if const_widget_type.contains("Text") {
+                        let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
+                        truncated_arr_bson = tmp_arr_bson
+                            .iter()
+                            .map(|item| item.clone())
+                            .filter(|item| {
+                                const_control_arr
+                                    .control_arr_str()
+                                    .contains(&item.as_str().unwrap())
+                            })
+                            .collect();
+                        if truncated_arr_bson.len() != tmp_arr_bson.len() {
+                            is_changed = true;
+                        }
+                    } else if const_widget_type.contains("I32") {
+                        let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
+                        truncated_arr_bson = tmp_arr_bson
+                            .iter()
+                            .map(|item| item.clone())
+                            .filter(|item| {
+                                const_control_arr
+                                    .control_arr_i32()
+                                    .contains(&item.as_i32().unwrap())
+                            })
+                            .collect();
+                        if truncated_arr_bson.len() != tmp_arr_bson.len() {
+                            is_changed = true;
+                        }
+                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
+                    {
+                        let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
+                        truncated_arr_bson = tmp_arr_bson
+                            .iter()
+                            .map(|item| item.clone())
+                            .filter(|item| {
+                                const_control_arr
+                                    .control_arr_i64()
+                                    .contains(&item.as_i64().unwrap())
+                            })
+                            .collect();
+                        if truncated_arr_bson.len() != tmp_arr_bson.len() {
+                            is_changed = true;
+                        }
+                    } else if const_widget_type.contains("F64") {
+                        let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
+                        truncated_arr_bson = tmp_arr_bson
+                            .iter()
+                            .map(|item| item.clone())
+                            .filter(|item| {
+                                const_control_arr
+                                    .control_arr_f64()
+                                    .contains(&item.as_f64().unwrap())
+                            })
+                            .collect();
+                        if truncated_arr_bson.len() != tmp_arr_bson.len() {
+                            is_changed = true;
+                        }
+                    }
+                    //
+                    if is_changed {
+                        let result_bson = if !truncated_arr_bson.is_empty() {
+                            Bson::Array(truncated_arr_bson)
+                        } else {
+                            Bson::Null
+                        };
+                        doc_from_db.insert(const_field_name, result_bson);
+                    }
+                } else {
+                    // Select widgets with support for one selection.
+                    is_changed = if const_widget_type.contains("Text") {
+                        let val = doc_from_db.get_str(const_field_name)?;
+                        !const_control_arr.control_arr_str().contains(&val)
+                    } else if const_widget_type.contains("I32") {
+                        let val = doc_from_db.get_i32(const_field_name)?;
+                        !const_control_arr.control_arr_i32().contains(&val)
+                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
+                    {
+                        let val = doc_from_db.get_i64(const_field_name)?;
+                        !const_control_arr.control_arr_i64().contains(&val)
+                    } else if const_widget_type.contains("F64") {
+                        let val = doc_from_db.get_f64(const_field_name)?;
+                        !const_control_arr.control_arr_f64().contains(&val)
+                    } else {
+                        Err(format!(
+                            "Model: {} > Method: `update_dyn_wig` => \
+                            Invalid data type.",
+                            meta.model_name,
+                        ))?
+                    };
+                    //
+                    if is_changed {
+                        doc_from_db.insert(const_field_name, Bson::Null);
+                    }
+                }
+                //
+                if is_changed {
+                    // Update the document in the database.
+                    let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
+                    coll.update_one(query, doc_from_db, None)?;
+                }
             }
         }
 
         // Update metadata and widgects map to cache.
-        // -----------------------------------------------------------------------------------------
         Self::to_cache()?;
         //
         Ok(())

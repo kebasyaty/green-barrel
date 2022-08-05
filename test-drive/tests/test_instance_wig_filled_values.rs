@@ -12,10 +12,11 @@ mod app_name {
     // Test application settings
     // =============================================================================================
     pub const PROJECT_NAME: &str = "project_name";
+    // The unique key for this test.
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "test474l8gCy44C4";
+    pub const UNIQUE_PROJECT_KEY: &str = "testF6rJHzxM7H8";
     //
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
@@ -244,6 +245,7 @@ mod app_name {
             ]"#
         )]
         pub select_i32_mult: Option<Vec<i32>>,
+        //
         #[serde(default)]
         #[field_attrs(widget = "selectI32MultDyn")]
         pub select_i32_mult_dyn: Option<Vec<i32>>,
@@ -467,7 +469,7 @@ fn test_instance_wig_filled_values() -> Result<(), Box<dyn Error>> {
     // *********************************************************************************************
     // Check
     // ---------------------------------------------------------------------------------------------
-    let output_data = test_model.check()?;
+    let output_data = test_model.check(None)?;
     assert!(output_data.is_valid(), "Check - is_valid");
     assert!(output_data.hash().is_empty(), "Check - hash.is_empty");
     assert!(output_data.object_id().is_err(), "Check - object_id.is_err");

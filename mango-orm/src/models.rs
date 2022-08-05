@@ -37,7 +37,9 @@ pub struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
+    // <field_name, field_type>.
     pub field_type_map: std::collections::HashMap<String, String>,
+    // <field_name, widget_type>.
     pub widget_type_map: std::collections::HashMap<String, String>,
     // <field_name, (widget_type, value)>.
     pub default_value_map: std::collections::HashMap<String, (String, String)>,
@@ -125,7 +127,7 @@ pub trait Main {
         unique_project_key: &str,
         collection_name: &str,
         client: &Client,
-        map_widgets: &mut HashMap<String, Widget>,
+        widget_map: &mut HashMap<String, Widget>,
     ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
         let db_mango_tech: String = format!("mango_tech__{}__{}", project_name, unique_project_key);
@@ -139,22 +141,60 @@ pub trait Main {
         };
         // Get a document with values for dynamic widgets.
         if let Some(doc) = collection.find_one(filter, None)? {
-            let doc_dyn_values = doc.get_document("fields")?;
+            let dyn_values_doc = doc.get_document("fields")?;
             // Updating the `options` parameter for fields with a dynamic widget.
-            for (field_name, widget) in map_widgets {
+            for (field_name, widget) in widget_map {
                 let widget_type = widget.widget.clone();
                 if widget_type.contains("Dyn") {
-                    let arr = doc_dyn_values.get_array(field_name)?;
-                    let options: Vec<(String, String)> = arr
-                        .iter()
-                        .map(|item| {
-                            let arr = item.as_array().unwrap();
-                            (
-                                arr[0].as_str().unwrap().to_string(),
-                                arr[1].as_str().unwrap().to_string(),
-                            )
-                        })
-                        .collect();
+                    let arr = dyn_values_doc.get_array(field_name)?;
+                    let options = if widget_type.contains("Text") {
+                        arr.iter()
+                            .map(|item| {
+                                let arr = item.as_array().unwrap();
+                                (
+                                    arr[0].as_str().unwrap().to_string(),
+                                    arr[1].as_str().unwrap().to_string(),
+                                )
+                            })
+                            .collect::<Vec<(String, String)>>()
+                    } else if widget_type.contains("I32") {
+                        arr.iter()
+                            .map(|item| {
+                                let arr = item.as_array().unwrap();
+                                (
+                                    arr[0].as_i32().unwrap().to_string(),
+                                    arr[1].as_str().unwrap().to_string(),
+                                )
+                            })
+                            .collect::<Vec<(String, String)>>()
+                    } else if widget_type.contains("U32") || widget_type.contains("I64") {
+                        arr.iter()
+                            .map(|item| {
+                                let arr = item.as_array().unwrap();
+                                (
+                                    arr[0].as_i64().unwrap().to_string(),
+                                    arr[1].as_str().unwrap().to_string(),
+                                )
+                            })
+                            .collect::<Vec<(String, String)>>()
+                    } else if widget_type.contains("F64") {
+                        arr.iter()
+                            .map(|item| {
+                                let arr = item.as_array().unwrap();
+                                (
+                                    arr[0].as_f64().unwrap().to_string(),
+                                    arr[1].as_str().unwrap().to_string(),
+                                )
+                            })
+                            .collect::<Vec<(String, String)>>()
+                    } else {
+                        Err(format!(
+                            "Model: {} > Method: `vitaminize` => \
+                            Invalid data type.",
+                            Self::meta()?.model_name,
+                        ))?
+                    };
+                    //
                     widget.options = options;
                 }
             }
@@ -165,7 +205,7 @@ pub trait Main {
                 Self::meta()?.model_name
             ))?
         }
-
+        //
         Ok(())
     }
 }

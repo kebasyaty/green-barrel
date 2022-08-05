@@ -78,7 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Check model.
     // ---------------------------------------------------------------------------------------------
     /*
-    let output_data = user.check()?;
+    let output_data = user.check(None)?;
     println!("Boolean: {}", output_data.is_valid());
     println!("Hash: {}", output_data.hash());
     println!("Object Id: {:?}", output_data.object_id());

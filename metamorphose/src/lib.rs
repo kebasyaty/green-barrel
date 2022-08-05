@@ -450,7 +450,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         )
                     }
                 }
-                // Validation the `min` and` max` parameters for date and time.
+                // Validation the `min` and` max` field attributes for date and time.
                 if widget.widget == "inputDate".to_string() {
                     let re_valid_date = regex::RegexBuilder::new(
                     r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
@@ -570,7 +570,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             } else if !widget.options.is_empty() {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    For dynamic widgets, it is unacceptable to use `select` parameter.",
+                    For dynamic widgets, it is unacceptable to use `select` field attribute.",
                     model_name.to_string(),
                     field_name,
                 )
@@ -582,7 +582,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name,
                 )
             }
-        // Validation the `slug_sources` parameter for widgets of the `Slug` type.
+        // Validation the `slug_sources` field attribute for widgets of the `Slug` type.
         } else if widget.widget.contains("Slug") {
             if !widget.value.is_empty() {
                 panic!(
@@ -673,7 +673,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     if result {
                         panic!(
                             "Model: `{}` > Field: `{}` => \
-                            There is no default value in the `options` parameter.",
+                            There is no default value in the `options` field attribute.",
                             model_name.to_string(),
                             field_name,
                         )
@@ -687,13 +687,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 {
                     panic!(
                         "Model: `{}` > Field: `{}` => \
-                        There is no default value in the `options` parameter.",
+                        There is no default value in the `options` field attribute.",
                         model_name.to_string(),
                         field_name,
                     )
                 }
             }
-        // For widgets with support for u32 numbers, parameter min = 0
+        // For widgets with support for u32 numbers, field attribute min = 0
         } else if widget.widget.contains("U32") {
             widget.min = 0_usize.to_string();
         }
@@ -1086,7 +1086,7 @@ fn get_widget_info<'a>(
     Ok(info)
 }
 
-/// Get parameter value from model field attribute.
+/// Get value from field attribute of Model.
 // *************************************************************************************************
 fn get_param_value<'a>(
     attr_name: &'a str,
@@ -1104,7 +1104,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `label`. \
+                    Could not determine value for field attribute `label`. \
                     Example: \"Some text\"",
                     model_name, field_name
                 )
@@ -1116,7 +1116,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `accept`. \
+                    Could not determine value for field attribute `accept`. \
                     Example: \"image/jpeg,image/png\"",
                     model_name, field_name
                 )
@@ -1146,7 +1146,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `widget`. \
+                    Could not determine value for field attribute `widget`. \
                     Example: \"inputEmail\"",
                     model_name, field_name
                 )
@@ -1159,7 +1159,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: 5",
                         model_name, field_name, field_type
                     )
@@ -1173,7 +1173,7 @@ fn get_param_value<'a>(
                         if arr.unwrap().is_empty() {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` parameter. \
+                                An empty array is not allowed for the `value` field attribute. \
                                 Example: \"[10, 20]\"",
                                 model_name, field_name, field_type
                             )
@@ -1182,7 +1182,7 @@ fn get_param_value<'a>(
                     } else {
                         panic!(
                             "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for parameter `value`. \
+                            Could not determine value for field attribute `value`. \
                             Example: \"[10, 20]\"",
                             model_name, field_name, field_type
                         )
@@ -1190,7 +1190,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
@@ -1202,7 +1202,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: 5",
                         model_name, field_name, field_type
                     )
@@ -1216,7 +1216,7 @@ fn get_param_value<'a>(
                         if arr.unwrap().is_empty() {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` parameter. \
+                                An empty array is not allowed for the `value` field attribute. \
                                 Example: \"[10, 20]\"",
                                 model_name, field_name, field_type
                             )
@@ -1225,7 +1225,7 @@ fn get_param_value<'a>(
                     } else {
                         panic!(
                             "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10, 20]\"",
                             model_name, field_name, field_type
                         )
@@ -1233,7 +1233,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
@@ -1245,7 +1245,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: 5",
                         model_name, field_name, field_type
                     )
@@ -1259,7 +1259,7 @@ fn get_param_value<'a>(
                         if arr.unwrap().is_empty() {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` parameter. \
+                                An empty array is not allowed for the `value` field attribute. \
                                 Example: \"[10, 20]\"",
                                 model_name, field_name, field_type
                             )
@@ -1268,7 +1268,7 @@ fn get_param_value<'a>(
                     } else {
                         panic!(
                             "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for parameter `value`. \
+                            Could not determine value for field attribute `value`. \
                             Example: \"[10, 20]\"",
                             model_name, field_name, field_type
                         )
@@ -1276,7 +1276,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10, 20]\"",
                         model_name, field_name, field_type
                     )
@@ -1288,7 +1288,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: 5.2",
                         model_name, field_name, field_type
                     )
@@ -1302,7 +1302,7 @@ fn get_param_value<'a>(
                         if arr.unwrap().is_empty() {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` parameter. \
+                                An empty array is not allowed for the `value` field attribute. \
                                 Example: \"[10, 20]\"",
                                 model_name, field_name, field_type
                             )
@@ -1311,7 +1311,7 @@ fn get_param_value<'a>(
                     } else {
                         panic!(
                             "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10.1, 20.2]\"",
                             model_name, field_name, field_type
                         )
@@ -1319,7 +1319,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"[10.1, 20.2]\"",
                         model_name, field_name, field_type
                     )
@@ -1333,14 +1333,14 @@ fn get_param_value<'a>(
                         panic!(
                             "Model: `{}` > Field: `{}` > Widget: `{}` => \
                             The password field must not have a \
-                            default value in the `value` parameter.",
+                            default value in the `value` field attribute.",
                             model_name, field_name, "inputPassword"
                         )
                     }
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: \"Some text\"",
                         model_name, field_name, field_type
                     )
@@ -1354,7 +1354,7 @@ fn get_param_value<'a>(
                         if arr.unwrap().is_empty() {
                             panic!(
                                 "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` parameter. \
+                                An empty array is not allowed for the `value` field attribute. \
                                 Example: \"[10, 20]\"",
                                 model_name, field_name, field_type
                             )
@@ -1363,7 +1363,7 @@ fn get_param_value<'a>(
                     } else {
                         panic!(
                             "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for parameter `value`. \
+                            Could not determine value for field attribute `value`. \
                             Example: r#\"[\"Some text\", \"Some text\"]\"#",
                             model_name, field_name, field_type
                         )
@@ -1371,7 +1371,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `value`. \
+                        Could not determine value for field attribute `value`. \
                         Example: r#\"[\"Some text\", \"Some text\"]\"#",
                         model_name, field_name, field_type
                     )
@@ -1379,7 +1379,7 @@ fn get_param_value<'a>(
             }
             _ => panic!(
                 "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `value` parameter.",
+                Unsupported field type for `value` field attribute.",
                 model_name.to_string(),
                 field_name,
                 field_type
@@ -1391,7 +1391,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `placeholder`. \
+                    Could not determine value for field attribute `placeholder`. \
                     Example: \"Some text\"",
                     model_name, field_name
                 )
@@ -1403,7 +1403,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `pattern`. \
+                    Could not determine value for field attribute `pattern`. \
                     Example: \"some regular expression\"",
                     model_name, field_name
                 )
@@ -1415,7 +1415,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `minlength`. \
+                    Could not determine value for field attribute `minlength`. \
                     Example: 10",
                     model_name, field_name
                 )
@@ -1427,7 +1427,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `maxlength`. \
+                    Could not determine value for field attribute `maxlength`. \
                     Example: 10",
                     model_name, field_name
                 )
@@ -1439,7 +1439,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `required`. \
+                    Could not determine value for field attribute `required`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1451,7 +1451,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `checked`. \
+                    Could not determine value for field attribute `checked`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1463,7 +1463,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `unique`. \
+                    Could not determine value for field attribute `unique`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1475,7 +1475,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `disabled`. \
+                    Could not determine value for field attribute `disabled`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1487,7 +1487,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `readonly`. \
+                    Could not determine value for field attribute `readonly`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1496,11 +1496,23 @@ fn get_param_value<'a>(
         "step" => match field_type {
             "i32" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.step = lit_int.base10_parse::<i32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i32>().unwrap();
+                    if num < i32::MIN || num > i32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `step` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i32::MIN,
+                            i32::MAX
+                        )
+                    }
+                    widget.step = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `step`. \
+                        Could not determine value for field attribute `step`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
@@ -1508,11 +1520,23 @@ fn get_param_value<'a>(
             }
             "u32" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.step = lit_int.base10_parse::<u32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<u32>().unwrap();
+                    if num < u32::MIN || num > u32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `step` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            u32::MIN,
+                            u32::MAX
+                        )
+                    }
+                    widget.step = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `step`. \
+                        Could not determine value for field attribute `step`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
@@ -1520,11 +1544,23 @@ fn get_param_value<'a>(
             }
             "i64" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.step = lit_int.base10_parse::<i64>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i64>().unwrap();
+                    if num < i64::MIN || num > i64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `step` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i64::MIN,
+                            i64::MAX
+                        )
+                    }
+                    widget.step = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `step`. \
+                        Could not determine value for field attribute `step`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
@@ -1532,11 +1568,23 @@ fn get_param_value<'a>(
             }
             "f64" => {
                 if let Float(lit_float) = &mnv.lit {
-                    widget.step = lit_float.base10_parse::<f64>().unwrap().to_string();
+                    let num = lit_float.base10_parse::<f64>().unwrap();
+                    if num < f64::MIN || num > f64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `step` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            f64::MIN,
+                            f64::MAX
+                        )
+                    }
+                    widget.step = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `step`. \
+                        Could not determine value for field attribute `step`. \
                         Example: 10.2",
                         model_name, field_name, field_type
                     )
@@ -1544,11 +1592,24 @@ fn get_param_value<'a>(
             }
             "String" => {
                 if let Str(lit_str) = &mnv.lit {
-                    widget.step = lit_str.value().trim().to_string()
+                    let text = lit_str.value().trim().to_string();
+                    let text_len = text.len();
+                    if text_len < widget.minlength || text_len > widget.maxlength {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `step` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            widget.minlength,
+                            widget.maxlength
+                        )
+                    }
+                    widget.step = text;
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `step`.
+                        Could not determine value for field attribute `step`.
                         Example: not supported.",
                         model_name, field_name, field_type
                     )
@@ -1556,54 +1617,102 @@ fn get_param_value<'a>(
             }
             _ => panic!(
                 "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `step` parameter.",
+                Unsupported field type for `step` field attribute.",
                 model_name, field_name, field_type
             ),
         },
         "min" => match field_type {
-            "i32" => {
+            "i32" | "Vec < i32 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.min = lit_int.base10_parse::<i32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i32>().unwrap();
+                    if num < i32::MIN || num > i32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `min` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i32::MIN,
+                            i32::MAX
+                        )
+                    }
+                    widget.min = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `min`. \
+                        Could not determine value for field attribute `min`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "u32" => {
+            "u32" | "Vec < u32 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.min = lit_int.base10_parse::<u32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<u32>().unwrap();
+                    if num < u32::MIN || num > u32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `min` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            u32::MIN,
+                            u32::MAX
+                        )
+                    }
+                    widget.min = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `min`. \
+                        Could not determine value for field attribute `min`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "i64" => {
+            "i64" | "Vec < i64 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.min = lit_int.base10_parse::<i64>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i64>().unwrap();
+                    if num < i64::MIN || num > i64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `min` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i64::MIN,
+                            i64::MAX
+                        )
+                    }
+                    widget.min = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `min`. \
+                        Could not determine value for field attribute `min`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "f64" => {
+            "f64" | "Vec < f64 >" => {
                 if let Float(lit_float) = &mnv.lit {
-                    widget.min = lit_float.base10_parse::<f64>().unwrap().to_string();
+                    let num = lit_float.base10_parse::<f64>().unwrap();
+                    if num < f64::MIN || num > f64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `min` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            f64::MIN,
+                            f64::MAX
+                        )
+                    }
+                    widget.min = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `min`. \
+                        Could not determine value for field attribute `min`. \
                         Example: 10.2",
                         model_name, field_name, field_type
                     )
@@ -1611,11 +1720,24 @@ fn get_param_value<'a>(
             }
             "String" => {
                 if let Str(lit_str) = &mnv.lit {
-                    widget.min = lit_str.value().trim().to_string();
+                    let text = lit_str.value().trim().to_string();
+                    let text_len = text.len();
+                    if text_len < widget.minlength || text_len > widget.maxlength {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `min` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            widget.minlength,
+                            widget.maxlength
+                        )
+                    }
+                    widget.min = text;
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `min`. \
+                        Could not determine value for field attribute `min`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_name, field_name, field_type
                     )
@@ -1623,54 +1745,102 @@ fn get_param_value<'a>(
             }
             _ => panic!(
                 "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `min` parameter.",
+                Unsupported field type for `min` field attribute.",
                 model_name, field_name, field_type
             ),
         },
         "max" => match field_type {
-            "i32" => {
+            "i32" | "Vec < i32 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.max = lit_int.base10_parse::<i32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i32>().unwrap();
+                    if num < i32::MIN || num > i32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `max` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i32::MIN,
+                            i32::MAX
+                        )
+                    }
+                    widget.max = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `max`. \
+                        Could not determine value for field attribute `max`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "u32" => {
+            "u32" | "Vec < u32 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.max = lit_int.base10_parse::<u32>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<u32>().unwrap();
+                    if num < u32::MIN || num > u32::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `max` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            u32::MIN,
+                            u32::MAX
+                        )
+                    }
+                    widget.max = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `max`. \
+                        Could not determine value for field attribute `max`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "i64" => {
+            "i64" | "Vec < i64 >" => {
                 if let Int(lit_int) = &mnv.lit {
-                    widget.max = lit_int.base10_parse::<i64>().unwrap().to_string();
+                    let num = lit_int.base10_parse::<i64>().unwrap();
+                    if num < i64::MIN || num > i64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `max` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            i64::MIN,
+                            i64::MAX
+                        )
+                    }
+                    widget.max = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `max`. \
+                        Could not determine value for field attribute `max`. \
                         Example: 10",
                         model_name, field_name, field_type
                     )
                 }
             }
-            "f64" => {
+            "f64" | "Vec < f64 >" => {
                 if let Float(lit_float) = &mnv.lit {
-                    widget.max = lit_float.base10_parse::<f64>().unwrap().to_string();
+                    let num = lit_float.base10_parse::<f64>().unwrap();
+                    if num < f64::MIN || num > f64::MAX {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `max` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            f64::MIN,
+                            f64::MAX
+                        )
+                    }
+                    widget.max = num.to_string();
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `max`. \
+                        Could not determine value for field attribute `max`. \
                         Example: 10.2",
                         model_name, field_name, field_type,
                     )
@@ -1678,11 +1848,24 @@ fn get_param_value<'a>(
             }
             "String" => {
                 if let Str(lit_str) = &mnv.lit {
-                    widget.max = lit_str.value().trim().to_string();
+                    let text = lit_str.value().trim().to_string();
+                    let text_len = text.len();
+                    if text_len < widget.minlength || text_len > widget.maxlength {
+                        panic!(
+                            "Model: `{}` > Field: `{}` > Type: {} => \
+                            Field attribute `max` does not fall within the interval {} <-> {}",
+                            model_name,
+                            field_name,
+                            field_type,
+                            widget.minlength,
+                            widget.maxlength
+                        )
+                    }
+                    widget.max = text;
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `max`. \
+                        Could not determine value for field attribute `max`. \
                         Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
                         model_name, field_name, field_type
                     )
@@ -1690,7 +1873,7 @@ fn get_param_value<'a>(
             }
             _ => panic!(
                 "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `max` parameter.",
+                Unsupported field type for `max` field attribute.",
                 model_name, field_name, field_type
             ),
         },
@@ -1711,7 +1894,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `options`. \
+                        Could not determine value for field attribute `options`. \
                         Example: 5 or \
                         Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
                         Example: r#\"[10, 20]\"#",
@@ -1735,7 +1918,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `options`. \
+                        Could not determine value for field attribute `options`. \
                         Example: 5 or \
                         Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
                         Example: r#\"[10, 20]\"#",
@@ -1759,7 +1942,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `options`. \
+                        Could not determine value for field attribute `options`. \
                         Example: 5 or \
                         Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
                         Example: r#\"[10, 20]\"#",
@@ -1783,7 +1966,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `options`. \
+                        Could not determine value for field attribute `options`. \
                         Example: 5.5 or \
                         Example: r#\"[[10.1, \"Title 1\"], [20.2, \"Title 2\"]]\"# or \
                         Example: r#\"[10.1, 20.2]\"#",
@@ -1808,7 +1991,7 @@ fn get_param_value<'a>(
                 } else {
                     panic!(
                         "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for parameter `options`. \
+                        Could not determine value for field attribute `options`. \
                         Example: \"Some text\" or \
                         Example: r#\"[[\"value 1\", \"Title 1\"], [\"value 2\", \"Title 2\"]]\"# or \
                         Example: r#\"[\"Item 1\", \"Item 2\"]\"#",
@@ -1818,7 +2001,7 @@ fn get_param_value<'a>(
             }
             _ => panic!(
                 "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `options` parameter.",
+                Unsupported field type for `options` field attribute.",
                 model_name, field_name, field_type
             ),
         },
@@ -1840,7 +2023,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `thumbnails`. \
+                    Could not determine value for field attribute `thumbnails`. \
                     Example: r#\"[[\"xs\",150], [\"sm\",300], [\"md\",600], [\"lg\",1200]]\"# \
                     from one to four inclusive",
                     model_name, field_name
@@ -1854,7 +2037,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `slug_sources`. \
+                    Could not determine value for field attribute `slug_sources`. \
                     Example: r#\"[\"title\"]\"# or r#\"[\"title\", \"hash\"]\"#",
                     model_name, field_name
                 )
@@ -1866,7 +2049,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `is_hide`. \
+                    Could not determine value for field attribute `is_hide`. \
                     Example: true. Default = false.",
                     model_name, field_name
                 )
@@ -1878,7 +2061,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `other_attrs`. \
+                    Could not determine value for field attribute `other_attrs`. \
                     Example: \"autofocus multiple size=\\\"some number\\\"",
                     model_name, field_name
                 )
@@ -1890,7 +2073,7 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `css_classes`. \
+                    Could not determine value for field attribute `css_classes`. \
                     Example: \"class_name, class_name\"",
                     model_name, field_name
                 )
@@ -1902,30 +2085,34 @@ fn get_param_value<'a>(
             } else {
                 panic!(
                     "Model: `{}` > Field: `{}` => \
-                    Could not determine value for parameter `hint`. \
+                    Could not determine value for field attribute `hint`. \
                     Example: \"Some text\".",
                     model_name, field_name
                 )
             }
         }
         "id" => panic!(
-            "Model: `{}` > Field: `{}` => The `id` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `id` field attribute is determined automatically.",
             model_name, field_name
         ),
         "name" => panic!(
-            "Model: `{}` > Field: `{}` => The `name` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `name` field attribute is determined automatically.",
             model_name, field_name
         ),
         "input_type" => panic!(
-            "Model: `{}` > Field: `{}` => The `input_type` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `input_type` field attribute is determined automatically.",
             model_name, field_name
         ),
         "warning" => panic!(
-            "Model: `{}` > Field: `{}` => The `warning` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `warning` field attribute is determined automatically.",
             model_name, field_name
         ),
         "error" => panic!(
-            "Model: `{}` > Field: `{}` => The `error` parameter is determined automatically.",
+            "Model: `{}` > Field: `{}` => The `error` field attribute is determined automatically.",
+            model_name, field_name
+        ),
+        "alert" => panic!(
+            "Model: `{}` > Field: `{}` => The `alert` field attribute is determined automatically.",
             model_name, field_name
         ),
         _ => panic!(

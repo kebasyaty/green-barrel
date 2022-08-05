@@ -13,10 +13,11 @@ mod app_name {
     // Test application settings
     // =============================================================================================
     pub const PROJECT_NAME: &str = "project_name";
+    // The unique key for this test.
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "testBqLY3xfFL8wz";
+    pub const UNIQUE_PROJECT_KEY: &str = "testkC1n08ZfjgS";
     //
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
@@ -142,6 +143,7 @@ mod app_name {
         #[serde(default)]
         #[field_attrs(widget = "selectI32Mult")]
         pub select_i32_mult: Option<Vec<i32>>,
+        //
         #[serde(default)]
         #[field_attrs(widget = "selectI32MultDyn")]
         pub select_i32_mult_dyn: Option<Vec<i32>>,
@@ -308,15 +310,6 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     );
     // Get cached Model data
     let _cache_data: (ModelCache, Client) = TestModel::get_cache_data_for_query()?;
-    // Update data for dynamic widgets
-    /*
-    let json_line = r#"{
-            "field_name":[["value","Title"]],
-            "field_name_2":[["value","Title 2"]],
-            "field_name_3":[["value","Title 3"]]
-         }"#;
-    assert!(TestModel::db_update_dyn_widgets(json_line).is_ok());
-    */
     //
     //
     // Module: mango-orm/src/models/db_query_api/commons.rs

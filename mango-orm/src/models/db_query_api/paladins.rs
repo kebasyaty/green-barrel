@@ -13,6 +13,7 @@ use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
+    helpers::{FileData, ImageData},
     models::{
         caching::Caching,
         hooks::Hooks,
@@ -20,7 +21,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main, Meta,
     },
-    widgets::{FileData, ImageData, Widget},
+    widgets::Widget,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -159,13 +160,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let model_name  = ModelName {...}
-    /// let output_data = model_name.check()?;
+    /// let output_data = model_name.check(None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
     /// ```
     ///
-    fn check(&mut self) -> Result<OutputDataCheck, Box<dyn Error>> {
+    fn check(&mut self, is_save: Option<bool>) -> Result<OutputDataCheck, Box<dyn Error>> {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -1833,13 +1834,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Insert or update fields for timestamps `created_at` and `updated_at`.
             // -------------------------------------------------------------------------------------
             if !is_err_symptom {
+                let is_save = is_save.unwrap_or(false);
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 let dt_text: String = dt.to_rfc3339()[..19].into();
                 if is_update {
                     // For update.
-                    final_doc.insert("updated_at", Bson::DateTime(dt));
-                    final_widget_map.get_mut("updated_at").unwrap().value = dt_text.clone();
-                    self.set_updated_at(dt_text);
+                    if is_save {
+                        final_doc.insert("updated_at", Bson::DateTime(dt));
+                        final_widget_map.get_mut("updated_at").unwrap().value = dt_text.clone();
+                        self.set_updated_at(dt_text);
+                    }
                     // Get the `created_at` value from the database.
                     let doc = {
                         let object_id = ObjectId::with_string(hash)?;
@@ -1852,7 +1856,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert("created_at", dt);
                     final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
                     self.set_created_at(dt_text);
-                } else {
+                } else if is_save {
                     // For create.
                     final_doc.insert("created_at", Bson::DateTime(dt));
                     final_doc.insert("updated_at", Bson::DateTime(dt));
@@ -1976,7 +1980,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for num in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check()?;
+            let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             // Get cached Model data.
