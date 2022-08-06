@@ -1,6 +1,5 @@
 //! Adapts the Structure for database queries using a programmatic or web interface.
 
-pub mod administrator;
 pub mod caching;
 pub mod converters;
 pub mod db_query_api;
@@ -8,69 +7,14 @@ pub mod hooks;
 pub mod output_data;
 pub mod validation;
 
-use crate::widgets::Widget;
 use mongodb::{
     bson::{doc, oid::ObjectId},
     sync::Client,
 };
-use serde::Deserialize;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-// MODEL
-// #################################################################################################
-/// Metadata
-/// ( model parameters )
-// *************************************************************************************************
-#[derive(Deserialize, Clone, Debug)]
-pub struct Meta {
-    pub model_name: String,
-    pub project_name: String,
-    pub unique_project_key: String,
-    pub service_name: String,
-    pub database_name: String,
-    pub db_client_name: String,
-    pub db_query_docs_limit: u32,
-    pub collection_name: String,
-    pub fields_count: usize,
-    pub fields_name: Vec<String>,
-    pub is_add_docs: bool,
-    pub is_up_docs: bool,
-    pub is_del_docs: bool,
-    // <field_name, field_type>.
-    pub field_type_map: std::collections::HashMap<String, String>,
-    // <field_name, widget_type>.
-    pub widget_type_map: std::collections::HashMap<String, String>,
-    // <field_name, (widget_type, value)>.
-    pub default_value_map: std::collections::HashMap<String, (String, String)>,
-    // List of field names that will not be saved to the database.
-    pub ignore_fields: Vec<String>,
-}
-
-impl Default for Meta {
-    fn default() -> Self {
-        Meta {
-            model_name: String::new(),
-            project_name: String::new(),
-            unique_project_key: String::new(),
-            service_name: String::new(),
-            database_name: String::new(),
-            db_client_name: String::new(),
-            db_query_docs_limit: 0_u32,
-            collection_name: String::new(),
-            fields_count: 0_usize,
-            fields_name: Vec::new(),
-            is_add_docs: true,
-            is_up_docs: true,
-            is_del_docs: true,
-            field_type_map: std::collections::HashMap::new(),
-            widget_type_map: std::collections::HashMap::new(),
-            default_value_map: std::collections::HashMap::new(),
-            // List of field names that will not be saved to the database.
-            ignore_fields: Vec::new(),
-        }
-    }
-}
+use crate::{helpers::Meta, widgets::Widget};
 
 /// Model options and widget map for Form.
 // *************************************************************************************************

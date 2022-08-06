@@ -5,10 +5,8 @@ use serde_json::Value;
 use std::error::Error;
 
 use crate::{
-    models::{
-        db_query_api::{commons::QCommons, paladins::QPaladins},
-        Meta,
-    },
+    helpers::Meta,
+    models::db_query_api::{commons::QCommons, paladins::QPaladins},
     widgets::Widget,
 };
 

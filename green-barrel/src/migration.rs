@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
 
 use crate::{
-    helpers::{FileData, ImageData},
+    helpers::{FileData, ImageData, Meta},
     store::MONGODB_CLIENT_STORE,
 };
 
@@ -39,7 +39,7 @@ pub struct ModelState {
 pub struct Monitor<'a> {
     pub project_name: &'a str,
     pub unique_project_key: &'a str,
-    pub models: Vec<crate::models::Meta>,
+    pub models: Vec<Meta>,
 }
 
 impl<'a> Monitor<'a> {
