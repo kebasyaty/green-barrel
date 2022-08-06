@@ -13,6 +13,8 @@
 
 ## Attention
 
+#### [MongoDB version 4.4](https://www.mongodb.com/docs/manual/release-notes/4.4/ "MongoDB version 4.4")
+
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
 **[Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") ). For those who use [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
