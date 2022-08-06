@@ -4,7 +4,7 @@
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [Actix-green-panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel").**
+**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel").**
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
@@ -13,11 +13,11 @@
 
 ## Attention
 
-#### [MongoDB version 4.4](https://www.mongodb.com/docs/manual/release-notes/4.4/ "MongoDB version 4.4")
+#### [MongoDB](https://www.mongodb.com/ "MongoDB") version 4.4
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") ). For those who use [Actix-Green panel](https://github.com/kebasyaty/actix-green-panel "actix-green-panel") - Follow our updates.**
+**[Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") ). For those who use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") - Follow our updates.**
 
 ## Requirements
 
