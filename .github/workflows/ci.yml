@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: cargo build --all --verbose
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.3.0
+        uses: supercharge/mongodb-github-action@1.7.0
         with:
           mongodb-version: 4.4
       - name: Run tests
