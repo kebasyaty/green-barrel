@@ -24,7 +24,7 @@ jobs:
       - name: Check format
         run: cargo fmt --all -- --check
       - name: Check with clippy
-        run: cd mango-orm && cargo clippy --all
+        run: cd green-barrel && cargo clippy --all
       - name: Build
         run: cargo build --all --verbose
       - name: Start MongoDB
