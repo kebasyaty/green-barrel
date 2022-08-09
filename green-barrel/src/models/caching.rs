@@ -8,10 +8,13 @@ use serde_json::Value;
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::{
-    helpers::{ControlArr, Enctype, HttpMethod},
+    helpers::{
+        enumerations::{ControlArr, Enctype, HttpMethod},
+        generate_html::GenerateHtml,
+    },
     models::{converters::Converters, Main, Meta},
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
-    widgets::{generate_html::GenerateHtml, Widget},
+    widgets::Widget,
 };
 
 /// Caching inmodelation about Models for speed up work.

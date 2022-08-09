@@ -13,7 +13,7 @@ use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    helpers::{FileData, ImageData},
+    helpers::structures::{FileData, ImageData},
     models::{
         caching::Caching,
         hooks::Hooks,

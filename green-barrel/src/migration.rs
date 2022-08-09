@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
 
 use crate::{
-    helpers::{FileData, ImageData, Meta},
+    helpers::structures::{FileData, ImageData, Meta},
     store::MONGODB_CLIENT_STORE,
 };
 

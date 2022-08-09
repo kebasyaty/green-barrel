@@ -1,7 +1,6 @@
 //! For control of fields on the server and client side.
 
 pub mod check_box;
-pub mod generate_html;
 pub mod input_color;
 pub mod input_date;
 pub mod input_date_time;

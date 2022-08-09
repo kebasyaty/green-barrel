@@ -6,7 +6,7 @@ use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use crate::{helpers::Meta, widgets::Widget};
+use crate::{helpers::structures::Meta, widgets::Widget};
 
 // GLOBAL STORAGE
 // #################################################################################################

@@ -14,7 +14,7 @@ use mongodb::{
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::{helpers::Meta, widgets::Widget};
+use crate::{helpers::structures::Meta, widgets::Widget};
 
 /// Model options and widget map for Form.
 // *************************************************************************************************

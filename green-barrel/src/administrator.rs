@@ -5,7 +5,7 @@ use serde_json::Value;
 use std::error::Error;
 
 use crate::{
-    helpers::Meta,
+    helpers::structures::Meta,
     models::db_query_api::{commons::QCommons, paladins::QPaladins},
     widgets::Widget,
 };

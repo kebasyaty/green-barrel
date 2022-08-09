@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::error::Error;
 
 use crate::{
-    helpers::{Enctype, HttpMethod},
+    helpers::enumerations::{Enctype, HttpMethod},
     widgets::Widget,
 };
 
