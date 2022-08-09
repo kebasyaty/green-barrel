@@ -1,5 +1,5 @@
 [package]
-authors = ["Gennady Kostunin <kebasyaty@gmail.com>", "Aurelien Foucault <aurelien.foucault@epitech.eu>"]
+authors = ["Gennady Kostunin <kebasyaty@gmail.com>", "Aurelien Foucault <aurelien.foucault@epitech.eu>", "Luc Perkins <lucperkins@gmail.com>"]
 description = "ORM-like API MongoDB for Rust."
 edition = "2021"
 homepage = "https://github.com/kebasyaty/green-barrel"
@@ -8,7 +8,8 @@ license = "MIT OR Apache-2.0"
 name = "green-barrel"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/green-barrel"
-version = "0.12.20"
+rust-version = "1.57"
+version = "1.0.0-beta"
 
 [dependencies]
 actix-web = "3.3.3"

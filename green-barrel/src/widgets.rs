@@ -1,6 +1,30 @@
 //! For control of fields on the server and client side.
 
+pub mod check_box;
 pub mod generate_html;
+pub mod input_color;
+pub mod input_date;
+pub mod input_date_time;
+pub mod input_file;
+pub mod input_image;
+pub mod input_mail;
+pub mod input_password;
+pub mod input_phone;
+pub mod input_slug;
+pub mod input_text;
+pub mod number_f64;
+pub mod number_i32;
+pub mod number_i64;
+pub mod number_u32;
+pub mod radio_f64;
+pub mod radio_i32;
+pub mod radio_i64;
+pub mod radio_text;
+pub mod radio_u32;
+pub mod range_f64;
+pub mod range_i32;
+pub mod range_i64;
+pub mod range_u32;
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

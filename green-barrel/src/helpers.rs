@@ -72,7 +72,7 @@ pub struct FileData {
     #[serde(default)]
     pub name: String,
     #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub size: u32, // in bytes
+    pub size: u32, // bytes
 }
 
 /// Helper structures for inputImage widgets.
@@ -102,11 +102,11 @@ pub struct ImageData {
     #[serde(default)]
     pub name: String,
     #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub size: u32, // in bytes
+    pub size: u32, // bytes
     #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub width: u32, // in pixels
+    pub width: u32, // pixels
     #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub height: u32, // in pixels
+    pub height: u32, // pixels
 }
 
 /// For transporting of Widgets map to implementation of methods.
