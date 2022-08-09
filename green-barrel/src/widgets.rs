@@ -29,6 +29,7 @@ pub mod range_f64;
 pub mod range_i32;
 pub mod range_i64;
 pub mod range_u32;
+pub mod select_text;
 pub mod text_area;
 
 use core::fmt::Debug;
