@@ -34,6 +34,6 @@ pub use crate::{
         radio_i32::RadioI32, radio_i64::RadioI64, radio_text::RadioText, radio_u32::RadioU32,
         range_f64::RangeF64, range_i32::RangeI32, range_i64::RangeI64, range_u32::RangeU32,
         select_text::SelectText, select_text_dyn::SelectTextDyn, select_text_mult::SelectTextMult,
-        text_area::TextArea, Widget,
+        select_text_mult_dyn::SelectTextMultDyn, text_area::TextArea, Widget,
     },
 };

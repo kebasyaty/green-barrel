@@ -32,6 +32,7 @@ pub mod range_u32;
 pub mod select_text;
 pub mod select_text_dyn;
 pub mod select_text_mult;
+pub mod select_text_mult_dyn;
 pub mod text_area;
 
 use core::fmt::Debug;
