@@ -57,7 +57,11 @@ impl<'a> Default for SelectTextMult<'a> {
 }
 
 impl<'a> SelectTextMult<'a> {
-    pub fn set(&mut self, value: &str) {
-        self.value = Some(String::from(value));
+    pub fn set(&mut self, value: Vec<&str>) {
+        let value = value
+            .iter()
+            .map(|item| item.to_string())
+            .collect::<Vec<String>>();
+        self.value = Some(value);
     }
 }
