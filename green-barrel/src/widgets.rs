@@ -12,6 +12,7 @@ pub mod input_password;
 pub mod input_phone;
 pub mod input_slug;
 pub mod input_text;
+pub mod input_url;
 pub mod number_f64;
 pub mod number_i32;
 pub mod number_i64;
