@@ -1,7 +1,6 @@
 //! # Green Barrel
 //! ORM-like API MongoDB for Rust.
 
-pub mod administrator;
 pub mod helpers;
 pub mod migration;
 pub mod models;
@@ -10,8 +9,8 @@ pub mod test_tool;
 pub mod widgets;
 
 pub use crate::{
-    administrator::{Administrator, OutputDataAdmin},
     helpers::{
+        administrator::{Administrator, OutputDataAdmin},
         enumerations::{ControlArr, Enctype, HttpMethod},
         generate_html::GenerateHtml,
         structures::{FileData, ImageData, Meta, TransMapWidgets},
