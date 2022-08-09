@@ -8,6 +8,7 @@ pub mod input_date_time;
 pub mod input_file;
 pub mod input_image;
 pub mod input_ip;
+pub mod input_ipv4;
 pub mod input_mail;
 pub mod input_password;
 pub mod input_phone;
