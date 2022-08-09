@@ -22,7 +22,7 @@ pub struct TextArea<'a> {
     pub is_hide: bool,    // Hide field from user.
     pub cols: u32,        // 	Specifies the visible width of a text area.
     pub rows: u32,        // Specifies the visible number of lines in a text area.
-    pub wrap: &str, // Specifies how the text in a text area is to be wrapped when submitted in a form - wrap="soft | hard".
+    pub wrap: &'a str, // Specifies how the text in a text area is to be wrapped when submitted in a form - wrap="soft | hard".
     pub other_attrs: &'a str, // Example: r# "autofocus tabindex="some number" size="some number""#.
     pub css_classes: &'a str, // Example: "class-name-1 class-name-2".
     pub hint: &'a str, // Additional explanation for the user.
