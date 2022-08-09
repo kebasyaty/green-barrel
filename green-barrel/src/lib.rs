@@ -27,11 +27,11 @@ pub use crate::{
     widgets::{
         check_box::CheckBox, generate_html::GenerateHtml, input_color::InputColor,
         input_date::InputDate, input_date_time::InputDateTime, input_file::InputFile,
-        input_image::InputImage, input_ip::InputIP, input_ipv4::InputIPv4, input_mail::InputEmail,
-        input_password::InputPassword, input_phone::InputPhone, input_slug::InputSlug,
-        input_text::InputText, input_url::InputUrl, number_f64::NumberF64, number_i32::NumberI32,
-        number_i64::NumberI64, number_u32::NumberU32, radio_f64::RadioF64, radio_i32::RadioI32,
-        radio_i64::RadioI64, radio_text::RadioText, radio_u32::RadioU32, range_f64::RangeF64,
-        range_i32::RangeI32, range_i64::RangeI64, range_u32::RangeU32, Widget,
+        input_image::InputImage, input_ip::InputIP, input_ipv4::InputIPv4, input_ipv6::InputIPv6,
+        input_mail::InputEmail, input_password::InputPassword, input_phone::InputPhone,
+        input_slug::InputSlug, input_text::InputText, input_url::InputUrl, number_f64::NumberF64,
+        number_i32::NumberI32, number_i64::NumberI64, number_u32::NumberU32, radio_f64::RadioF64,
+        radio_i32::RadioI32, radio_i64::RadioI64, radio_text::RadioText, radio_u32::RadioU32,
+        range_f64::RangeF64, range_i32::RangeI32, range_i64::RangeI64, range_u32::RangeU32, Widget,
     },
 };
