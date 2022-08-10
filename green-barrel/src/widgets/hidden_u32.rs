@@ -16,7 +16,7 @@ pub struct HiddenU32 {
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub step: i32,  // Increment step for numeric fields.
+    pub step: u32,  // Increment step for numeric fields.
     pub min: Option<u32>, // The lower value for entering a number or date.
     pub max: Option<u32>, // The top value for entering a number or date.
     pub is_hide: bool, // Hide field from user.
