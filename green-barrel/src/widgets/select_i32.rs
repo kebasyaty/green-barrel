@@ -33,7 +33,7 @@ impl Default for SelectI32 {
             id: String::new(),
             label: String::new(),
             widget: String::from("inputText"),
-            input_type: String::from("text"),
+            input_type: String::from("select"),
             name: String::new(),
             value: None,
             placeholder: String::new(),
