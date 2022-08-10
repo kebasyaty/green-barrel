@@ -167,7 +167,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         model_name: ast.ident.to_string(),
         ..Default::default()
     };
-    let mut trans_widget_map: TransWidgetMap = Default::default();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
     let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name {}};
@@ -410,11 +409,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{:?}` => {}", model_name, err),
     };
-    // TransWidgetMap to Json-line.
-    let trans_widget_map: String = match serde_json::to_string(&trans_widget_map) {
-        Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{:?}` => {:?}", model_name, err),
-    };
 
     // Implementation of methods.
     // *********************************************************************************************
@@ -475,14 +469,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 .to_lowercase();
 
                 Ok(meta)
-            }
-
-            /// Get map of widgets for model fields.
-            /// Hint: <field name, Widget>
-            // -------------------------------------------------------------------------------------
-            fn widgets() -> Result<std::collections::HashMap<String, Widget>,
-                Box<dyn std::error::Error>> {
-                Ok(serde_json::from_str::<TransWidgetMap>(&#trans_widget_map)?.map_widgets)
             }
 
             /// Getter and Setter for field `hash`.
@@ -623,14 +609,6 @@ impl Default for Meta {
             ignore_fields: Vec::new(),
         }
     }
-}
-
-/// For transporting of Widgets map to implementation of methods.
-/// Format: <field name, Widget name>
-// *************************************************************************************************
-#[derive(Default, Serialize)]
-struct TransWidgetMap {
-    pub widget_map: std::collections::HashMap<String, String>,
 }
 
 /// Get widget info.
