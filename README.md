@@ -9,6 +9,7 @@
 [![crates.io](https://img.shields.io/badge/crates.io-v0.12.21-orange "crates.io")](https://crates.io/crates/green-barrel/0.12.21 "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
 ![Crates.io](https://img.shields.io/crates/d/mango-orm?label=mango-orm%20-%20downloads)
+![crates.io](https://img.shields.io/crates/d/green-barrel)
 ![crates.io](https://img.shields.io/crates/l/green-barrel)
 
 ## Attention
@@ -17,7 +18,7 @@
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") ). For those who use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") - Follow our updates.**
+**[Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel/tree/v0 "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/v0/metamorphose "metamorphose"), [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") ). For those who use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel") - Follow our updates.**
 
 ## Requirements
 
