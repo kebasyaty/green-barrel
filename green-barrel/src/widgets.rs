@@ -33,6 +33,7 @@ pub mod select_i32_dyn;
 pub mod select_i32_mult;
 pub mod select_i32_mult_dyn;
 pub mod select_i64;
+pub mod select_i64_dyn;
 pub mod select_text;
 pub mod select_text_dyn;
 pub mod select_text_mult;
