@@ -2,6 +2,7 @@
 
 pub mod check_box;
 pub mod hidden_f64;
+pub mod hidden_hash;
 pub mod hidden_i32;
 pub mod hidden_i64;
 pub mod hidden_text;
