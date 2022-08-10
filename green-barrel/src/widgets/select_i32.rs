@@ -17,7 +17,7 @@ pub struct SelectI32 {
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub min: Option<i32>, // The lower value for entering a number.
     pub max: Option<i32>, // The top value for entering a number.
-    pub options: Vec<(i32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![("value", "Title"), ("value 2", "Title 2")].
+    pub options: Vec<(i32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
