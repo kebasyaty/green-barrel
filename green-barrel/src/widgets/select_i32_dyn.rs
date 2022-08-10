@@ -1,10 +1,10 @@
-//! SelectI32
+//! SelectI32Dyn
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
-pub struct SelectI32 {
+pub struct SelectI32Dyn {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub widget: String, // Widget name.
@@ -17,8 +17,7 @@ pub struct SelectI32 {
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub min: Option<i32>, // The lower value for entering a number.
     pub max: Option<i32>, // The top value for entering a number.
-    pub options: Vec<(i32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![("value", "Title"), ("value 2", "Title 2")].
-    pub is_hide: bool,               // Hide field from user.
+    pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -27,12 +26,12 @@ pub struct SelectI32 {
     pub alert: String, // Alert message for the entire web form. The value is determined automatically.
 }
 
-impl Default for SelectI32 {
+impl Default for SelectI32Dyn {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("SelectI32"),
+            widget: String::from("SelectI32Dyn"),
             input_type: String::from("select"),
             name: String::new(),
             value: None,
@@ -42,7 +41,6 @@ impl Default for SelectI32 {
             readonly: false,
             min: None,
             max: None,
-            options: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
@@ -54,7 +52,7 @@ impl Default for SelectI32 {
     }
 }
 
-impl SelectI32 {
+impl SelectI32Dyn {
     pub fn set(&mut self, value: i32) {
         self.value = Some(value);
     }

@@ -29,6 +29,7 @@ pub mod range_i32;
 pub mod range_i64;
 pub mod range_u32;
 pub mod select_i32;
+pub mod select_i32_dyn;
 pub mod select_text;
 pub mod select_text_dyn;
 pub mod select_text_mult;
