@@ -368,14 +368,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Get field type.
+                // Get Widgets value type map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
-                    get_widget_info(field_type.as_str()).unwrap();
-                    //
+                    let field_type = get_widget_info(field_type.as_str()).unwrap();
                     trans_meta
-                        .field_type_map
-                        .insert(field_name.clone(), field_type.clone());
+                        .widget_value_type_map
+                        .insert(field_name.clone(), field_type.0.to_string());
                 }
                 // Add field name and Widget name to the map.
                 trans_meta
@@ -593,7 +592,7 @@ struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
-    pub field_type_map: std::collections::HashMap<String, String>,
+    pub widget_value_type_map: std::collections::HashMap<String, String>,
     pub widget_type_map: std::collections::HashMap<String, String>,
     // <field_name, (widget_type, value)>
     pub default_value_map: std::collections::HashMap<String, (String, String)>,
@@ -617,7 +616,7 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
-            field_type_map: std::collections::HashMap::new(),
+            widget_value_type_map: std::collections::HashMap::new(),
             widget_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             // List of field names that will not be saved to the database.
@@ -696,5 +695,6 @@ fn get_widget_info<'a>(
         "HiddenF64" => ("f64", "hidden"),
         _ => Err("Invalid widget type.")?,
     };
+    //
     Ok(info)
 }
