@@ -17,8 +17,8 @@ pub struct InputDate {
     pub unique: bool,    // The unique value of a field in a collection.
     pub disabled: bool,  // Blocks access and modification of the element.
     pub readonly: bool,  // Specifies that the field cannot be modified by the user.
-    pub min: String,     // The lower value for entering a number or date.
-    pub max: String,     // The top value for entering a number or date.
+    pub min: String,     // The lower value for entering a date.
+    pub max: String,     // The top value for entering a date.
     pub is_hide: bool,   // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
