@@ -42,7 +42,7 @@ impl Default for HiddenF64 {
             unique: false,
             disabled: false,
             readonly: false,
-            step: 1,
+            step: 1.0,
             min: None,
             max: None,
             is_hide: true,
