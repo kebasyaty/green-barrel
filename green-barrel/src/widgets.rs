@@ -31,6 +31,7 @@ pub mod range_u32;
 pub mod select_f64;
 pub mod select_f64_dyn;
 pub mod select_f64_mult;
+pub mod select_f64_mult_dyn;
 pub mod select_i32;
 pub mod select_i32_dyn;
 pub mod select_i32_mult;
