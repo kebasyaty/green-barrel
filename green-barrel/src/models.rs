@@ -47,17 +47,9 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
 
-    /// Convert hash-line to ObjectId.
+    /// ObjectId to hash field.
     // ---------------------------------------------------------------------------------------------
-    fn hash_to_id(hash: &str) -> Result<ObjectId, Box<dyn Error>> {
-        Ok(ObjectId::with_string(hash)?)
-    }
-
-    /// Convert ObjectId to hash-line.
-    // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(object_id: ObjectId) -> String {
-        object_id.to_hex()
-    }
+    fn id_to_hash(&mut self, object_id: ObjectId);
 
     /// Enrich the widget map with values for dynamic widgets.
     // ---------------------------------------------------------------------------------------------

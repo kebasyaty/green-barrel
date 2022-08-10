@@ -504,6 +504,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
                 Ok(serde_json::to_value(self)?)
             }
+
+            /// ObjectId to hash field.
+            // -------------------------------------------------------------------------------------
+            fn id_to_hash(&mut self, object_id: ObjectId) -> String {
+                self.hash = Some(object_id.to_hex());
+            }
         }
 
         /// Rendering HTML-controls code for Form.
