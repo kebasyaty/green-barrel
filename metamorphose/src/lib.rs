@@ -379,14 +379,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     let cap = &re_clear_field_type
                         .captures_iter(field_type.as_str())
                         .next();
-                    if cap.is_some() {
-                        field_type = cap.as_ref().unwrap()[1].to_string();
-                    } else {
+                    if cap.is_none() {
                         panic!(
                             "Model: `{:?}` > Field: `{}` => Change field type to `Option < {} >`.",
                             model_name, field_name, field_type
                         )
                     }
+                    field_type = cap.as_ref().unwrap()[1].to_string();
+                    //
                     trans_meta
                         .field_type_map
                         .insert(field_name.clone(), field_type.clone());
