@@ -23,7 +23,7 @@ pub struct Meta {
     pub is_up_docs: bool,
     pub is_del_docs: bool,
     // <field_name, field_type>.
-    pub field_type_map: std::collections::HashMap<String, String>,
+    pub widget_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, widget_type>.
     pub widget_type_map: std::collections::HashMap<String, String>,
     // <field_name, (widget_type, value)>.
@@ -48,7 +48,7 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
-            field_type_map: std::collections::HashMap::new(),
+            widget_value_type_map: std::collections::HashMap::new(),
             widget_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             // List of field names that will not be saved to the database.
