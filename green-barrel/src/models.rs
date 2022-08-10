@@ -28,11 +28,6 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn meta() -> Result<Meta, Box<dyn Error>>;
 
-    /// Get map of widgets for model fields.
-    /// Hint: <field name, Widget>
-    // ---------------------------------------------------------------------------------------------
-    fn widgets() -> Result<HashMap<String, Widget>, Box<dyn Error>>;
-
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
     fn get_hash(&self) -> String;
