@@ -39,7 +39,7 @@ pub use crate::{
         select_i32_dyn::SelectI32Dyn, select_i32_mult::SelectI32Mult,
         select_i32_mult_dyn::SelectI32MultDyn, select_text::SelectText,
         select_text_dyn::SelectTextDyn, select_text_mult::SelectTextMult,
-        select_text_mult_dyn::SelectTextMultDyn, select_u32::SelectU32, text_area::TextArea,
-        Widget,
+        select_text_mult_dyn::SelectTextMultDyn, select_u32::SelectU32,
+        select_u32_dyn::SelectU32Dyn, text_area::TextArea, Widget,
     },
 };
