@@ -28,7 +28,7 @@ pub use crate::{
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
     test_tool::del_test_db,
     widgets::{
-        check_box::CheckBox, hidden_i32::HiddenI32, hidden_text::HiddenText,
+        check_box::CheckBox, hidden_i32::HiddenI32, hidden_text::HiddenText, hidden_u32::HiddenU32,
         input_color::InputColor, input_date::InputDate, input_date_time::InputDateTime,
         input_email::InputEmail, input_file::InputFile, input_image::InputImage, input_ip::InputIP,
         input_ipv4::InputIPv4, input_ipv6::InputIPv6, input_password::InputPassword,
