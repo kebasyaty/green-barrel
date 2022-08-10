@@ -47,13 +47,13 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
 
-    /// Convert hash-line to MongoDB ID.
+    /// Convert hash-line to ObjectId.
     // ---------------------------------------------------------------------------------------------
     fn hash_to_id(hash: &str) -> Result<ObjectId, Box<dyn Error>> {
         Ok(ObjectId::with_string(hash)?)
     }
 
-    /// Convert MongoDB ID to hash-line.
+    /// Convert ObjectId to hash-line.
     // ---------------------------------------------------------------------------------------------
     fn id_to_hash(object_id: ObjectId) -> String {
         object_id.to_hex()
