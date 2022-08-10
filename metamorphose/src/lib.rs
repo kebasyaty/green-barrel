@@ -156,11 +156,6 @@ pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {
 // Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
 fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
-    // Clear the field type from `Option <>`
-    let re_clear_field_type = regex::RegexBuilder::new(r"^Option < ([a-z\d\s<>]+) >$")
-        .case_insensitive(true)
-        .build()
-        .unwrap();
     let model_name = &ast.ident;
     if model_name.to_string().len() > 31 {
         panic!(
@@ -376,16 +371,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Get field type.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
-                    let cap = &re_clear_field_type
-                        .captures_iter(field_type.as_str())
-                        .next();
-                    if cap.is_none() {
-                        panic!(
-                            "Model: `{:?}` > Field: `{}` => Change field type to `Option < {} >`.",
-                            model_name, field_name, field_type
-                        )
-                    }
-                    field_type = cap.as_ref().unwrap()[1].to_string();
+                    get_widget_info(field_type.as_str()).unwrap();
                     //
                     trans_meta
                         .field_type_map
