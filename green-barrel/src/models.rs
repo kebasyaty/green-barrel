@@ -33,6 +33,10 @@ pub trait Main {
     fn get_hash(&self) -> String;
     fn set_hash(&mut self, value: String);
 
+    /// ObjectId to hash field.
+    // ---------------------------------------------------------------------------------------------
+    fn id_to_hash(&mut self, object_id: ObjectId);
+
     /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------
     fn get_created_at(&self) -> String;
@@ -46,10 +50,6 @@ pub trait Main {
     /// Serialize an instance of the Model to a hash-line.
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
-
-    /// ObjectId to hash field.
-    // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(&mut self, object_id: ObjectId);
 
     /// Enrich the widget map with values for dynamic widgets.
     // ---------------------------------------------------------------------------------------------

@@ -480,6 +480,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 self.hash = Some(value);
             }
 
+            /// ObjectId to hash field.
+            // -------------------------------------------------------------------------------------
+            fn id_to_hash(&mut self, object_id: ObjectId) -> String {
+                self.hash = Some(object_id.to_hex());
+            }
+
             /// Getter and Setter for field `created_at`.
             // -------------------------------------------------------------------------------------
             fn get_created_at(&self) -> String {
@@ -503,12 +509,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             fn self_to_json(&self)
                 -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
                 Ok(serde_json::to_value(self)?)
-            }
-
-            /// ObjectId to hash field.
-            // -------------------------------------------------------------------------------------
-            fn id_to_hash(&mut self, object_id: ObjectId) -> String {
-                self.hash = Some(object_id.to_hex());
             }
         }
 
