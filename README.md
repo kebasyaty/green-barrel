@@ -1,4 +1,4 @@
-[![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/mango-orm "Logo")
+[![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/green-barrel/tree/v0 "Green Barrel")
 
 # Green Barrel
 
