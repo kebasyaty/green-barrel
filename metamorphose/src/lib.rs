@@ -391,16 +391,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .field_type_map
                         .insert(field_name.clone(), field_type.clone());
                 }
-
-                // Add field name and widget name to the map.
+                // Add field name and Widget name to the map.
                 trans_meta
                     .widget_type_map
-                    .insert(field_name.clone(), widget.widget.clone());
-                // Add widget to map.
-                trans_widget_map
-                    .widget_map
-                    .insert(field_name.clone(), widget);
-
+                    .insert(field_name.clone(), field_type);
                 // Delete field attributes.
                 // ( To avoid conflicts with the compiler )
                 field.attrs = Vec::new();
