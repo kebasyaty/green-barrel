@@ -578,13 +578,13 @@ struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
-    // <field_name, widget_value_type>.
+    // <field_name, widget_value_type>
     pub widget_value_type_map: std::collections::HashMap<String, String>,
-    // <field_name, widget_type>.
+    // <field_name, widget_type>
     pub widget_type_map: std::collections::HashMap<String, String>,
-    // <field_name, (widget_type, value)>.
+    // <field_name, (widget_type, value)>
     pub default_value_map: std::collections::HashMap<String, (String, String)>,
-    // List of field names that will not be saved to the database.
+    // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
 }
 
