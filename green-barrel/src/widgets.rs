@@ -1,6 +1,7 @@
 //! For control of fields on the server and client side.
 
 pub mod check_box;
+pub mod hidden_i32;
 pub mod hidden_text;
 pub mod input_color;
 pub mod input_date;
