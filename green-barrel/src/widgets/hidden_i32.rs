@@ -45,7 +45,7 @@ impl Default for HiddenI32 {
             step: 1,
             min: None,
             max: None,
-            is_hide: false,
+            is_hide: true,
             other_attrs: String::new(),
             css_classes: String::new(),
             hint: String::new(),
