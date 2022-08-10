@@ -4,7 +4,7 @@
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel").**
+**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/v0/test-drive/tests "tests"). For maximum convenience use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel/tree/green-barrel_v_0_12_x "actix-greenpanel").**
 
 [![crates.io](https://img.shields.io/badge/crates.io-v0.12.24-orange "crates.io")](https://crates.io/crates/green-barrel/0.12.24 "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
