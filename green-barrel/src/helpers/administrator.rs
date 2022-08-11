@@ -7,7 +7,6 @@ use std::error::Error;
 use crate::{
     helpers::structures::Meta,
     models::db_query_api::{commons::QCommons, paladins::QPaladins},
-    widgets::Widget,
 };
 
 /// The output data for the admin panel.

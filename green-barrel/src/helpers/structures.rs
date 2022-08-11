@@ -3,8 +3,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::widgets::Widget;
-
 /// Metadata ( model parameters )
 // -------------------------------------------------------------------------------------------------
 #[derive(Deserialize, Clone, Debug)]
@@ -103,12 +101,4 @@ pub struct ImageData {
     pub width: u32, // pixels
     #[serde(default, with = "mongodb::bson::compat::u2f")]
     pub height: u32, // pixels
-}
-
-/// For transporting of Widgets map to implementation of methods.
-/// Hint: <field name, Widget>
-// -------------------------------------------------------------------------------------------------
-#[derive(Deserialize)]
-pub struct TransMapWidgets {
-    pub map_widgets: HashMap<String, Widget>,
 }

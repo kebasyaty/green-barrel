@@ -101,7 +101,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn to_json() -> Result<String, Box<dyn Error>> {
+    fn to_json() -> Result<String, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
@@ -131,11 +135,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
             drop(model_store);
             let mut model_store = MODEL_STORE.write()?;
             let model_cache = model_store.get(key.as_str()).unwrap();
-            let json = Self::widget_map_to_json(model_json)?;
+            let json_val = serde_json::to_value(&Self::new()?)?;
             let mut new_model_cache = model_cache.clone();
-            new_model_cache.model_json = json.clone();
+            new_model_cache.model_json = json_val;
             model_store.insert(key, new_model_cache);
-            return Ok(json);
+            return Ok(serde_json::to_string(&json_val)?);
         }
         //
         Ok((serde_json::to_string(&model_cache.model_json))?)
