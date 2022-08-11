@@ -92,8 +92,9 @@ pub trait Main {
                 //
                 if widget_name.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
-                    let options = if widget_name.contains("Text") {
-                        arr.iter()
+                    if widget_name.contains("Text") {
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
@@ -101,50 +102,67 @@ pub trait Main {
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
+                            .collect::<Vec<(String, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
                     } else if widget_name.contains("I32") {
-                        arr.iter()
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_i32().unwrap().to_string(),
+                                    arr[0].as_i32().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
+                            .collect::<Vec<(i32, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
                     } else if widget_name.contains("U32") || widget_name.contains("I64") {
-                        arr.iter()
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_i64().unwrap().to_string(),
+                                    arr[0].as_i64().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
+                            .collect::<Vec<(i64, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
                     } else if widget_name.contains("F64") {
-                        arr.iter()
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_f64().unwrap().to_string(),
+                                    arr[0].as_f64().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
+                            .collect::<Vec<(f64, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
                     } else {
                         Err(format!(
                             "Model: {} > Method: `vitaminize` => \
                             Invalid data type.",
                             Self::meta()?.model_name,
                         ))?
-                    };
-                    //
-                    *model_json
-                        .get_mut(field_name)
-                        .unwrap()
-                        .get_mut("options")
-                        .unwrap() = json!(options);
+                    }
                 }
             }
         } else {
