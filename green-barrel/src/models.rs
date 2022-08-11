@@ -11,7 +11,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId},
     sync::Client,
 };
-use serde_json::value::Value;
+use serde_json::{json, value::Value};
 use std::error::Error;
 
 use crate::helpers::structures::Meta;
@@ -140,7 +140,11 @@ pub trait Main {
                         ))?
                     };
                     //
-                    widget.options = options;
+                    *model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("options")
+                        .unwrap() = json!(options);
                 }
             }
         } else {
