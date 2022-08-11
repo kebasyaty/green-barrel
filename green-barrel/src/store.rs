@@ -15,7 +15,7 @@ use crate::{helpers::structures::Meta, widgets::Widget};
 pub struct ModelCache {
     pub meta: Meta,
     pub widget_map: HashMap<String, Widget>,
-    pub form_json: String,
+    pub model_json: String,
     pub html_form: String,
 }
 
