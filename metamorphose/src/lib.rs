@@ -57,22 +57,26 @@ pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {
 // Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
 fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
-    let model_name = &ast.ident;
-    let model_name_str = model_name.to_string();
+    let model_name_ident = &ast.ident;
+    let model_name_str = model_name_ident.to_string();
+    //
     if model_name_str.len() > 31 {
         panic!(
             "Model: `{}` => Model name - Max size: 31 characters.",
             model_name_str
         )
     }
+    //
     let mut trans_meta = Meta {
         model_name: model_name_str.clone(),
         ..Default::default()
     };
+    //
     let mut html_id_map = std::collections::HashMap::<String, String>::new();
-    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
-    let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
-    let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name {}};
+    //
+    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name_ident {}};
+    let mut add_trait_hooks = quote! {impl Hooks for #model_name_ident {}};
+    let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name_ident {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -124,9 +128,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_up_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_up_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_del_docs") {
@@ -332,7 +336,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// All methods that directly depend on the macro.
         // *****************************************************************************************
-        impl Main for #model_name {
+        impl Main for #model_name_ident {
             /// Get model key.
             /// Hint: To access data in the cache.
             // -------------------------------------------------------------------------------------
@@ -341,7 +345,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(format!(
                     "{}__{}__{}",
                     SERVICE_NAME.trim(),
-                    re.replace_all(stringify!(#model_name), "_$upper_chr"),
+                    re.replace_all(stringify!(#model_name_ident), "_$upper_chr"),
                     UNIQUE_PROJECT_KEY.trim().to_string()
                 )
                 .to_lowercase())
@@ -440,24 +444,24 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
-        impl Caching for #model_name {}
+        impl Caching for #model_name_ident {}
 
         /// Validating Model fields for save and update.
         // *****************************************************************************************
-        impl Validation for #model_name {}
+        impl Validation for #model_name_ident {}
 
         /// Database Query API
         // *****************************************************************************************
         /// Output data converters for database queries.
-        impl Converters for #model_name {}
+        impl Converters for #model_name_ident {}
         /// Common database query methods.
-        impl QCommons for #model_name {}
+        impl QCommons for #model_name_ident {}
         /// Query methods for a Model instance.
-        impl QPaladins for #model_name {}
+        impl QPaladins for #model_name_ident {}
 
         /// Helper methods for the admin panel.
         // *****************************************************************************************
-        impl Administrator for #model_name {}
+        impl Administrator for #model_name_ident {}
 
     };
 
