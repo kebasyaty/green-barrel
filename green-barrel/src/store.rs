@@ -3,6 +3,7 @@
 use lazy_static::lazy_static;
 use mongodb::sync::Client;
 use regex::{Regex, RegexBuilder};
+use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
@@ -14,7 +15,7 @@ use crate::helpers::structures::Meta;
 #[derive(Default, Clone, Debug)]
 pub struct ModelCache {
     pub meta: Meta,
-    pub model_json: String,
+    pub model_json: Value,
     pub html_form: String,
 }
 
