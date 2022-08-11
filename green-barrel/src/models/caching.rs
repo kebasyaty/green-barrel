@@ -359,8 +359,8 @@ pub trait Caching: Main + GenerateHtml + Converters {
         // Define conditional constants.
         // Get widget map and check the field name for belonging to the Model.
         let const_widget = {
-            if let Some(widget_type) = model_cache.widget_map.get(const_field_name) {
-                widget_type
+            if let Some(widget) = model_cache.widget_map.get(const_field_name) {
+                widget
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` => \
