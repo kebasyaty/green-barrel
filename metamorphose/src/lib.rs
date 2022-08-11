@@ -354,6 +354,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 .to_lowercase())
             }
 
+            /// Get a new model instance with custom settings.
+            // -------------------------------------------------------------------------------------
+            fn new() -> Self {
+                //
+            }
+
             /// Get metadata of Model.
             // -------------------------------------------------------------------------------------
             fn meta() -> Result<Meta, Box<dyn std::error::Error>> {

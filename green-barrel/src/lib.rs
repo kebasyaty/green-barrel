@@ -11,6 +11,7 @@ pub mod widgets;
 pub use crate::{
     helpers::{
         administrator::{Administrator, OutputDataAdmin},
+        create_instance::Create,
         enumerations::{ControlArr, Enctype, HttpMethod},
         generate_html::GenerateHtml,
         structures::{FileData, ImageData, Meta, TransMapWidgets},
