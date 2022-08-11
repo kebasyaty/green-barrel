@@ -6,7 +6,7 @@ use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use crate::{helpers::structures::Meta, widgets::Widget};
+use crate::helpers::structures::Meta;
 
 // GLOBAL STORAGE
 // #################################################################################################
@@ -14,7 +14,6 @@ use crate::{helpers::structures::Meta, widgets::Widget};
 #[derive(Default, Clone, Debug)]
 pub struct ModelCache {
     pub meta: Meta,
-    pub widget_map: HashMap<String, Widget>,
     pub model_json: String,
     pub html_form: String,
 }
