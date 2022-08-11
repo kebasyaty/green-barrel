@@ -1,12 +1,10 @@
 //! Rendering HTML-controls code for Form.
 
+use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
 
-use crate::{
-    helpers::enumerations::{Enctype, HttpMethod},
-    widgets::Widget,
-};
+use crate::helpers::enumerations::{Enctype, HttpMethod};
 
 /// Rendering HTML-controls code for Form.
 pub trait GenerateHtml {
@@ -40,7 +38,7 @@ pub trait GenerateHtml {
         service_name: &str,
         model_name: &str,
         fields_name: &Vec<String>,
-        widget_map: &HashMap<String, Widget>,
+        model_json: &Value,
     ) -> Result<String, Box<dyn Error>> {
         //
         // Controls of Form.

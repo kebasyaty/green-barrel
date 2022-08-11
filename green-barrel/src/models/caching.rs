@@ -225,7 +225,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 model_cache.meta.service_name.as_str(),
                 model_cache.meta.model_name.as_str(),
                 &model_cache.meta.fields_name,
-                &model_cache.widget_map,
+                &model_cache.model_json,
             )?;
             let mut new_model_cache = model_cache.clone();
             new_model_cache.html_form = html.clone();
