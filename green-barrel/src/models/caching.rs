@@ -122,7 +122,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         if !model_store.contains_key(key.as_str()) {
             // Unlock.
             drop(model_store);
-            // Add metadata and widgects map to cache.
+            // Add metadata and widgects to cache.
             Self::to_cache()?;
             // Reaccess.
             model_store = MODEL_STORE.read()?;
@@ -139,16 +139,6 @@ pub trait Caching: Main + GenerateHtml + Converters {
         }
         // Generate data and return the result.
         let model_cache = model_cache.unwrap();
-        if model_cache.model_json.is_null() {
-            drop(model_store);
-            let mut model_store = MODEL_STORE.write()?;
-            let model_cache = model_store.get(key.as_str()).unwrap();
-            let json_val = serde_json::to_value(&Self::new()?)?;
-            let mut new_model_cache = model_cache.clone();
-            new_model_cache.model_json = json_val;
-            model_store.insert(key, new_model_cache);
-            return Ok(serde_json::to_string(&json_val)?);
-        }
         //
         Ok((serde_json::to_string(&model_cache.model_json))?)
     }
