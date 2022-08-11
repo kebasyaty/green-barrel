@@ -269,7 +269,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Get Widget value type.
+                // Add field name and Widget value type to map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let widget_info =
@@ -279,7 +279,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .widget_value_type_map
                         .insert(field_name.clone(), widget_info.0.to_string());
                 }
-                // Add field name and Widget name to the map.
+                // Add field name and Widget name to map.
                 trans_meta
                     .widget_type_map
                     .insert(field_name.clone(), field_type);
