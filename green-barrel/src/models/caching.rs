@@ -23,8 +23,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -69,8 +68,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     ///
     fn to_wig() -> Result<Self, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -111,8 +109,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     ///
     fn to_json() -> Result<String, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -156,8 +153,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     ///
     fn model_to_json_for_admin() -> Result<String, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get cached Model data.
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
@@ -195,8 +191,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         enctype: Option<Enctype>,
     ) -> Result<String, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -256,8 +251,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     ///
     fn get_cache_data_for_query() -> Result<(ModelCache, Client), Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -317,8 +311,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     // *********************************************************************************************
     fn update_dyn_wig(dyn_data: Value) -> Result<(), Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
-        Self: serde::ser::Serialize + Sized,
+        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {
         //
         // Define conditional constants.
