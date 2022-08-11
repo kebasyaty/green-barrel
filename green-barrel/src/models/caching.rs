@@ -62,8 +62,8 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// # Example:
     ///
     /// ```
-    /// let widgets_map = UserProfile::wig()?;
-    /// println!("{:?}", widgets_map);
+    /// let widgets = UserProfile::wig()?;
+    /// println!("{:?}", widgets);
     /// ```
     ///
     fn to_wig() -> Result<Self, Box<dyn Error>>
