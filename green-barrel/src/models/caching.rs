@@ -5,7 +5,7 @@ use mongodb::{
     sync::Client,
 };
 use serde_json::{json, Value};
-use std::{collections::HashMap, convert::TryFrom, error::Error};
+use std::{convert::TryFrom, error::Error};
 
 use crate::{
     helpers::{
@@ -21,7 +21,11 @@ use crate::{
 pub trait Caching: Main + GenerateHtml + Converters {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
-    fn to_cache() -> Result<(), Box<dyn Error>> {
+    fn to_cache() -> Result<(), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get write access in cache.
@@ -31,20 +35,20 @@ pub trait Caching: Main + GenerateHtml + Converters {
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
-        // Get a widget map.
-        let mut widget_map: HashMap<String, Widget> = Self::widgets()?;
+        // Get a widgets.
+        let mut model_json = serde_json::to_value(&Self::new()?)?;
         // Enrich the widget map with values for dynamic widgets.
         Self::vitaminize(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
-            &mut widget_map,
+            &mut model_json,
         )?;
         // Init new ModelCache.
         let new_model_cache = ModelCache {
             meta,
-            widget_map,
+            model_json,
             ..Default::default()
         };
         // Save structure `ModelCache` to store.
