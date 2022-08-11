@@ -134,10 +134,8 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 meta.model_name
             ))?
         }
-        // Generate data and return the result.
-        let model_cache = model_cache.unwrap();
         //
-        Ok((serde_json::to_string(&model_cache.model_json))?)
+        Ok((serde_json::to_string(&model_cache.unwrap().model_json))?)
     }
 
     /// Json-line for admin panel.
