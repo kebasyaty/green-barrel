@@ -359,7 +359,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         // Define conditional constants.
         // Get widget map and check the field name for belonging to the Model.
         let const_widget = {
-            if let Some(widget) = model_cache.widget_map.get(const_field_name) {
+            if let Some(widget) = model_cache.model_json.get(const_field_name) {
                 widget
             } else {
                 Err(format!(
@@ -369,7 +369,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 ))?
             }
         };
-        let const_widget_type = const_widget.widget.as_str();
+        let const_widget_type = const_widget.get("widget").unwrap().as_str().unwrap();
         // Check the Widget type for belonging to dynamic types.
         if !const_widget_type.contains("Dyn") {
             Err(format!(
@@ -408,16 +408,15 @@ pub trait Caching: Main + GenerateHtml + Converters {
         {
             let is_value_exist = if const_widget_type.contains("Text") {
                 if let Some(val) = dyn_data["value"].as_str() {
-                    let val_len = val.len();
-                    if val_len < const_widget.minlength || val_len > const_widget.maxlength {
+                    let val_len = val.len() as u64;
+                    let minlength = const_widget.get("minlength").unwrap().as_u64().unwrap();
+                    let maxlength = const_widget.get("maxlength").unwrap().as_u64().unwrap();
+                    if val_len < minlength || val_len > maxlength {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
                         Parameter: `dyn_data` > Field: `value` => \
                         Characters = {} ; Min length = {} ; Max length = {}",
-                            meta.model_name,
-                            val_len,
-                            const_widget.minlength,
-                            const_widget.maxlength
+                            meta.model_name, val_len, minlength, maxlength
                         ))?
                     }
                     let arr_vec = target_arr_bson
