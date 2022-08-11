@@ -127,19 +127,18 @@ pub trait Caching: Main + GenerateHtml + Converters {
         }
         // Generate data and return the result.
         let model_cache = model_cache.unwrap();
-        if model_cache.model_json.is_empty() {
+        if model_cache.model_json.is_null() {
             drop(model_store);
             let mut model_store = MODEL_STORE.write()?;
             let model_cache = model_store.get(key.as_str()).unwrap();
-            let widget_map = model_cache.widget_map.clone();
-            let json = Self::widget_map_to_json(widget_map)?;
+            let json = Self::widget_map_to_json(model_json)?;
             let mut new_model_cache = model_cache.clone();
             new_model_cache.model_json = json.clone();
             model_store.insert(key, new_model_cache);
             return Ok(json);
         }
         //
-        Ok(model_cache.model_json.clone())
+        Ok((serde_json::to_string(&model_cache.model_json))?)
     }
 
     /// Json-line for admin panel.

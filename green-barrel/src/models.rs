@@ -12,9 +12,9 @@ use mongodb::{
     sync::Client,
 };
 use serde_json::value::Value;
-use std::{collections::HashMap, error::Error};
+use std::error::Error;
 
-use crate::{helpers::structures::Meta, widgets::Widget};
+use crate::helpers::structures::Meta;
 
 /// Model options and widget map for Form.
 // *************************************************************************************************
@@ -64,7 +64,7 @@ pub trait Main {
         unique_project_key: &str,
         collection_name: &str,
         client: &Client,
-        widget_map: &mut HashMap<String, Widget>,
+        model_json: &mut Value,
     ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
@@ -81,10 +81,10 @@ pub trait Main {
             let dyn_values_doc = doc.get_document("fields")?;
             // Updating the `options` parameter for fields with a dynamic widget.
             for (field_name, widget) in widget_map {
-                let widget_type = widget.widget.clone();
-                if widget_type.contains("Dyn") {
+                let widget_name = widget.widget.clone();
+                if widget_name.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
-                    let options = if widget_type.contains("Text") {
+                    let options = if widget_name.contains("Text") {
                         arr.iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -94,7 +94,7 @@ pub trait Main {
                                 )
                             })
                             .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("I32") {
+                    } else if widget_name.contains("I32") {
                         arr.iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -104,7 +104,7 @@ pub trait Main {
                                 )
                             })
                             .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("U32") || widget_type.contains("I64") {
+                    } else if widget_name.contains("U32") || widget_name.contains("I64") {
                         arr.iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -114,7 +114,7 @@ pub trait Main {
                                 )
                             })
                             .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("F64") {
+                    } else if widget_name.contains("F64") {
                         arr.iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
