@@ -4,7 +4,7 @@ use mongodb::{
     bson::{doc, Bson},
     sync::Client,
 };
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::{
@@ -14,7 +14,6 @@ use crate::{
     },
     models::{converters::Converters, Main, Meta},
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
-    widgets::Widget,
 };
 
 /// Caching inmodelation about Models for speed up work.
@@ -159,15 +158,15 @@ pub trait Caching: Main + GenerateHtml + Converters {
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
-        let widget_map = model_cache.widget_map.clone();
-        let mut widget_list: Vec<Widget> = Vec::new();
+        let model_json = model_cache.model_json.clone();
+        let mut widget_list: Vec<Value> = Vec::new();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = widget_map.get(field_name).unwrap().clone();
+            let mut widget = model_json.get(field_name).unwrap();
             if field_name == "created_at" || field_name == "updated_at" {
-                widget.is_hide = false;
+                *widget.get_mut("is_hide").unwrap() = json!(false);
             }
-            widget_list.push(widget);
+            widget_list.push(*widget);
         }
         //
         Ok(serde_json::to_string(&widget_list)?)
