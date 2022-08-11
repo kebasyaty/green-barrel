@@ -5,8 +5,8 @@ use proc_macro::TokenStream;
 use quote::quote;
 use serde::Serialize;
 use syn::{
-    parse2, parse_macro_input, AttributeArgs, Data::Struct, DeriveInput, Fields::Named, Ident,
-    NestedMeta, Type::Path,
+    parse2, parse_macro_input, AttributeArgs, Data::Struct, DeriveInput, Fields::Named, NestedMeta,
+    Type::Path,
 };
 
 // MODEL - MACRO FOR CONVERTING STRUCTURE TO GREEN-BARREL MODEL
