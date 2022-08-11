@@ -434,15 +434,14 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 }
             } else if const_widget_type.contains("I32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<i64>()?)
-                        || (!const_widget.max.is_empty()
-                            && val > const_widget.max.parse::<i64>()?)
-                    {
+                    let min = const_widget.get("min").unwrap().as_i64().unwrap();
+                    let max = const_widget.get("max").unwrap().as_i64().unwrap();
+                    if val < min || val > max {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
                         Parameter: `dyn_data` > Field: `value` => \
                         Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name, val, const_widget.min, const_widget.max
+                            meta.model_name, val, min, max
                         ))?
                     }
                     if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
@@ -469,15 +468,14 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 }
             } else if const_widget_type.contains("U32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<i64>()?)
-                        || (!const_widget.max.is_empty()
-                            && val > const_widget.max.parse::<i64>()?)
-                    {
+                    let min = const_widget.get("min").unwrap().as_i64().unwrap();
+                    let max = const_widget.get("max").unwrap().as_i64().unwrap();
+                    if val < min || val > max {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
                         Parameter: `dyn_data` > Field: `value` => \
                         Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name, val, const_widget.min, const_widget.max
+                            meta.model_name, val, min, max
                         ))?
                     }
                     if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
