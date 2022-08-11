@@ -9,6 +9,7 @@ use syn::{
     Data::Struct,
     DeriveInput,
     Fields::Named,
+    Ident,
     Lit::{Bool, Float, Int, Str},
     Meta::{List, NameValue},
     MetaNameValue, NestedMeta,
@@ -370,10 +371,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Get Widgets value type map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
-                    let field_type = get_widget_info(field_type.as_str()).unwrap();
+                    let widget_info =
+                        get_widget_info(field_type.as_str(), model_name, field_name.as_str())
+                            .unwrap();
                     trans_meta
                         .widget_value_type_map
-                        .insert(field_name.clone(), field_type.0.to_string());
+                        .insert(field_name.clone(), widget_info.0.to_string());
                 }
                 // Add field name and Widget name to the map.
                 trans_meta
@@ -554,7 +557,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 // #################################################################################################
 /// Get ID for Widget.
 // *************************************************************************************************
-fn get_id(model_name: String, field_name: String) -> String {
+fn get_html_id(model_name: String, field_name: String) -> String {
     let field_name_upper = field_name
         .split('_')
         .map(|word| {
@@ -623,6 +626,8 @@ impl Default for Meta {
 // *************************************************************************************************
 fn get_widget_info<'a>(
     widget_name: &'a str,
+    model_name: &Ident,
+    field_name: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match widget_name {
         "CheckBox" => ("bool", "checkbox"),
@@ -674,12 +679,17 @@ fn get_widget_info<'a>(
         "SelectF64Dyn" => ("f64", "select"),
         "SelectF64Mult" => ("Vec<f64>", "select"),
         "SelectF64MultDyn" => ("Vec<f64>", "select"),
-        "HiddenText" => ("String", "hidden"),
-        "HiddenI32" => ("i32", "hidden"),
-        "HiddenU32" => ("u32", "hidden"),
-        "HiddenI64" => ("i64", "hidden"),
-        "HiddenF64" => ("f64", "hidden"),
-        _ => Err("Invalid widget type.")?,
+        "HiddenText" => ("String", "text"),
+        "HiddenHash" => ("String", "text"),
+        "HiddenDateTime" => ("String", "datetime"),
+        "HiddenI32" => ("i32", "number"),
+        "HiddenU32" => ("u32", "number"),
+        "HiddenI64" => ("i64", "number"),
+        "HiddenF64" => ("f64", "number"),
+        _ => Err(format!(
+            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid Widget type.",
+            model_name, field_name, widget_name,
+        ))?,
     };
     //
     Ok(info)
