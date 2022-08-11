@@ -501,8 +501,8 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 }
             } else if const_widget_type.contains("I64") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    let min = const_widget.get("min").unwrap().as_f64().unwrap();
-                    let max = const_widget.get("max").unwrap().as_f64().unwrap();
+                    let min = const_widget.get("min").unwrap().as_i64().unwrap();
+                    let max = const_widget.get("max").unwrap().as_i64().unwrap();
                     if val < min || val > max {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
@@ -534,15 +534,15 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 }
             } else if const_widget_type.contains("F64") {
                 if let Some(val) = dyn_data["value"].as_f64() {
-                    if (!const_widget.min.is_empty() && val < const_widget.min.parse::<f64>()?)
-                        || (!const_widget.max.is_empty()
-                            && val > const_widget.max.parse::<f64>()?)
+                    let min = const_widget.get("min").unwrap().as_f64().unwrap();
+                    let max = const_widget.get("max").unwrap().as_f64().unwrap();
+                    if val < min || val > max {
                     {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
                         Parameter: `dyn_data` > Field: `value` => \
                         Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name, val, const_widget.min, const_widget.max
+                            meta.model_name, val, min, max
                         ))?
                     }
                     if val < f64::MIN || val > f64::MAX {
