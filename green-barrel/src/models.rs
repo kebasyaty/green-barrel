@@ -65,6 +65,7 @@ pub trait Main {
         collection_name: &str,
         client: &Client,
         model_json: &mut Value,
+        fields_name: &Vec<String>,
     ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
@@ -80,8 +81,14 @@ pub trait Main {
         if let Some(doc) = collection.find_one(filter, None)? {
             let dyn_values_doc = doc.get_document("fields")?;
             // Updating the `options` parameter for fields with a dynamic widget.
-            for (field_name, widget) in widget_map {
-                let widget_name = widget.widget.clone();
+            for field_name in fields_name {
+                let widget_name = model_json
+                    .get(field_name)
+                    .unwrap()
+                    .get("widget")
+                    .unwrap()
+                    .as_str()
+                    .unwrap();
                 if widget_name.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
                     let options = if widget_name.contains("Text") {
