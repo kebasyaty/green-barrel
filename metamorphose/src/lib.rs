@@ -68,6 +68,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         model_name: ast.ident.to_string(),
         ..Default::default()
     };
+    let mut html_id_map = std::collections::HashMap::<String, String>::new();
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
     let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name {}};
@@ -268,7 +269,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Get Widgets value type map.
+                // Get Widget value type.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let widget_info =
