@@ -63,7 +63,10 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// println!("{:?}", widgets_map);
     /// ```
     ///
-    fn to_wig() -> Result<HashMap<String, Widget>, Box<dyn Error>> {
+    fn to_wig() -> Result<Self, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+    {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
@@ -88,7 +91,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
             ))?
         }
         // Get data and return the result.
-        Ok(model_cache.unwrap().widget_map.clone())
+        Ok(serde_json::from_value(model_cache.unwrap().model_json)?)
     }
 
     /// Get field attributes in Json modelat for page templates.
