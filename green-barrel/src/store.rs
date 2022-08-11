@@ -16,7 +16,7 @@ pub struct ModelCache {
     pub meta: Meta,
     pub widget_map: HashMap<String, Widget>,
     pub form_json: String,
-    pub form_html: String,
+    pub html_form: String,
 }
 
 // Store

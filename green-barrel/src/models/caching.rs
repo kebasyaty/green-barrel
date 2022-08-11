@@ -214,7 +214,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         }
         // Generate data and return the result.
         let model_cache = model_cache.unwrap();
-        if model_cache.form_html.is_empty() {
+        if model_cache.html_form.is_empty() {
             drop(model_store);
             let mut model_store = MODEL_STORE.write()?;
             let model_cache = model_store.get(key.as_str()).unwrap();
@@ -228,12 +228,12 @@ pub trait Caching: Main + GenerateHtml + Converters {
                 &model_cache.widget_map,
             )?;
             let mut new_model_cache = model_cache.clone();
-            new_model_cache.form_html = html.clone();
+            new_model_cache.html_form = html.clone();
             model_store.insert(key, new_model_cache);
             return Ok(html);
         }
         //
-        Ok(model_cache.form_html.clone())
+        Ok(model_cache.html_form.clone())
     }
 
     /// Get cached Model data.
