@@ -58,14 +58,15 @@ pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {
 // *************************************************************************************************
 fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
     let model_name = &ast.ident;
-    if model_name.to_string().len() > 31 {
+    let model_name_str = model_name.to_string();
+    if model_name_str.len() > 31 {
         panic!(
-            "Model: `{:?}` => Model name - Max size: 31 characters.",
-            model_name
+            "Model: `{}` => Model name - Max size: 31 characters.",
+            model_name_str
         )
     }
     let mut trans_meta = Meta {
-        model_name: ast.ident.to_string(),
+        model_name: model_name_str.clone(),
         ..Default::default()
     };
     let mut html_id_map = std::collections::HashMap::<String, String>::new();
@@ -83,9 +84,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.database_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `database`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("db_client_name") {
@@ -93,9 +94,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_client_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_client_name`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
@@ -103,9 +104,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_query_docs_limit`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_add_docs") {
@@ -113,9 +114,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_add_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_add_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_up_docs") {
@@ -133,9 +134,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_del_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_del_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("ignore_fields") {
@@ -149,10 +150,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .collect();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `ignore_fields`. Use the type `&str` in \
                             the format - <field_name, field_name>.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_use_add_valid") {
@@ -162,9 +163,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_add_valid`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_use_hooks") {
@@ -174,9 +175,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_hooks`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_use_custom_html") {
@@ -186,16 +187,16 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_custom_html`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 }
             } else {
                 panic!(
-                    "Model: `{:?}` => syn::Meta::NameValue is missing.",
-                    model_name
+                    "Model: `{}` => syn::Meta::NameValue is missing.",
+                    model_name_str
                 )
             }
         }
@@ -216,18 +217,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
                     if field_name == "hash" {
                         panic!(
-                            "Model: `{:?}` => The field named `hash` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `hash` is reserved.",
+                            model_name_str
                         )
                     } else if field_name == "created_at" {
                         panic!(
-                            "Model: `{:?}` => The field named `created_at` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `created_at` is reserved.",
+                            model_name_str
                         )
                     } else if field_name == "updated_at" {
                         panic!(
-                            "Model: `{:?}` => The field named `updated_at` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `updated_at` is reserved.",
+                            model_name_str
                         )
                     }
                 }
@@ -272,9 +273,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Add field name and Widget value type to map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
-                    let widget_info =
-                        get_widget_info(field_type.as_str(), model_name, field_name.as_str())
-                            .unwrap();
+                    let widget_info = get_widget_info(
+                        field_type.as_str(),
+                        model_name_str.as_str(),
+                        field_name.as_str(),
+                    )
+                    .unwrap();
                     trans_meta
                         .widget_value_type_map
                         .insert(field_name.clone(), widget_info.0.to_string());
@@ -283,14 +287,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 trans_meta
                     .widget_type_map
                     .insert(field_name.clone(), field_type);
+                //
+                // Add field name and Widget html id to map.
+                html_id_map.insert(
+                    field_name.clone(),
+                    get_html_id(model_name_str.as_str(), field_name.as_str()),
+                );
+                //
                 // Delete field attributes.
                 // ( To avoid conflicts with the compiler )
                 field.attrs = Vec::new();
             }
         } else {
             panic!(
-                "Model: `{:?}` => Expected a struct with named fields.",
-                model_name
+                "Model: `{}` => Expected a struct with named fields.",
+                model_name_str
             )
         }
     }
@@ -301,8 +312,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
-                "Model: `{:?}` => Model does not have an ignored field named `{}`.",
-                model_name, field_name,
+                "Model: `{}` => Model does not have an ignored field named `{}`.",
+                model_name_str, field_name,
             )
         }
     }
@@ -311,7 +322,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     // ---------------------------------------------------------------------------------------------
     let trans_meta: String = match serde_json::to_string(&trans_meta) {
         Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{:?}` => {}", model_name, err),
+        Err(err) => panic!("Model: `{}` => {}", model_name_str, err),
     };
 
     // Implementation of methods.
@@ -458,7 +469,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 // #################################################################################################
 /// Get ID for Widget.
 // *************************************************************************************************
-fn get_html_id(model_name: String, field_name: String) -> String {
+fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
     let field_name_upper = field_name
         .split('_')
         .map(|word| {
@@ -527,7 +538,7 @@ impl Default for Meta {
 // *************************************************************************************************
 fn get_widget_info<'a>(
     widget_name: &'a str,
-    model_name: &Ident,
+    model_name: &'a str,
     field_name: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match widget_name {
