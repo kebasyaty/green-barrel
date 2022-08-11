@@ -70,6 +70,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     fn to_wig() -> Result<Self, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
@@ -163,7 +164,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn model_to_json_for_admin() -> Result<String, Box<dyn Error>> {
+    fn model_to_json_for_admin() -> Result<String, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         // Get cached Model data.
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -198,7 +203,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
         url_action: Option<&str>,
         http_method: Option<HttpMethod>,
         enctype: Option<Enctype>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
@@ -255,7 +264,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// println!("{:?}", model_cache);
     /// ```
     ///
-    fn get_cache_data_for_query() -> Result<(ModelCache, Client), Box<dyn Error>> {
+    fn get_cache_data_for_query() -> Result<(ModelCache, Client), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get read access from cache.
@@ -312,7 +325,11 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// ```
     ///
     // *********************************************************************************************
-    fn update_dyn_wig(dyn_data: Value) -> Result<(), Box<dyn Error>> {
+    fn update_dyn_wig(dyn_data: Value) -> Result<(), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+        Self: serde::ser::Serialize + Sized,
+    {
         //
         // Define conditional constants.
         let const_field_name = {
