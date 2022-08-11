@@ -26,7 +26,9 @@ pub trait Main {
 
     /// Get a new model instance with custom settings.
     // ---------------------------------------------------------------------------------------------
-    fn new() -> Self;
+    fn new() -> Result<Self, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized;
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
