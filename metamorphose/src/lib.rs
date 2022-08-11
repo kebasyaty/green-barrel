@@ -321,10 +321,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             )
         }
     }
-
     // trans_meta to Json-line.
-    // ---------------------------------------------------------------------------------------------
-    let trans_meta: String = match serde_json::to_string(&trans_meta) {
+    let trans_meta_json: String = match serde_json::to_string(&trans_meta) {
+        Ok(json_string) => json_string,
+        Err(err) => panic!("Model: `{}` => {}", model_name_str, err),
+    };
+    // html_id_map to Json-line.
+    let html_id_map_json = match serde_json::to_string(&html_id_map) {
         Ok(json_string) => json_string,
         Err(err) => panic!("Model: `{}` => {}", model_name_str, err),
     };
@@ -355,7 +358,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             // -------------------------------------------------------------------------------------
             fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                let mut meta = serde_json::from_str::<Meta>(&#trans_meta)?;
+                let mut meta = serde_json::from_str::<Meta>(&#trans_meta_json)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
                 // Add project name.
                 meta.project_name = PROJECT_NAME.trim().to_string();
