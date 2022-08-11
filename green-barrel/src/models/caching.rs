@@ -43,6 +43,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
             meta.collection_name.as_str(),
             &client_cache,
             &mut model_json,
+            &meta.fields_name,
         )?;
         // Init new ModelCache.
         let new_model_cache = ModelCache {
