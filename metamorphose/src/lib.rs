@@ -264,7 +264,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             for field in fields {
                 let mut field_name = String::new();
                 let mut field_type = String::new();
-
+                //
                 // Get field name.
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
