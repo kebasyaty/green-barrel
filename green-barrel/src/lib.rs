@@ -11,7 +11,7 @@ pub mod widgets;
 pub use crate::{
     helpers::{
         administrator::{Administrator, OutputDataAdmin},
-        enumerations::{ControlArr, Enctype, HttpMethod},
+        enumerations::ControlArr,
         structures::{FileData, ImageData, Meta},
     },
     migration::Monitor,
