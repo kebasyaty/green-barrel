@@ -618,13 +618,8 @@ fn get_widget_info<'a>(
         "SelectF64Dyn" => ("f64", "select"),
         "SelectF64Mult" => ("Vec<f64>", "select"),
         "SelectF64MultDyn" => ("Vec<f64>", "select"),
-        "HiddenText" => ("String", "text"),
         "HiddenHash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
-        "HiddenI32" => ("i32", "number"),
-        "HiddenU32" => ("u32", "number"),
-        "HiddenI64" => ("i64", "number"),
-        "HiddenF64" => ("f64", "number"),
         _ => Err(format!(
             "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid Widget type.",
             model_name, field_name, widget_name,
