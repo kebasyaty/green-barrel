@@ -189,6 +189,7 @@ pub trait GenerateHtml {
                 }
                 "radio" => {
                     let mut inputs = String::new();
+                    let value = attrs.get("value").unwrap();
                     let options = attrs
                         .get("options")
                         .unwrap()
