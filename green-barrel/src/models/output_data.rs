@@ -1,6 +1,7 @@
 //! Output data for QPaladins.
 
 use mongodb::bson::{document::Document, oid::ObjectId};
+use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
 
@@ -10,7 +11,6 @@ use crate::{
         generate_html::GenerateHtml,
     },
     models::converters::Converters,
-    widgets::Widget,
 };
 
 /// Helper methods for converting output data (use in the paladins.rs module).
@@ -90,7 +90,7 @@ impl OutputData {
 pub struct OutputDataCheck {
     is_valid: bool,
     final_doc: Option<Document>,
-    final_widget_map: HashMap<String, Widget>,
+    final_model_json: Value,
     service_name: String,
     model_name: String,
     fields_name: Vec<String>,
@@ -104,7 +104,7 @@ impl OutputDataCheck {
     pub fn from(
         is_valid: bool,
         final_doc: Option<Document>,
-        final_widget_map: HashMap<String, Widget>,
+        final_model_json: Value,
         service_name: String,
         model_name: String,
         fields_name: Vec<String>,
@@ -112,7 +112,7 @@ impl OutputDataCheck {
         Self {
             is_valid,
             final_doc,
-            final_widget_map,
+            final_model_json,
             service_name,
             model_name,
             fields_name,
@@ -132,7 +132,14 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn hash(&self) -> String {
-        self.final_widget_map.get("hash").unwrap().value.clone()
+        self.final_model_json
+            .get("hash")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .to_string()
     }
 
     /// Get MongoDB ID from hash-line

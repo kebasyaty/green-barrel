@@ -356,7 +356,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn creator_to_json_val() -> Result<serde_json::value::Value, Box<dyn Error>>
+            fn creator_to_json_val() -> Result<serde_json::Value, Box<dyn Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {

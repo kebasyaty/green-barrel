@@ -19,7 +19,7 @@ lazy_static = "1.4.0"
 rand = "0.8.5"
 regex = "1.5.6"
 rust-argon2 = "1.0.0"
-serde_json = "1.0.81"
+serde_json = "1.0.83"
 slug = "0.1.4"
 validator = "0.15.0"
 
