@@ -140,6 +140,8 @@ pub trait GenerateHtml {
                     );
                 }
                 "checkbox" => {
+                    let checked = attrs.get("checked").unwrap().as_bool().unwrap();
+                    //
                     controls = format!(
                         "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                         controls,
@@ -147,7 +149,7 @@ pub trait GenerateHtml {
                         format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", name),
-                        if attrs.checked { " checked" } else { "" },
+                        if checked { " checked" } else { "" },
                         if disabled { " disabled" } else { "" },
                         if readonly { " readonly" } else { "" },
                         if !css_classes.is_empty() {

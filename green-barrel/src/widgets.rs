@@ -2,12 +2,7 @@
 
 pub mod check_box;
 pub mod hidden_date_time;
-pub mod hidden_f64;
 pub mod hidden_hash;
-pub mod hidden_i32;
-pub mod hidden_i64;
-pub mod hidden_text;
-pub mod hidden_u32;
 pub mod input_color;
 pub mod input_date;
 pub mod input_date_time;
