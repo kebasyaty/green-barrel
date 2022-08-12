@@ -71,7 +71,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         email: Some("user_1_@noreply.net".to_string()),
         password: Some("12345678".to_string()),
         confirm_password: Some("12345678".to_string()),
-        is_staff: Some(false),
+        is_staff: Some(true),
+        is_active: Some(true),
         ..Default::default()
     };
 

@@ -35,7 +35,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
         // Get a widgets.
-        let mut model_json = serde_json::to_value(&Self::new()?)?;
+        let mut model_json = Self::creator_to_json_val()?;
         // Enrich the widget map with values for dynamic widgets.
         Self::vitaminize(
             meta.project_name.as_str(),
@@ -63,8 +63,15 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// # Example:
     ///
     /// ```
-    /// let widgets = UserProfile::wig()?;
-    /// println!("{:?}", widgets);
+    /// let user = User::new()?;
+    /// user.username.set("user");
+    /// user.email.set("user_1_@noreply.net");
+    /// user.password.set("12345678");
+    /// user.confirm_password.set("12345678");
+    /// user.is_staff.set(true);
+    /// user.is_active.set(true);
+    ///
+    /// println!("{:?}", user);
     /// ```
     ///
     fn new() -> Result<Self, Box<dyn Error>>
@@ -89,7 +96,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `to_wig()` => \
+                "Model: `{}` ; Method: `new()` => \
                 Failed to get data from cache.",
                 meta.model_name
             ))?
