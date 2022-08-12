@@ -25,7 +25,8 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn key() -> Result<String, Box<dyn Error>>;
 
-    /// Get a new model instance with custom settings.
+    /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
+    /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
     fn creator_to_json_val() -> Result<Value, Box<dyn Error>>
     where
