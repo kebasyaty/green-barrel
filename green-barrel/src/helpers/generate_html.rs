@@ -45,13 +45,16 @@ pub trait GenerateHtml {
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
         for field_name in fields_name {
-            let attrs = widget_map.get(field_name).unwrap();
+            let attrs = model_json.get(field_name).unwrap();
             // Alert message for the entire web form - Is required.
             // Hint: alternatively use in popup.
-            if !attrs.alert.is_empty() {
-                controls = format!("<p class=\"warning\">{}</p>{}", attrs.alert, controls);
+            let alert = attrs.get("alert").unwrap().as_str().unwrap();
+            let input_type = attrs.get("input_type").unwrap().as_str().unwrap();
+            let css_classes = attrs.get("css_classes").unwrap().as_str().unwrap();
+            if !alert.is_empty() {
+                controls = format!("<p class=\"warning\">{}</p>{}", alert, controls);
             }
-            match attrs.input_type.as_str() {
+            match input_type {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
@@ -63,7 +66,7 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         format!(" value=\"{}\"", attrs.value),
                         if attrs.required { " required" } else { "" },
@@ -89,8 +92,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -122,13 +125,13 @@ pub trait GenerateHtml {
                         controls,
                         if attrs.is_hide { "none" } else { "block" },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         if attrs.checked { " checked" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -167,7 +170,7 @@ pub trait GenerateHtml {
                             inputs,
                             if attrs.is_hide { "none" } else { "block" },
                             format!(" id=\"{}\"-{}", attrs.id, idx),
-                            format!(" type=\"{}\"", attrs.input_type),
+                            format!(" type=\"{}\"", input_type),
                             format!(" name=\"{}\"", attrs.name),
                             format!(" value=\"{}\"", item.0),
                             if item.0 == attrs.value {
@@ -177,8 +180,8 @@ pub trait GenerateHtml {
                             },
                             if attrs.disabled { " disabled" } else { "" },
                             if attrs.readonly { " readonly" } else { "" },
-                            if !attrs.css_classes.is_empty() {
-                                format!(" class=\"{}\"", attrs.css_classes)
+                            if !css_classes.is_empty() {
+                                format!(" class=\"{}\"", css_classes)
                             } else {
                                 String::new()
                             },
@@ -222,7 +225,7 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         format!(" value=\"{}\"", attrs.value),
                         if attrs.required { " required" } else { "" },
@@ -238,8 +241,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\" ", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\" ", css_classes)
                         } else {
                             String::new()
                         },
@@ -276,13 +279,13 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         if attrs.required { " required" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -319,7 +322,7 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         format!(" value=\"{}\"", attrs.value),
                         if attrs.required { " required" } else { "" },
@@ -345,8 +348,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -383,7 +386,7 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         format!(" value=\"{}\"", attrs.value),
                         if attrs.required { " required" } else { "" },
@@ -404,8 +407,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -461,8 +464,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -521,8 +524,8 @@ pub trait GenerateHtml {
                         if attrs.required { " required" } else { "" },
                         if attrs.disabled { " disabled" } else { "" },
                         if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
@@ -554,12 +557,12 @@ pub trait GenerateHtml {
                         "{}<input{}{}{}{}{}{}{}>",
                         controls,
                         format!(" id=\"{}\"", attrs.id),
-                        format!(" type=\"{}\"", attrs.input_type),
+                        format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", attrs.name),
                         format!(" value=\"{}\"", attrs.value),
                         if attrs.required { " required" } else { "" },
-                        if !attrs.css_classes.is_empty() {
-                            format!(" class=\"{}\"", attrs.css_classes)
+                        if !css_classes.is_empty() {
+                            format!(" class=\"{}\"", css_classes)
                         } else {
                             String::new()
                         },
