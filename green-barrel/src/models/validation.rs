@@ -5,7 +5,7 @@ use mongodb::{
     sync::Collection,
 };
 use regex::Regex;
-use serde_json::{json, value::Value};
+use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
 use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD};
