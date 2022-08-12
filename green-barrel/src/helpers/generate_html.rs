@@ -61,6 +61,9 @@ pub trait GenerateHtml {
             let placeholder = attrs.get("placeholder").unwrap().as_str().unwrap();
             let pattern = attrs.get("pattern").unwrap().as_str().unwrap();
             let other_attrs = attrs.get("other_attrs").unwrap().as_str().unwrap();
+            let hint = attrs.get("hint").unwrap().as_str().unwrap();
+            let warning = attrs.get("warning").unwrap().as_str().unwrap();
+            let error = attrs.get("error").unwrap().as_str().unwrap();
             let css_classes = attrs.get("css_classes").unwrap().as_str().unwrap();
             //
             if !alert.is_empty() {
@@ -119,18 +122,18 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -162,18 +165,18 @@ pub trait GenerateHtml {
                         } else {
                             format!("<label for=\"{}\">{}:</label>", id, "Untitled")
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -212,18 +215,18 @@ pub trait GenerateHtml {
                             } else {
                                 format!("<label for=\"{}\">{}:</label>", id, "Untitled")
                             },
-                            if !attrs.hint.is_empty() {
-                                format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                            if !hint.is_empty() {
+                                format!("<br><small class=\"hint\">{}</small>", hint)
                             } else {
                                 String::new()
                             },
-                            if !attrs.warning.is_empty() {
-                                format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                            if !warning.is_empty() {
+                                format!("<br><small class=\"warning\">{}</small>", warning)
                             } else {
                                 String::new()
                             },
-                            if !attrs.error.is_empty() {
-                                format!("<br><small class=\"error\">{}</small>", attrs.error)
+                            if !error.is_empty() {
+                                format!("<br><small class=\"error\">{}</small>", error)
                             } else {
                                 String::new()
                             }
@@ -268,18 +271,18 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -311,18 +314,18 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -375,18 +378,18 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -434,18 +437,18 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -492,18 +495,18 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         attrs.value,
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
@@ -552,18 +555,18 @@ pub trait GenerateHtml {
                             String::new()
                         },
                         options,
-                        if !attrs.hint.is_empty() {
-                            format!("<br><small class=\"hint\">{}</small>", attrs.hint)
+                        if !hint.is_empty() {
+                            format!("<br><small class=\"hint\">{}</small>", hint)
                         } else {
                             String::new()
                         },
-                        if !attrs.warning.is_empty() {
-                            format!("<br><small class=\"warning\">{}</small>", attrs.warning)
+                        if !warning.is_empty() {
+                            format!("<br><small class=\"warning\">{}</small>", warning)
                         } else {
                             String::new()
                         },
-                        if !attrs.error.is_empty() {
-                            format!("<br><small class=\"error\">{}</small>", attrs.error)
+                        if !error.is_empty() {
+                            format!("<br><small class=\"error\">{}</small>", error)
                         } else {
                             String::new()
                         }
