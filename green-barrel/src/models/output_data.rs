@@ -235,7 +235,7 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn to_json(&self) -> Result<String, Box<dyn Error>> {
-        Self::widget_map_to_json(self.final_widget_map.clone())
+        Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
     /// Json-line for admin panel.
