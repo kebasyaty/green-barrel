@@ -44,41 +44,54 @@ pub trait GenerateHtml {
         // Controls of Form.
         // -----------------------------------------------------------------------------------------
         let mut controls = String::new();
+        //
         for field_name in fields_name {
             let attrs = model_json.get(field_name).unwrap();
             // Alert message for the entire web form - Is required.
             // Hint: alternatively use in popup.
             let alert = attrs.get("alert").unwrap().as_str().unwrap();
             let input_type = attrs.get("input_type").unwrap().as_str().unwrap();
+            let is_hide = attrs.get("is_hide").unwrap().as_bool().unwrap();
+            let label = attrs.get("label").unwrap().as_str().unwrap();
+            let id = attrs.get("id").unwrap().as_str().unwrap();
+            let name = attrs.get("name").unwrap().as_str().unwrap();
+            let required = attrs.get("required").unwrap().as_bool().unwrap();
+            let disabled = attrs.get("disabled").unwrap().as_bool().unwrap();
+            let readonly = attrs.get("readonly").unwrap().as_bool().unwrap();
+            let placeholder = attrs.get("placeholder").unwrap().as_str().unwrap();
+            let pattern = attrs.get("pattern").unwrap().as_str().unwrap();
             let css_classes = attrs.get("css_classes").unwrap().as_str().unwrap();
+            //
             if !alert.is_empty() {
                 controls = format!("<p class=\"warning\">{}</p>{}", alert, controls);
             }
+            //
             match input_type {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
+                    let value = attrs.get("value").unwrap().as_str().unwrap();
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
-                        format!(" value=\"{}\"", attrs.value),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.placeholder.is_empty() {
-                            format!(" placeholder=\"{}\"", attrs.placeholder)
+                        format!(" name=\"{}\"", name),
+                        format!(" value=\"{}\"", value),
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
+                        if !placeholder.is_empty() {
+                            format!(" placeholder=\"{}\"", placeholder)
                         } else {
                             String::new()
                         },
-                        if !attrs.pattern.is_empty() {
-                            format!(" pattern=\"{}\"", attrs.pattern)
+                        if !pattern.is_empty() {
+                            format!(" pattern=\"{}\"", pattern)
                         } else {
                             String::new()
                         },
@@ -123,13 +136,13 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        format!(" id=\"{}\"", attrs.id),
+                        if is_hide { "none" } else { "block" },
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
+                        format!(" name=\"{}\"", name),
                         if attrs.checked { " checked" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
                         if !css_classes.is_empty() {
                             format!(" class=\"{}\"", css_classes)
                         } else {
@@ -140,10 +153,10 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label>", attrs.id, attrs.label)
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label>", id, label)
                         } else {
-                            format!("<label for=\"{}\">{}:</label>", attrs.id, "Untitled")
+                            format!("<label for=\"{}\">{}:</label>", id, "Untitled")
                         },
                         if !attrs.hint.is_empty() {
                             format!("<br><small class=\"hint\">{}</small>", attrs.hint)
@@ -168,18 +181,18 @@ pub trait GenerateHtml {
                         inputs = format!(
                             "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                             inputs,
-                            if attrs.is_hide { "none" } else { "block" },
-                            format!(" id=\"{}\"-{}", attrs.id, idx),
+                            if is_hide { "none" } else { "block" },
+                            format!(" id=\"{}\"-{}", id, idx),
                             format!(" type=\"{}\"", input_type),
-                            format!(" name=\"{}\"", attrs.name),
+                            format!(" name=\"{}\"", name),
                             format!(" value=\"{}\"", item.0),
                             if item.0 == attrs.value {
                                 " checked"
                             } else {
                                 ""
                             },
-                            if attrs.disabled { " disabled" } else { "" },
-                            if attrs.readonly { " readonly" } else { "" },
+                            if disabled { " disabled" } else { "" },
+                            if readonly { " readonly" } else { "" },
                             if !css_classes.is_empty() {
                                 format!(" class=\"{}\"", css_classes)
                             } else {
@@ -190,10 +203,10 @@ pub trait GenerateHtml {
                             } else {
                                 String::new()
                             },
-                            if !attrs.label.is_empty() {
-                                format!("<label for=\"{}\">{}:</label>", attrs.id, attrs.label)
+                            if !label.is_empty() {
+                                format!("<label for=\"{}\">{}:</label>", id, label)
                             } else {
-                                format!("<label for=\"{}\">{}:</label>", attrs.id, "Untitled")
+                                format!("<label for=\"{}\">{}:</label>", id, "Untitled")
                             },
                             if !attrs.hint.is_empty() {
                                 format!("<br><small class=\"hint\">{}</small>", attrs.hint)
@@ -218,26 +231,26 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
+                        format!(" name=\"{}\"", name),
                         format!(" value=\"{}\"", attrs.value),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.placeholder.is_empty() {
-                            format!(" placeholder=\"{}\"", attrs.placeholder)
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
+                        if !placeholder.is_empty() {
+                            format!(" placeholder=\"{}\"", placeholder)
                         } else {
                             String::new()
                         },
-                        if !attrs.pattern.is_empty() {
-                            format!(" pattern=\"{}\"", attrs.pattern)
+                        if !pattern.is_empty() {
+                            format!(" pattern=\"{}\"", pattern)
                         } else {
                             String::new()
                         },
@@ -272,18 +285,18 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
+                        format!(" name=\"{}\"", name),
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
                         if !css_classes.is_empty() {
                             format!(" class=\"{}\"", css_classes)
                         } else {
@@ -315,21 +328,21 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
+                        format!(" name=\"{}\"", name),
                         format!(" value=\"{}\"", attrs.value),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
-                        if !attrs.placeholder.is_empty() {
-                            format!(" placeholder=\"{}\"", attrs.placeholder)
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
+                        if !placeholder.is_empty() {
+                            format!(" placeholder=\"{}\"", placeholder)
                         } else {
                             String::new()
                         },
@@ -379,19 +392,19 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
+                        format!(" name=\"{}\"", name),
                         format!(" value=\"{}\"", attrs.value),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
                         if attrs.step != "0" {
                             format!(" step=\"{}\"", attrs.step)
                         } else {
@@ -438,17 +451,17 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<textarea{}{}{}{}{}{}{}{}{}{}>{}</textarea>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
-                        format!(" name=\"{}\"", attrs.name),
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
+                        format!(" id=\"{}\"", id),
+                        format!(" name=\"{}\"", name),
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
                         if !attrs.minlength > 0 {
                             format!(" minlength=\"{}\"", attrs.minlength)
                         } else {
@@ -459,8 +472,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.placeholder.is_empty() {
-                            format!(" placeholder=\"{}\"", attrs.placeholder)
+                        if !placeholder.is_empty() {
+                            format!(" placeholder=\"{}\"", placeholder)
                         } else {
                             String::new()
                         },
@@ -510,20 +523,20 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<select{}{}{}{}{}{}{}>{}</select>{}{}{}</p>",
                         controls,
-                        if attrs.is_hide { "none" } else { "block" },
-                        if !attrs.label.is_empty() {
-                            format!("<label for=\"{}\">{}:</label><br>", attrs.id, attrs.label)
+                        if is_hide { "none" } else { "block" },
+                        if !label.is_empty() {
+                            format!("<label for=\"{}\">{}:</label><br>", id, label)
                         } else {
                             String::new()
                         },
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         match attrs.widget.contains("Mult") {
-                            true => format!(" name=\"{}[]\" multiple", attrs.name),
-                            false => format!(" name=\"{}\"", attrs.name),
+                            true => format!(" name=\"{}[]\" multiple", name),
+                            false => format!(" name=\"{}\"", name),
                         },
-                        if attrs.required { " required" } else { "" },
-                        if attrs.disabled { " disabled" } else { "" },
-                        if attrs.readonly { " readonly" } else { "" },
+                        if required { " required" } else { "" },
+                        if disabled { " disabled" } else { "" },
+                        if readonly { " readonly" } else { "" },
                         if !css_classes.is_empty() {
                             format!(" class=\"{}\"", css_classes)
                         } else {
@@ -556,11 +569,11 @@ pub trait GenerateHtml {
                     controls = format!(
                         "{}<input{}{}{}{}{}{}{}>",
                         controls,
-                        format!(" id=\"{}\"", attrs.id),
+                        format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
-                        format!(" name=\"{}\"", attrs.name),
+                        format!(" name=\"{}\"", name),
                         format!(" value=\"{}\"", attrs.value),
-                        if attrs.required { " required" } else { "" },
+                        if required { " required" } else { "" },
                         if !css_classes.is_empty() {
                             format!(" class=\"{}\"", css_classes)
                         } else {
