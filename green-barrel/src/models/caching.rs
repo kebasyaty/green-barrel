@@ -96,12 +96,12 @@ pub trait Caching: Main + GenerateHtml + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `new()` => \
+                "Model: `{}` ; Method: `new` => \
                 Failed to get data from cache.",
                 meta.model_name
             ))?
         }
-        // Get data and return the result.
+        //
         Ok(serde_json::from_value(model_cache.unwrap().model_json)?)
     }
 
@@ -137,7 +137,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `model_json()` => \
+                "Model: `{}` ; Method: `to_json` => \
                 Failed to get data from cache.",
                 meta.model_name
             ))?
