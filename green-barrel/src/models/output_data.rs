@@ -353,8 +353,8 @@ impl OutputDataCheck {
     pub fn err_msg(&self) -> String {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
-            let widget = self.final_model_json.get(field_name).unwrap();
             let tmp = errors.clone();
+            let widget = self.final_model_json.get(field_name).unwrap();
             let error = widget.get("error").unwrap().as_str().unwrap();
             if !error.is_empty() {
                 errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
