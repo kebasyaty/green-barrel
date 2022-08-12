@@ -1,7 +1,6 @@
 //! Rendering HTML-controls code for Form.
 
 use serde_json::Value;
-use std::collections::HashMap;
 use std::error::Error;
 
 use crate::helpers::enumerations::{Enctype, HttpMethod};
@@ -72,7 +71,7 @@ pub trait GenerateHtml {
             //
             match input_type {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
-                    let value = attrs.get("value").unwrap().as_str().unwrap();
+                    let value = attrs.get("value").unwrap();
                     let minlength = attrs.get("minlength").unwrap().as_u64().unwrap();
                     let maxlength = attrs.get("maxlength").unwrap().as_u64().unwrap();
                     //
@@ -88,7 +87,11 @@ pub trait GenerateHtml {
                         format!(" id=\"{}\"", id),
                         format!(" type=\"{}\"", input_type),
                         format!(" name=\"{}\"", name),
-                        format!(" value=\"{}\"", value),
+                        if !value.is_null() {
+                            format!(" value=\"{}\"", value.as_str().unwrap())
+                        } else {
+                            String::new()
+                        },
                         if required { " required" } else { "" },
                         if disabled { " disabled" } else { "" },
                         if readonly { " readonly" } else { "" },
@@ -186,7 +189,16 @@ pub trait GenerateHtml {
                 }
                 "radio" => {
                     let mut inputs = String::new();
-                    for (idx, item) in attrs.options.iter().enumerate() {
+                    let options = attrs
+                        .get("options")
+                        .unwrap()
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| (item.0.to_string(), item.1.to_strin()))
+                        .collect::<Vec<(String, String)>>();
+                    //
+                    for (idx, item) in options.iter().enumerate() {
                         inputs = format!(
                             "{}<p style=\"display:{};\"><input{}{}{}{}{}{}{}{}{}>{}{}{}{}</p>",
                             inputs,
