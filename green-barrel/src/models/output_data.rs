@@ -1,7 +1,7 @@
 //! Output data for QPaladins.
 
 use mongodb::bson::{document::Document, oid::ObjectId};
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::error::Error;
 
 use crate::{
@@ -255,17 +255,24 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
-        let mut widget_list: Vec<Widget> = Vec::new();
-        let hash = self.final_widget_map.get("hash").unwrap().clone().value;
+        let mut widget_list: Vec<Value> = Vec::new();
+        let hash = self
+            .final_model_json
+            .get("hash")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
+            .unwrap();
         // Get a list of widgets in the order of the model fields.
         for field_name in self.fields_name.iter() {
-            let mut widget = self.final_widget_map.get(field_name).unwrap().clone();
+            let mut widget = self.final_model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
-                widget.is_hide = false;
+                *widget.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
-                widget.widget = "hiddenText".to_string();
-                widget.input_type = "hidden".to_string();
+                *widget.get_mut("widget").unwrap() = json!("hiddenText");
+                *widget.get_mut("input_type").unwrap() = json!("hidden");
             }
             widget_list.push(widget);
         }
