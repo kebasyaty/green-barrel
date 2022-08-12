@@ -280,7 +280,7 @@ impl OutputDataCheck {
         Ok(serde_json::to_string(&widget_list)?)
     }
 
-    /// Get Html-code
+    /// Get Model instance as Html-form.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
