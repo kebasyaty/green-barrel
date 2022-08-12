@@ -27,7 +27,7 @@ pub trait Main {
 
     /// Get a new model instance with custom settings.
     // ---------------------------------------------------------------------------------------------
-    fn new() -> Result<Self, Box<dyn Error>>
+    fn creator_to_json_val() -> Result<Value, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized;
 

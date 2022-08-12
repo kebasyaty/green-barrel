@@ -57,7 +57,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
         Ok(())
     }
 
-    /// Get an widgets map for page template.
+    /// Get a new model instance with custom settings.
     // *********************************************************************************************
     ///
     /// # Example:
@@ -67,7 +67,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// println!("{:?}", widgets);
     /// ```
     ///
-    fn to_wig() -> Result<Self, Box<dyn Error>>
+    fn new() -> Result<Self, Box<dyn Error>>
     where
         Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
     {

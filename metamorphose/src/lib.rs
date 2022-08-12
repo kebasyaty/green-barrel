@@ -356,23 +356,24 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn new() -> Result<Self, Box<dyn Error>>
+            fn creator_to_json_val() -> Result<serde_json::value::Value, Box<dyn Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
-                let mut instance_json = serde_json::to_value(Self::creare())?;
+                let mut instance_json_val = serde_json::to_value(Self::create())?;
                 let html_id_map =
                     serde_json::from_str::<std::collections::HashMap<String, String>>(&html_id_map_json)?;
                 for (field_name, id) in html_id_map {
-                    *instance_json
+                    *instance_json_val
                         .get_mut(field_name)
                         .unwrap()
                         .get_mut("id")
                         .unwrap() = serde_json::json!(id);
                 }
-                let instance = serde_json::from_value::<Self>(instance_json).unwrap();
-                Ok(instance)
+                //
+                Ok(instance_json_val)
             }
+
 
             /// Get metadata of Model.
             // -------------------------------------------------------------------------------------
