@@ -374,7 +374,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(instance_json_val)
             }
 
-
             /// Get metadata of Model.
             // -------------------------------------------------------------------------------------
             fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
