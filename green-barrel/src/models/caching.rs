@@ -8,17 +8,14 @@ use serde_json::{json, Value};
 use std::{convert::TryFrom, error::Error};
 
 use crate::{
-    helpers::{
-        enumerations::{ControlArr, Enctype, HttpMethod},
-        generate_html::GenerateHtml,
-    },
+    helpers::enumerations::ControlArr,
     models::{converters::Converters, Main, Meta},
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
 };
 
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
-pub trait Caching: Main + GenerateHtml + Converters {
+pub trait Caching: Main + Converters {
     /// Add metadata and widgects map to cache.
     // *********************************************************************************************
     fn to_cache() -> Result<(), Box<dyn Error>>
@@ -178,73 +175,6 @@ pub trait Caching: Main + GenerateHtml + Converters {
         }
         //
         Ok(serde_json::to_string(&widget_list)?)
-    }
-
-    /// Get Html model of Model for page templates.
-    // *********************************************************************************************
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let html = UserProfile::to_html(None, None, None)?;
-    /// // OR
-    /// let html = UserProfile::to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?;
-    ///
-    /// println!("{}", html);
-    /// ```
-    ///
-    fn to_html(
-        url_action: Option<&str>,
-        http_method: Option<HttpMethod>,
-        enctype: Option<Enctype>,
-    ) -> Result<String, Box<dyn Error>>
-    where
-        Self: serde::ser::Serialize + serde::de::DeserializeOwned + Sized,
-    {
-        // Get a key to access Model data in the cache.
-        let key: String = Self::key()?;
-        // Get read access from cache.
-        let mut model_store = MODEL_STORE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !model_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(model_store);
-            // Add metadata and widgects map to cache.
-            Self::to_cache()?;
-            // Reaccess.
-            model_store = MODEL_STORE.read()?;
-        }
-        // Get model_cache.
-        let model_cache = model_store.get(key.as_str());
-        if model_cache.is_none() {
-            let meta = Self::meta()?;
-            Err(format!(
-                "Model: `{}` > Method: `to_html` => Failed to get data from cache.",
-                meta.model_name
-            ))?
-        }
-        // Generate data and return the result.
-        let model_cache = model_cache.unwrap();
-        if model_cache.html_form.is_empty() {
-            drop(model_store);
-            let mut model_store = MODEL_STORE.write()?;
-            let model_cache = model_store.get(key.as_str()).unwrap();
-            let html = Self::generate_html(
-                url_action,
-                http_method,
-                enctype,
-                model_cache.meta.service_name.as_str(),
-                model_cache.meta.model_name.as_str(),
-                &model_cache.meta.fields_name,
-                &model_cache.model_json,
-            )?;
-            let mut new_model_cache = model_cache.clone();
-            new_model_cache.html_form = html.clone();
-            model_store.insert(key, new_model_cache);
-            return Ok(html);
-        }
-        //
-        Ok(model_cache.html_form.clone())
     }
 
     /// Get cached Model data.

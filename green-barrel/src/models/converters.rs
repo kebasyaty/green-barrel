@@ -8,8 +8,6 @@ use mongodb::{
 };
 use std::{collections::HashMap, error::Error};
 
-use crate::widgets::Widget;
-
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
     /// Get widgets map from document ( presence of widgets ).

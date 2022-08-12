@@ -12,9 +12,8 @@ use mongodb::{
 };
 use std::{collections::HashMap, error::Error};
 
-use crate::{
-    models::{caching::Caching, converters::Converters, output_data::OutputData, Main, Meta},
-    widgets::Widget,
+use crate::models::{
+    caching::Caching, converters::Converters, output_data::OutputData, Main, Meta,
 };
 
 /// Common query methods.

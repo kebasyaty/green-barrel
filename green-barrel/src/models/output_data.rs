@@ -4,13 +4,7 @@ use mongodb::bson::{document::Document, oid::ObjectId};
 use serde_json::{json, Value};
 use std::error::Error;
 
-use crate::{
-    helpers::{
-        enumerations::{Enctype, HttpMethod},
-        generate_html::GenerateHtml,
-    },
-    models::converters::Converters,
-};
+use crate::models::converters::Converters;
 
 /// Helper methods for converting output data (use in the paladins.rs module).
 // *************************************************************************************************
@@ -101,7 +95,6 @@ pub struct OutputDataCheck {
     fields_name: Vec<String>,
 }
 
-impl GenerateHtml for OutputDataCheck {}
 impl Converters for OutputDataCheck {}
 
 impl OutputDataCheck {
@@ -278,40 +271,6 @@ impl OutputDataCheck {
         }
         //
         Ok(serde_json::to_string(&widget_list)?)
-    }
-
-    /// Get Model instance as Html-form.
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let model_name = ModelName::new()?;
-    ///
-    /// let output_data = model_name.check()?;
-    /// // or
-    /// let output_data = model_name.save(None, None)?;
-    ///
-    /// println!("{}", output_data.to_html(None, None, None)?);
-    /// // or
-    /// println!("{}", output_data.to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?);
-    /// ```
-    ///
-    pub fn to_html(
-        &self,
-        action: Option<&str>,
-        method: Option<HttpMethod>,
-        enctype: Option<Enctype>,
-    ) -> Result<String, Box<dyn Error>> {
-        Self::generate_html(
-            action,
-            method,
-            enctype,
-            &self.service_name,
-            &self.model_name,
-            &self.fields_name,
-            &self.final_model_json,
-        )
     }
 
     /// Get validation status (boolean).

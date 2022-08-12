@@ -12,7 +12,6 @@ pub use crate::{
     helpers::{
         administrator::{Administrator, OutputDataAdmin},
         enumerations::{ControlArr, Enctype, HttpMethod},
-        generate_html::GenerateHtml,
         structures::{FileData, ImageData, Meta},
     },
     migration::Monitor,

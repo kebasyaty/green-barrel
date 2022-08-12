@@ -16,7 +16,6 @@ use crate::helpers::structures::Meta;
 pub struct ModelCache {
     pub meta: Meta,
     pub model_json: Value,
-    pub html_form: String,
 }
 
 // Store

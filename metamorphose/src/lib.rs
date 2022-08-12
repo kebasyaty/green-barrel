@@ -76,7 +76,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     //
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name_ident {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name_ident {}};
-    let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name_ident {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -181,18 +180,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         panic!(
                             "Model: `{}` => Could not determine value for \
                             parameter `is_use_hooks`. Use the `bool` type.",
-                            model_name_str
-                        )
-                    }
-                } else if mnv.path.is_ident("is_use_custom_html") {
-                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        if lit_bool.value {
-                            add_trait_generate_html = quote! {};
-                        }
-                    } else {
-                        panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_use_custom_html`. Use the `bool` type.",
                             model_name_str
                         )
                     }
@@ -453,10 +440,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(serde_json::to_value(self)?)
             }
         }
-
-        /// Rendering HTML-controls code for Form.
-        // *****************************************************************************************
-        #add_trait_generate_html
 
         /// A set of methods for custom validation.
         // *****************************************************************************************

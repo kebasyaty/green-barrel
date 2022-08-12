@@ -21,7 +21,6 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main, Meta,
     },
-    widgets::Widget,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {

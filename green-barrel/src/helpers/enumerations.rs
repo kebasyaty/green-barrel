@@ -1,7 +1,5 @@
 //! Enumerations
 
-use core::fmt::Debug;
-
 /// To optimize the update_dyn_wig method.
 // -------------------------------------------------------------------------------------------------
 pub enum ControlArr<'a> {
@@ -33,57 +31,6 @@ impl<'a> ControlArr<'a> {
         match self {
             Self::F64(data) => data,
             _ => panic!("Invalid data type."),
-        }
-    }
-}
-
-/// The HTTP method to submit the form with. Possible (case insensitive) values: GET and POST.
-/// Default -> HttpMethod::GET
-// -------------------------------------------------------------------------------------------------
-#[derive(Debug)]
-pub enum HttpMethod {
-    GET,
-    POST,
-}
-
-impl Default for HttpMethod {
-    fn default() -> Self {
-        HttpMethod::GET
-    }
-}
-
-impl HttpMethod {
-    pub fn value(&self) -> String {
-        match self {
-            HttpMethod::GET => String::from("get"),
-            HttpMethod::POST => String::from("post"),
-        }
-    }
-}
-
-/// If the value of the method attribute is post, enctype is the MIME type of the form submission.
-/// Possible values: application/x-www-form-urlencoded | multipart/form-data | text/plain.
-/// Default -> Enctype::Application
-// -------------------------------------------------------------------------------------------------
-#[derive(Debug)]
-pub enum Enctype {
-    Application,
-    Multipart,
-    Text,
-}
-
-impl Default for Enctype {
-    fn default() -> Self {
-        Enctype::Application
-    }
-}
-
-impl Enctype {
-    pub fn value(&self) -> String {
-        match self {
-            Enctype::Application => String::from("application/x-www-form-urlencoded"),
-            Enctype::Multipart => String::from("multipart/form-data"),
-            Enctype::Text => String::from("text/plain"),
         }
     }
 }
