@@ -39,7 +39,7 @@ impl OutputData {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
     /// let output_data = model_name.delete()?;
     /// let output_data = model_name.update_password()?;
     /// assert!(output_data.is_valid());
@@ -125,8 +125,8 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
-    /// let output_data = model_name.check()?;
+    /// let model_name = ModelName::new()?;
+    /// let output_data = model_name.check(None)?;
     /// let output_data = model_name.save(None, None)?;
     /// println!("{}", output_data.hash());
     /// ```
@@ -195,8 +195,8 @@ impl OutputDataCheck {
     /// println!("{:?}", output_data.set_wig(updated_widget_map));
     /// ```
     ///
-    pub fn to_wig(&self) -> HashMap<String, Widget> {
-        self.final_widget_map.clone()
+    pub fn to_wig(&self) -> Value {
+        self.final_model_json.clone()
     }
     pub fn set_wig(&mut self, new_widget_map: HashMap<String, Widget>) {
         self.final_widget_map = new_widget_map

@@ -154,6 +154,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     ///
     /// ```
     /// let json_line = UserProfile::to_json_for_admin()?;
+    ///
     /// println!("{}", json_line);
     /// ```
     ///
@@ -188,6 +189,7 @@ pub trait Caching: Main + GenerateHtml + Converters {
     /// let html = UserProfile::to_html(None, None, None)?;
     /// // OR
     /// let html = UserProfile::to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?;
+    ///
     /// println!("{}", html);
     /// ```
     ///
