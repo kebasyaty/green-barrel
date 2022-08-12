@@ -3,7 +3,10 @@
 use serde_json::Value;
 use std::error::Error;
 
-use crate::helpers::enumerations::{Enctype, HttpMethod};
+use crate::{
+    helpers::enumerations::{Enctype, HttpMethod},
+    widgets,
+};
 
 /// Rendering HTML-controls code for Form.
 pub trait GenerateHtml {
@@ -48,6 +51,7 @@ pub trait GenerateHtml {
             let attrs = model_json.get(field_name).unwrap();
             // Alert message for the entire web form - Is required.
             // Hint: alternatively use in popup.
+            let widget_name = attrs.get("widget").unwrap().as_str().unwrap();
             let alert = attrs.get("alert").unwrap().as_str().unwrap();
             let input_type = attrs.get("input_type").unwrap().as_str().unwrap();
             let is_hide = attrs.get("is_hide").unwrap().as_bool().unwrap();
@@ -196,7 +200,17 @@ pub trait GenerateHtml {
                         .as_array()
                         .unwrap()
                         .iter()
-                        .map(|item| (item.0.to_string(), item.1.to_strin()))
+                        .map(|item| {
+                            if widget_name.contains("Text") {
+                                serde_json::from_value::<(String, String)>(*item).unwrap()
+                            } else if widget_name.contains("F64") {
+                                let item = serde_json::from_value::<(f64, String)>(*item).unwrap();
+                                (item.0.to_string(), item.1)
+                            } else {
+                                let item = serde_json::from_value::<(i64, String)>(*item).unwrap();
+                                (item.0.to_string(), item.1)
+                            }
+                        })
                         .collect::<Vec<(String, String)>>();
                     //
                     for (idx, item) in options.iter().enumerate() {
