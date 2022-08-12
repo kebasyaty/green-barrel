@@ -60,6 +60,7 @@ pub trait GenerateHtml {
             let readonly = attrs.get("readonly").unwrap().as_bool().unwrap();
             let placeholder = attrs.get("placeholder").unwrap().as_str().unwrap();
             let pattern = attrs.get("pattern").unwrap().as_str().unwrap();
+            let other_attrs = attrs.get("other_attrs").unwrap().as_str().unwrap();
             let css_classes = attrs.get("css_classes").unwrap().as_str().unwrap();
             //
             if !alert.is_empty() {
@@ -69,6 +70,9 @@ pub trait GenerateHtml {
             match input_type {
                 "text" | "url" | "tel" | "password" | "email" | "color" => {
                     let value = attrs.get("value").unwrap().as_str().unwrap();
+                    let minlength = attrs.get("minlength").unwrap().as_u64().unwrap();
+                    let maxlength = attrs.get("maxlength").unwrap().as_u64().unwrap();
+                    //
                     controls = format!(
                         "{}<p style=\"display:{};\">{}<input{}{}{}{}{}{}{}{}{}{}{}{}{}>{}{}{}</p>",
                         controls,
@@ -95,13 +99,13 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.minlength > 0 {
-                            format!(" minlength=\"{}\"", attrs.minlength)
+                        if !minlength > 0 {
+                            format!(" minlength=\"{}\"", minlength)
                         } else {
                             String::new()
                         },
-                        if !attrs.maxlength > 0 {
-                            format!(" maxlength=\"{}\"", attrs.maxlength)
+                        if !maxlength > 0 {
+                            format!(" maxlength=\"{}\"", maxlength)
                         } else {
                             String::new()
                         },
@@ -110,8 +114,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -148,8 +152,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -198,8 +202,8 @@ pub trait GenerateHtml {
                             } else {
                                 String::new()
                             },
-                            if !attrs.other_attrs.is_empty() {
-                                format!(" {}", attrs.other_attrs)
+                            if !other_attrs.is_empty() {
+                                format!(" {}", other_attrs)
                             } else {
                                 String::new()
                             },
@@ -259,8 +263,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -302,8 +306,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -366,8 +370,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -425,8 +429,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -462,13 +466,13 @@ pub trait GenerateHtml {
                         if required { " required" } else { "" },
                         if disabled { " disabled" } else { "" },
                         if readonly { " readonly" } else { "" },
-                        if !attrs.minlength > 0 {
-                            format!(" minlength=\"{}\"", attrs.minlength)
+                        if !minlength > 0 {
+                            format!(" minlength=\"{}\"", minlength)
                         } else {
                             String::new()
                         },
-                        if !attrs.maxlength > 0 {
-                            format!(" maxlengt\"{}\"", attrs.maxlength)
+                        if !maxlength > 0 {
+                            format!(" maxlengt\"{}\"", maxlength)
                         } else {
                             String::new()
                         },
@@ -482,8 +486,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -542,8 +546,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         },
@@ -579,8 +583,8 @@ pub trait GenerateHtml {
                         } else {
                             String::new()
                         },
-                        if !attrs.other_attrs.is_empty() {
-                            format!(" {}", attrs.other_attrs)
+                        if !other_attrs.is_empty() {
+                            format!(" {}", other_attrs)
                         } else {
                             String::new()
                         }
