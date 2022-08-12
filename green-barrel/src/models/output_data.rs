@@ -219,7 +219,7 @@ impl OutputDataCheck {
         self.final_model_json = new_model_json
     }
 
-    /// Get Json-line
+    /// Get Model instance in Json-line format.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -238,7 +238,7 @@ impl OutputDataCheck {
         Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
-    /// Json-line for admin panel.
+    /// Get widget list in json-line format for admin panel.
     // ---------------------------------------------------------------------------------------------
     /// ( converts a widget map to a list, in the order of the Model fields )
     ///
