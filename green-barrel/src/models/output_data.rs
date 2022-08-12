@@ -2,7 +2,6 @@
 
 use mongodb::bson::{document::Document, oid::ObjectId};
 use serde_json::Value;
-use std::collections::HashMap;
 use std::error::Error;
 
 use crate::{
@@ -196,7 +195,7 @@ impl OutputDataCheck {
         self.final_doc = new_doc;
     }
 
-    /// Get/Set Map of Widgets
+    /// Get/Set Model instance in serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
     /// ( Wig - Widgets )
     ///
@@ -209,15 +208,15 @@ impl OutputDataCheck {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.to_wig());
-    /// println!("{:?}", output_data.set_wig(updated_widget_map));
+    /// println!("{:?}", output_data.get_model_json());
+    /// println!("{:?}", output_data.set_model_json(updated_widget_map));
     /// ```
     ///
-    pub fn to_wig(&self) -> Value {
+    pub fn get_model_json(&self) -> Value {
         self.final_model_json.clone()
     }
-    pub fn set_wig(&mut self, new_widget_map: HashMap<String, Widget>) {
-        self.final_widget_map = new_widget_map
+    pub fn set_model_json(&mut self, new_model_json: Value) {
+        self.final_model_json = new_model_json
     }
 
     /// Get Json-line
