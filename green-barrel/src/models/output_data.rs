@@ -352,10 +352,12 @@ impl OutputDataCheck {
     ///
     pub fn err_msg(&self) -> String {
         let mut errors = String::new();
-        for (field_name, widget) in self.final_widget_map.iter() {
+        for field_name in self.fields_name.iter() {
+            let widget = self.final_model_json.get(field_name).unwrap();
             let tmp = errors.clone();
-            if !widget.error.is_empty() {
-                errors = format!("{}\nField: `{}` => {}", tmp, field_name, widget.error);
+            let error = widget.get("error").unwrap().as_str().unwrap();
+            if !error.is_empty() {
+                errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
             }
         }
         if !errors.is_empty() {
