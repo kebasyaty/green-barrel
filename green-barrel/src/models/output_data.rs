@@ -310,7 +310,7 @@ impl OutputDataCheck {
             &self.service_name,
             &self.model_name,
             &self.fields_name,
-            &self.final_widget_map,
+            &self.final_model_json,
         )
     }
 
