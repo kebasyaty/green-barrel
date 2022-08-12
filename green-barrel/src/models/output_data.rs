@@ -40,8 +40,11 @@ impl OutputData {
     ///
     /// ```
     /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.delete()?;
+    /// // or
     /// let output_data = model_name.update_password()?;
+    ///
     /// assert!(output_data.is_valid());
     /// ```
     ///
@@ -60,8 +63,11 @@ impl OutputData {
     ///
     /// ```
     /// let model_name = ModelName {...};
+    ///
     /// let output_data = model_name.delete()?;
+    /// // or
     /// let output_data = model_name.update_password()?;
+    ///
     /// if output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -126,8 +132,11 @@ impl OutputDataCheck {
     ///
     /// ```
     /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check(None)?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{}", output_data.hash());
     /// ```
     ///
@@ -148,9 +157,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{:?}", output_data.object_id()?);
     /// ```
     ///
@@ -167,9 +179,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{:?}", output_data.get_doc());
     /// println!("{:?}", output_data.set_doc(Some(new_doc)));
     /// ```
@@ -188,9 +203,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?
+    /// ;
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{:?}", output_data.to_wig());
     /// println!("{:?}", output_data.set_wig(updated_widget_map));
     /// ```
@@ -208,9 +226,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{}", output_data.to_json()?);
     /// ```
     ///
@@ -225,9 +246,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{}", output_data.to_json_for_admin()?);
     /// ```
     ///
@@ -256,12 +280,14 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
-    /// //
+    ///
     /// println!("{}", output_data.to_html(None, None, None)?);
-    /// // OR
+    /// // or
     /// println!("{}", output_data.to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?);
     /// ```
     ///
@@ -288,9 +314,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// assert!(output_data.is_valid());
     /// ```
     ///
@@ -304,9 +333,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// if output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -332,9 +364,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// if output_data.is_valid() {
     ///     output_data.print_err();
     /// }
