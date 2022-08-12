@@ -5,12 +5,10 @@ use mongodb::{
     sync::Collection,
 };
 use regex::Regex;
+use serde_json::{json, value::Value};
 use std::{collections::HashMap, error::Error};
 
-use crate::{
-    store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
-    widgets::Widget,
-};
+use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
@@ -35,8 +33,8 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(widget: &Widget, err: &String) -> Result<String, Box<dyn Error>> {
-        let mut tmp = widget.error.clone();
+    fn accumula_err(widget: &Value, err: &String) -> Result<String, Box<dyn Error>> {
+        let mut tmp = widget.get("error").unwrap().as_str().unwrap().to_string();
         tmp = if !tmp.is_empty() {
             format!("{}<br>", tmp)
         } else {
