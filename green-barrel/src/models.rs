@@ -21,7 +21,7 @@ use crate::helpers::structures::Meta;
 // *************************************************************************************************
 pub trait Main {
     /// Get model key
-    /// ( to access data in the cache )
+    /// ( to access model metadata in cache ).
     // ---------------------------------------------------------------------------------------------
     fn key() -> Result<String, Box<dyn Error>>;
 
