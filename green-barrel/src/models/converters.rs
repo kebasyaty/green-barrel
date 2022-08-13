@@ -10,65 +10,6 @@ use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get widgets map from document ( presence of widgets ).
-    // ---------------------------------------------------------------------------------------------
-    fn one_to_wig(
-        doc: Option<Document>,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
-        model_name: &str,
-        fields_name: &Vec<String>,
-        mut map_widgets: HashMap<String, Widget>,
-    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
-        //
-        if doc.is_none() {
-            return Ok(None);
-        }
-        let prepared_doc =
-            Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)?;
-        for field in fields_name {
-            if !ignore_fields.contains(field) {
-                let mut widget = map_widgets.get_mut(field).unwrap();
-                let doc = prepared_doc.get(field).unwrap();
-                if doc.element_type() != ElementType::Null {
-                    match doc.element_type() {
-                        ElementType::String => {
-                            widget.value = doc.as_str().unwrap().to_string();
-                        }
-                        ElementType::Int32 => {
-                            widget.value = doc.as_i32().unwrap().to_string();
-                        }
-                        ElementType::Int64 => {
-                            widget.value = doc.as_i64().unwrap().to_string();
-                        }
-                        ElementType::Double => {
-                            widget.value = doc.as_f64().unwrap().to_string();
-                        }
-                        ElementType::Boolean => {
-                            widget.checked = doc.as_bool().unwrap();
-                        }
-                        ElementType::Array => {
-                            widget.value =
-                                serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
-                        }
-                        _ => match widget.widget.as_str() {
-                            "inputFile" | "inputImage" => {
-                                widget.value =
-                                    serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
-                            }
-                            _ => Err(format!(
-                                "Model: `{}` ; Method: `one_doc_to_wig()` => \
-                                Invalid Widget type.",
-                                model_name
-                            ))?,
-                        },
-                    }
-                }
-            }
-        }
-        Ok(Some(map_widgets))
-    }
-
     /// Get model instance from document.
     /// Hint: For the `save`, `update`, `delete` operations.
     // ---------------------------------------------------------------------------------------------
