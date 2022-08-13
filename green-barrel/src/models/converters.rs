@@ -28,7 +28,7 @@ pub trait Converters {
         let prepared_doc =
             Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)
                 .unwrap();
-        let mut accumula_doc = mongodb::bson::document::Document::new();
+        let mut accumula_doc = Document::new();
         for (field_name, widget_type) in widget_type_map {
             if ignore_fields.contains(&field_name) {
                 continue;
@@ -63,14 +63,14 @@ pub trait Converters {
         model_name: &str,
     ) -> Result<Document, Box<dyn Error>> {
         //
-        let mut prepared_doc = Document::new();
+        let mut accumula_doc = Document::new();
         for (field_name, widget_type) in widget_type_map {
             if ignore_fields.contains(&field_name) {
                 continue;
             }
             if field_name == "hash" {
                 let bson_val = doc.get("_id").unwrap();
-                prepared_doc.insert(
+                accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
                         Bson::String(bson_val.as_object_id().unwrap().to_hex())
@@ -84,7 +84,7 @@ pub trait Converters {
                 );
             } else if widget_type == "inputPassword" {
                 let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+                accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
                         Bson::String(String::new())
@@ -94,7 +94,7 @@ pub trait Converters {
                 );
             } else if widget_type == "inputDate" {
                 let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+                accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
                         Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..10].into())
@@ -104,7 +104,7 @@ pub trait Converters {
                 );
             } else if widget_type == "inputDateTime" {
                 let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+                accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
                         Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..19].into())
@@ -114,11 +114,11 @@ pub trait Converters {
                 );
             } else {
                 let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(field_name, bson_val);
+                accumula_doc.insert(field_name, bson_val);
             }
         }
 
-        Ok(prepared_doc)
+        Ok(accumula_doc)
     }
 
     /// Get prepared documents ( missing widgets ).
