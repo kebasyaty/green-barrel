@@ -462,7 +462,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get document from database and convert to model instance in jsob-line format.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = &model_cache.model_json.clone();
-            Self::one_doc_to_json_val(
+            Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
                 &meta.widget_type_map,
@@ -509,7 +509,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get document from database and convert to model instance.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = &model_cache.model_json.clone();
-            Self::one_doc_to_json_val(
+            Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
                 &meta.widget_type_map,

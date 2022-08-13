@@ -81,7 +81,7 @@ pub trait Converters {
     /// In the model instance, in the format serde_json::Value,
     /// Update the widget values from the corresponding document from the database.
     // ---------------------------------------------------------------------------------------------
-    fn one_doc_to_json_val(
+    fn one_to_json_val(
         db_doc: Document,
         ignore_fields: &Vec<String>,
         widget_type_map: &HashMap<String, String>,
