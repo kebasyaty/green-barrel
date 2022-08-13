@@ -130,12 +130,12 @@ pub trait Converters {
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
         let mut cursor = collection.find(filter, find_options)?;
-        let mut docs: Vec<Document> = Vec::new();
+        let mut doc_list: Vec<Document> = Vec::new();
         while let Some(doc) = cursor.next() {
-            docs.push(doc?);
+            doc_list.push(doc?);
         }
 
-        Ok(docs)
+        Ok(doc_list)
     }
 
     /// Get json-line from document list ( missing widgets ).
