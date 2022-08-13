@@ -264,8 +264,8 @@ impl OutputDataCheck {
                 *widget.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
-                *widget.get_mut("widget").unwrap() = json!("hiddenText");
                 *widget.get_mut("input_type").unwrap() = json!("hidden");
+                *widget.get_mut("value").unwrap() = json!("");
             }
             widget_list.push(widget);
         }

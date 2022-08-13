@@ -44,9 +44,10 @@ pub trait Administrator: QCommons + QPaladins {
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
             let mut widget = model_json.get(field_name).unwrap().clone();
-            if !hash.is_empty()
-                && widget.get("widget").unwrap().as_str().unwrap() == "InputPassword"
-            {
+            if field_name == "created_at" || field_name == "updated_at" {
+                *widget.get_mut("is_hide").unwrap() = json!(false);
+            }
+            if field_name.contains("password") && !hash.is_empty() {
                 *widget.get_mut("input_type").unwrap() = json!("hidden");
                 *widget.get_mut("value").unwrap() = json!("");
             }
