@@ -459,9 +459,9 @@ pub trait QCommons: Main + Caching + Converters {
         let coll: Collection = client_cache
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Execute query.
-        let mut model_json = &model_cache.model_json.clone();
+        // Get document from database and convert to model instance in jsob-line format.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+            let mut model_json = &model_cache.model_json.clone();
             Self::one_doc_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
