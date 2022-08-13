@@ -3,6 +3,8 @@
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::structures::FileData;
+
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct InputFile {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
@@ -10,7 +12,7 @@ pub struct InputFile {
     pub widget: String, // Widget name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Default value.
+    pub value: Option<FileData>, // Default value.
     pub accept: String, // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
