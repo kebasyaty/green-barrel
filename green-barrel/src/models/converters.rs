@@ -1,58 +1,16 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
 use mongodb::{
-    bson::{de::from_document, document::Document, spec::ElementType, Bson},
+    bson::{document::Document, spec::ElementType, Bson},
     options::FindOptions,
     sync::Collection,
 };
-use serde::de::DeserializeOwned;
+
 use serde_json::Value;
 use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get model instance from document ( for the `save`, `update`, `delete` operations ).
-    // ---------------------------------------------------------------------------------------------
-    fn to_model_instance(
-        doc: Option<Document>,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
-        model_name: &str,
-    ) -> Result<Option<Self>, Box<dyn Error>>
-    where
-        Self: DeserializeOwned + Sized,
-    {
-        if doc.is_none() {
-            return Ok(None);
-        }
-        let prepared_doc =
-            Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)
-                .unwrap();
-        let mut accumula_doc = Document::new();
-        for (field_name, widget_type) in widget_type_map {
-            if ignore_fields.contains(&field_name) {
-                continue;
-            }
-            let bson_val = prepared_doc.get(field_name).unwrap();
-            if widget_type == "InputFile" || widget_type == "InputImage" {
-                accumula_doc.insert(
-                    field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        let result =
-                            serde_json::to_string(&bson_val.clone().into_relaxed_extjson())
-                                .unwrap();
-                        Bson::String(result)
-                    } else {
-                        Bson::Null
-                    },
-                );
-            } else {
-                accumula_doc.insert(field_name, bson_val);
-            }
-        }
-        Ok(Some(from_document::<Self>(accumula_doc)?))
-    }
-
     /// Get prepared document ( converting data types to model-friendly formats ).
     // ---------------------------------------------------------------------------------------------
     fn to_prepared_doc(
