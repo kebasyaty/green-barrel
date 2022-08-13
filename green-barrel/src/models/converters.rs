@@ -129,7 +129,7 @@ pub trait Converters {
         model_name: &str,
         fields_name: &Vec<String>,
         mut model_json: &Value,
-    ) -> Result<&'a Value, Box<dyn Error>> {
+    ) -> Result<(), Box<dyn Error>> {
         //
         let prepared_doc =
             Self::to_prepared_doc(db_doc, ignore_fields, widget_type_map, model_name)?;
@@ -137,11 +137,15 @@ pub trait Converters {
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
                 let field_doc = prepared_doc.get(field_name).unwrap();
-                model_json
+                *model_json
+                    .get_mut(field_name)
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = serde_json::to_value(field_doc).unwrap();
             }
         }
         //
-        Ok(model_json)
+        Ok(())
     }
 
     /// Get prepared documents ( missing widgets ).
