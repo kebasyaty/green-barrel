@@ -1,5 +1,5 @@
 //! For describe a model with user defaults.
 
 pub trait Creator {
-    fn create() -> Self;
+    fn custom_default() -> Self;
 }

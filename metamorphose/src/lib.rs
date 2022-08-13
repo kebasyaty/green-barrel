@@ -347,7 +347,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
-                let mut instance_json_val = serde_json::to_value(Self::create())?;
+                let mut instance_json_val = serde_json::to_value(Self::custom_default())?;
                 let html_id_map =
                     serde_json::from_str::<std::collections::HashMap<String, String>>(&#html_id_map_json)?;
                 for (field_name, id) in html_id_map {
