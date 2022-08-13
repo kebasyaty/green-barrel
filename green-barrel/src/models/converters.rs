@@ -120,7 +120,8 @@ pub trait Converters {
         Ok(accumula_doc)
     }
 
-    /// one_to_json_line
+    /// In the model instance, in the format serde_json::Value,
+    /// Update the widget values from the corresponding document from the database.
     // ---------------------------------------------------------------------------------------------
     fn one_to_json_val(
         db_doc: Document,
