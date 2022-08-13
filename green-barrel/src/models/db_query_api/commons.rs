@@ -336,11 +336,11 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        let docs = Self::many_to_doc(filter, Some(options), coll)?;
-        if docs.is_empty() {
+        let doc_list = Self::many_to_doc_list(filter, Some(options), coll)?;
+        if doc_list.is_empty() {
             return Ok(None);
         }
-        Ok(Some(docs))
+        Ok(Some(doc_list))
     }
 
     /// Finds the documents in the collection matching filter and

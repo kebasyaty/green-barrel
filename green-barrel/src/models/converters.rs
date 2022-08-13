@@ -123,7 +123,7 @@ pub trait Converters {
 
     /// Get prepared documents ( missing widgets ).
     // ---------------------------------------------------------------------------------------------
-    fn many_to_doc(
+    fn many_to_doc_list(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,
