@@ -1,10 +1,10 @@
-//! autoSlug
+//! AutoSlug
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
-pub struct autoSlug {
+pub struct AutoSlug {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub widget: String, // Widget name.
@@ -26,12 +26,12 @@ pub struct autoSlug {
     pub alert: String, // Alert message for the entire web form. The value is determined automatically.
 }
 
-impl Default for autoSlug {
+impl Default for AutoSlug {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("autoSlug"),
+            widget: String::from("AutoSlug"),
             input_type: String::from("text"),
             name: String::new(),
             value: None,
@@ -52,7 +52,7 @@ impl Default for autoSlug {
     }
 }
 
-impl autoSlug {
+impl AutoSlug {
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }

@@ -9,7 +9,7 @@
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
 ///     title: InputText,
-///     slug: autoSlug,
+///     slug: AutoSlug,
 /// }
 ///
 /// impl Creator for ModelName {
