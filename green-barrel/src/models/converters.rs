@@ -140,7 +140,7 @@ pub trait Converters {
 
     /// Get json-line from document list ( missing widgets ).
     // ---------------------------------------------------------------------------------------------
-    fn many_to_json(
+    fn many_to_json_line(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,

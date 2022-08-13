@@ -385,7 +385,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        Self::many_to_json(
+        Self::many_to_json_line(
             filter,
             Some(options),
             coll,
