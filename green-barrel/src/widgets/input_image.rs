@@ -55,7 +55,7 @@ impl Default for InputImage {
 }
 
 impl InputImage {
-    pub fn set(&mut self, value: &str) {
-        self.value = Some(String::from(value));
+    pub fn set(&mut self, value: ImageData) {
+        self.value = Some(value);
     }
 }
