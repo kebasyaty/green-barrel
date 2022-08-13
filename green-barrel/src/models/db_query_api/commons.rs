@@ -461,9 +461,8 @@ pub trait QCommons: Main + Caching + Converters {
             .collection(meta.collection_name.as_str());
         // Execute query.
         let mut model_json = &model_cache.model_json.clone();
-        //
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
-            let json_line = Self::one_to_json_val(
+            Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
                 &meta.widget_type_map,
@@ -471,7 +470,7 @@ pub trait QCommons: Main + Caching + Converters {
                 &meta.fields_name,
                 model_json,
             )?;
-            return Ok(serde_json::to_string(&json_line)?);
+            return Ok(serde_json::to_string(model_json)?);
         }
         //
         Ok(String::new())

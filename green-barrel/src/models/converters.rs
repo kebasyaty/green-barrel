@@ -122,23 +122,26 @@ pub trait Converters {
 
     /// one_to_json_line
     // ---------------------------------------------------------------------------------------------
-    fn one_to_json_val(
+    fn one_to_json_val<'a>(
         db_doc: Document,
         ignore_fields: &Vec<String>,
         widget_type_map: &HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
         mut model_json: &Value,
-    ) -> Result<Value, Box<dyn Error>> {
+    ) -> Result<&'a Value, Box<dyn Error>> {
         //
         let prepared_doc =
             Self::to_prepared_doc(db_doc, ignore_fields, widget_type_map, model_name)?;
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
-                let doc = prepared_doc.get(field_name).unwrap();
+                let field_doc = prepared_doc.get(field_name).unwrap();
+                model_json
             }
         }
+        //
+        Ok(model_json)
     }
 
     /// Get prepared documents ( missing widgets ).
