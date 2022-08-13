@@ -462,7 +462,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Execute query.
         let mut model_json = &model_cache.model_json.clone();
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
-            Self::one_to_json_val(
+            Self::one_doc_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
                 &meta.widget_type_map,
