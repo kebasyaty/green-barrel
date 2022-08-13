@@ -439,13 +439,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_json(filter, None);
+    /// let result  = ModelName::find_one_to_json_line(filter, None);
     /// if result.is_ok() {
     ///     println!("{}", result);
     /// }
     /// ```
     ///
-    fn find_one_to_json(
+    fn find_one_to_json_line(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
