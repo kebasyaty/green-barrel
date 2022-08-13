@@ -308,7 +308,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_many_to_doc(
+    fn find_many_to_doc_list(
         filter: Option<Document>,
         options: Option<FindOptions>,
     ) -> Result<Option<Vec<Document>>, Box<dyn Error>>
