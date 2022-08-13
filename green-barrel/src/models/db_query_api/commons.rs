@@ -477,47 +477,6 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return widget map.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// use mongodb::bson::doc;
-    /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_wig(filter, None)?;
-    /// if result.is_some()) {
-    ///     println!("{:?}", result.unwrap());
-    /// }
-    /// ```
-    ///
-    fn find_one_to_wig(
-        filter: Document,
-        options: Option<FindOneOptions>,
-    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>>
-    where
-        Self: Serialize + DeserializeOwned + Sized,
-    {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
-        // Access collection.
-        let coll: Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Execute query.
-        Self::one_to_wig(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            &meta.model_name,
-            &meta.fields_name,
-            model_cache.widget_map.clone(),
-        )
-    }
-
-    /// Finds a single document in the collection matching filter and
     /// return as model instance ( missing widgets ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
