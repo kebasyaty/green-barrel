@@ -53,7 +53,7 @@ impl Default for InputFile {
 }
 
 impl InputFile {
-    pub fn set(&mut self, value: &str) {
-        self.value = Some(String::from(value));
+    pub fn set(&mut self, value: FileData) {
+        self.value = Some(value);
     }
 }
