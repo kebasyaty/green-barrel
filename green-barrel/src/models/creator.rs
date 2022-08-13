@@ -17,6 +17,7 @@
 ///         Self {
 ///             title: InputText {
 ///                 label: String::from("Title"),
+///                 maxlength: 60,
 ///                 required: true,
 ///                 unique: true,
 ///                 ..Default::default()
