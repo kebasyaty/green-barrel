@@ -460,20 +460,21 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
-        let json_line = Self::one_to_json_line(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            &meta.model_name,
-            &meta.fields_name,
-            model_cache.model_json.clone(),
-        )?;
+        let mut model_json = &model_cache.model_json.clone();
         //
-        if json_line.is_none() {
-            return Ok(String::new());
+        if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+            let json_line = Self::one_to_json_val(
+                db_doc,
+                &meta.ignore_fields,
+                &meta.widget_type_map,
+                &meta.model_name,
+                &meta.fields_name,
+                model_json,
+            )?;
+            return Ok(serde_json::to_string(&json_line)?);
         }
         //
-        Ok(json_line)
+        Ok(String::new())
     }
 
     /// Finds a single document in the collection matching filter and

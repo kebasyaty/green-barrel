@@ -6,6 +6,7 @@ use mongodb::{
     sync::Collection,
 };
 use serde::de::DeserializeOwned;
+use serde_json::Value;
 use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
@@ -121,7 +122,14 @@ pub trait Converters {
 
     /// one_to_json_line
     // ---------------------------------------------------------------------------------------------
-    fn one_to_json_line() -> Result<String, Box<dyn Error>> {
+    fn one_to_json_val(
+        db_doc: Document,
+        ignore_fields: &Vec<String>,
+        widget_type_map: &HashMap<String, String>,
+        model_name: &str,
+        fields_name: &Vec<String>,
+        mut model_json: &Value,
+    ) -> Result<Value, Box<dyn Error>> {
         //
     }
 
