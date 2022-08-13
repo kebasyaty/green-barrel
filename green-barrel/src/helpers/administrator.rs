@@ -1,6 +1,7 @@
 //! Helper methods for the admin panel.
 
 use mongodb::bson::{doc, document::Document, oid::ObjectId};
+use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::error::Error;
 
@@ -28,13 +29,16 @@ pub trait Administrator: QCommons + QPaladins {
     /// println!("{}", model_name.instance_to_json_for_admin()?);
     /// ```
     ///
-    fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+    fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         //
-        let map_widgets = model_cache.widget_map.clone();
+        let model_json = model_cache.model_json.clone();
         let model_json = self.self_to_json()?;
         let mut widget_list: Vec<Widget> = Vec::new();
         let hash = self.get_hash();
@@ -82,7 +86,7 @@ pub trait Administrator: QCommons + QPaladins {
         dyn_data: Option<Value>,
     ) -> Result<OutputDataAdmin<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: Serialize + DeserializeOwned + Sized,
     {
         //
         if doc_hash.is_some() {
@@ -141,7 +145,10 @@ pub trait Administrator: QCommons + QPaladins {
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
         filter: Option<&Document>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         //
         if doc_hash.is_some() {
             // Get document
