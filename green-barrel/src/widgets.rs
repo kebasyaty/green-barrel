@@ -6,6 +6,7 @@ pub mod check_box;
 pub mod hidden_date_time;
 pub mod hidden_hash;
 // text
+pub mod auto_slug;
 pub mod input_color;
 pub mod input_date;
 pub mod input_date_time;
@@ -15,7 +16,6 @@ pub mod input_ipv4;
 pub mod input_ipv6;
 pub mod input_password;
 pub mod input_phone;
-pub mod input_slug;
 pub mod input_text;
 pub mod input_url;
 pub mod text_area;

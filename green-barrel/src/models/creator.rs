@@ -8,7 +8,8 @@
 /// #[Model]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     title: InputText
+///     title: InputText,
+///     slug: autoSlug,
 /// }
 ///
 /// impl Creator for ModelName {
