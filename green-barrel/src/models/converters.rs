@@ -10,8 +10,7 @@ use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get model instance from document.
-    /// Hint: For the `save`, `update`, `delete` operations.
+    /// Get model instance from document ( for the `save`, `update`, `delete` operations ).
     // ---------------------------------------------------------------------------------------------
     fn to_model_instance(
         doc: Option<Document>,
@@ -53,8 +52,7 @@ pub trait Converters {
         Ok(Some(from_document::<Self>(accumula_doc)?))
     }
 
-    /// Get prepared document.
-    /// Hint: Converting data types to model-friendly formats.
+    /// Get prepared document ( converting data types to model-friendly formats ).
     // ---------------------------------------------------------------------------------------------
     fn to_prepared_doc(
         doc: Document,
@@ -119,6 +117,12 @@ pub trait Converters {
         }
 
         Ok(accumula_doc)
+    }
+
+    /// one_to_json_line
+    // ---------------------------------------------------------------------------------------------
+    fn one_to_json_line() -> Result<String, Box<dyn Error>> {
+        //
     }
 
     /// Get prepared documents ( missing widgets ).
