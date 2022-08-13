@@ -10,6 +10,7 @@ use mongodb::{
     sync::Collection,
     Namespace,
 };
+use serde::{de::DeserializeOwned, ser::Serialize};
 use std::{collections::HashMap, error::Error};
 
 use crate::models::{
@@ -36,7 +37,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn aggregate(
         pipeline: Vec<Document>,
         options: Option<AggregateOptions>,
-    ) -> Result<Vec<Document>, Box<dyn Error>> {
+    ) -> Result<Vec<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -68,7 +72,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn count_documents(
         filter: Option<Document>,
         options: Option<CountOptions>,
-    ) -> Result<i64, Box<dyn Error>> {
+    ) -> Result<i64, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -99,7 +106,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn delete_many(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -147,7 +157,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn delete_one(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -195,7 +208,10 @@ pub trait QCommons: Main + Caching + Converters {
         field_name: &str,
         filter: Option<Document>,
         options: Option<DistinctOptions>,
-    ) -> Result<Vec<Bson>, Box<dyn Error>> {
+    ) -> Result<Vec<Bson>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -220,7 +236,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>> {
+    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -260,7 +279,10 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn estimated_document_count(
         options: Option<EstimatedDocumentCountOptions>,
-    ) -> Result<i64, Box<dyn Error>> {
+    ) -> Result<i64, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -289,7 +311,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_many_to_doc(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<Option<Vec<Document>>, Box<dyn Error>> {
+    ) -> Result<Option<Vec<Document>>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -335,7 +360,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_many_to_json(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -386,7 +414,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_one_to_doc(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<Option<Document>, Box<dyn Error>> {
+    ) -> Result<Option<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -417,7 +448,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_one_to_json(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -460,7 +494,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_one_to_wig(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
+    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -500,7 +537,7 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: Serialize + DeserializeOwned + Sized,
     {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -539,7 +576,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_one_and_delete_to_doc(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<Option<Document>, Box<dyn Error>> {
+    ) -> Result<Option<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -578,7 +618,10 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_one_and_delete_to_json(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -634,7 +677,7 @@ pub trait QCommons: Main + Caching + Converters {
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: Serialize + DeserializeOwned + Sized,
     {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
@@ -669,7 +712,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", name);
     /// ```
     ///
-    fn name() -> Result<String, Box<dyn Error>> {
+    fn name() -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -692,7 +738,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{:?}", name);
     /// ```
     ///
-    fn namespace() -> Result<Namespace, Box<dyn Error>> {
+    fn namespace() -> Result<Namespace, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
