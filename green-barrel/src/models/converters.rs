@@ -131,8 +131,8 @@ pub trait Converters {
         //
         let mut doc_list: Vec<Document> = Vec::new();
         let mut cursor = collection.find(filter, find_options)?;
-        while let Some(doc) = cursor.next() {
-            doc_list.push(doc?);
+        while let Some(Ok(db_doc)) = cursor.next() {
+            doc_list.push(db_doc);
         }
 
         Ok(doc_list)
