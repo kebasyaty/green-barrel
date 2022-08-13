@@ -122,7 +122,7 @@ pub trait Converters {
 
     /// one_to_json_line
     // ---------------------------------------------------------------------------------------------
-    fn one_to_json_val<'a>(
+    fn one_to_json_val(
         db_doc: Document,
         ignore_fields: &Vec<String>,
         widget_type_map: &HashMap<String, String>,
