@@ -131,6 +131,14 @@ pub trait Converters {
         mut model_json: &Value,
     ) -> Result<Value, Box<dyn Error>> {
         //
+        let prepared_doc =
+            Self::to_prepared_doc(db_doc, ignore_fields, widget_type_map, model_name)?;
+        //
+        for field in fields_name {
+            if !ignore_fields.contains(field) {
+                //
+            }
+        }
     }
 
     /// Get prepared documents ( missing widgets ).
