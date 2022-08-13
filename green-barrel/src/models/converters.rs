@@ -153,12 +153,12 @@ pub trait Converters {
         let mut json_line = String::new();
         while let Some(db_doc) = cursor.next() {
             let prepared_doc =
-                Self::to_prepared_doc(db_doc?, ignore_fields, widget_type_map, model_name);
+                Self::to_prepared_doc(db_doc?, ignore_fields, widget_type_map, model_name)?;
             //
             json_line = format!(
                 "{},{}",
                 json_line,
-                Bson::Document(prepared_doc?)
+                Bson::Document(prepared_doc)
                     .into_relaxed_extjson()
                     .to_string(),
             );
