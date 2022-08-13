@@ -7,6 +7,7 @@ use mongodb::{
     sync::Collection,
 };
 use rand::Rng;
+use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::value::Value;
 use slug::slugify;
 use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
@@ -165,7 +166,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn check(&mut self, is_save: Option<bool>) -> Result<OutputDataCheck, Box<dyn Error>> {
+    fn check(&mut self, is_save: Option<bool>) -> Result<OutputDataCheck, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -1934,7 +1938,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
-            &mut final_widget_map,
+            &final_model_json,
+            &meta.fields_name,
         )?;
 
         // Return result.
