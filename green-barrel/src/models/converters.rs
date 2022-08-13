@@ -69,35 +69,6 @@ pub trait Converters {
         Ok(Some(map_widgets))
     }
 
-    /// Get json-line from widget map.
-    // ---------------------------------------------------------------------------------------------
-    fn widget_map_to_json(widget_map: HashMap<String, Widget>) -> Result<String, Box<dyn Error>> {
-        let mut obj_val = serde_json::to_value(widget_map.clone())?;
-        for (field, widget) in widget_map.iter() {
-            let wig_val = widget.value.clone();
-            let json_val = if wig_val.is_empty() {
-                serde_json::Value::Null
-            } else {
-                if widget.widget == "inputFile"
-                    || widget.widget == "inputImage"
-                    || widget.widget.contains("Mult")
-                {
-                    serde_json::from_str(wig_val.as_str())?
-                } else if widget.widget.contains("32") || widget.widget.contains("I64") {
-                    let num = wig_val.parse::<i64>()?;
-                    serde_json::value::to_value(num)?
-                } else if widget.widget.contains("F64") {
-                    let num = wig_val.parse::<f64>()?;
-                    serde_json::value::to_value(num)?
-                } else {
-                    serde_json::value::to_value(wig_val)?
-                }
-            };
-            *obj_val.get_mut(field).unwrap().get_mut("value").unwrap() = json_val;
-        }
-        Ok(serde_json::to_string(&obj_val)?)
-    }
-
     /// Get model instance from document.
     /// Hint: For the `save`, `update`, `delete` operations.
     // ---------------------------------------------------------------------------------------------
