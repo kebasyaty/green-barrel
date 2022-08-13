@@ -38,9 +38,8 @@ pub trait Administrator: QCommons + QPaladins {
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         //
-        let model_json = model_cache.model_json.clone();
         let model_json = self.self_to_json()?;
-        let mut widget_list: Vec<Widget> = Vec::new();
+        let mut widget_list = Vec::<Value>::new();
         let hash = self.get_hash();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
