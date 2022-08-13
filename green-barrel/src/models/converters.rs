@@ -151,9 +151,9 @@ pub trait Converters {
         //
         let mut cursor = collection.find(filter, find_options)?;
         let mut json_line = String::new();
-        while let Some(doc) = cursor.next() {
+        while let Some(db_doc) = cursor.next() {
             let prepared_doc =
-                Self::to_prepared_doc(doc?, ignore_fields, widget_type_map, model_name);
+                Self::to_prepared_doc(db_doc?, ignore_fields, widget_type_map, model_name);
             //
             json_line = format!(
                 "{},{}",
