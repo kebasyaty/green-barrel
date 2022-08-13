@@ -82,7 +82,7 @@ pub trait Converters {
                         ))?
                     },
                 );
-            } else if widget_type == "inputPassword" {
+            } else if widget_type == "InputPassword" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -92,7 +92,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "inputDate" {
+            } else if widget_type == "InputDate" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -102,7 +102,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "inputDateTime" {
+            } else if widget_type == "InputDateTime" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
