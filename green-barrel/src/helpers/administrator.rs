@@ -2,7 +2,7 @@
 
 use mongodb::bson::{doc, document::Document, oid::ObjectId};
 use serde::{de::DeserializeOwned, ser::Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::error::Error;
 
 use crate::{
@@ -43,32 +43,12 @@ pub trait Administrator: QCommons + QPaladins {
         let hash = self.get_hash();
         // Get a list of widgets in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = map_widgets.get(field_name).unwrap().clone();
-            if !field_name.contains("password") {
-                let field_json = model_json[field_name].clone();
-                if field_json.is_string() {
-                    widget.value = field_json.as_str().unwrap().to_string();
-                } else if field_json.is_i64() {
-                    widget.value = field_json.as_i64().unwrap().to_string();
-                } else if field_json.is_u64() {
-                    widget.value = field_json.as_u64().unwrap().to_string();
-                } else if field_json.is_f64() {
-                    widget.value = field_json.as_f64().unwrap().to_string();
-                } else if field_json.is_array() {
-                    let array = field_json.as_array().unwrap();
-                    widget.value = serde_json::to_string(array)?;
-                } else if field_json.is_boolean() {
-                    widget.checked = field_json.as_bool().unwrap();
-                } else if field_json.is_null() {
-                    widget.value = String::new();
-                }
-                if field_name == "created_at" || field_name == "updated_at" {
-                    widget.is_hide = false;
-                }
-            } else if !hash.is_empty() {
-                widget.widget = "hiddenText".to_string();
-                widget.input_type = "hidden".to_string();
-                widget.value = String::new();
+            let mut widget = model_json.get(field_name).unwrap().clone();
+            if widget.get("widget").unwrap().as_str().unwrap() == "InputPassword"
+                && !hash.is_empty()
+            {
+                *widget.get_mut("input_type").unwrap() = json!("hidden");
+                *widget.get_mut("value").unwrap() = json!("");
             }
             widget_list.push(widget);
         }
