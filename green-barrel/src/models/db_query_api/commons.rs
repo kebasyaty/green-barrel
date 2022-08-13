@@ -11,7 +11,7 @@ use mongodb::{
     Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
-use std::{collections::HashMap, error::Error};
+use std::error::Error;
 
 use crate::models::{
     caching::Caching, converters::Converters, output_data::OutputData, Main, Meta,
