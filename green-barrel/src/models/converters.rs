@@ -141,7 +141,7 @@ pub trait Converters {
                     .get_mut(field_name)
                     .unwrap()
                     .get_mut("value")
-                    .unwrap() = serde_json::to_value(field_doc).unwrap();
+                    .unwrap() = field_doc.into_relaxed_extjson();
             }
         }
         //
