@@ -430,7 +430,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return in JSON format ( presence of widgets ).
+    /// return in JSON format.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -477,7 +477,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return as model instance ( missing widgets ).
+    /// return as model instance.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
