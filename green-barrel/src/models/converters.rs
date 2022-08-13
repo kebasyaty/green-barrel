@@ -149,8 +149,8 @@ pub trait Converters {
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
-        let mut cursor = collection.find(filter, find_options)?;
         let mut json_line = String::new();
+        let mut cursor = collection.find(filter, find_options)?;
         while let Some(db_doc) = cursor.next() {
             let prepared_doc =
                 Self::to_prepared_doc(db_doc?, ignore_fields, widget_type_map, model_name)?;
