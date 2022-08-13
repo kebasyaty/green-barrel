@@ -34,7 +34,7 @@ pub trait Converters {
                 continue;
             }
             let bson_val = prepared_doc.get(field_name).unwrap();
-            if widget_type == "inputFile" || widget_type == "inputImage" {
+            if widget_type == "InputFile" || widget_type == "InputImage" {
                 accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
