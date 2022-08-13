@@ -129,8 +129,8 @@ pub trait Converters {
         collection: Collection,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
-        let mut cursor = collection.find(filter, find_options)?;
         let mut doc_list: Vec<Document> = Vec::new();
+        let mut cursor = collection.find(filter, find_options)?;
         while let Some(doc) = cursor.next() {
             doc_list.push(doc?);
         }
