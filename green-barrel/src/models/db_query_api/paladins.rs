@@ -1972,7 +1972,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputDataCheck, Box<dyn Error>> {
+    ) -> Result<OutputDataCheck, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Run hooks.
         if self.get_hash().is_empty() {
             self.pre_create();
@@ -2074,7 +2077,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>> {
+    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Run hook.
         self.pre_delete();
         // Get cached Model data.
@@ -2247,7 +2253,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         password: &str,
         options: Option<FindOneOptions>,
-    ) -> Result<bool, Box<dyn Error>> {
+    ) -> Result<bool, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -2325,7 +2334,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         new_password: &str,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         //
         let mut result_bool = false;
         let mut err_msg = String::new();
