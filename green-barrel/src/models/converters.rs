@@ -1,11 +1,11 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
-use mongodb::bson::document::Document;
 use mongodb::{
-    bson::{de::from_document, spec::ElementType, Bson},
+    bson::{de::from_document, document::Document, spec::ElementType, Bson},
     options::FindOptions,
     sync::Collection,
 };
+use serde::de::DeserializeOwned;
 use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
@@ -20,21 +20,22 @@ pub trait Converters {
         model_name: &str,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: DeserializeOwned + Sized,
     {
         if doc.is_none() {
             return Ok(None);
         }
-        let doc = Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)
-            .unwrap();
-        let mut prepared_doc = mongodb::bson::document::Document::new();
+        let prepared_doc =
+            Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)
+                .unwrap();
+        let mut accumula_doc = mongodb::bson::document::Document::new();
         for (field_name, widget_type) in widget_type_map {
             if ignore_fields.contains(&field_name) {
                 continue;
             }
-            let bson_val = doc.get(field_name).unwrap();
+            let bson_val = prepared_doc.get(field_name).unwrap();
             if widget_type == "inputFile" || widget_type == "inputImage" {
-                prepared_doc.insert(
+                accumula_doc.insert(
                     field_name,
                     if bson_val.element_type() != ElementType::Null {
                         let result =
@@ -46,10 +47,10 @@ pub trait Converters {
                     },
                 );
             } else {
-                prepared_doc.insert(field_name, bson_val);
+                accumula_doc.insert(field_name, bson_val);
             }
         }
-        Ok(Some(from_document::<Self>(prepared_doc)?))
+        Ok(Some(from_document::<Self>(accumula_doc)?))
     }
 
     /// Get prepared document.
