@@ -575,7 +575,7 @@ fn get_widget_info<'a>(
         "RangeF64" => ("f64", "range"),
         "InputPhone" => ("String", "tel"),
         "InputText" => ("String", "text"),
-        "InputSlug" => ("String", "text"),
+        "AutoSlug" => ("String", "text"),
         "InputUrl" => ("String", "url"),
         "InputIP" => ("String", "text"),
         "InputIPv4" => ("String", "text"),
