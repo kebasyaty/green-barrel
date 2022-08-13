@@ -302,7 +302,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_doc(None, None)?;
+    /// let result = ModelName::find_many_to_doc_list(None, None)?;
     /// if result.is_some() {
     ///     println!("{:?}", result.unwrap());
     /// }
@@ -351,13 +351,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json(None, None);
+    /// let result = ModelName::find_many_to_json_line(None, None);
     /// if result.is_ok() {
     ///     println!("{}", result?);
     /// }
     /// ```
     ///
-    fn find_many_to_json(
+    fn find_many_to_json_line(
         filter: Option<Document>,
         options: Option<FindOptions>,
     ) -> Result<String, Box<dyn Error>>
