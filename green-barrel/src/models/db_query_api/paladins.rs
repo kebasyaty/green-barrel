@@ -479,44 +479,33 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if slug.is_empty() {
-                        slug = if !final_value.is_null() {
-                            final_value.as_str().unwrap().trim().to_string()
-                        } else {
-                            String::new()
-                        };
+                    if slug.is_empty() && !final_value.is_null() {
+                        slug = final_value.as_str().unwrap().trim().to_string();
                     }
                     // Validation, if the field is required and empty, accumulate the error.
                     if slug.is_empty() {
-                        if !final_default.is_null() {
-                            *final_value = final_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, "Required field.")?);
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
                                         Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
+                                    model_name, field_name
+                                ))?
                             }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if !ignore_fields.contains(&field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     //
-                    slug_str = slugify(slug_str);
-                    final_widget.value = slug_str.clone();
+                    slug = slugify(slug);
+                    final_widget.value = slug.clone();
                     let bson_field_value = Bson::String(slug_str.clone());
                     // Field attribute check - `pattern`.
                     // -----------------------------------------------------------------------------
