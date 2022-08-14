@@ -93,14 +93,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 } else {
                     Err(format!(
                         "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                        Document (info file) not found.",
+                            Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
             } else {
                 Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                    Document not found.",
+                        Document not found.",
                     model_name, field_name
                 ))?
             }
@@ -220,7 +220,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !fields_name.contains(&field_name) {
                         Err(format!(
                             "\n\nModel: `{}` ;  Method: `add_validation()` => \
-                            The `{}` field is missing from the model.\n\n",
+                                The `{}` field is missing from the model.\n\n",
                             model_name, field_name
                         ))?
                     }
@@ -285,8 +285,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Widget: {} > \
-                                        Field: `is_hide` = `true` ; Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
                                         model_name, field_name, widget_name
                                     ))?
                                 }
@@ -2032,7 +2032,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let meta = Self::meta()?;
         Err(format!(
             "Model: `{}` > Method: `save` => \
-            !!!-Stub-!!!",
+                !!!-Stub-!!!",
             meta.model_name
         ))?
     }
@@ -2113,7 +2113,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` => Document (info file) not found.",
+                                            Method: `delete()` => Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -2151,7 +2151,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 } else {
                                     Err(format!(
                                         "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` => Document (info file) not found.",
+                                            Method: `delete()` => Document (info file) not found.",
                                         meta.model_name, field_name
                                     ))?
                                 }
@@ -2243,7 +2243,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if hash.is_empty() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                An empty `hash` field is not allowed when updating.",
+                    An empty `hash` field is not allowed when updating.",
                 meta.model_name
             ))?
         }
@@ -2257,7 +2257,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if doc.is_none() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                There is no document in the database for the current `hash` value.",
+                    There is no document in the database for the current `hash` value.",
                 meta.model_name
             ))?
         }
@@ -2268,7 +2268,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if password_hash.is_none() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                The `password` field is missing.",
+                    The `password` field is missing.",
                 meta.model_name
             ))?
         }
