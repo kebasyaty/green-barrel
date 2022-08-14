@@ -411,21 +411,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
-                        is_err_symptom = true;
-                        if !widget_type.contains("hidden") && !final_widget.is_hide {
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                        } else {
-                            Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
-                                model_name,
-                                field_name,
-                                err.to_string()
-                            ))
-                            .unwrap()
-                        }
-                    });
+                    Self::regex_validation(widget_name, final_value.as_str().unwrap())
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                        .unwrap());
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
+                                    model_name,
+                                    field_name,
+                                    err.to_string()
+                                ))
+                                .unwrap()
+                            }
+                        });
 
                     // Insert result.
                     // -----------------------------------------------------------------------------

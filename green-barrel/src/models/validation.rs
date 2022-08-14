@@ -45,51 +45,51 @@ pub trait Validation {
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
-        match field_type {
-            "inputEmail" => {
+    fn regex_validation(widget_name: &str, value: &str) -> Result<(), Box<dyn Error>> {
+        match widget_name {
+            "InputEmail" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?
                 }
             }
-            "inputColor" => {
+            "InputColor" => {
                 if !REGEX_IS_COLOR_CODE.is_match(value) {
                     Err("Invalid Color code.")?
                 }
             }
-            "inputUrl" => {
+            "InputUrl" => {
                 if !validator::validate_url(value) {
                     Err("Invalid Url.")?
                 }
             }
-            "inputIP" => {
+            "InputIP" => {
                 if !validator::validate_ip(value) {
                     Err("Invalid IP address.")?
                 }
             }
-            "inputIPv4" => {
+            "InputIPv4" => {
                 if !validator::validate_ip_v4(value) {
                     Err("Invalid IPv4 address.")?
                 }
             }
-            "inputIPv6" => {
+            "InputIPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err("Invalid IPv6 address.")?
                 }
             }
-            "inputPassword" => {
+            "InputPassword" => {
                 if !REGEX_IS_PASSWORD.is_match(value) {
                     Err("Size 8-256 chars.<br>\
                         Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (")?
                 }
             }
-            "inputDate" => {
+            "InputDate" => {
                 if !REGEX_IS_DATE.is_match(value) {
                     Err("Incorrect date format.<br>\
                          Example: 1970-02-28")?
                 }
             }
-            "inputDateTime" => {
+            "InputDateTime" => {
                 if !REGEX_IS_DATETIME.is_match(value) {
                     Err("Incorrect date and time format.<br>\
                          Example: 1970-02-28T00:00")?
