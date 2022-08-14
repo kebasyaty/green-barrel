@@ -299,16 +299,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value;
-                    if widget_name != "inputPassword" {
-                        bson_field_value = Bson::String(field_value.clone());
-                        final_widget.value = field_value.clone();
+                    let field_value_bson = if widget_name != "inputPassword" {
+                        Bson::String(final_value.as_str().unwrap().to_string())
                     } else {
-                        bson_field_value = Bson::Null;
-                        final_widget.value = String::new();
+                        Bson::Null
                     };
-                    // Convert to &str
-                    let field_value: &str = field_value.as_str();
 
                     // Field attribute check - `pattern`.
                     // -----------------------------------------------------------------------------
