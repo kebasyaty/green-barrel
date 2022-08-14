@@ -306,25 +306,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    let pattern = final_widget.get("pattern").unwrap().as_str().unwrap();
-                    if !pattern.is_empty() {
-                        Self::regex_pattern_validation(final_value.as_str().unwrap(), pattern)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_widget.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_widget, &err.to_string())
-                                            .unwrap());
-                                } else {
-                                    Err(format!(
+                    let pattern = final_widget.get("pattern");
+                    if pattern.is_some() {
+                        Self::regex_pattern_validation(
+                            final_value.as_str().unwrap(),
+                            pattern.unwrap().as_str().unwrap(),
+                        )
+                        .unwrap_or_else(|err| {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                        .unwrap());
+                            } else {
+                                Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
                                 ))
-                                    .unwrap()
-                                }
-                            });
+                                .unwrap()
+                            }
+                        });
                     }
 
                     // Validation in regular expression.
