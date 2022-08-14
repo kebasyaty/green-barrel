@@ -250,7 +250,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 continue;
             }
-            // Get field value for validation.
+            // Get widget value for validation.
             let mut final_value = final_widget.get_mut("value").unwrap();
             let widget_type = final_widget.get("widget").unwrap().as_str().unwrap();
 
@@ -263,31 +263,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 | "hiddenText" => {
                     // When updating, we skip field password type.
                     if is_update && widget_type == "inputPassword" {
-                        final_widget.value = String::new();
+                        *final_value = serde_json::Value::Null;
                         continue;
                     }
-                    // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
-                        let clean_data: String =
-                            pre_json_value.as_str().unwrap().trim().to_string();
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        if !clean_data.is_empty() {
-                            if widget_type != "inputPassword" {
-                                final_widget.value = clean_data.clone();
-                            } else {
-                                final_widget.value = String::new();
-                            }
-                        }
-                        clean_data
-                    } else {
-                        String::new()
-                    };
 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if field_value.is_empty() {
+                    if final_value.is_null() {
                         if widget_type != "inputPassword" && !final_widget.value.is_empty() {
                             field_value = final_widget.value.clone();
                         } else {

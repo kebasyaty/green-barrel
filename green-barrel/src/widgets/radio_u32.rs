@@ -11,6 +11,7 @@ pub struct RadioU32 {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<u32>, // Default value.
+    pub default: Option<u32>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
@@ -34,6 +35,7 @@ impl Default for RadioU32 {
             input_type: String::from("radio"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             required: false,
             disabled: false,

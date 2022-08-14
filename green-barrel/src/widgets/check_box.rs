@@ -11,6 +11,7 @@ pub struct CheckBox {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<bool>, // Default value.
+    pub default: Option<bool>, // Value by default
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub checked: bool, // A pre-activated radio button or checkbox.
@@ -34,6 +35,7 @@ impl Default for CheckBox {
             input_type: String::from("checkbox"),
             name: String::new(),
             value: Some(false),
+            default: None,
             placeholder: String::new(),
             required: false,
             checked: false,

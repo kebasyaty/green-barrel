@@ -11,6 +11,7 @@ pub struct RangeI64 {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<i64>, // Default value.
+    pub default: Option<i64>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.
@@ -37,6 +38,7 @@ impl Default for RangeI64 {
             input_type: String::from("range"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             required: false,
             unique: false,

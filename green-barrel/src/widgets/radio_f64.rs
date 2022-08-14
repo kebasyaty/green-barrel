@@ -11,6 +11,7 @@ pub struct RadioF64 {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<f64>, // Default value.
+    pub default: Option<f64>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
@@ -34,6 +35,7 @@ impl Default for RadioF64 {
             input_type: String::from("radio"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             required: false,
             disabled: false,

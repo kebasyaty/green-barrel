@@ -11,6 +11,7 @@ pub struct SelectText {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
+    pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
@@ -37,6 +38,7 @@ impl Default for SelectText {
             input_type: String::from("select"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             minlength: 0,
             maxlength: 256,

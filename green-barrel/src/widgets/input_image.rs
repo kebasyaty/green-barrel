@@ -13,6 +13,7 @@ pub struct InputImage {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<ImageData>, // Default value.
+    pub default: Option<ImageData>, // Value by default
     pub accept: String, // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
@@ -37,6 +38,7 @@ impl Default for InputImage {
             input_type: String::from("file"),
             name: String::new(),
             value: None,
+            default: None,
             accept: String::new(),
             placeholder: String::new(),
             required: false,

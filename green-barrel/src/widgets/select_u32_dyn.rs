@@ -11,6 +11,7 @@ pub struct SelectU32Dyn {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<u32>, // Default value.
+    pub default: Option<u32>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
@@ -35,6 +36,7 @@ impl Default for SelectU32Dyn {
             input_type: String::from("select"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             required: false,
             disabled: false,
