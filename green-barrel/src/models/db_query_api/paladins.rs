@@ -328,7 +328,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
 
                     // Validation in regular expression.
-                    // Checking `minlength`, `maxlength`, `min length`, `max length`.
+                    // Checking `minlength`.
                     // -----------------------------------------------------------------------------
                     let minlength = final_widget.get("minlength").unwrap();
                     if !minlength.is_null() {
@@ -353,7 +353,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         });
                     }
-                    //
+                    // Checking `maxlength`.
                     let maxlength = final_widget.get("maxlength").unwrap();
                     if !maxlength.is_null() {
                         Self::check_maxlength(
