@@ -488,10 +488,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation, if the field is required and empty, accumulate the error.
                     if slug.is_empty() {
-                        if !final_widget.value.is_empty() {
-                            slug_str = final_widget.value.clone();
+                        if !final_default.is_null() {
+                            *final_value = final_default.clone();
                         } else {
-                            if final_widget.required {
+                            if is_required {
                                 is_err_symptom = true;
                                 if !final_widget.is_hide {
                                     final_widget.error = Self::accumula_err(
