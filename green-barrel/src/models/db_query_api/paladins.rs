@@ -190,16 +190,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 false
             };
         // Get a list of fields that should not be included in the document.
-        let ignore_fields: Vec<&str> = meta
+        let ignore_fields = meta
             .ignore_fields
             .iter()
             .map(|item| item.as_str())
-            .collect();
+            .collect::<Vec<&str>>();
         // Access the collection.
         let coll: Collection = client_cache
             .database(&meta.database_name)
             .collection(&meta.collection_name);
-        // Get preliminary data from the model.
+        // Get preliminary data from model instance and use for final result.
         let final_model_json = self.self_to_json()?;
         // Document for the final result.
         let mut final_doc = Document::new();
