@@ -298,7 +298,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if widget_name != "inputPassword" {
+                    let field_value_bson = if widget_name != "InputPassword" {
                         Bson::String(final_value.as_str().unwrap().to_string())
                     } else {
                         Bson::Null
@@ -380,7 +380,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    if widget_type != "inputPassword" && final_widget.unique {
+                    if widget_name != "InputPassword" && final_widget.unique {
                         Self::check_unique(hash, field_name, &bson_field_value, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
