@@ -330,12 +330,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation in regular expression.
                     // Checking `minlength`, `maxlength`, `min length`, `max length`.
                     // -----------------------------------------------------------------------------
-                    Self::check_minlength(final_widget.minlength, field_value).unwrap_or_else(
+                    let minlength =
+                        final_widget.get("minlength").unwrap().as_i64().unwrap() as usize;
+                    Self::check_minlength(minlength, final_value.as_str().unwrap()).unwrap_or_else(
                         |err| {
                             is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            if !is_hide {
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                        .unwrap());
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
