@@ -432,20 +432,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        match widget_type {
-                            "inputPassword" => {
-                                if !field_value.is_empty() {
+                        let value = final_value.as_str().unwrap();
+                        match widget_name {
+                            "InputPassword" => {
+                                if !value.is_empty() {
                                     if !is_update {
                                         // Generate password hash and add to result document.
                                         let password_hash: String =
-                                            Self::create_password_hash(field_value)?;
+                                            Self::create_password_hash(value)?;
                                         final_doc.insert(field_name, Bson::String(password_hash));
                                     }
                                 }
                             }
                             _ => {
                                 // Insert result from other fields.
-                                final_doc.insert(field_name, bson_field_value);
+                                final_doc.insert(field_name, field_value_bson);
                             }
                         }
                     }
