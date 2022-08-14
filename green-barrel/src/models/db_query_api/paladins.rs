@@ -252,17 +252,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
             // Get widget value for validation.
             let mut final_value = final_widget.get_mut("value").unwrap();
-            let widget_type = final_widget.get("widget").unwrap().as_str().unwrap();
+            let mut final_default = final_widget.get_mut("default").unwrap();
+            let final_required = final_widget.get("required").unwrap().as_bool().unwrap();
+            let final_is_hide = final_widget.get("is_hide").unwrap().as_bool().unwrap();
+            let widget_name = final_widget.get("widget").unwrap().as_str().unwrap();
 
             // Field validation.
-            match widget_type {
+            match widget_name {
                 // Validation of Text type fields.
                 // *********************************************************************************
                 "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
                 | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
                 | "hiddenText" => {
                     // When updating, we skip field password type.
-                    if is_update && widget_type == "inputPassword" {
+                    if is_update && widget_name == "inputPassword" {
                         *final_value = serde_json::Value::Null;
                         continue;
                     }
@@ -271,23 +274,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
-                        if widget_type != "inputPassword" && !final_widget.value.is_empty() {
-                            field_value = final_widget.value.clone();
+                        if widget_name != "inputPassword" && !final_default.is_null() {
+                            *final_value = final_default.clone();
                         } else {
-                            if final_widget.required {
+                            if final_required {
                                 is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
+                                if !final_is_hide {
+                                    *final_widget.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_widget, "Required field.")?
+                                    );
                                 } else {
                                     Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
+                                        "\n\nModel: `{}` > Field: `{}` > Widget: {} > \
+                                        is_hide: `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
+                                        model_name, field_name, widget_name
                                     ))?
                                 }
                             }
@@ -299,7 +300,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Used to validation uniqueness and in the final result.
                     let bson_field_value;
-                    if widget_type != "inputPassword" {
+                    if widget_name != "inputPassword" {
                         bson_field_value = Bson::String(field_value.clone());
                         final_widget.value = field_value.clone();
                     } else {
@@ -315,7 +316,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Self::regex_pattern_validation(field_value, final_widget.pattern.as_str())
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
+                                if !final_is_hide {
                                     final_widget.error =
                                         Self::accumula_err(&final_widget, &err.to_string())
                                             .unwrap();
