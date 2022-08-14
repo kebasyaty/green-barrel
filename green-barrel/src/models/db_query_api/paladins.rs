@@ -206,7 +206,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
-        let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
+        let fields_name = meta
+            .fields_name
+            .iter()
+            .map(|item| item.as_str())
+            .collect::<Vec<&str>>();
         let mut final_widget_map: HashMap<String, Widget> = model_cache.widget_map.clone();
 
         // Add hash-line (for document identification, if the document was created).
