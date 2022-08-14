@@ -297,9 +297,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     }
+                    //
+                    let curr_value = final_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = if widget_name != "InputPassword" {
-                        Bson::String(final_value.as_str().unwrap().to_string())
+                        Bson::String(curr_value.to_string())
                     } else {
                         Bson::Null
                     };
@@ -309,7 +311,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let pattern = final_widget.get("pattern");
                     if pattern.is_some() {
                         Self::regex_pattern_validation(
-                            final_value.as_str().unwrap(),
+                            curr_value,
                             pattern.unwrap().as_str().unwrap(),
                         )
                         .unwrap_or_else(|err| {
@@ -337,7 +339,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if minlength.is_some() {
                         Self::check_minlength(
                             minlength.unwrap().as_i64().unwrap() as usize,
-                            final_value.as_str().unwrap(),
+                            curr_value,
                         )
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
@@ -361,7 +363,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if maxlength.is_some() {
                         Self::check_maxlength(
                             maxlength.unwrap().as_i64().unwrap() as usize,
-                            final_value.as_str().unwrap(),
+                            curr_value,
                         )
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
@@ -411,28 +413,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_name, final_value.as_str().unwrap())
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, &err.to_string())
-                                        .unwrap());
-                            } else {
-                                Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
+                    Self::regex_validation(widget_name, curr_value).unwrap_or_else(|err| {
+                        is_err_symptom = true;
+                        if !is_hide {
+                            *final_widget.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_widget, &err.to_string()).unwrap());
+                        } else {
+                            Err(format!(
+                                "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
+                                model_name,
+                                field_name,
+                                err.to_string()
+                            ))
+                            .unwrap()
+                        }
+                    });
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        let value = final_value.as_str().unwrap();
+                        let value = curr_value;
                         match widget_name {
                             "InputPassword" => {
                                 if !value.is_empty() {
