@@ -8,9 +8,9 @@ use mongodb::{
 };
 use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
-use serde_json::value::Value;
+use serde_json::{json, value::Value};
 use slug::slugify;
-use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
+use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
@@ -179,8 +179,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
         // Determines the mode of accessing the database (insert or update).
-        let hash = self.get_hash();
-        let hash = hash.as_str();
+        let hash = &self.get_hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
         let mut is_err_symptom =
@@ -200,7 +199,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .database(&meta.database_name)
             .collection(&meta.collection_name);
         // Get preliminary data from model instance and use for final result.
-        let final_model_json = self.self_to_json()?;
+        let mut final_model_json = self.self_to_json()?;
         // Document for the final result.
         let mut final_doc = Document::new();
 
@@ -211,10 +210,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .iter()
             .map(|item| item.as_str())
             .collect::<Vec<&str>>();
-        let mut final_widget_map: HashMap<String, Widget> = model_cache.widget_map.clone();
-
-        // Add hash-line (for document identification, if the document was created).
-        final_widget_map.get_mut(&"hash".to_owned()).unwrap().value = self.get_hash();
 
         // Apply additional validation.
         {
@@ -229,8 +224,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             model_name, field_name
                         ))?
                     }
-                    if let Some(widget) = final_widget_map.get_mut(&field_name.to_owned()) {
-                        widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
+                    if let Some(widget) = final_model_json.get_mut(field_name) {
+                        *widget.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&widget, err_msg)?);
                     }
                 }
             }

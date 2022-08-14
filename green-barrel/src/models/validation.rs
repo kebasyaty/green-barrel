@@ -33,7 +33,7 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(widget: &Value, err: &String) -> Result<String, Box<dyn Error>> {
+    fn accumula_err(widget: &Value, err: &str) -> Result<String, Box<dyn Error>> {
         let mut tmp = widget.get("error").unwrap().as_str().unwrap().to_string();
         tmp = if !tmp.is_empty() {
             format!("{}<br>", tmp)
