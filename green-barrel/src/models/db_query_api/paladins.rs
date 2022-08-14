@@ -508,17 +508,32 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     *final_value = json!(slug);
                     let field_value_bson = Bson::String(slug.clone());
                     // Validation of `unique`.
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
+                    // Validation of `unique`.
+                    // -----------------------------------------------------------------------------
+                    let is_unique = final_widget.get("unique").unwrap().as_bool().unwrap();
+                    if is_unique {
+                        Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                if !is_hide {
+                                    *final_widget.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap());
+                                } else {
+                                    Err(format!(
+                                        "\n\nModel: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}\n\n",
+                                        model_name,
+                                        field_name,
+                                        err.to_string()
+                                    ))
+                                    .unwrap()
+                                }
                             });
                     }
                     // Insert result.
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
                 // Validation of date type fields.
