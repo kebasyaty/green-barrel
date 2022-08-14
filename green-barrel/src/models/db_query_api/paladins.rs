@@ -264,7 +264,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
                 | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
-                    if is_update && widget_name == "inputPassword" {
+                    if is_update && widget_name == "InputPassword" {
                         *final_value = serde_json::Value::Null;
                         continue;
                     }
@@ -273,7 +273,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
-                        if widget_name != "inputPassword" && !final_default.is_null() {
+                        if widget_name != "InputPassword" && !final_default.is_null() {
                             *final_value = final_default.clone();
                         } else {
                             if is_required {
@@ -452,7 +452,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of Slug type fields.
                 // *********************************************************************************
-                "inputSlug" => {
+                "AutoSlug" => {
                     let mut slug_str = String::new();
                     for field in final_widget.slug_sources.iter() {
                         let value = pre_json.get(field).unwrap();

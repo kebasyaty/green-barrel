@@ -95,7 +95,7 @@ pub trait Caching: Main + Converters {
             let meta = Self::meta()?;
             Err(format!(
                 "Model: `{}` ; Method: `new` => \
-                Failed to get data from cache.",
+                    Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -136,7 +136,7 @@ pub trait Caching: Main + Converters {
             let meta = Self::meta()?;
             Err(format!(
                 "Model: `{}` ; Method: `to_json` => \
-                Failed to get data from cache.",
+                    Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -211,7 +211,7 @@ pub trait Caching: Main + Converters {
             let meta = Self::meta()?;
             Err(format!(
                 "Model: `{}` > Method: `get_cache_data_for_query` => \
-                Failed to get data from cache.",
+                    Failed to get data from cache.",
                 meta.model_name
             ))?
         }
@@ -260,8 +260,8 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `field_name` => \
-                    The field is missing.",
+                        Parameter: `dyn_data` > Field: `field_name` => \
+                        The field is missing.",
                     Self::meta()?.model_name
                 ))?
             }
@@ -271,8 +271,8 @@ pub trait Caching: Main + Converters {
                 if title.len() > 150 {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `title` => \
-                        The maximum title length is 150 characters.",
+                            Parameter: `dyn_data` > Field: `title` => \
+                            The maximum title length is 150 characters.",
                         Self::meta()?.model_name
                     ))?
                 }
@@ -280,8 +280,8 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `title` => \
-                    The field is missing.",
+                        Parameter: `dyn_data` > Field: `title` => \
+                        The field is missing.",
                     Self::meta()?.model_name
                 ))?
             }
@@ -292,8 +292,8 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `is_delete` => \
-                    The field is missing.",
+                        Parameter: `dyn_data` > Field: `is_delete` => \
+                        The field is missing.",
                     Self::meta()?.model_name
                 ))?
             }
@@ -312,7 +312,7 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` => \
-                    There is no field named `{}` in the model.",
+                        There is no field named `{}` in the model.",
                     meta.model_name, const_field_name
                 ))?
             }
@@ -322,7 +322,7 @@ pub trait Caching: Main + Converters {
         if !const_widget_type.contains("Dyn") {
             Err(format!(
                 "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
-                Widget `{}` is not dynamic.",
+                    Widget `{}` is not dynamic.",
                 meta.model_name, const_field_name, const_widget_type
             ))?
         }
@@ -362,8 +362,8 @@ pub trait Caching: Main + Converters {
                     if val_len < minlength || val_len > maxlength {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        Characters = {} ; Min length = {} ; Max length = {}",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                Characters = {} ; Min length = {} ; Max length = {}",
                             meta.model_name, val_len, minlength, maxlength
                         ))?
                     }
@@ -375,8 +375,8 @@ pub trait Caching: Main + Converters {
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `value` => \
-                    The value is not a `&str` type.",
+                            Parameter: `dyn_data` > Field: `value` => \
+                            The value is not a `&str` type.",
                         meta.model_name
                     ))?
                 }
@@ -389,8 +389,8 @@ pub trait Caching: Main + Converters {
                     {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        Number = {} ; Min = {} ; Max = {}",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
                             val,
                             min.unwrap(),
@@ -400,8 +400,8 @@ pub trait Caching: Main + Converters {
                     if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        The value `{}` is not a `i32` type.",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                The value `{}` is not a `i32` type.",
                             meta.model_name, val
                         ))?
                     }
@@ -414,8 +414,8 @@ pub trait Caching: Main + Converters {
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `value` => \
-                    The value is not a `i32` type.",
+                            Parameter: `dyn_data` > Field: `value` => \
+                            The value is not a `i32` type.",
                         meta.model_name
                     ))?
                 }
@@ -428,8 +428,8 @@ pub trait Caching: Main + Converters {
                     {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        Number = {} ; Min = {} ; Max = {}",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
                             val,
                             min.unwrap(),
@@ -439,8 +439,8 @@ pub trait Caching: Main + Converters {
                     if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        The value `{}` is not a `u32` type.",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                The value `{}` is not a `u32` type.",
                             meta.model_name, val
                         ))?
                     }
@@ -452,8 +452,8 @@ pub trait Caching: Main + Converters {
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `value` => \
-                    The value is not a `u32` type.",
+                            Parameter: `dyn_data` > Field: `value` => \
+                            The value is not a `u32` type.",
                         meta.model_name
                     ))?
                 }
@@ -466,8 +466,8 @@ pub trait Caching: Main + Converters {
                     {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        Number = {} ; Min = {} ; Max = {}",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
                             val,
                             min.unwrap(),
@@ -477,8 +477,8 @@ pub trait Caching: Main + Converters {
                     if val < i64::MIN || val > i64::MAX {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        The value `{}` is not a `i64` type.",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                The value `{}` is not a `i64` type.",
                             meta.model_name, val
                         ))?
                     }
@@ -490,8 +490,8 @@ pub trait Caching: Main + Converters {
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `value` => \
-                    The value is not a `i64` type.",
+                            Parameter: `dyn_data` > Field: `value` => \
+                            The value is not a `i64` type.",
                         meta.model_name
                     ))?
                 }
@@ -504,8 +504,8 @@ pub trait Caching: Main + Converters {
                     {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        Number = {} ; Min = {} ; Max = {}",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
                             val,
                             min.unwrap(),
@@ -515,8 +515,8 @@ pub trait Caching: Main + Converters {
                     if val < f64::MIN || val > f64::MAX {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` > \
-                        Parameter: `dyn_data` > Field: `value` => \
-                        The value `{}` is not a `f64` type.",
+                                Parameter: `dyn_data` > Field: `value` => \
+                                The value `{}` is not a `f64` type.",
                             meta.model_name, val
                         ))?
                     }
@@ -528,8 +528,8 @@ pub trait Caching: Main + Converters {
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_wig` > \
-                    Parameter: `dyn_data` > Field: `value` => \
-                    The value is not a `f64` type.",
+                            Parameter: `dyn_data` > Field: `value` => \
+                            The value is not a `f64` type.",
                         meta.model_name
                     ))?
                 }
@@ -539,14 +539,14 @@ pub trait Caching: Main + Converters {
             if !const_is_delete && is_value_exist {
                 Err(format!(
                     "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
-                Cannot add new value, similar value already exists.",
+                    Cannot add new value, similar value already exists.",
                     meta.model_name, const_field_name
                 ))?
             }
             if const_is_delete && !is_value_exist {
                 Err(format!(
                     "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
-                The value cannot be deleted, it is missing.",
+                        The value cannot be deleted, it is missing.",
                     meta.model_name, const_field_name
                 ))?
             }
@@ -589,7 +589,7 @@ pub trait Caching: Main + Converters {
                     } else {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` => \
-                            Invalid data type.",
+                                Invalid data type.",
                             meta.model_name,
                         ))?
                     }
@@ -621,7 +621,7 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` => \
-                    Invalid data type.",
+                        Invalid data type.",
                     meta.model_name,
                 ))?
             }
@@ -671,7 +671,7 @@ pub trait Caching: Main + Converters {
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_wig` => \
-                    Invalid data type.",
+                        Invalid data type.",
                     meta.model_name,
                 ))?
             };
@@ -776,7 +776,7 @@ pub trait Caching: Main + Converters {
                     } else {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_wig` => \
-                            Invalid data type.",
+                                Invalid data type.",
                             meta.model_name,
                         ))?
                     };
