@@ -261,9 +261,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             match widget_name {
                 // Validation of Text type fields.
                 // *********************************************************************************
-                "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
-                | "hiddenText" => {
+                "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
+                | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
                     if is_update && widget_name == "inputPassword" {
                         *final_value = serde_json::Value::Null;
