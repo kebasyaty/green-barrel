@@ -253,8 +253,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get widget value for validation.
             let mut final_value = final_widget.get_mut("value").unwrap();
             let mut final_default = final_widget.get_mut("default").unwrap();
-            let final_required = final_widget.get("required").unwrap().as_bool().unwrap();
-            let final_is_hide = final_widget.get("is_hide").unwrap().as_bool().unwrap();
+            let is_required = final_widget.get("required").unwrap().as_bool().unwrap();
+            let is_hide = final_widget.get("is_hide").unwrap().as_bool().unwrap();
             let widget_name = final_widget.get("widget").unwrap().as_str().unwrap();
 
             // Field validation.
@@ -277,16 +277,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if widget_name != "inputPassword" && !final_default.is_null() {
                             *final_value = final_default.clone();
                         } else {
-                            if final_required {
+                            if is_required {
                                 is_err_symptom = true;
-                                if !final_is_hide {
+                                if !is_hide {
                                     *final_widget.get_mut("error").unwrap() = json!(
                                         Self::accumula_err(&final_widget, "Required field.")?
                                     );
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Widget: {} > \
-                                        is_hide: `true` ; Method: `check()` => \
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
                                         model_name, field_name, widget_name
                                     ))?
@@ -305,16 +305,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Bson::Null
                     };
 
-                    // Field attribute check - `pattern`.
+                    // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(field_value, final_widget.pattern.as_str())
+                    let pattern = final_widget.get("pattern").unwrap().as_str().unwrap();
+                    if !pattern.is_empty() {
+                        Self::regex_pattern_validation(final_value.as_str().unwrap(), pattern)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                if !final_is_hide {
-                                    final_widget.error =
-                                        Self::accumula_err(&final_widget, &err.to_string())
-                                            .unwrap();
+                                if !is_hide {
+                                    *final_widget.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_widget, &err.to_string())
+                                            .unwrap());
                                 } else {
                                     Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
