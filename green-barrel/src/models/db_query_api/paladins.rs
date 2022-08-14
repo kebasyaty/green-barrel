@@ -378,29 +378,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         });
                     }
 
-                    // Validation of range (`min` <> `max`).
-                    // Hint: The `validate_length()` method did not
-                    // provide the desired result.
-                    // -----------------------------------------------------------------------------
-                    let min = final_widget.minlength.clone();
-                    let max = final_widget.maxlength.clone();
-                    let len = field_value.encode_utf16().count();
-                    if max > 0_usize && (len < min || len > max) {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "Length {} is out of range (min={} <-> max={}).",
-                            len, min, max
-                        );
-                        if !widget_type.contains("hidden") && !final_widget.is_hide {
-                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
-                        } else {
-                            Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                model_name, field_name, msg
-                            ))?
-                        }
-                    }
-
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
                     if widget_type != "inputPassword" && final_widget.unique {
