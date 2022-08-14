@@ -330,10 +330,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation in regular expression.
                     // Checking `minlength`, `maxlength`, `min length`, `max length`.
                     // -----------------------------------------------------------------------------
-                    let minlength =
-                        final_widget.get("minlength").unwrap().as_i64().unwrap() as usize;
-                    Self::check_minlength(minlength, final_value.as_str().unwrap()).unwrap_or_else(
-                        |err| {
+                    let minlength = final_widget.get("minlength").unwrap();
+                    if !minlength.is_null() {
+                        Self::check_minlength(
+                            minlength.as_i64().unwrap() as usize,
+                            final_value.as_str().unwrap(),
+                        )
+                        .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_widget.get_mut("error").unwrap() =
@@ -348,14 +351,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))
                                 .unwrap()
                             }
-                        },
-                    );
-                    Self::check_maxlength(final_widget.maxlength, field_value).unwrap_or_else(
-                        |err| {
+                        });
+                    }
+                    //
+                    let maxlength = final_widget.get("maxlength").unwrap();
+                    if !maxlength.is_null() {
+                        Self::check_maxlength(
+                            maxlength.as_i64().unwrap() as usize,
+                            final_value.as_str().unwrap(),
+                        )
+                        .unwrap_or_else(|err| {
                             is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                            if !is_hide {
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                        .unwrap());
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -365,8 +375,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))
                                 .unwrap()
                             }
-                        },
-                    );
+                        });
+                    }
 
                     // Validation of range (`min` <> `max`).
                     // Hint: The `validate_length()` method did not
