@@ -235,7 +235,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Loop over fields for validation.
         for field_name in fields_name {
             //
-            let final_widget = final_model_json.get_mut(field_name).unwrap();
+            let mut final_widget = final_model_json.get_mut(field_name).unwrap();
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
