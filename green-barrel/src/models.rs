@@ -55,7 +55,7 @@ pub trait Main {
     fn get_updated_at(&self) -> String;
     fn set_updated_at(&mut self, value: String);
 
-    /// Serialize an instance of the Model to a hash-line.
+    /// Serializing the model instance to serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
 

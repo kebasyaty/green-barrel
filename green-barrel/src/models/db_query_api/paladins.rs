@@ -200,7 +200,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .database(&meta.database_name)
             .collection(&meta.collection_name);
         // Get preliminary data from the model.
-        let pre_json: Value = self.self_to_json()?;
+        let final_model_json = self.self_to_json()?;
         // Document for the final result.
         let mut final_doc = Document::new();
 
@@ -1949,7 +1949,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         Ok(OutputDataCheck::from(
             !is_err_symptom,
             Some(final_doc),
-            final_widget_map,
+            final_model_json,
             meta.service_name,
             meta.model_name,
             meta.fields_name,

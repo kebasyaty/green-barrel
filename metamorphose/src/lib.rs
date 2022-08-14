@@ -433,7 +433,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 self.updated_at = Some(value);
             }
 
-            /// Serialize model instance to json-line.
+            /// Serializing the model instance to serde_json::Value format.
             // -------------------------------------------------------------------------------------
             fn self_to_json(&self)
                 -> Result<serde_json::Value, Box<dyn std::error::Error>> {
