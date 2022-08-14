@@ -515,20 +515,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                if !is_hide {
-                                    *final_widget.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_widget, &err.to_string())
-                                            .unwrap());
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {}\n\n",
-                                        model_name,
-                                        field_name,
-                                        err.to_string()
-                                    ))
-                                    .unwrap()
-                                }
+                                *final_widget.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                        .unwrap());
                             });
                     }
                     // Insert result.
