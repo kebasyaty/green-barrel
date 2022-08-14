@@ -170,22 +170,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        //
+        let is_save = is_save.unwrap_or(false);
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
-        // User input error detection symptom.
-        let mut is_err_symptom = if !meta.is_add_docs || !meta.is_up_docs {
-            true
-        } else {
-            false
-        };
         // Determines the mode of accessing the database (insert or update).
         let hash = self.get_hash();
         let hash = hash.as_str();
         let is_update: bool = !hash.is_empty();
+        // User input error detection symptom.
+        let mut is_err_symptom =
+            if is_save && ((!is_update && !meta.is_add_docs) || (is_update && !meta.is_up_docs)) {
+                true
+            } else {
+                false
+            };
         // Get a list of fields that should not be included in the document.
         let ignore_fields: Vec<&str> = meta
             .ignore_fields
