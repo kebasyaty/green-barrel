@@ -453,30 +453,41 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of Slug type fields.
                 // *********************************************************************************
                 "AutoSlug" => {
-                    let mut slug_str = String::new();
-                    for field in final_widget.slug_sources.iter() {
-                        let value = pre_json.get(field).unwrap();
-                        if value.is_string() {
-                            let text = value.as_str().unwrap().trim().to_string();
-                            slug_str = format!("{}-{}", slug_str, text);
-                        } else if value.is_i64() {
-                            let num = value.as_i64().unwrap();
-                            slug_str = format!("{}-{}", slug_str, num);
-                        } else if value.is_f64() {
-                            let num = value.as_f64().unwrap();
-                            slug_str = format!("{}-{}", slug_str, num);
+                    let mut slug = String::new();
+                    let slug_sources = final_widget
+                        .get("slug_sources")
+                        .unwrap()
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| item.as_str().unwrap())
+                        .collect::<Vec<&str>>();
+                    //
+                    for field_name in slug_sources {
+                        if let Some(value) = final_model_json.get(field_name).unwrap().get("value")
+                        {
+                            if value.is_string() {
+                                let text = value.as_str().unwrap().trim();
+                                slug = format!("{}-{}", slug, text);
+                            } else if final_value.is_i64() {
+                                let num = value.as_i64().unwrap();
+                                slug = format!("{}-{}", slug, num);
+                            } else if final_value.is_f64() {
+                                let num = value.as_f64().unwrap();
+                                slug = format!("{}-{}", slug, num);
+                            }
                         }
                     }
                     //
-                    if slug_str.is_empty() {
-                        slug_str = if !pre_json_value.is_null() {
-                            pre_json_value.as_str().unwrap().trim().to_string()
+                    if slug.is_empty() {
+                        slug = if !final_value.is_null() {
+                            final_value.as_str().unwrap().trim().to_string()
                         } else {
                             String::new()
                         };
                     }
                     // Validation, if the field is required and empty, accumulate the error.
-                    if slug_str.is_empty() {
+                    if slug.is_empty() {
                         if !final_widget.value.is_empty() {
                             slug_str = final_widget.value.clone();
                         } else {
