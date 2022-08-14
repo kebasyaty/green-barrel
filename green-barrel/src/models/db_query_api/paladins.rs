@@ -8,7 +8,7 @@ use mongodb::{
 };
 use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
-use serde_json::{json, value::Value};
+use serde_json::{json, Value};
 use slug::slugify;
 use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
