@@ -1840,7 +1840,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Insert or update fields for timestamps `created_at` and `updated_at`.
             // -------------------------------------------------------------------------------------
             if !is_err_symptom {
-                let is_save = is_save.unwrap_or(false);
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 let dt_text: String = dt.to_rfc3339()[..19].into();
                 if is_update {
