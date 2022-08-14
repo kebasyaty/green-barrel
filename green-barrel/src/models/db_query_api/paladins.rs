@@ -234,33 +234,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Loop over fields for validation.
         for field_name in fields_name {
+            //
+            let final_widget = final_model_json.get_mut(field_name).unwrap();
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
                 if is_err_symptom {
-                    let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
                     if !meta.is_add_docs {
-                        final_widget.alert = "It is forbidden to perform saves.".to_string();
+                        *final_widget.get_mut("alert").unwrap() =
+                            json!("It is forbidden to perform saves.");
                     } else if !meta.is_up_docs {
-                        final_widget.alert = "It is forbidden to perform updates.".to_string();
+                        *final_widget.get_mut("alert").unwrap() =
+                            json!("It is forbidden to perform updates.");
                     }
                 }
                 continue;
             }
             // Get field value for validation.
-            let pre_json_value: Option<&Value> = pre_json.get(field_name);
-            // Check field value.
-            if pre_json_value.is_none() {
-                Err(format!(
-                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                    This field is missing.\n\n",
-                    model_name, field_name
-                ))?
-            }
-            //
-            let mut pre_json_value: &Value = pre_json_value.unwrap();
-            let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
-            let widget_type: &str = &final_widget.widget.clone()[..];
+            let mut final_value = final_widget.get_mut("value").unwrap();
+            let widget_type = final_widget.get("widget").unwrap().as_str().unwrap();
 
             // Field validation.
             match widget_type {
