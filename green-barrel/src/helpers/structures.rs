@@ -23,7 +23,7 @@ pub struct Meta {
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, field_type>
     pub field_type_map: std::collections::HashMap<String, String>,
-    // <field_name, (widget_type, value)>
+    // <field_name, (_type, value)>
     pub default_value_map: std::collections::HashMap<String, (String, String)>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
@@ -53,7 +53,7 @@ impl Default for Meta {
     }
 }
 
-/// Helper structures for inputFile widgets.
+/// Helper structures for inputFile fields type.
 // -------------------------------------------------------------------------------------------------
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
@@ -67,7 +67,7 @@ pub struct FileData {
     pub size: u32, // bytes
 }
 
-/// Helper structures for inputImage widgets.
+/// Helper structures for inputImage fields type.
 // -------------------------------------------------------------------------------------------------
 #[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct ImageData {
