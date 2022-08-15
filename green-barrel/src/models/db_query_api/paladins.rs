@@ -674,108 +674,64 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64" => {
                     //
-                    let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
-                    let mut tmp_value;
-                    // Get selected items.
-                    for _ in 0..=1 {
-                        // Get selected items.
-                        if !pre_json_value.is_null() && !tmp_json_text.is_empty() {
-                            final_doc.insert(
-                                field_name,
-                                match widget_type {
-                                    "selectText" => {
-                                        let val = pre_json_value.as_str().unwrap().to_string();
-                                        final_widget.value = val.clone();
-                                        if val.is_empty() && final_widget.required {
-                                            is_err_symptom = true;
-                                            final_widget.error = Self::accumula_err(
-                                                &final_widget,
-                                                &"Required field.".to_owned(),
-                                            )
-                                            .unwrap();
-                                        }
-                                        Bson::String(val)
-                                    }
-                                    "selectI32" => {
-                                        let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
-                                        final_widget.value = val.to_string();
-                                        Bson::Int32(val)
-                                    }
-                                    "selectU32" | "selectI64" => {
-                                        let val = pre_json_value.as_i64().unwrap();
-                                        final_widget.value = val.to_string();
-                                        Bson::Int64(val)
-                                    }
-                                    "selectF64" => {
-                                        let val = pre_json_value.as_f64().unwrap();
-                                        final_widget.value = val.to_string();
-                                        Bson::Double(val)
-                                    }
-                                    _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported widget type - `{}`.\n\n",
-                                        model_name, field_name, widget_type
-                                    ))?,
-                                },
-                            );
-                            break;
+                    if final_value.is_null() {
+                        if !final_default.is_null() {
+                            *final_value = final_default.clone();
                         } else {
-                            if !final_widget.value.is_empty() {
-                                if widget_type == "selectText" {
-                                    tmp_value = serde_json::to_value(final_widget.value.clone())?;
+                            if is_required {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field_type.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                    );
                                 } else {
-                                    tmp_value = serde_json::from_str(final_widget.value.as_str())?;
-                                }
-                                tmp_json_text = serde_json::to_string(&tmp_value)?;
-                                pre_json_value = &tmp_value;
-                            } else {
-                                if final_widget.required {
-                                    is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` => \
+                                    Err(format!(
+                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name
-                                        ))?
-                                    }
+                                        model_name, field_name, field_type
+                                    ))?
                                 }
-                                if !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, Bson::Null);
-                                }
-                                break;
                             }
+                            if !ignore_fields.contains(&field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         }
                     }
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
+                    // Get selected items.
+                    final_doc.insert(
+                        field_name,
+                        match field_type {
+                            "SelectText" => {
+                                let val = final_value.as_str().unwrap();
+                                if val.is_empty() && is_required {
+                                    is_err_symptom = true;
+                                    *final_field_type.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                    );
+                                }
+                                Bson::String(val.to_string())
                             }
-                        });
-                    }
+                            "SelectI32" => {
+                                let val = i32::try_from(final_value.as_i64().unwrap())?;
+                                Bson::Int32(val)
+                            }
+                            "SelectU32" | "selectI64" => {
+                                let val = final_value.as_i64().unwrap();
+                                Bson::Int64(val)
+                            }
+                            "SelectF64" => {
+                                let val = final_value.as_f64().unwrap();
+                                Bson::Double(val)
+                            }
+                            _ => Err(format!(
+                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
+                                    Unsupported widget type - `{}`.\n\n",
+                                model_name, field_name, field_type
+                            ))?,
+                        },
+                    );
                 }
                 //
                 "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
