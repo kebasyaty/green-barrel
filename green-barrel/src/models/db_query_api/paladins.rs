@@ -264,7 +264,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of Text type fields.
                 // *********************************************************************************
                 "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
-                | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" => {
+                | "InputText" | "HiddenHash" | "InputUrl" | "InputIP" | "InputIPv4"
+                | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
                     if is_update && field_type == "InputPassword" {
                         *final_value = serde_json::Value::Null;
@@ -593,27 +594,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    if !final_widget.min.is_empty() && !final_widget.max.is_empty() {
+                    let min = final_field_type.get("min").unwrap().as_str().unwrap();
+                    let max = final_field_type.get("max").unwrap().as_str().unwrap();
+                    if !min.is_empty() && !max.is_empty() {
                         // Validation in regular expression (min).
-                        Self::regex_validation(widget_type, final_widget.min.as_str())
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                        if let Err(err) = Self::regex_validation(field_type, min) {
+                            is_err_symptom = true;
+                            *final_field_type.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field_type, &err.to_string())?);
+                            continue;
+                        }
                         // Validation in regular expression (max).
-                        Self::regex_validation(widget_type, final_widget.max.as_str())
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
-                        if is_err_symptom {
+                        if let Err(err) = Self::regex_validation(field_type, max) {
+                            is_err_symptom = true;
+                            *final_field_type.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field_type, &err.to_string())?);
                             continue;
                         }
                         // Date to DateTime (min).
                         let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_value: String = if widget_type == "inputDate" {
+                            let min_value: String = if field_type == "InputDate" {
                                 format!("{}T00:00", final_widget.min.clone())
                             } else {
                                 final_widget.min.clone()

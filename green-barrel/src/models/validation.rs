@@ -89,7 +89,7 @@ pub trait Validation {
                          Example: 1970-02-28")?
                 }
             }
-            "InputDateTime" => {
+            "InputDateTime" | "HiddenDateTime" => {
                 if !REGEX_IS_DATETIME.is_match(value) {
                     Err("Incorrect date and time format.<br>\
                          Example: 1970-02-28T00:00")?
