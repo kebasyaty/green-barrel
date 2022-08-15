@@ -30,7 +30,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         coll: &Collection,
         model_name: &str,
         field_name: &str,
-        widget_default_value: &str,
+        field_default_value: &str,
         is_image: bool,
     ) -> Result<(), Box<dyn Error>> {
         //
@@ -50,8 +50,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
                     if is_image {
-                        let default_path = if !widget_default_value.is_empty() {
-                            serde_json::from_str::<ImageData>(widget_default_value)?.path
+                        let default_path = if !field_default_value.is_empty() {
+                            serde_json::from_str::<ImageData>(field_default_value)?.path
                         } else {
                             String::new()
                         };
@@ -75,8 +75,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                     } else {
-                        let default_path = if !widget_default_value.is_empty() {
-                            serde_json::from_str::<FileData>(widget_default_value)?.path
+                        let default_path = if !field_default_value.is_empty() {
+                            serde_json::from_str::<FileData>(field_default_value)?.path
                         } else {
                             String::new()
                         };
@@ -222,9 +222,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             model_name, field_name
                         ))?
                     }
-                    if let Some(widget) = final_model_json.get_mut(field_name) {
-                        *widget.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&widget, err_msg)?);
+                    if let Some(field_type) = final_model_json.get_mut(field_name) {
+                        *field_type.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&field_type, err_msg)?);
                     }
                 }
             }
@@ -233,36 +233,40 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Loop over fields for validation.
         for field_name in fields_name {
             //
-            let mut final_widget = final_model_json.get_mut(field_name).unwrap();
+            let mut final_field_type = final_model_json.get_mut(field_name).unwrap();
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
                 if is_err_symptom {
                     if !meta.is_add_docs {
-                        *final_widget.get_mut("alert").unwrap() =
+                        *final_field_type.get_mut("alert").unwrap() =
                             json!("It is forbidden to perform saves.");
                     } else if !meta.is_up_docs {
-                        *final_widget.get_mut("alert").unwrap() =
+                        *final_field_type.get_mut("alert").unwrap() =
                             json!("It is forbidden to perform updates.");
                     }
                 }
                 continue;
             }
-            // Get widget value for validation.
-            let mut final_value = final_widget.get_mut("value").unwrap();
-            let mut final_default = final_widget.get_mut("default").unwrap();
-            let is_required = final_widget.get("required").unwrap().as_bool().unwrap();
-            let is_hide = final_widget.get("is_hide").unwrap().as_bool().unwrap();
-            let widget_name = final_widget.get("widget").unwrap().as_str().unwrap();
+            // Get field type value for validation.
+            let mut final_value = final_field_type.get_mut("value").unwrap();
+            let mut final_default = final_field_type.get_mut("default").unwrap();
+            let is_required = final_field_type.get("required").unwrap().as_bool().unwrap();
+            let is_hide = final_field_type.get("is_hide").unwrap().as_bool().unwrap();
+            let field_type = final_field_type
+                .get("field_type")
+                .unwrap()
+                .as_str()
+                .unwrap();
 
             // Field validation.
-            match widget_name {
+            match field_type {
                 // Validation of Text type fields.
                 // *********************************************************************************
                 "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
                 | "InputText" | "InputUrl" | "InputIP" | "InputIPv4" | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
-                    if is_update && widget_name == "InputPassword" {
+                    if is_update && field_type == "InputPassword" {
                         *final_value = serde_json::Value::Null;
                         continue;
                     }
@@ -271,21 +275,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
-                        if widget_name != "InputPassword" && !final_default.is_null() {
+                        if field_type != "InputPassword" && !final_default.is_null() {
                             *final_value = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_widget.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_widget, "Required field.")?
+                                    *final_field_type.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_field_type, "Required field.")?
                                     );
                                 } else {
                                     Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Widget: {} > \
+                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, widget_name
+                                        model_name, field_name, field_type
                                     ))?
                                 }
                             }
@@ -298,7 +302,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     let curr_value = final_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if widget_name != "InputPassword" {
+                    let field_value_bson = if field_type != "InputPassword" {
                         Bson::String(curr_value.to_string())
                     } else {
                         Bson::Null
@@ -306,7 +310,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    let pattern = final_widget.get("pattern");
+                    let pattern = final_field_type.get("pattern");
                     if pattern.is_some() {
                         Self::regex_pattern_validation(
                             curr_value,
@@ -315,8 +319,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
                                         .unwrap());
                             } else {
                                 Err(format!(
@@ -333,7 +337,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation in regular expression.
                     // Checking `minlength`.
                     // -----------------------------------------------------------------------------
-                    let minlength = final_widget.get("minlength");
+                    let minlength = final_field_type.get("minlength");
                     if minlength.is_some() {
                         Self::check_minlength(
                             minlength.unwrap().as_i64().unwrap() as usize,
@@ -342,8 +346,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
                                         .unwrap());
                             } else {
                                 Err(format!(
@@ -357,7 +361,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         });
                     }
                     // Checking `maxlength`.
-                    let maxlength = final_widget.get("maxlength");
+                    let maxlength = final_field_type.get("maxlength");
                     if maxlength.is_some() {
                         Self::check_maxlength(
                             maxlength.unwrap().as_i64().unwrap() as usize,
@@ -366,8 +370,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
                                         .unwrap());
                             } else {
                                 Err(format!(
@@ -383,16 +387,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let unique = final_widget.get("unique");
+                    let unique = final_field_type.get("unique");
                     if unique.is_some() {
                         let is_unique = unique.unwrap().as_bool().unwrap();
-                        if widget_name != "InputPassword" && is_unique {
+                        if field_type != "InputPassword" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_widget.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_widget, &err.to_string())
+                                        *final_field_type.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field_type, &err.to_string())
                                                 .unwrap()
                                         );
                                     } else {
@@ -411,11 +415,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_name, curr_value).unwrap_or_else(|err| {
+                    Self::regex_validation(field_type, curr_value).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
-                            *final_widget.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_widget, &err.to_string()).unwrap());
+                            *final_field_type.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field_type, &err.to_string())
+                                    .unwrap());
                         } else {
                             Err(format!(
                                 "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
@@ -430,7 +435,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        match widget_name {
+                        match field_type {
                             "InputPassword" => {
                                 if !curr_value.is_empty() {
                                     if !is_update {
@@ -452,7 +457,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "AutoSlug" => {
                     let mut slug = String::new();
-                    let slug_sources = final_widget
+                    let slug_sources = final_field_type
                         .get("slug_sources")
                         .unwrap()
                         .as_array()
@@ -485,8 +490,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, "Required field.")?);
+                                *final_field_type.get_mut("error").unwrap() = json!(
+                                    Self::accumula_err(&final_field_type, "Required field.")?
+                                );
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
@@ -508,13 +514,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`.
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let is_unique = final_widget.get("unique").unwrap().as_bool().unwrap();
+                    let is_unique = final_field_type.get("unique").unwrap().as_bool().unwrap();
                     if is_unique {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                *final_widget.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_widget, &err.to_string())
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
                                         .unwrap());
                             });
                     }
