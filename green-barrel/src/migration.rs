@@ -108,7 +108,7 @@ impl<'a> Monitor<'a> {
                 client
                     .database(&db_green_tech)
                     .create_collection(collection_models_name, None)?;
-                // Create a collection for widget types of `select`.
+                // Create a collection for fields types of `select`.
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
                     .database(&db_green_tech)
@@ -149,11 +149,11 @@ impl<'a> Monitor<'a> {
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             let collection_models_name: &str = "monitor_models";
-            let collection_dyn_widgets_name: &str = "dynamic_widgets";
+            let collection_dyn_fields_type: &str = "dynamic_fields";
             let green_tech_db: Database = client.database(&db_green_tech);
             let collection_models: Collection = green_tech_db.collection(collection_models_name);
-            let collection_dyn_widgets: Collection =
-                green_tech_db.collection(collection_dyn_widgets_name);
+            let collection_dyn_fields: Collection =
+                green_tech_db.collection(collection_dyn_fields_type);
             // Delete orphaned Collections.
             let cursor: Cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
@@ -173,7 +173,7 @@ impl<'a> Monitor<'a> {
                         "collection": &model_state.collection
                     };
                     collection_models.delete_one(query.clone(), None)?;
-                    collection_dyn_widgets.delete_one(query, None)?;
+                    collection_dyn_fields.delete_one(query, None)?;
                 }
             }
         }
@@ -233,19 +233,19 @@ impl<'a> Monitor<'a> {
             let db_green_tech: String = self.green_tech_name()?;
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Map of default values and value types from `value (default)` attribute -
-            // <field_name, (widget_type, value)>
+            // <field_name, (field_type, value)>
             let default_values_map: HashMap<String, (String, String)> =
                 meta.default_value_map.clone();
-            // Get map of widgets types.
-            let widget_type_map = meta.field_type_map.clone();
-            // Get truncated map of widgets types.
-            let trunc_widget_type_map: HashMap<String, String> = widget_type_map.clone();
-            trunc_widget_type_map
+            // Get map of fields types.
+            let field_type_map = meta.field_type_map.clone();
+            // Get truncated map of fields types.
+            let trunc_field_type_map: HashMap<String, String> = field_type_map.clone();
+            trunc_field_type_map
                 .clone()
                 .retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
-            // Get a map of widgets from the technical database,
+            // Get a map of fields type from the technical database,
             // from the `monitor_models` collection for current Model.
-            let monitor_widget_type_map: HashMap<String, String>;
+            let monitor_field_type_map: HashMap<String, String>;
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -271,11 +271,11 @@ impl<'a> Monitor<'a> {
                         .map(|item| item.as_str().unwrap().to_string())
                         .collect()
                 };
-                // Get a map of widgets from the technical database,
+                // Get a map of fields type from the technical database,
                 // from the `monitor_models` collection for current Model.
-                monitor_widget_type_map = {
+                monitor_field_type_map = {
                     model
-                        .get_document("widget_map")
+                        .get_document("field_map")
                         .unwrap()
                         .iter()
                         .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
@@ -286,10 +286,8 @@ impl<'a> Monitor<'a> {
                 let mut changed_fields: Vec<&str> = Vec::new();
                 for field in trunc_fields_name_list.iter() {
                     if !monitor_models_fields_name.contains(&field.to_string())
-                        || (trunc_widget_type_map.get(*field).unwrap()
-                            != monitor_widget_type_map
-                                .get(*field)
-                                .unwrap_or(&String::new()))
+                        || (trunc_field_type_map.get(*field).unwrap()
+                            != monitor_field_type_map.get(*field).unwrap_or(&String::new()))
                     {
                         changed_fields.push(field);
                     }
@@ -308,34 +306,33 @@ impl<'a> Monitor<'a> {
                         // Create temporary blank document.
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
-                        for field in fields_name.iter() {
-                            if *field == "hash" || ignore_fields.contains(&field) {
+                        for field_name in fields_name.iter() {
+                            if *field_name == "hash" || ignore_fields.contains(&field_name) {
                                 continue;
                             }
                             // If the field exists, get its value.
-                            if !changed_fields.contains(field) {
-                                let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                            if !changed_fields.contains(field_name) {
+                                let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
                                 if value_from_db.is_some() {
-                                    tmp_doc.insert(field.to_string(), value_from_db.unwrap());
+                                    tmp_doc.insert(field_name.to_string(), value_from_db.unwrap());
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` > Field: `{}` ; \
                                             Method: `migrat()` => \
                                             Can't get field value from database.",
-                                        meta.service_name, meta.model_name, field
+                                        meta.service_name, meta.model_name, field_name
                                     ))?;
                                 }
                             } else {
                                 // If no field exists, get default value.
-                                let value = default_values_map.get(*field).unwrap();
+                                let value = default_values_map.get(*field_name).unwrap();
                                 tmp_doc.insert(
-                                    field.to_string(),
+                                    field_name.to_string(),
                                     match value.0.as_str() {
-                                        "checkBoxText" | "radioText" | "inputColor"
-                                        | "inputEmail" | "inputPassword" | "inputPhone"
-                                        | "inputText" | "inputUrl" | "inputIP" | "inputIPv4"
-                                        | "inputIPv6" | "textArea" | "selectText" | "hiddenText"
-                                        | "inputSlug" => {
+                                         "RadioText" | "InputColor"
+                                        | "InputEmail" | "InputPassword" | "InputPhone"
+                                        | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
+                                        | "InputIPv6" | "TextArea" | "SelectText" | "AutoSlug" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 Bson::String(val)
@@ -343,13 +340,13 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "inputDate" => {
+                                        "InputDate" => {
                                             // Example: "1970-02-28".
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATE.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                                 Method: `widgets()` => Incorrect date \
+                                                                 Method: `migrat()` => Incorrect date \
                                                                  format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
                                                 }
@@ -366,13 +363,13 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "inputDateTime" => {
+                                        "InputDateTime" | "HiddenDateTime" => {
                                             // Example: "1970-02-28T00:00".
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 if !crate::store::REGEX_IS_DATETIME.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                                 Method: `widgets()` => \
+                                                                 Method: `migrat()` => \
                                                                  Incorrect date and time format. \
                                                                  Example: 1970-02-28T00:00",
                                                         meta.service_name, meta.model_name
@@ -390,8 +387,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "radioI32" | "numberI32" | "rangeI32" 
-                                        | "selectI32" | "hiddenI32" => {
+                                        "RadioI32" | "NumberI32" | "RangeI32" | "SelectI32" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 Bson::Int32(
@@ -401,10 +397,9 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "radioU32" | "numberU32" | "rangeU32"
-                                        | "selectU32" | "checkBoxI64" | "radioI64" 
-                                        | "numberI64" | "rangeI64" | "selectI64" 
-                                        | "hiddenU32" | "hiddenI64" => {
+                                        "RadioU32" | "NumberU32" | "RangeU32"
+                                        | "SelectU32" | "RadioI64" | "NumberI64"
+                                        | "RangeI64" | "SelectI64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 Bson::Int64(
@@ -565,7 +560,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         _ => {
                                             Err(format!("Service: `{}` > Model: `{}` ; Method: \
-                                                         `migrat()` => Invalid Widget type.",
+                                                         `migrat()` => Invalid Field type.",
                                                 meta.service_name, meta.model_name
                                             ))?
                                         }
