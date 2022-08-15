@@ -4,6 +4,7 @@ pub mod caching;
 pub mod converters;
 pub mod creator;
 pub mod db_query_api;
+pub mod helpers;
 pub mod hooks;
 pub mod output_data;
 pub mod validation;
@@ -15,7 +16,7 @@ use mongodb::{
 use serde_json::{json, value::Value};
 use std::error::Error;
 
-use crate::helpers::structures::Meta;
+use crate::models::helpers::Meta;
 
 /// Model options and field type map for Form.
 // *************************************************************************************************

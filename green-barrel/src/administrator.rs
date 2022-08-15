@@ -5,9 +5,9 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use std::error::Error;
 
-use crate::{
-    helpers::structures::Meta,
-    models::db_query_api::{commons::QCommons, paladins::QPaladins},
+use crate::models::{
+    db_query_api::{commons::QCommons, paladins::QPaladins},
+    helpers::Meta,
 };
 
 /// The output data for the admin panel.

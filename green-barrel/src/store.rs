@@ -7,7 +7,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use crate::helpers::structures::Meta;
+use crate::models::helpers::Meta;
 
 // GLOBAL STORAGE
 // #################################################################################################
