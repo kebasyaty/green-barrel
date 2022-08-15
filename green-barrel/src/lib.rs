@@ -1,33 +1,15 @@
 //! # Green Barrel
 //! ORM-like API MongoDB for Rust.
 
+pub mod fields;
 pub mod helpers;
 pub mod migration;
 pub mod models;
 pub mod store;
 pub mod test_tool;
-pub mod widgets;
 
 pub use crate::{
-    helpers::{
-        administrator::{Administrator, OutputDataAdmin},
-        enumerations::ControlArr,
-        structures::{FileData, ImageData, Meta},
-    },
-    migration::Monitor,
-    models::{
-        caching::Caching,
-        converters::Converters,
-        creator::Creator,
-        db_query_api::{commons::QCommons, paladins::QPaladins},
-        hooks::Hooks,
-        output_data::{OutputData, OutputDataCheck},
-        validation::{AdditionalValidation, Validation},
-        Main,
-    },
-    store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
-    test_tool::del_test_db,
-    widgets::{
+    fields::{
         auto_slug::AutoSlug, check_box::CheckBox, hidden_date_time::HiddenDateTime,
         hidden_hash::HiddenHash, input_color::InputColor, input_date::InputDate,
         input_date_time::InputDateTime, input_email::InputEmail, input_file::InputFile,
@@ -47,4 +29,22 @@ pub use crate::{
         select_u32_dyn::SelectU32Dyn, select_u32_mult::SelectU32Mult,
         select_u32_mult_dyn::SelectU32MultDyn, text_area::TextArea,
     },
+    helpers::{
+        administrator::{Administrator, OutputDataAdmin},
+        enumerations::ControlArr,
+        structures::{FileData, ImageData, Meta},
+    },
+    migration::Monitor,
+    models::{
+        caching::Caching,
+        converters::Converters,
+        creator::Creator,
+        db_query_api::{commons::QCommons, paladins::QPaladins},
+        hooks::Hooks,
+        output_data::{OutputData, OutputDataCheck},
+        validation::{AdditionalValidation, Validation},
+        Main,
+    },
+    store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
+    test_tool::del_test_db,
 };
