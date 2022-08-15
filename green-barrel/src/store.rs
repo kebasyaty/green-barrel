@@ -11,7 +11,7 @@ use crate::helpers::structures::Meta;
 
 // GLOBAL STORAGE
 // #################################################################################################
-/// Structure for caching map of widgets, json and html, for mango models.
+/// Structure for caching map of fields type, json and html, for mango models.
 #[derive(Default, Clone, Debug)]
 pub struct ModelCache {
     pub meta: Meta,
