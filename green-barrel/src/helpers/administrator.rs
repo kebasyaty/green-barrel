@@ -19,7 +19,7 @@ pub enum OutputDataAdmin<T> {
 /// Helper methods for the admin panel.
 pub trait Administrator: QCommons + QPaladins {
     /// Json-line for admin panel.
-    /// ( converts a widget map to a list, in the order of the Model fields )
+    /// ( converts a field type map to a list, in the order of the Model fields )
     // *********************************************************************************************
     ///
     /// # Example:
@@ -39,22 +39,22 @@ pub trait Administrator: QCommons + QPaladins {
         let meta: Meta = model_cache.meta;
         //
         let model_json = self.self_to_json()?;
-        let mut widget_list = Vec::<Value>::new();
+        let mut field_type_list = Vec::<Value>::new();
         let hash = self.get_hash();
-        // Get a list of widgets in the order of the model fields.
+        // Get a list of fields type in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = model_json.get(field_name).unwrap().clone();
+            let mut field_type = model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
-                *widget.get_mut("is_hide").unwrap() = json!(false);
+                *field_type.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
-                *widget.get_mut("input_type").unwrap() = json!("hidden");
-                *widget.get_mut("value").unwrap() = json!("");
+                *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("value").unwrap() = json!("");
             }
-            widget_list.push(widget);
+            field_type_list.push(field_type);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&field_type_list)?)
     }
 
     /// Get the model instance for actix-mango-panel.
@@ -81,8 +81,8 @@ pub trait Administrator: QCommons + QPaladins {
             if object_id.is_err() {
                 Err(format!(
                     "Model: `{}` > \
-                    Method: `instance_for_admin` => \
-                    Invalid document hash.",
+                        Method: `instance_for_admin` => \
+                        Invalid document hash.",
                     Self::key()?
                 ))?
             }
@@ -105,14 +105,14 @@ pub trait Administrator: QCommons + QPaladins {
                 None,
             )?))
         } else if dyn_data.is_some() {
-            // Update dynamic widget data
-            Self::update_dyn_wig(dyn_data.unwrap())?;
+            // Update dynamic field type data
+            Self::update_dyn_field(dyn_data.unwrap())?;
             return Ok(OutputDataAdmin::EarlyResult(String::new()));
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `instance_for_admin` => \
-                No match on function arguments.",
+                    Method: `instance_for_admin` => \
+                    No match on function arguments.",
                 Self::key()?
             ))?
         }
@@ -146,8 +146,8 @@ pub trait Administrator: QCommons + QPaladins {
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `result_for_admin` => \
-                No match on function arguments.",
+                    Method: `result_for_admin` => \
+                    No match on function arguments.",
                 Self::key()?
             ))?
         }
