@@ -303,10 +303,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    let curr_value = final_value.as_str().unwrap();
+                    let curr_val = final_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = if field_type != "InputPassword" {
-                        Bson::String(curr_value.to_string())
+                        Bson::String(curr_val.to_string())
                     } else {
                         Bson::Null
                     };
@@ -316,7 +316,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let pattern = final_field_type.get("pattern");
                     if pattern.is_some() {
                         Self::regex_pattern_validation(
-                            curr_value,
+                            curr_val,
                             pattern.unwrap().as_str().unwrap(),
                         )
                         .unwrap_or_else(|err| {
@@ -344,7 +344,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if minlength.is_some() {
                         Self::check_minlength(
                             minlength.unwrap().as_i64().unwrap() as usize,
-                            curr_value,
+                            curr_val,
                         )
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
@@ -368,7 +368,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if maxlength.is_some() {
                         Self::check_maxlength(
                             maxlength.unwrap().as_i64().unwrap() as usize,
-                            curr_value,
+                            curr_val,
                         )
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
@@ -418,7 +418,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(field_type, curr_value).unwrap_or_else(|err| {
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
                             *final_field_type.get_mut("error").unwrap() =
@@ -440,11 +440,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         match field_type {
                             "InputPassword" => {
-                                if !curr_value.is_empty() {
+                                if !curr_val.is_empty() {
                                     if !is_update {
                                         // Generate password hash and add to result document.
                                         let password_hash: String =
-                                            Self::create_password_hash(curr_value)?;
+                                            Self::create_password_hash(curr_val)?;
                                         final_doc.insert(field_name, Bson::String(password_hash));
                                     }
                                 }
@@ -568,11 +568,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    let curr_value = final_value.as_str().unwrap();
+                    let curr_val = final_value.as_str().unwrap();
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
-                    if let Err(err) = Self::regex_validation(field_type, curr_value) {
+                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
                         is_err_symptom = true;
                         *final_field_type.get_mut("error").unwrap() =
                             json!(Self::accumula_err(&final_field_type, &err.to_string())?);
@@ -584,9 +584,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Date to DateTime.
                     let dt_val: chrono::DateTime<chrono::Utc> = {
                         let val = if field_type == "InputDate" {
-                            format!("{}T00:00", curr_value)
+                            format!("{}T00:00", curr_val)
                         } else {
-                            curr_value.to_string()
+                            curr_val.to_string()
                         };
                         chrono::DateTime::<chrono::Utc>::from_utc(
                             chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")?,
