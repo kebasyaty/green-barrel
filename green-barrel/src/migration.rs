@@ -573,7 +573,7 @@ impl<'a> Monitor<'a> {
                             if doc_from_db.contains_key(field_name) {
                                 let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
                                 if value_from_db.is_some() {
-                                    tmp_doc.insert(field.name.to_string(), value_from_db.unwrap());
+                                    tmp_doc.insert(field_name.to_string(), value_from_db.unwrap());
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` ; \
