@@ -409,8 +409,8 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "radioF64" | "numberF64" | "rangeF64" 
-                                        | "selectF64" | "hiddenF64" => {
+                                        "RadioF64" | "NumberF64" | "RangeF64" 
+                                        | "SelectF64" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 Bson::Double(
@@ -420,7 +420,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "checkBox" => {
+                                        "CheckBox" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 Bson::Boolean(
@@ -430,7 +430,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Boolean(false)
                                             }
                                         }
-                                        "inputFile" => {
+                                        "InputFile" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let mut file_data = serde_json::from_str::<FileData>(val.as_str())?;
@@ -442,7 +442,7 @@ impl<'a> Monitor<'a> {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                     `migrat()` => Check the `path` and `url` \
                                                     attributes in the `default` field parameter.",
-                                                        meta.model_name, field)
+                                                        meta.model_name, field_name)
                                                     )?
                                                 }
                                                 // Create path for validation of file.
@@ -451,7 +451,7 @@ impl<'a> Monitor<'a> {
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; \
                                                     Method: `migrat()` => File is missing - {}",
-                                                        meta.model_name, field, path)
+                                                        meta.model_name, field_name, path)
                                                     )?
                                                 }
                                                 // Get file metadata.
@@ -467,7 +467,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "inputImage" => {
+                                        "InputImage" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let mut file_data = serde_json::from_str::<ImageData>(val.as_str())?;
@@ -479,7 +479,7 @@ impl<'a> Monitor<'a> {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` => Check the `path` and `url` \
                                                                  attributes in the `default` field parameter.",
-                                                        meta.model_name, field
+                                                        meta.model_name, field_name
                                                     ))?
                                                 }
                                                 // Create path for validation of file.
@@ -488,7 +488,7 @@ impl<'a> Monitor<'a> {
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                                  `migrat()` => File is missing - {}",
-                                                        meta.model_name, field, path
+                                                        meta.model_name, field_name, path
                                                     ))?
                                                 }
                                                 // Get file metadata.
@@ -508,7 +508,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "selectTextMult" => {
+                                        "SelectTextMult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<String>>(val.as_str())?
@@ -519,7 +519,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "selectI32Mult" => {
+                                        "SelectI32Mult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<i32>>(val.as_str())?
@@ -530,7 +530,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                         "selectU32Mult" | "selectI64Mult"  => {
+                                         "SelectU32Mult" | "SelectI64Mult"  => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<i64>>(val.as_str())?
@@ -541,7 +541,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "selectF64Mult" => {
+                                        "SelectF64Mult" => {
                                             let val: String = value.1.clone();
                                             if !val.is_empty() {
                                                 let val = serde_json::from_str::<Vec<f64>>(val.as_str())?
@@ -552,10 +552,10 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "selectTextDyn" | "selectTextMultDyn" | "selectI32Dyn"
-                                        | "selectI32MultDyn" | "selectU32Dyn" | "selectU32MultDyn"
-                                        | "selectI64Dyn" | "selectI64MultDyn" | "selectF64Dyn"
-                                        | "selectF64MultDyn" => {
+                                        "SelectTextDyn" | "SelectTextMultDyn" | "SelectI32Dyn"
+                                        | "SelectI32MultDyn" | "SelectU32Dyn" | "SelectU32MultDyn"
+                                        | "SelectI64Dyn" | "SelectI64MultDyn" | "SelectF64Dyn"
+                                        | "SelectF64MultDyn" => {
                                             Bson::Null
                                         }
                                         _ => {
@@ -569,26 +569,26 @@ impl<'a> Monitor<'a> {
                             }
                         }
                         // Insert the reserved fields.
-                        for field in vec!["created_at", "updated_at"] {
-                            if doc_from_db.contains_key(field) {
-                                let value_from_db: Option<&Bson> = doc_from_db.get(field);
+                        for field_name in vec!["created_at", "updated_at"] {
+                            if doc_from_db.contains_key(field_name) {
+                                let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
                                 if value_from_db.is_some() {
-                                    tmp_doc.insert(field.to_string(), value_from_db.unwrap());
+                                    tmp_doc.insert(field.name.to_string(), value_from_db.unwrap());
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` ; \
-                                                 Method: `migrat()` => \
-                                                 Cannot get field value from database for \
-                                                 field `{}`.",
-                                        meta.service_name, meta.model_name, field
+                                            Method: `migrat()` => \
+                                            Cannot get field value from database for \
+                                            field `{}`.",
+                                        meta.service_name, meta.model_name, field_name
                                     ))?
                                 }
                             } else {
                                 Err(format!(
                                     "Service: `{}` > Model: `{}` ; Method: `migrat()` => \
-                                             Key `{}` was not found in the document from \
-                                             the database.",
-                                    meta.service_name, meta.model_name, field
+                                        Key `{}` was not found in the document from \
+                                        the database.",
+                                    meta.service_name, meta.model_name, field_name
                                 ))?
                             }
                         }
@@ -598,7 +598,7 @@ impl<'a> Monitor<'a> {
                     }
                 }
             } else {
-                monitor_widget_type_map = HashMap::new();
+                monitor_field_type_map = HashMap::new();
             }
 
             // Create a new database (if doesn't exist) and add new collection.
@@ -641,7 +641,7 @@ impl<'a> Monitor<'a> {
                     "collection": &meta.collection_name,
                     "fields": trunc_fields_name_list.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
-                    "widget_map": to_bson(&trunc_widget_type_map.clone())?,
+                    "field_type_map": to_bson(&trunc_field_type_map.clone())?,
                     "status": true
                 };
                 // Check if there is model state in the database.
@@ -655,27 +655,27 @@ impl<'a> Monitor<'a> {
                 }
             }
 
-            // Document management to support model fields with dynamic widgets.
+            // Document management to support model fields with dynamic fields type.
             // -------------------------------------------------------------------------------------
             // Check if there is a technical database of the project, if not, causes panic.
             if !database_names.contains(&db_green_tech)
                 || !db
                     .list_collection_names(None)?
-                    .contains(&"dynamic_widgets".to_owned())
+                    .contains(&"dynamic_fields".to_owned())
             {
                 Err(format!(
                     "In the `refresh()` method, \
-                             no technical database has been created for the project."
+                        no technical database has been created for the project."
                 ))?
             }
             //
-            let collection: Collection = db.collection("dynamic_widgets");
+            let collection: Collection = db.collection("dynamic_fields");
             let filter = doc! {
                 "database": &meta.database_name,
                 "collection": &meta.collection_name
             };
             // Check if there is a document in the database for
-            // storing the values of dynamic widgets of model.
+            // storing the values of dynamic fields type of model.
             if collection.count_documents(filter.clone(), None)? == 0_i64 {
                 // Init new document.
                 let mut new_doc = doc! {
@@ -685,9 +685,9 @@ impl<'a> Monitor<'a> {
                 };
                 // Add empty arrays to the new document.
                 let mut fields_doc = Document::new();
-                for (field, widget) in widget_type_map.clone() {
-                    if widget.contains("Dyn") {
-                        fields_doc.insert(field, Bson::Array(Vec::new()));
+                for (field_name, field_type) in field_type_map.clone() {
+                    if field_type.contains("Dyn") {
+                        fields_doc.insert(field_name, Bson::Array(Vec::new()));
                     }
                 }
                 // Insert new document.
@@ -696,34 +696,34 @@ impl<'a> Monitor<'a> {
             } else {
                 // Get an existing document.
                 let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
-                // Get a document with `dynamic_widgets` fields.
+                // Get a document with `dynamic_fields` fields.
                 let fields_doc = exist_doc.get_document_mut("fields")?;
                 // Get a list of fields from the technical database,
-                // from the `dynamic_widgets` collection for current Model.
+                // from the `dynamic_fields` collection for current Model.
                 let dyn_fields_from_db: Vec<String> =
                     fields_doc.keys().map(|item| item.into()).collect();
-                // Create an empty list for fields with dynamic widget types.
+                // Create an empty list for fields with dynamic field types.
                 let mut dyn_fields_from_model: Vec<String> = Vec::new();
                 // Add new (if any) fields in `fields_doc`.
-                for (field, widget) in trunc_widget_type_map.clone() {
-                    if widget.contains("Dyn") {
-                        dyn_fields_from_model.push(field.clone());
-                        // If the new field or widgets do not match,
+                for (field_name, field_type) in trunc_field_type_map.clone() {
+                    if field_type.contains("Dyn") {
+                        dyn_fields_from_model.push(field_name.clone());
+                        // If the new field or fields type do not match,
                         // initialize with an empty array.
-                        if !dyn_fields_from_db.contains(&field)
-                            || (widget
-                                != *monitor_widget_type_map
-                                    .get(field.as_str())
+                        if !dyn_fields_from_db.contains(&field_name)
+                            || (field_type
+                                != *monitor_field_type_map
+                                    .get(field_name.as_str())
                                     .unwrap_or(&String::new()))
                         {
-                            fields_doc.insert(field, Bson::Array(Vec::new()));
+                            fields_doc.insert(field_name, Bson::Array(Vec::new()));
                         }
                     }
                 }
                 // Remove orphaned fields.
-                for field in dyn_fields_from_db {
-                    if !dyn_fields_from_model.contains(&field) {
-                        fields_doc.remove(&field).unwrap();
+                for field_name in dyn_fields_from_db {
+                    if !dyn_fields_from_model.contains(&field_name) {
+                        fields_doc.remove(&field_name).unwrap();
                     }
                 }
                 // Full update existing document.
