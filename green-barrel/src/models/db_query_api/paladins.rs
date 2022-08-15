@@ -888,8 +888,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name, field_type
                                 ))?
                             }
