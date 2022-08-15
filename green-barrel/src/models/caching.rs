@@ -27,14 +27,14 @@ pub trait Caching: Main + Converters {
         let key: String = Self::key()?;
         // Get write access in cache.
         let mut model_store = MODEL_STORE.write()?;
-        // Create `ModelCache` default and add map of widgets and metadata of model.
+        // Create `ModelCache` default and add map of fields and metadata of model.
         let meta: Meta = Self::meta()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
-        // Get a widgets.
+        // Get a fields.
         let mut model_json = Self::creator_to_json_val()?;
-        // Enrich the widget map with values for dynamic widgets.
+        // Enrich the field map with values for dynamic fields.
         Self::vitaminize(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
@@ -145,7 +145,7 @@ pub trait Caching: Main + Converters {
     }
 
     /// Json-line for admin panel.
-    /// ( converts a widget map to a list, in the order of the Model fields )
+    /// ( converts a field map to a list, in the order of the Model fields )
     // *********************************************************************************************
     ///
     /// # Example:
@@ -165,17 +165,17 @@ pub trait Caching: Main + Converters {
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         let model_json = model_cache.model_json.clone();
-        let mut widget_list: Vec<Value> = Vec::new();
-        // Get a list of widgets in the order of the model fields.
+        let mut field_list: Vec<Value> = Vec::new();
+        // Get a list of fields in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = model_json.get(field_name).unwrap();
+            let mut field = model_json.get(field_name).unwrap();
             if field_name == "created_at" || field_name == "updated_at" {
-                *widget.get_mut("is_hide").unwrap() = json!(false);
+                *field.get_mut("is_hide").unwrap() = json!(false);
             }
-            widget_list.push(*widget);
+            field_list.push(*field);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&field_list)?)
     }
 
     /// Get cached Model data.
@@ -226,7 +226,7 @@ pub trait Caching: Main + Converters {
         Ok((model_cache.clone(), client.clone()))
     }
 
-    /// Update data for dynamic widgets.
+    /// Update data for dynamic fields.
     /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/mango-panel
     ///
     /// # Example:
@@ -244,11 +244,11 @@ pub trait Caching: Main + Converters {
     ///     "title": "Title", // maximum title length = 150 characters
     ///     "is_delete": false
     /// });
-    /// assert!(ModelName::update_dyn_wig(dyn_data).is_ok());
+    /// assert!(ModelName::update_dyn_field(dyn_data).is_ok());
     /// ```
     ///
     // *********************************************************************************************
-    fn update_dyn_wig(dyn_data: Value) -> Result<(), Box<dyn Error>>
+    fn update_dyn_field(dyn_data: Value) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -259,7 +259,7 @@ pub trait Caching: Main + Converters {
                 field_name
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` > \
+                    "Model: {} > Method: `update_dyn_field` > \
                         Parameter: `dyn_data` > Field: `field_name` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -270,7 +270,7 @@ pub trait Caching: Main + Converters {
             if let Some(title) = dyn_data["title"].as_str() {
                 if title.len() > 150 {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `title` => \
                             The maximum title length is 150 characters.",
                         Self::meta()?.model_name
@@ -279,7 +279,7 @@ pub trait Caching: Main + Converters {
                 title
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` > \
+                    "Model: {} > Method: `update_dyn_field` > \
                         Parameter: `dyn_data` > Field: `title` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -291,7 +291,7 @@ pub trait Caching: Main + Converters {
                 is_delete
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` > \
+                    "Model: {} > Method: `update_dyn_field` > \
                         Parameter: `dyn_data` > Field: `is_delete` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -305,25 +305,25 @@ pub trait Caching: Main + Converters {
         let meta: Meta = model_cache.meta;
         //
         // Define conditional constants.
-        // Get widget map and check the field name for belonging to the Model.
+        // Get field map and check the field name for belonging to the Model.
         let const_field = {
             if let Some(field) = model_cache.model_json.get(const_field_name) {
                 field
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` => \
+                    "Model: {} > Method: `update_dyn_field` => \
                         There is no field named `{}` in the model.",
                     meta.model_name, const_field_name
                 ))?
             }
         };
-        let const_widget_type = const_field.get("widget").unwrap().as_str().unwrap();
-        // Check the Widget type for belonging to dynamic types.
-        if !const_widget_type.contains("Dyn") {
+        let const_field_type = const_field.get("field_type").unwrap().as_str().unwrap();
+        // Check the Field type for belonging to dynamic types.
+        if !const_field_type.contains("Dyn") {
             Err(format!(
-                "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
-                    Widget `{}` is not dynamic.",
-                meta.model_name, const_field_name, const_widget_type
+                "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
+                    Field `{}` is not dynamic.",
+                meta.model_name, const_field_name, const_field_type
             ))?
         }
         //
@@ -335,7 +335,7 @@ pub trait Caching: Main + Converters {
                 meta.unique_project_key.clone()
             );
             let db = client_cache.database(&green_tech_keyword);
-            db.collection("dynamic_widgets")
+            db.collection("dynamic_fields")
         };
         //
         let filter = doc! {
@@ -352,16 +352,16 @@ pub trait Caching: Main + Converters {
         // Update dynamic data.
         // -----------------------------------------------------------------------------------------
         // 1.Check for a similar value.
-        // 2.Check that the value type is compatible with the widget type.
+        // 2.Check that the value type is compatible with the Field type.
         {
-            let is_value_exist = if const_widget_type.contains("Text") {
+            let is_value_exist = if const_field_type.contains("Text") {
                 if let Some(val) = dyn_data["value"].as_str() {
                     let val_len = val.len() as u64;
                     let minlength = const_field.get("minlength").unwrap().as_u64().unwrap();
                     let maxlength = const_field.get("maxlength").unwrap().as_u64().unwrap();
                     if val_len < minlength || val_len > maxlength {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Characters = {} ; Min length = {} ; Max length = {}",
                             meta.model_name, val_len, minlength, maxlength
@@ -374,13 +374,13 @@ pub trait Caching: Main + Converters {
                     arr_vec.contains(&val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `&str` type.",
                         meta.model_name
                     ))?
                 }
-            } else if const_widget_type.contains("I32") {
+            } else if const_field_type.contains("I32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
                     let min = const_field.get("min").unwrap().as_i64();
                     let max = const_field.get("max").unwrap().as_i64();
@@ -388,7 +388,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -399,7 +399,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `i32` type.",
                             meta.model_name, val
@@ -413,13 +413,13 @@ pub trait Caching: Main + Converters {
                     arr_vec.contains(&val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i32` type.",
                         meta.model_name
                     ))?
                 }
-            } else if const_widget_type.contains("U32") {
+            } else if const_field_type.contains("U32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
                     let min = const_field.get("min").unwrap().as_i64();
                     let max = const_field.get("max").unwrap().as_i64();
@@ -427,7 +427,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -438,7 +438,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `u32` type.",
                             meta.model_name, val
@@ -451,13 +451,13 @@ pub trait Caching: Main + Converters {
                     arr_vec.contains(&val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `u32` type.",
                         meta.model_name
                     ))?
                 }
-            } else if const_widget_type.contains("I64") {
+            } else if const_field_type.contains("I64") {
                 if let Some(val) = dyn_data["value"].as_i64() {
                     let min = const_field.get("min").unwrap().as_i64();
                     let max = const_field.get("max").unwrap().as_i64();
@@ -465,7 +465,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -476,7 +476,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < i64::MIN || val > i64::MAX {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `i64` type.",
                             meta.model_name, val
@@ -489,13 +489,13 @@ pub trait Caching: Main + Converters {
                     arr_vec.contains(&val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i64` type.",
                         meta.model_name
                     ))?
                 }
-            } else if const_widget_type.contains("F64") {
+            } else if const_field_type.contains("F64") {
                 if let Some(val) = dyn_data["value"].as_f64() {
                     let min = const_field.get("min").unwrap().as_f64();
                     let max = const_field.get("max").unwrap().as_f64();
@@ -503,7 +503,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -514,7 +514,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < f64::MIN || val > f64::MAX {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` > \
+                            "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `f64` type.",
                             meta.model_name, val
@@ -527,7 +527,7 @@ pub trait Caching: Main + Converters {
                     arr_vec.contains(&val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_wig` > \
+                        "Model: {} > Method: `update_dyn_field` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `f64` type.",
                         meta.model_name
@@ -538,14 +538,14 @@ pub trait Caching: Main + Converters {
             };
             if !const_is_delete && is_value_exist {
                 Err(format!(
-                    "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
                     Cannot add new value, similar value already exists.",
                     meta.model_name, const_field_name
                 ))?
             }
             if const_is_delete && !is_value_exist {
                 Err(format!(
-                    "Model: {} > Field: `{}` ; Method: `update_dyn_wig` => \
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
                         The value cannot be deleted, it is missing.",
                     meta.model_name, const_field_name
                 ))?
@@ -563,32 +563,31 @@ pub trait Caching: Main + Converters {
             for idx in 0..const_target_arr_len {
                 let tmp_arr = target_arr_bson[idx].as_array().unwrap();
                 if tmp_arr[1].as_str().unwrap() == const_title {
-                    if const_widget_type.contains("Text") {
+                    if const_field_type.contains("Text") {
                         if tmp_arr[0].as_str().unwrap() == dyn_data["value"].as_str().unwrap() {
                             target_arr_bson.remove(idx);
                             break;
                         }
-                    } else if const_widget_type.contains("I32") {
+                    } else if const_field_type.contains("I32") {
                         if tmp_arr[0].as_i32().unwrap()
                             == i32::try_from(dyn_data["value"].as_i64().unwrap())?
                         {
                             target_arr_bson.remove(idx);
                             break;
                         }
-                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
-                    {
+                    } else if const_field_type.contains("U32") || const_field_type.contains("I64") {
                         if tmp_arr[0].as_i64().unwrap() == dyn_data["value"].as_i64().unwrap() {
                             target_arr_bson.remove(idx);
                             break;
                         }
-                    } else if const_widget_type.contains("F64") {
+                    } else if const_field_type.contains("F64") {
                         if tmp_arr[0].as_f64().unwrap() == dyn_data["value"].as_f64().unwrap() {
                             target_arr_bson.remove(idx);
                             break;
                         }
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` => \
+                            "Model: {} > Method: `update_dyn_field` => \
                                 Invalid data type.",
                             meta.model_name,
                         ))?
@@ -598,29 +597,29 @@ pub trait Caching: Main + Converters {
         } else {
             // Add dynamic value.
             //
-            if const_widget_type.contains("Text") {
+            if const_field_type.contains("Text") {
                 let val_bson = Bson::String(dyn_data["value"].as_str().unwrap().to_string());
                 let title_bson = Bson::String(const_title.to_string());
                 let arr_bson = Bson::Array(vec![val_bson, title_bson]);
                 target_arr_bson.push(arr_bson);
-            } else if const_widget_type.contains("I32") {
+            } else if const_field_type.contains("I32") {
                 let val_bson = Bson::Int32(i32::try_from(dyn_data["value"].as_i64().unwrap())?);
                 let title_bson = Bson::String(const_title.to_string());
                 let arr_bson = Bson::Array(vec![val_bson, title_bson]);
                 target_arr_bson.push(arr_bson);
-            } else if const_widget_type.contains("U32") || const_widget_type.contains("I64") {
+            } else if const_field_type.contains("U32") || const_field_type.contains("I64") {
                 let val_bson = Bson::Int64(dyn_data["value"].as_i64().unwrap());
                 let title_bson = Bson::String(const_title.to_string());
                 let arr_bson = Bson::Array(vec![val_bson, title_bson]);
                 target_arr_bson.push(arr_bson);
-            } else if const_widget_type.contains("F64") {
+            } else if const_field_type.contains("F64") {
                 let val_bson = Bson::Double(dyn_data["value"].as_f64().unwrap());
                 let title_bson = Bson::String(const_title.to_string());
                 let arr_bson = Bson::Array(vec![val_bson, title_bson]);
                 target_arr_bson.push(arr_bson);
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` => \
+                    "Model: {} > Method: `update_dyn_field` => \
                         Invalid data type.",
                     meta.model_name,
                 ))?
@@ -640,28 +639,28 @@ pub trait Caching: Main + Converters {
         // *****************************************************************************************
         if const_is_delete {
             //
-            let const_control_arr = if const_widget_type.contains("Text") {
+            let const_control_arr = if const_field_type.contains("Text") {
                 ControlArr::Text(
                     target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_str().unwrap())
                         .collect::<Vec<&str>>(),
                 )
-            } else if const_widget_type.contains("I32") {
+            } else if const_field_type.contains("I32") {
                 ControlArr::I32(
                     target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_i32().unwrap())
                         .collect::<Vec<i32>>(),
                 )
-            } else if const_widget_type.contains("U32") || const_widget_type.contains("I64") {
+            } else if const_field_type.contains("U32") || const_field_type.contains("I64") {
                 ControlArr::I64(
                     target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
                         .collect::<Vec<i64>>(),
                 )
-            } else if const_widget_type.contains("F64") {
+            } else if const_field_type.contains("F64") {
                 ControlArr::F64(
                     target_arr_bson
                         .iter()
@@ -670,7 +669,7 @@ pub trait Caching: Main + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_wig` => \
+                    "Model: {} > Method: `update_dyn_field` => \
                         Invalid data type.",
                     meta.model_name,
                 ))?
@@ -688,10 +687,10 @@ pub trait Caching: Main + Converters {
                 if doc_from_db.is_null(const_field_name) {
                     continue;
                 }
-                // Widgets with support multiple selection.
-                if const_widget_type.contains("Mult") {
+                // fields with support multiple selection.
+                if const_field_type.contains("Mult") {
                     let mut truncated_arr_bson = Vec::<Bson>::new();
-                    if const_widget_type.contains("Text") {
+                    if const_field_type.contains("Text") {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
@@ -705,7 +704,7 @@ pub trait Caching: Main + Converters {
                         if truncated_arr_bson.len() != tmp_arr_bson.len() {
                             is_changed = true;
                         }
-                    } else if const_widget_type.contains("I32") {
+                    } else if const_field_type.contains("I32") {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
@@ -719,8 +718,7 @@ pub trait Caching: Main + Converters {
                         if truncated_arr_bson.len() != tmp_arr_bson.len() {
                             is_changed = true;
                         }
-                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
-                    {
+                    } else if const_field_type.contains("U32") || const_field_type.contains("I64") {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
@@ -734,7 +732,7 @@ pub trait Caching: Main + Converters {
                         if truncated_arr_bson.len() != tmp_arr_bson.len() {
                             is_changed = true;
                         }
-                    } else if const_widget_type.contains("F64") {
+                    } else if const_field_type.contains("F64") {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
@@ -759,23 +757,22 @@ pub trait Caching: Main + Converters {
                         doc_from_db.insert(const_field_name, result_bson);
                     }
                 } else {
-                    // Select widgets with support for one selection.
-                    is_changed = if const_widget_type.contains("Text") {
+                    // Select fields with support for one selection.
+                    is_changed = if const_field_type.contains("Text") {
                         let val = doc_from_db.get_str(const_field_name)?;
                         !const_control_arr.control_arr_str().contains(&val)
-                    } else if const_widget_type.contains("I32") {
+                    } else if const_field_type.contains("I32") {
                         let val = doc_from_db.get_i32(const_field_name)?;
                         !const_control_arr.control_arr_i32().contains(&val)
-                    } else if const_widget_type.contains("U32") || const_widget_type.contains("I64")
-                    {
+                    } else if const_field_type.contains("U32") || const_field_type.contains("I64") {
                         let val = doc_from_db.get_i64(const_field_name)?;
                         !const_control_arr.control_arr_i64().contains(&val)
-                    } else if const_widget_type.contains("F64") {
+                    } else if const_field_type.contains("F64") {
                         let val = doc_from_db.get_f64(const_field_name)?;
                         !const_control_arr.control_arr_f64().contains(&val)
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_wig` => \
+                            "Model: {} > Method: `update_dyn_field` => \
                                 Invalid data type.",
                             meta.model_name,
                         ))?
@@ -794,7 +791,7 @@ pub trait Caching: Main + Converters {
             }
         }
 
-        // Update metadata and widgects map to cache.
+        // Update metadata and fields map to cache.
         Self::to_cache()?;
         //
         Ok(())
