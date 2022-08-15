@@ -559,8 +559,8 @@ impl<'a> Monitor<'a> {
                                             Bson::Null
                                         }
                                         _ => {
-                                            Err(format!("Service: `{}` > Model: `{}` ; Method: \
-                                                         `migrat()` => Invalid Field type.",
+                                            Err(format!("Service: `{}` > Model: `{}` ; \
+                                                Method: `migrat()` => Invalid Field type.",
                                                 meta.service_name, meta.model_name
                                             ))?
                                         }
