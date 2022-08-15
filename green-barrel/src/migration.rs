@@ -112,7 +112,7 @@ impl<'a> Monitor<'a> {
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
                     .database(&db_green_tech)
-                    .create_collection(collection_dyn_widgets_name, None)?;
+                    .create_collection(collection_dyn_fields_type, None)?;
             } else {
                 // Reset models state information.
                 let green_tech_db: Database = client.database(&db_green_tech);
