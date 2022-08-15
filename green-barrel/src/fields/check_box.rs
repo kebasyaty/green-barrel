@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct CheckBox {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<bool>, // Default value.
@@ -31,7 +31,7 @@ impl Default for CheckBox {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("CheckBox"),
+            field_type: String::from("CheckBox"),
             input_type: String::from("checkbox"),
             name: String::new(),
             value: Some(false),

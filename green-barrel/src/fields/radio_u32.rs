@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct RadioU32 {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // field_type name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<u32>, // Default value.
@@ -31,7 +31,7 @@ impl Default for RadioU32 {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("RadioU32"),
+            field_type: String::from("RadioU32"),
             input_type: String::from("radio"),
             name: String::new(),
             value: None,

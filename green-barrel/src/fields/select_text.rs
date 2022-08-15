@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct SelectText {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // Widget name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
@@ -34,7 +34,7 @@ impl Default for SelectText {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("SelectText"),
+            field_type: String::from("SelectText"),
             input_type: String::from("select"),
             name: String::new(),
             value: None,

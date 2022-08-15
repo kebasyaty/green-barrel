@@ -9,7 +9,7 @@ use crate::helpers::structures::ImageData;
 pub struct InputImage {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // field_type name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<ImageData>, // Default value.
@@ -34,7 +34,7 @@ impl Default for InputImage {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("InputImage"),
+            field_type: String::from("InputImage"),
             input_type: String::from("file"),
             name: String::new(),
             value: None,

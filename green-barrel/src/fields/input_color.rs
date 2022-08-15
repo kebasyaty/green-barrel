@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct InputColor {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // field_type name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
@@ -34,7 +34,7 @@ impl Default for InputColor {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("InputColor"),
+            field_type: String::from("InputColor"),
             input_type: String::from("color"),
             name: String::new(),
             value: None,

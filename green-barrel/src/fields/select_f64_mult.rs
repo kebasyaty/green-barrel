@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct SelectF64Mult {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // field_type name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<Vec<f64>>, // Default value.
@@ -33,7 +33,7 @@ impl Default for SelectF64Mult {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("SelectF64Mult"),
+            field_type: String::from("SelectF64Mult"),
             input_type: String::from("select"),
             name: String::new(),
             value: None,

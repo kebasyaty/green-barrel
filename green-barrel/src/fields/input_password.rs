@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct InputPassword {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
+    pub field_type: String, // field_type name.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
@@ -33,7 +33,7 @@ impl Default for InputPassword {
         Self {
             id: String::new(),
             label: String::new(),
-            widget: String::from("InputPassword"),
+            field_type: String::from("InputPassword"),
             input_type: String::from("password"),
             name: String::new(),
             value: None,
