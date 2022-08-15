@@ -275,7 +275,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if final_value.is_null() {
+                    let val_str = final_value.as_str();
+                    //
+                    if final_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
                         if field_type != "InputPassword" && !final_default.is_null() {
                             *final_value = final_default.clone();
                         } else {
@@ -674,7 +676,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64" => {
                     //
-                    if final_value.is_null() {
+                    let val_str = final_value.as_str();
+                    //
+                    if final_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
                         if !final_default.is_null() {
                             *final_value = final_default.clone();
                         } else {
@@ -705,12 +709,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         match field_type {
                             "SelectText" => {
                                 let val = final_value.as_str().unwrap();
-                                if val.is_empty() && is_required {
-                                    is_err_symptom = true;
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
-                                    );
-                                }
                                 Bson::String(val.to_string())
                             }
                             "SelectI32" => {
