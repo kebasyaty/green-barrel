@@ -791,8 +791,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     );
                 }
                 //
-                "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
-                | "selectF64Mult" => {
+                "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult"
+                | "SelectF64Mult" => {
                     //
                     let check_enpty_arr = final_value.as_array();
                     //
