@@ -536,39 +536,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if field_name == "created_at" || field_name == "updated_at" {
                         continue;
                     }
-                    // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
-                        let clean_data: String =
-                            pre_json_value.as_str().unwrap().trim().to_string();
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = clean_data.clone();
-                        clean_data
-                    } else {
-                        String::new()
-                    };
-
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if field_value.is_empty() {
-                        if !final_widget.value.is_empty() {
-                            field_value = final_widget.value.clone();
+                    if final_value.is_null() {
+                        if !final_default.is_null() {
+                            *final_value = final_default.clone();
                         } else {
-                            if final_widget.required {
+                            if is_required {
                                 is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
+                                if !is_hide {
+                                    *final_field_type.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                    );
                                 } else {
                                     Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
+                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
+                                        model_name, field_name, field_type
                                     ))?
                                 }
                             }
@@ -578,17 +564,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     }
-                    // Convert to &str
-                    let field_value: &str = field_value.as_str();
+                    //
+                    let curr_value = final_value.as_str().unwrap();
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
+                    if let Err(err) = Self::regex_validation(field_type, curr_value) {
                         is_err_symptom = true;
-                        final_widget.error =
-                            Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                    });
-                    if is_err_symptom {
+                        *final_field_type.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field_type, &err.to_string())?);
                         continue;
                     }
 
@@ -596,13 +580,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
                     let dt_value: chrono::DateTime<chrono::Utc> = {
-                        let field_value: String = if widget_type == "inputDate" {
-                            format!("{}T00:00", field_value.to_string())
+                        let val = if field_type == "InputDate" {
+                            format!("{}T00:00", curr_value)
                         } else {
-                            field_value.to_string()
+                            curr_value.to_string()
                         };
                         chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(&field_value, "%Y-%m-%dT%H:%M")?,
+                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")?,
                             chrono::Utc,
                         )
                     };
