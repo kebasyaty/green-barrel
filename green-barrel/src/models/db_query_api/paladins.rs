@@ -13,15 +13,13 @@ use slug::slugify;
 use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
-use crate::{
-    helpers::structures::{FileData, ImageData},
-    models::{
-        caching::Caching,
-        hooks::Hooks,
-        output_data::{OutputData, OutputDataCheck},
-        validation::{AdditionalValidation, Validation},
-        Main, Meta,
-    },
+use crate::models::{
+    caching::Caching,
+    helpers::{FileData, ImageData, Meta},
+    hooks::Hooks,
+    output_data::{OutputData, OutputDataCheck},
+    validation::{AdditionalValidation, Validation},
+    Main,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
