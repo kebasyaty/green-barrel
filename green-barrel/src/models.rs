@@ -17,7 +17,7 @@ use std::error::Error;
 
 use crate::helpers::structures::Meta;
 
-/// Model options and widget map for Form.
+/// Model options and field type map for Form.
 // *************************************************************************************************
 pub trait Main {
     /// Get model key
@@ -59,7 +59,7 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
 
-    /// Enrich the widget map with values for dynamic widgets.
+    /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
     fn vitaminize(
         project_name: &str,
@@ -71,30 +71,28 @@ pub trait Main {
     ) -> Result<(), Box<dyn Error>> {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
-        // Access to the collection with values for dynamic widgets.
-        let collection = client
-            .database(&db_green_tech)
-            .collection("dynamic_widgets");
+        // Access to the collection with values for dynamic fields type.
+        let collection = client.database(&db_green_tech).collection("dynamic_fields");
         // Filter for searching a document.
         let filter = doc! {
             "collection": collection_name
         };
-        // Get a document with values for dynamic widgets.
+        // Get a document with values for dynamic fields type.
         if let Some(doc) = collection.find_one(filter, None)? {
             let dyn_values_doc = doc.get_document("fields")?;
-            // Updating the `options` parameter for fields with a dynamic widget.
+            // Updating the `options` parameter for fields with a dynamic field type.
             for field_name in fields_name {
-                let widget_name = model_json
+                let field_type = model_json
                     .get(field_name)
                     .unwrap()
-                    .get("widget")
+                    .get("field_type")
                     .unwrap()
                     .as_str()
                     .unwrap();
                 //
-                if widget_name.contains("Dyn") {
+                if field_type.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
-                    if widget_name.contains("Text") {
+                    if field_type.contains("Text") {
                         let options = arr
                             .iter()
                             .map(|item| {
@@ -110,7 +108,7 @@ pub trait Main {
                             .unwrap()
                             .get_mut("options")
                             .unwrap() = json!(options);
-                    } else if widget_name.contains("I32") {
+                    } else if field_type.contains("I32") {
                         let options = arr
                             .iter()
                             .map(|item| {
@@ -126,7 +124,7 @@ pub trait Main {
                             .unwrap()
                             .get_mut("options")
                             .unwrap() = json!(options);
-                    } else if widget_name.contains("U32") || widget_name.contains("I64") {
+                    } else if field_type.contains("U32") || field_type.contains("I64") {
                         let options = arr
                             .iter()
                             .map(|item| {
@@ -142,7 +140,7 @@ pub trait Main {
                             .unwrap()
                             .get_mut("options")
                             .unwrap() = json!(options);
-                    } else if widget_name.contains("F64") {
+                    } else if field_type.contains("F64") {
                         let options = arr
                             .iter()
                             .map(|item| {
@@ -170,7 +168,7 @@ pub trait Main {
         } else {
             Err(format!(
                 "Model: {} ; Method: `vitaminize()` => \
-                Document with values for dynamic widgets not found.",
+                Document with values for dynamic fields type not found.",
                 Self::meta()?.model_name
             ))?
         }
