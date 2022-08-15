@@ -672,7 +672,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
+                "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64" => {
                     //
                     let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
                     let mut tmp_value;
