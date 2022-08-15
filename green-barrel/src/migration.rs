@@ -31,7 +31,7 @@ pub struct ModelState {
     pub database: String,
     pub collection: String,
     pub fields: Vec<String>,
-    pub map_widgets: HashMap<String, String>,
+    pub field_type_map: HashMap<String, String>,
     pub status: bool,
 }
 
@@ -98,8 +98,8 @@ impl<'a> Monitor<'a> {
             // Collection for monitoring the state of Models.
             let collection_models_name: &str = "monitor_models";
             // Used to store selection items, for
-            // widgets like selectTextDyn, selectTextMultDyn, etc.
-            let collection_dyn_widgets_name: &str = "dynamic_widgets";
+            // Fields type like selectTextDyn, selectTextMultDyn, etc.
+            let collection_dyn_fields_type: &str = "dynamic_fields_type";
             //Get a list of databases.
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Create a technical database for the project if it doesn't exist.
