@@ -224,7 +224,7 @@ impl<'a> Monitor<'a> {
                 .map(|item| item.as_str())
                 .collect();
             // List field names without `hash` and ignored fields.
-            let trunc_list_fields_name: Vec<&str> = fields_name
+            let trunc_fields_name_list: Vec<&str> = fields_name
                 .iter()
                 .filter(|item| **item != "hash" && !ignore_fields.contains(item))
                 .map(|item| *item)
@@ -234,18 +234,18 @@ impl<'a> Monitor<'a> {
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (widget_type, value)>
-            let map_default_values: HashMap<String, (String, String)> =
+            let default_values_map: HashMap<String, (String, String)> =
                 meta.default_value_map.clone();
             // Get map of widgets types.
-            let map_widget_type = meta.widget_type_map.clone();
+            let widget_type_map = meta.field_type_map.clone();
             // Get truncated map of widgets types.
-            let trunc_map_widget_type: HashMap<String, String> = map_widget_type.clone();
-            trunc_map_widget_type
+            let trunc_widget_type_map: HashMap<String, String> = widget_type_map.clone();
+            trunc_widget_type_map
                 .clone()
                 .retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
             // Get a map of widgets from the technical database,
             // from the `monitor_models` collection for current Model.
-            let monitor_map_widget_type: HashMap<String, String>;
+            let monitor_widget_type_map: HashMap<String, String>;
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -273,9 +273,9 @@ impl<'a> Monitor<'a> {
                 };
                 // Get a map of widgets from the technical database,
                 // from the `monitor_models` collection for current Model.
-                monitor_map_widget_type = {
+                monitor_widget_type_map = {
                     model
-                        .get_document("map_widgets")
+                        .get_document("widget_map")
                         .unwrap()
                         .iter()
                         .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
@@ -284,10 +284,10 @@ impl<'a> Monitor<'a> {
                 // Check if the set of fields in the collection of
                 // the current Model needs to be updated.
                 let mut changed_fields: Vec<&str> = Vec::new();
-                for field in trunc_list_fields_name.iter() {
+                for field in trunc_fields_name_list.iter() {
                     if !monitor_models_fields_name.contains(&field.to_string())
-                        || (trunc_map_widget_type.get(*field).unwrap()
-                            != monitor_map_widget_type
+                        || (trunc_widget_type_map.get(*field).unwrap()
+                            != monitor_widget_type_map
                                 .get(*field)
                                 .unwrap_or(&String::new()))
                     {
@@ -320,14 +320,14 @@ impl<'a> Monitor<'a> {
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` > Field: `{}` ; \
-                                                 Method: `migrat()` => \
-                                                 Can't get field value from database.",
+                                            Method: `migrat()` => \
+                                            Can't get field value from database.",
                                         meta.service_name, meta.model_name, field
                                     ))?;
                                 }
                             } else {
                                 // If no field exists, get default value.
-                                let value = map_default_values.get(*field).unwrap();
+                                let value = default_values_map.get(*field).unwrap();
                                 tmp_doc.insert(
                                     field.to_string(),
                                     match value.0.as_str() {
@@ -603,7 +603,7 @@ impl<'a> Monitor<'a> {
                     }
                 }
             } else {
-                monitor_map_widget_type = HashMap::new();
+                monitor_widget_type_map = HashMap::new();
             }
 
             // Create a new database (if doesn't exist) and add new collection.
@@ -633,7 +633,7 @@ impl<'a> Monitor<'a> {
             {
                 Err(format!(
                     "In the `refresh()` method, \
-                             no technical database has been created for the project."
+                        no technical database has been created for the project."
                 ))?
             } else {
                 let collection: Collection = db.collection("monitor_models");
@@ -644,9 +644,9 @@ impl<'a> Monitor<'a> {
                 let doc: Document = mongodb::bson::doc! {
                     "database": &meta.database_name,
                     "collection": &meta.collection_name,
-                    "fields": trunc_list_fields_name.iter().map(|item| item.to_string())
+                    "fields": trunc_fields_name_list.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
-                    "map_widgets": to_bson(&trunc_map_widget_type.clone())?,
+                    "widget_map": to_bson(&trunc_widget_type_map.clone())?,
                     "status": true
                 };
                 // Check if there is model state in the database.
@@ -690,7 +690,7 @@ impl<'a> Monitor<'a> {
                 };
                 // Add empty arrays to the new document.
                 let mut fields_doc = Document::new();
-                for (field, widget) in map_widget_type.clone() {
+                for (field, widget) in widget_type_map.clone() {
                     if widget.contains("Dyn") {
                         fields_doc.insert(field, Bson::Array(Vec::new()));
                     }
@@ -710,14 +710,14 @@ impl<'a> Monitor<'a> {
                 // Create an empty list for fields with dynamic widget types.
                 let mut dyn_fields_from_model: Vec<String> = Vec::new();
                 // Add new (if any) fields in `fields_doc`.
-                for (field, widget) in trunc_map_widget_type.clone() {
+                for (field, widget) in trunc_widget_type_map.clone() {
                     if widget.contains("Dyn") {
                         dyn_fields_from_model.push(field.clone());
                         // If the new field or widgets do not match,
                         // initialize with an empty array.
                         if !dyn_fields_from_db.contains(&field)
                             || (widget
-                                != *monitor_map_widget_type
+                                != *monitor_widget_type_map
                                     .get(field.as_str())
                                     .unwrap_or(&String::new()))
                         {
