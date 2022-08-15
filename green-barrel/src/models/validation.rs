@@ -33,8 +33,8 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(widget: &Value, err: &str) -> Result<String, Box<dyn Error>> {
-        let mut tmp = widget.get("error").unwrap().as_str().unwrap().to_string();
+    fn accumula_err(field: &Value, err: &str) -> Result<String, Box<dyn Error>> {
+        let mut tmp = field.get("error").unwrap().as_str().unwrap().to_string();
         tmp = if !tmp.is_empty() {
             format!("{}<br>", tmp)
         } else {
@@ -45,8 +45,8 @@ pub trait Validation {
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(widget_name: &str, value: &str) -> Result<(), Box<dyn Error>> {
-        match widget_name {
+    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
+        match field_type {
             "InputEmail" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?

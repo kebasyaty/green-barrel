@@ -295,7 +295,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds the documents in the collection matching filter and
-    /// return document list ( missing widgets ).
+    /// return document list ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
@@ -344,7 +344,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds the documents in the collection matching filter and
-    /// return in JSON format ( missing widgets ).
+    /// return in JSON format ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
@@ -390,13 +390,13 @@ pub trait QCommons: Main + Caching + Converters {
             Some(options),
             coll,
             &meta.ignore_fields,
-            &meta.widget_type_map,
+            &meta.field_type_map,
             meta.model_name.as_str(),
         )
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return in Doc format ( missing widgets ).
+    /// return in Doc format ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -465,7 +465,7 @@ pub trait QCommons: Main + Caching + Converters {
             Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
-                &meta.widget_type_map,
+                &meta.field_type_map,
                 &meta.model_name,
                 &meta.fields_name,
                 model_json,
@@ -512,7 +512,7 @@ pub trait QCommons: Main + Caching + Converters {
             Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
-                &meta.widget_type_map,
+                &meta.field_type_map,
                 &meta.model_name,
                 &meta.fields_name,
                 model_json,
@@ -524,7 +524,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Atomically finds up to one document in the collection matching filter and
-    /// deletes it ( missing widgets ).
+    /// deletes it ( missing fields type ).
     /// Returns the deleted document (in Doc format).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
     // ---------------------------------------------------------------------------------------------

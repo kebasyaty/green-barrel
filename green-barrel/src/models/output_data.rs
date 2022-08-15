@@ -166,7 +166,6 @@ impl OutputDataCheck {
 
     /// Get/Set final document
     // ---------------------------------------------------------------------------------------------
-    /// ( Wig - Widgets )
     ///
     /// # Example:
     ///
@@ -190,7 +189,6 @@ impl OutputDataCheck {
 
     /// Get/Set Model instance in serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
-    /// ( Wig - Widgets )
     ///
     /// # Example:
     ///
@@ -202,7 +200,7 @@ impl OutputDataCheck {
     /// let output_data = model_name.save(None, None)?;
     ///
     /// println!("{:?}", output_data.get_model_json());
-    /// println!("{:?}", output_data.set_model_json(updated_widget_map));
+    /// println!("{:?}", output_data.set_model_json(updated_model_json));
     /// ```
     ///
     pub fn get_model_json(&self) -> Value {
@@ -231,9 +229,9 @@ impl OutputDataCheck {
         Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
-    /// Get widget list in json-line format for admin panel.
+    /// Get field type list in json-line format for admin panel.
     // ---------------------------------------------------------------------------------------------
-    /// ( converts a widget map to a list, in the order of the Model fields )
+    /// ( converts a field type map to a list, in the order of the Model fields )
     ///
     /// # Example:
     ///
@@ -248,7 +246,7 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
-        let mut widget_list: Vec<Value> = Vec::new();
+        let mut field_type_list: Vec<Value> = Vec::new();
         let hash = self
             .final_model_json
             .get("hash")
@@ -257,20 +255,20 @@ impl OutputDataCheck {
             .unwrap()
             .as_str()
             .unwrap();
-        // Get a list of widgets in the order of the model fields.
+        // Get a list of fields type in the order of the model fields.
         for field_name in self.fields_name.iter() {
-            let mut widget = self.final_model_json.get(field_name).unwrap().clone();
+            let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
-                *widget.get_mut("is_hide").unwrap() = json!(false);
+                *field_type.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
-                *widget.get_mut("input_type").unwrap() = json!("hidden");
-                *widget.get_mut("value").unwrap() = json!("");
+                *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("value").unwrap() = json!("");
             }
-            widget_list.push(widget);
+            field_type_list.push(field_type);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&field_type_list)?)
     }
 
     /// Get validation status (boolean).
@@ -313,8 +311,8 @@ impl OutputDataCheck {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
-            let widget = self.final_model_json.get(field_name).unwrap();
-            let error = widget.get("error").unwrap().as_str().unwrap();
+            let field_type = self.final_model_json.get(field_name).unwrap();
+            let error = field_type.get("error").unwrap().as_str().unwrap();
             if !error.is_empty() {
                 errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
             }

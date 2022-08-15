@@ -16,12 +16,12 @@ pub trait Converters {
     fn to_prepared_doc(
         doc: Document,
         ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<Document, Box<dyn Error>> {
         //
         let mut accumula_doc = Document::new();
-        for (field_name, widget_type) in widget_type_map {
+        for (field_name, field_type) in field_type_map {
             if ignore_fields.contains(&field_name) {
                 continue;
             }
@@ -39,7 +39,7 @@ pub trait Converters {
                         ))?
                     },
                 );
-            } else if widget_type == "InputPassword" {
+            } else if field_type == "InputPassword" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -49,7 +49,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "InputDate" {
+            } else if field_type == "InputDate" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -59,7 +59,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "InputDateTime" {
+            } else if field_type == "InputDateTime" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -79,19 +79,19 @@ pub trait Converters {
     }
 
     /// In the model instance, in the format serde_json::Value,
-    /// Update the widget values from the corresponding document from the database.
+    /// Update the field type values from the corresponding document from the database.
     // ---------------------------------------------------------------------------------------------
     fn one_to_json_val(
         db_doc: Document,
         ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
         mut model_json: &Value,
     ) -> Result<(), Box<dyn Error>> {
         //
         let prepared_doc =
-            Self::to_prepared_doc(db_doc, ignore_fields, widget_type_map, model_name)?;
+            Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
@@ -107,7 +107,7 @@ pub trait Converters {
         Ok(())
     }
 
-    /// Get prepared documents ( missing widgets ).
+    /// Get prepared documents ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
     fn many_to_doc_list(
         filter: Option<Document>,
@@ -124,14 +124,14 @@ pub trait Converters {
         Ok(doc_list)
     }
 
-    /// Get json-line from document list ( missing widgets ).
+    /// Get json-line from document list ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
     fn many_to_json_line(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,
         ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
@@ -139,7 +139,7 @@ pub trait Converters {
         let mut cursor = collection.find(filter, find_options)?;
         while let Some(Ok(db_doc)) = cursor.next() {
             let prepared_doc =
-                Self::to_prepared_doc(db_doc, ignore_fields, widget_type_map, model_name)?;
+                Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
             //
             json_line = format!(
                 "{},{}",
