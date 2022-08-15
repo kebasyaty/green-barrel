@@ -105,12 +105,12 @@ pub trait Validation {
     fn check_unique(
         hash: &str,
         field_name: &str,
-        bson_field_value: &Bson,
+        field_value_bson: &Bson,
         coll: &Collection,
     ) -> Result<(), Box<dyn Error>> {
         //
         let object_id = ObjectId::with_string(hash);
-        let mut filter = doc! { field_name: bson_field_value };
+        let mut filter = doc! { field_name: field_value_bson };
         if let Ok(id) = object_id {
             // If the document is will updated.
             filter = doc! {

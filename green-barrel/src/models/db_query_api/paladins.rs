@@ -649,15 +649,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
-                    let dt_value_bson = Bson::DateTime(dt_value);
+                    let dt_val_bson = Bson::DateTime(dt_val);
+
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &dt_value_bson, &coll).unwrap_or_else(
+                    let is_unique = final_field_type.get("unique").unwrap().as_bool().unwrap();
+                    if is_unique {
+                        Self::check_unique(hash, field_name, &dt_val_bson, &coll).unwrap_or_else(
                             |err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())?);
                             },
                         );
                     }
@@ -665,7 +667,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, dt_value_bson);
+                        final_doc.insert(field_name, dt_val_bson);
                     }
                 }
                 // Validation of `select` type fields.
