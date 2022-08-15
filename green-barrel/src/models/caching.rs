@@ -335,7 +335,7 @@ pub trait Caching: Main + Converters {
                 meta.unique_project_key.clone()
             );
             let db = client_cache.database(&green_tech_keyword);
-            db.collection("dynamic_fields_type")
+            db.collection("dynamic_fields")
         };
         //
         let filter = doc! {

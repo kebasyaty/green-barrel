@@ -99,7 +99,7 @@ impl<'a> Monitor<'a> {
             let collection_models_name: &str = "monitor_models";
             // Used to store selection items, for
             // Fields type like selectTextDyn, selectTextMultDyn, etc.
-            let collection_dyn_fields_type: &str = "dynamic_fields_type";
+            let collection_dyn_fields_type: &str = "dynamic_fields";
             //Get a list of databases.
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Create a technical database for the project if it doesn't exist.
