@@ -734,8 +734,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     );
                 }
                 //
-                "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
-                | "selectF64Dyn" => {
+                "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn"
+                | "SelectF64Dyn" => {
                     //
                     let check_enpty_str = final_value.as_str();
                     //
@@ -766,19 +766,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert(
                         field_name,
                         match field_type {
-                            "selectTextDyn" => {
+                            "SelectTextDyn" => {
                                 let val = final_value.as_str().unwrap().to_string();
                                 Bson::String(val)
                             }
-                            "selectI32Dyn" => {
+                            "SelectI32Dyn" => {
                                 let val = i32::try_from(final_value.as_i64().unwrap())?;
                                 Bson::Int32(val)
                             }
-                            "selectU32Dyn" | "selectI64Dyn" => {
+                            "SelectU32Dyn" | "selectI64Dyn" => {
                                 let val = final_value.as_i64().unwrap();
                                 Bson::Int64(val)
                             }
-                            "selectF64Dyn" => {
+                            "SelectF64Dyn" => {
                                 let val = final_value.as_f64().unwrap();
                                 Bson::Double(val)
                             }
