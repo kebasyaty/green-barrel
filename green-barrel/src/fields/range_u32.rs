@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct RangeU32 {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub field_type: String, // field_type name.
+    pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<u32>, // Default value.
