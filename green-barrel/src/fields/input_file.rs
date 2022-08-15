@@ -3,7 +3,7 @@
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::structures::FileData;
+use crate::models::helpers::FileData;
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct InputFile {

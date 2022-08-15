@@ -3,7 +3,7 @@
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::structures::ImageData;
+use crate::models::helpers::ImageData;
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct InputImage {
