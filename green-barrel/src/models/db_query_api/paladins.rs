@@ -580,7 +580,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create Date and Time Object.
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
-                    let dt_value: chrono::DateTime<chrono::Utc> = {
+                    let dt_val: chrono::DateTime<chrono::Utc> = {
                         let val = if field_type == "InputDate" {
                             format!("{}T00:00", curr_value)
                         } else {
@@ -613,42 +613,36 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         // Date to DateTime (min).
                         let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_value: String = if field_type == "InputDate" {
-                                format!("{}T00:00", final_widget.min.clone())
+                            let min_val: String = if field_type == "InputDate" {
+                                format!("{}T00:00", min)
                             } else {
-                                final_widget.min.clone()
+                                min.to_string()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(
-                                    &min_value,
-                                    "%Y-%m-%dT%H:%M",
-                                )?,
+                                chrono::NaiveDateTime::parse_from_str(&min_val, "%Y-%m-%dT%H:%M")?,
                                 chrono::Utc,
                             )
                         };
                         // Date to DateTime (max).
                         let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_value: String = if widget_type == "inputDate" {
-                                format!("{}T00:00", final_widget.max.clone())
+                            let max_val: String = if field_type == "InputDate" {
+                                format!("{}T00:00", max)
                             } else {
-                                final_widget.max.clone()
+                                max.to_string()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(
-                                    &max_value,
-                                    "%Y-%m-%dT%H:%M",
-                                )?,
+                                chrono::NaiveDateTime::parse_from_str(&max_val, "%Y-%m-%dT%H:%M")?,
                                 chrono::Utc,
                             )
                         };
                         // Check hit in range (min <> max).
-                        if dt_value < dt_min || dt_value > dt_max {
+                        if dt_val < dt_min || dt_val > dt_max {
                             is_err_symptom = true;
-                            final_widget.error = Self::accumula_err(
-                                &final_widget,
-                                &"Date out of range between `min` and` max`.".to_owned(),
-                            )
-                            .unwrap();
+                            *final_field_type.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(
+                                    &final_field_type,
+                                    "Date out of range between `min` and` max`."
+                                )?);
                             continue;
                         }
                     }
