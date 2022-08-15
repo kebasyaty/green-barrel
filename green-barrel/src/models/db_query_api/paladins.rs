@@ -717,7 +717,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 let val = i32::try_from(final_value.as_i64().unwrap())?;
                                 Bson::Int32(val)
                             }
-                            "SelectU32" | "selectI64" => {
+                            "SelectU32" | "SelectI64" => {
                                 let val = final_value.as_i64().unwrap();
                                 Bson::Int64(val)
                             }
@@ -751,8 +751,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name, field_type
                                 ))?
                             }
@@ -774,7 +774,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 let val = i32::try_from(final_value.as_i64().unwrap())?;
                                 Bson::Int32(val)
                             }
-                            "SelectU32Dyn" | "selectI64Dyn" => {
+                            "SelectU32Dyn" | "SelectI64Dyn" => {
                                 let val = final_value.as_i64().unwrap();
                                 Bson::Int64(val)
                             }
@@ -827,7 +827,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert(
                         field_name,
                         match field_type {
-                            "selectTextMult" => {
+                            "SelectTextMult" => {
                                 let val = final_value
                                     .as_array()
                                     .unwrap()
@@ -836,7 +836,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .collect::<Vec<Bson>>();
                                 Bson::Array(val)
                             }
-                            "selectI32Mult" => Bson::Array(
+                            "SelectI32Mult" => Bson::Array(
                                 final_value
                                     .as_array()
                                     .unwrap()
@@ -846,7 +846,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     })
                                     .collect::<Vec<Bson>>(),
                             ),
-                            "selectU32Mult" | "selectI64Mult" => Bson::Array(
+                            "SelectU32Mult" | "SelectI64Mult" => Bson::Array(
                                 final_value
                                     .as_array()
                                     .unwrap()
@@ -854,7 +854,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .map(|item| Bson::Int64(item.as_i64().unwrap()))
                                     .collect::<Vec<Bson>>(),
                             ),
-                            "selectF64Mult" => Bson::Array(
+                            "SelectF64Mult" => Bson::Array(
                                 final_value
                                     .as_array()
                                     .unwrap()
@@ -864,7 +864,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             ),
                             _ => Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                            Unsupported widget type - `{}`.\n\n",
+                                    Unsupported widget type - `{}`.\n\n",
                                 model_name, field_name, field_type
                             ))?,
                         },
