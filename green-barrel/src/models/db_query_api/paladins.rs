@@ -1254,9 +1254,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                            `check()` => Valid size names -\
-                                             `xs`, `sm`, `md`, `lg`.\n\n",
+                                        "\n\nModel: `{}` > Field: `{}` > Type: `ImageData` ; \
+                                            Method: `check()` => Valid size names -\
+                                            `xs`, `sm`, `md`, `lg`.\n\n",
                                         model_name, field_name
                                     ))?,
                                 }
