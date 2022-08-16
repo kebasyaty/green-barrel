@@ -1332,7 +1332,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_value.get("min").unwrap();
+                    let min = final_field_type.get("min").unwrap();
                     if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                         is_err_symptom = true;
                         let msg = format!(
@@ -1343,7 +1343,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
-                    let max = final_value.get("max").unwrap();
+                    let max = final_field_type.get("max").unwrap();
                     if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                         is_err_symptom = true;
                         let msg = format!(
@@ -1421,7 +1421,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_value.get("min").unwrap();
+                    let min = final_field_type.get("min").unwrap();
                     if !min.is_null() && curr_val < min.as_i64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
@@ -1432,7 +1432,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
-                    let max = final_value.get("max").unwrap();
+                    let max = final_field_type.get("max").unwrap();
                     if !max.is_null() && curr_val > max.as_i64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
@@ -1509,7 +1509,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_value.get("min").unwrap();
+                    let min = final_field_type.get("min").unwrap();
                     if !min.is_null() && curr_val < min.as_f64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
@@ -1520,7 +1520,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
-                    let max = final_value.get("max").unwrap();
+                    let max = final_field_type.get("max").unwrap();
                     if !max.is_null() && curr_val > max.as_f64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
