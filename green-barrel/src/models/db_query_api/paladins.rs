@@ -1170,48 +1170,46 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Flags to check.
-                    let is_emty_path = field_value.path.is_empty();
-                    let is_emty_url = field_value.url.is_empty();
+                    let is_emty_path = image_data.path.is_empty();
+                    let is_emty_url = image_data.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` => Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
+                            "\n\nModel: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                            `check()` => Required `path` and `url` fields.\n\n",
                             model_name, field_name
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(field_value.path.as_str());
+                    let f_path = std::path::Path::new(image_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => File is missing - {}\n\n",
-                            model_name, field_name, field_value.path
+                            model_name, field_name, image_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => The path does not lead to a file - {}\n\n",
-                            model_name, field_name, field_value.path
+                            model_name, field_name, image_data.path
                         ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    field_value.size = metadata.len() as u32;
+                    image_data.size = u32::try_from(metadata.len())?;
                     // Get file name
-                    field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
-                    field_value.width = dimensions.0;
-                    field_value.height = dimensions.1;
+                    image_data.width = dimensions.0;
+                    image_data.height = dimensions.1;
                     // Generate sub-size images.
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
-                        for max_size in final_widget.thumbnails.iter() {
+                        for max_size in thumbnails.iter() {
                             let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
                                 dimensions.0,
                                 dimensions.1,
@@ -1220,15 +1218,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if thumbnail_size.0 > 0 && thumbnail_size.1 > 0 {
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
-                                let thumb_name = format!("{}_{}", max_size.0, field_value.name);
-                                let thumb_path = field_value
+                                let thumb_name = format!("{}_{}", max_size.0, image_data.name);
+                                let thumb_path = image_data
                                     .path
                                     .clone()
-                                    .replace(field_value.name.as_str(), thumb_name.as_str());
-                                let thumb_url = field_value
+                                    .replace(image_data.name.as_str(), thumb_name.as_str());
+                                let thumb_url = image_data
                                     .url
                                     .clone()
-                                    .replace(field_value.name.as_str(), thumb_name.as_str());
+                                    .replace(image_data.name.as_str(), thumb_name.as_str());
                                 img = img.resize_exact(
                                     width,
                                     height,
@@ -1237,23 +1235,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 match max_size.0.as_str() {
                                     "lg" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_lg = thumb_path;
-                                        field_value.url_lg = thumb_url;
+                                        image_data.path_lg = thumb_path;
+                                        image_data.url_lg = thumb_url;
                                     }
                                     "md" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_md = thumb_path;
-                                        field_value.url_md = thumb_url;
+                                        image_data.path_md = thumb_path;
+                                        image_data.url_md = thumb_url;
                                     }
                                     "sm" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_sm = thumb_path;
-                                        field_value.url_sm = thumb_url;
+                                        image_data.path_sm = thumb_path;
+                                        image_data.url_sm = thumb_url;
                                     }
                                     "xs" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_xs = thumb_path;
-                                        field_value.url_xs = thumb_url;
+                                        image_data.path_xs = thumb_path;
+                                        image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` ; Method: \
@@ -1267,16 +1265,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     if !ignore_fields.contains(&field_name) {
-                        // Add image data to widget.
-                        final_widget.value = serde_json::to_string(&field_value)?;
+                        // Add file data to widget.
+                        *final_value = serde_json::to_value(image_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value =
-                                mongodb::bson::ser::to_bson(&field_value.clone())?;
-                            final_doc.insert(field_name, bson_field_value);
+                            let field_value_bson = mongodb::bson::ser::to_bson(final_value)?;
+                            final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
-                        final_widget.value = String::new();
+                        *final_value = json!(null);
                     }
                 }
                 // Validation of number type fields.
