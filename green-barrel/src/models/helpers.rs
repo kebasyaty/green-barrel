@@ -31,7 +31,7 @@ pub struct Meta {
 
 impl Default for Meta {
     fn default() -> Self {
-        Meta {
+        Self {
             model_name: String::new(),
             project_name: String::new(),
             unique_project_key: String::new(),
@@ -55,50 +55,68 @@ impl Default for Meta {
 
 /// Helper structures for inputFile fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct FileData {
-    #[serde(default)]
     pub path: String,
-    #[serde(default)]
     pub url: String,
-    #[serde(default)]
     pub name: String,
-    #[serde(default, with = "mongodb::bson::compat::u2f")]
     pub size: u32, // bytes
+    pub is_delete: bool,
+}
+
+impl Default for FileData {
+    fn default() -> Self {
+        Self {
+            path: String::new(),
+            url: String::new(),
+            name: String::new(),
+            size: 0,
+            is_delete: false,
+        }
+    }
 }
 
 /// Helper structures for inputImage fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Default, Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct ImageData {
-    #[serde(default)]
     pub path: String, // max size == original
-    #[serde(default)]
     pub path_xs: String,
-    #[serde(default)]
     pub path_sm: String,
-    #[serde(default)]
     pub path_md: String,
-    #[serde(default)]
     pub path_lg: String,
-    #[serde(default)]
     pub url: String, // max size == original
-    #[serde(default)]
     pub url_xs: String,
-    #[serde(default)]
     pub url_sm: String,
-    #[serde(default)]
     pub url_md: String,
-    #[serde(default)]
     pub url_lg: String,
-    #[serde(default)]
     pub name: String,
-    #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub size: u32, // bytes
-    #[serde(default, with = "mongodb::bson::compat::u2f")]
-    pub width: u32, // pixels
-    #[serde(default, with = "mongodb::bson::compat::u2f")]
+    pub size: u32,   // bytes
+    pub width: u32,  // pixels
     pub height: u32, // pixels
+    pub is_delete: bool,
+}
+
+impl Default for ImageData {
+    fn default() -> Self {
+        Self {
+            path: String::new(),
+            path_xs: String::new(),
+            path_sm: String::new(),
+            path_md: String::new(),
+            path_lg: String::new(),
+            url: String::new(),
+            url_xs: String::new(),
+            url_sm: String::new(),
+            url_md: String::new(),
+            url_lg: String::new(),
+            name: String::new(),
+            size: 0,
+            width: 0,
+            height: 0,
+            is_delete: false,
+        }
+    }
 }
 
 /// To optimize the update_dyn_wig method.
