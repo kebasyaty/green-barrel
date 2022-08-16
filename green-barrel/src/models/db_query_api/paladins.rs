@@ -945,15 +945,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     let path;
                     let url;
+                    let name;
+                    let size;
                     let is_delete;
                     // Get field value for validation.
                     if !final_value.is_null() {
                         path = final_value.get("path").unwrap().as_str().unwrap();
                         url = final_value.get("url").unwrap().as_str().unwrap();
+                        name = final_value.get("name").unwrap().as_str().unwrap();
+                        size = u32::try_from(final_value.get("size").unwrap().as_u64().unwrap())?;
                         is_delete = final_value.get("is_delete").unwrap().as_bool().unwrap();
                     } else {
                         path = "";
                         url = "";
+                        name = "";
+                        size = 0_u32;
                         is_delete = false;
                     };
                     // Delete file.
@@ -990,7 +996,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_info_file = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if _field_value.path.is_empty() && _field_value.url.is_empty() {
+                    if path.is_empty() && url.is_empty() {
                         if curr_info_file.is_empty() {
                             if !final_default.is_null() {
                                 *final_value = final_default.clone();
@@ -1024,8 +1030,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     // Flags to check.
-                    let is_emty_path = _field_value.path.is_empty();
-                    let is_emty_url = _field_value.url.is_empty();
+                    let is_emty_path = path.is_empty();
+                    let is_emty_url = url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
@@ -1037,19 +1043,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(_field_value.path.as_str());
+                    let f_path = std::path::Path::new(path.as_str());
                     if !f_path.exists() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => File is missing - {}\n\n",
-                            model_name, field_name, _field_value.path
+                            model_name, field_name, path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => The path does not lead to a file - {}\n\n",
-                            model_name, field_name, _field_value.path
+                            model_name, field_name, path
                         ))?
                     }
                     // Get file metadata.
