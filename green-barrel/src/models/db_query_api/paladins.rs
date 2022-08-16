@@ -949,7 +949,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
-                "inputFile" => {
+                "InputFile" => {
                     //
                     let mut is_delete = false;
                     // Get field value for validation.
@@ -982,18 +982,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             )?;
                         } else {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Upload a new file to delete the previous one.".to_owned(),
-                                )
-                                .unwrap();
+                            if !is_hide {
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(
+                                        &final_field_type,
+                                        "Upload a new file to delete the previous one."
+                                    )?);
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Upload a new file to delete the previous one.\n\n",
+                                    model_name, field_name, field_type
                                 ))?
                             }
                         }
@@ -1004,23 +1004,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     if _field_value.path.is_empty() && _field_value.url.is_empty() {
                         if curr_info_file.is_empty() {
-                            if !final_widget.value.is_empty() {
-                                // Get default value.
-                                _field_value = serde_json::from_str(final_widget.value.trim())?;
+                            if !final_default.is_null() {
+                                *final_value = final_default.clone();
                             } else {
-                                if final_widget.required {
+                                if is_required {
                                     is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
+                                    if !is_hide {
+                                        *final_field_type.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                &final_field_type,
+                                                "Required field."
+                                            )?);
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => Required field.\n\n",
-                                            model_name, field_name
+                                            "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
+                                            model_name, field_name, field_type
                                         ))?
                                     }
                                 }
