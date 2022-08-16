@@ -965,8 +965,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 &coll,
                                 model_name,
                                 field_name,
-                                final_widget.value.as_str(),
-                                false,
+                                Some(serde_json::from_value(final_default.clone())?),
+                                None,
                             )?;
                         } else {
                             is_err_symptom = true;
