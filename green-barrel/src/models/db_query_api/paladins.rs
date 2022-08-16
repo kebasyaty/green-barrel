@@ -1350,6 +1350,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         *final_field_type.get_mut("error").unwrap() =
                             json!(Self::accumula_err(&final_field_type, &msg)?);
                     }
+                    //
                     let max = final_value.get("max").unwrap();
                     if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                         is_err_symptom = true;
