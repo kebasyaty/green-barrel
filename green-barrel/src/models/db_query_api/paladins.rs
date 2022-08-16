@@ -1279,30 +1279,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of number type fields.
                 // *********************************************************************************
                 "RadioI32" | "NumberI32" | "RangeI32" => {
-                    // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            field_value = Some(final_widget.value.clone().parse::<i64>()?);
+                    if final_value.is_null() {
+                        if !final_default.is_null() {
+                            *final_value = final_default.clone();
                         } else {
-                            if final_widget.required {
+                            if is_required {
                                 is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
+                                if !is_hide {
+                                    *final_field_type.get_mut("error").unwrap() = json!(
+                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                    );
                                 } else {
                                     Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
+                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
+                                        model_name, field_name, field_type
                                     ))?
                                 }
                             }
@@ -1313,62 +1308,63 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get clean data.
-                    let field_value = i32::try_from(field_value.unwrap())?;
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.value = field_value.to_string();
+                    let curr_val = i32::try_from(final_value.as_i64().unwrap())?;
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = Bson::Int32(field_value);
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
+                    let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                    let unique = final_field_type.get("unique");
+                    if unique.is_some() {
+                        let is_unique = unique.unwrap().as_bool().unwrap();
+                        if is_unique {
+                            Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .unwrap_or_else(|err| {
+                                    is_err_symptom = true;
+                                    if !is_hide {
+                                        *final_field_type.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field_type, &err.to_string())
+                                                .unwrap()
+                                        );
+                                    } else {
+                                        Err(format!(
+                                            "\n\nModel: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}\n\n",
+                                            model_name,
+                                            field_name,
+                                            err.to_string()
+                                        ))
+                                        .unwrap()
+                                    }
+                                });
+                        }
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: i32 = final_widget.min.parse().unwrap_or_default();
-                    let max: i32 = final_widget.max.parse().unwrap_or_default();
-                    if (min != 0_i32 || max != 0_i32) && (field_value < min || field_value > max) {
+                    let min = final_value.get("min").unwrap();
+                    if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                         is_err_symptom = true;
                         let msg = format!(
-                            "Number {} is out of range (min={} <-> max={}).",
-                            field_value, min, max
+                            "The number `{}` must not be less than min=`{}`.",
+                            curr_val, min
                         );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                        *final_field_type.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                    }
+                    let max = final_value.get("max").unwrap();
+                    if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
+                        is_err_symptom = true;
+                        let msg = format!(
+                            "The number `{}` must not be greater than max=`{}`.",
+                            curr_val, max
+                        );
+                        *final_field_type.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field_type, &msg)?);
                     }
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
                 "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64" => {
