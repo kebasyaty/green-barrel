@@ -959,7 +959,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Delete file.
                     if is_delete && is_update && !ignore_fields.contains(&field_name) {
                         if !is_required
-                            || ((!path.is_empty() && !url.is_empty()) || !final_value.is_null())
+                            || ((!path.is_empty() && !url.is_empty()) || !final_default.is_null())
                         {
                             self.delete_file(
                                 &coll,
