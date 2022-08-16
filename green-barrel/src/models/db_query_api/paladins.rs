@@ -945,9 +945,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of file type fields.
                 // *********************************************************************************
                 "InputFile" => {
-                    // Get field value for validation.
+                    // Get data for validation.
                     let file_data = if !final_value.is_null() {
-                        serde_json::from_value(final_value.clone())?
+                        serde_json::from_value::<FileData>(final_value.clone())?
                     } else {
                         FileData::default()
                     };
@@ -1067,68 +1067,59 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 //
                 "InputImage" => {
-                    //
-                    let mut is_delete = false;
-                    let is_create_thumbnails: bool = !final_widget.thumbnails.is_empty();
-                    // Get field value for validation.
-                    let mut field_value: ImageData = if !pre_json_value.is_null() {
-                        let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_del) = serde_json::from_str::<
-                            serde_json::map::Map<String, serde_json::Value>,
-                        >(obj_str)
-                        .unwrap()
-                        .get("is_delete")
-                        {
-                            is_delete = is_del.as_bool().unwrap();
-                        }
-                        serde_json::from_str::<ImageData>(obj_str)?
+                    // Get data for validation.
+                    let image_data = if !final_value.is_null() {
+                        serde_json::from_value::<ImageData>(final_value.clone())?
                     } else {
                         ImageData::default()
                     };
                     // Delete file.
-                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
-                        if !final_widget.required
-                            || ((!field_value.path.is_empty() && !field_value.url.is_empty())
-                                || !final_widget.value.is_empty())
+                    if image_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
+                        if !is_required
+                            || ((!image_data.path.is_empty() && !image_data.url.is_empty())
+                                || !final_default.is_null())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                final_widget.value.as_str(),
-                                true,
+                                Some(serde_json::from_value(final_default.clone())?),
+                                None,
                             )?;
                         } else {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Upload a new file to delete the previous one.".to_owned(),
-                                )
-                                .unwrap();
+                            if !is_hide {
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(
+                                        &final_field_type,
+                                        "Upload a new file to delete the previous one."
+                                    )?);
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Upload a new file to delete the previous one.\n\n",
+                                    model_name, field_name, field_type
                                 ))?
                             }
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_file_info: String = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if curr_file_info.is_empty() {
-                            if !final_widget.value.is_empty() {
-                                // Get default value.
-                                field_value = serde_json::from_str(final_widget.value.trim())?;
+                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
+                        *final_field_type.get("thumbnails").unwrap(),
+                    )?;
+                    //
+                    if image_data.path.is_empty() && image_data.url.is_empty() {
+                        if curr_file_info.is_null() {
+                            if !final_default.is_null() {
+                                *final_value = final_default.clone();
                                 // Copy the default image to the default section.
-                                if is_create_thumbnails {
+                                if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
-                                    let path = Path::new(field_value.path.as_str());
+                                    let path = Path::new(image_data.path.as_str());
                                     let parent = path.parent().unwrap().to_str().unwrap();
                                     let extension =
                                         path.extension().unwrap().to_str().unwrap().to_string();
@@ -1138,32 +1129,33 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         parent, new_file_name, extension
                                     );
                                     fs::copy(
-                                        Path::new(field_value.path.as_str()),
+                                        Path::new(image_data.path.as_str()),
                                         Path::new(new_default_path.as_str()),
                                     )?;
-                                    field_value.path = new_default_path;
+                                    image_data.path = new_default_path;
                                     //
-                                    let url = Path::new(field_value.url.as_str());
+                                    let url = Path::new(image_data.url.as_str());
                                     let parent = url.parent().unwrap().to_str().unwrap();
-                                    field_value.url = format!(
+                                    image_data.url = format!(
                                         "{}/default/{}.{}",
                                         parent, new_file_name, extension
                                     );
                                 }
                             } else {
-                                if final_widget.required {
+                                if is_required {
                                     is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
+                                    if !is_hide {
+                                        *final_field_type.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                &final_field_type,
+                                                "Required field."
+                                            )?);
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` => Required field.\n\n",
-                                            model_name, field_name
+                                            "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
+                                            model_name, field_name, field_type
                                         ))?
                                     }
                                 }
@@ -1173,7 +1165,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            final_widget.value = curr_file_info;
+                            *final_value = curr_file_info;
                             continue;
                         }
                     }
@@ -1217,7 +1209,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     field_value.width = dimensions.0;
                     field_value.height = dimensions.1;
                     // Generate sub-size images.
-                    if is_create_thumbnails {
+                    if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in final_widget.thumbnails.iter() {
                             let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
