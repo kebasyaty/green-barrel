@@ -33,12 +33,12 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(field: &Value, err: &str) -> Result<String, Box<dyn Error>> {
+    fn accumula_err(field: &Value, err: &str) -> String {
         let mut msg = field.get("error").unwrap().as_str().unwrap().to_string();
         if !msg.is_empty() {
             msg = format!("{}<br>", msg)
         }
-        Ok(format!("{}{}", msg, err))
+        format!("{}{}", msg, err)
     }
 
     /// Validation in regular expression (email, password, etc...).

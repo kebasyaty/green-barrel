@@ -219,7 +219,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     if let Some(field_type) = final_model_json.get_mut(field_name) {
                         *field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&field_type, err_msg)?);
+                            json!(Self::accumula_err(&field_type, err_msg));
                     }
                 }
             }
@@ -280,7 +280,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -318,8 +318,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                        .unwrap());
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -345,8 +344,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                        .unwrap());
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -369,8 +367,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                        .unwrap());
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -395,7 +392,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     if !is_hide {
                                         *final_field_type.get_mut("error").unwrap() = json!(
                                             Self::accumula_err(&final_field_type, &err.to_string())
-                                                .unwrap()
                                         );
                                     } else {
                                         Err(format!(
@@ -417,8 +413,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         is_err_symptom = true;
                         if !is_hide {
                             *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                    .unwrap());
+                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
                         } else {
                             Err(format!(
                                 "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
@@ -489,7 +484,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")?
+                                    Self::accumula_err(&final_field_type, "Required field.")
                                 );
                             } else {
                                 Err(format!(
@@ -518,8 +513,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                        .unwrap());
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             });
                     }
                     // Insert result.
@@ -545,7 +539,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -570,7 +564,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if let Err(err) = Self::regex_validation(field_type, curr_val) {
                         is_err_symptom = true;
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &err.to_string())?);
+                            json!(Self::accumula_err(&final_field_type, &err.to_string()));
                         continue;
                     }
 
@@ -598,14 +592,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if let Err(err) = Self::regex_validation(field_type, min) {
                             is_err_symptom = true;
                             *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string())?);
+                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             continue;
                         }
                         // Validation in regular expression (max).
                         if let Err(err) = Self::regex_validation(field_type, max) {
                             is_err_symptom = true;
                             *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string())?);
+                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             continue;
                         }
                         // Date to DateTime (min).
@@ -639,7 +633,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 json!(Self::accumula_err(
                                     &final_field_type,
                                     "Date out of range between `min` and` max`."
-                                )?);
+                                ));
                             continue;
                         }
                     }
@@ -656,8 +650,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             |err| {
                                 is_err_symptom = true;
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
-                                        .unwrap());
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
                             },
                         );
                     }
@@ -684,7 +677,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -742,7 +735,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")?
+                                    Self::accumula_err(&final_field_type, "Required field.")
                                 );
                             } else {
                                 Err(format!(
@@ -802,7 +795,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -879,7 +872,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")?
+                                    Self::accumula_err(&final_field_type, "Required field.")
                                 );
                             } else {
                                 Err(format!(
@@ -971,12 +964,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     json!(Self::accumula_err(
                                         &final_field_type,
                                         "Upload a new file to delete the previous one."
-                                    )?);
+                                    ));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Upload a new file to delete the previous one.\n\n",
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name, field_type
                                 ))?
                             }
@@ -998,12 +991,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             json!(Self::accumula_err(
                                                 &final_field_type,
                                                 "Required field."
-                                            )?);
+                                            ));
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
+                                                Field: `is_hide` = `true` ; Method: `check()` => \
+                                                Hiding required fields is not allowed.\n\n",
                                             model_name, field_name, field_type
                                         ))?
                                     }
@@ -1093,12 +1086,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     json!(Self::accumula_err(
                                         &final_field_type,
                                         "Upload a new file to delete the previous one."
-                                    )?);
+                                    ));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Upload a new file to delete the previous one.\n\n",
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Upload a new file to delete the previous one.\n\n",
                                     model_name, field_name, field_type
                                 ))?
                             }
@@ -1149,12 +1142,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             json!(Self::accumula_err(
                                                 &final_field_type,
                                                 "Required field."
-                                            )?);
+                                            ));
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
+                                                Field: `is_hide` = `true` ; Method: `check()` => \
+                                                Hiding required fields is not allowed.\n\n",
                                             model_name, field_name, field_type
                                         ))?
                                     }
@@ -1290,7 +1283,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -1323,7 +1316,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     if !is_hide {
                                         *final_field_type.get_mut("error").unwrap() = json!(
                                             Self::accumula_err(&final_field_type, &err.to_string())
-                                                .unwrap()
                                         );
                                     } else {
                                         Err(format!(
@@ -1348,7 +1340,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
                     let max = final_value.get("max").unwrap();
@@ -1359,7 +1351,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
 
                     // Insert result.
@@ -1380,7 +1372,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -1413,7 +1405,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     if !is_hide {
                                         *final_field_type.get_mut("error").unwrap() = json!(
                                             Self::accumula_err(&final_field_type, &err.to_string())
-                                                .unwrap()
                                         );
                                     } else {
                                         Err(format!(
@@ -1438,7 +1429,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
                     let max = final_value.get("max").unwrap();
@@ -1449,7 +1440,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1469,7 +1460,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")?
+                                        Self::accumula_err(&final_field_type, "Required field.")
                                     );
                                 } else {
                                     Err(format!(
@@ -1502,7 +1493,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     if !is_hide {
                                         *final_field_type.get_mut("error").unwrap() = json!(
                                             Self::accumula_err(&final_field_type, &err.to_string())
-                                                .unwrap()
                                         );
                                     } else {
                                         Err(format!(
@@ -1527,7 +1517,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     //
                     let max = final_value.get("max").unwrap();
@@ -1538,7 +1528,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg)?);
+                            json!(Self::accumula_err(&final_field_type, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1551,7 +1541,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "CheckBox" => {
                     // Get field value for validation.
-                    let curr_val = final_value
+                    let curr_val = final_value.get
                     } else {
                         // Validation, if the field is required and empty, accumulate the error.
                         // ( The default value is used whenever possible )
@@ -1561,8 +1551,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 final_widget.error = Self::accumula_err(
                                     &final_widget,
                                     &"You must definitely choose.".to_owned(),
-                                )
-                                .unwrap();
+                                );
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
