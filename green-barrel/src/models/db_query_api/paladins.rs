@@ -1048,7 +1048,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    file_data.size = metadata.len() as u32;
+                    file_data.size = u32::try_from(metadata.len())?;
                     // Get file name.
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
