@@ -411,8 +411,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// ObjectId to hash field.
             // -------------------------------------------------------------------------------------
-            fn id_to_hash(&mut self, object_id: ObjectId) -> String {
+            fn object_id_to_hash(&mut self, object_id: ObjectId) -> String {
                 self.hash = Some(object_id.to_hex());
+            }
+
+            /// ObjectId from hash field.
+            // -------------------------------------------------------------------------------------
+            fn object_id_from_hash(&self) -> Result<ObjectId, Box<dyn Error>> {
+                let object_id = ObjectId::with_string(self.get_hash.as_str());
+                if let Err(err) = object_id {
+                    Err(err.to_string())?
+                }
+                Ok(object_id.unwrap())
             }
 
             /// Getter and Setter for field `created_at`.

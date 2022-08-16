@@ -44,7 +44,11 @@ pub trait Main {
 
     /// ObjectId to hash field.
     // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(&mut self, object_id: ObjectId);
+    fn object_id_to_hash(&mut self, object_id: ObjectId);
+
+    /// ObjectId from hash field.
+    // ---------------------------------------------------------------------------------------------
+    fn object_id_from_hash(&self) -> Result<ObjectId, Box<dyn Error>>;
 
     /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------

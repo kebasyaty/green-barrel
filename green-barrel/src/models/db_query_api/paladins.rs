@@ -110,7 +110,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let hash = self.get_hash();
         let mut result = String::new();
         if !hash.is_empty() {
-            let object_id = ObjectId::with_string(hash.as_str())?;
+            let object_id = self.object_id_from_hash()?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
@@ -1011,7 +1011,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            final_widget.value = curr_info_file;
+                            final_value = curr_info_file;
                             continue;
                         }
                     }
