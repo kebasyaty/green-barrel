@@ -8,7 +8,7 @@ use mongodb::{
 };
 use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use slug::slugify;
 use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
@@ -105,21 +105,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         coll: &Collection,
         field_name: &str,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<Value, Box<dyn Error>> {
         //
         let hash = self.get_hash();
-        let mut result = String::new();
         if !hash.is_empty() {
             let object_id = self.object_id_from_hash()?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
-                    result = serde_json::to_string(doc)?;
+                    let result = serde_json::to_value(doc);
+                    if let Err(err) = result {
+                        Err(err.to_string())?
+                    }
+                    return Ok(result.unwrap());
                 }
             }
         }
         //
-        Ok(result)
+        Ok(json!(null))
     }
 
     /// Calculate the maximum size for a thumbnail.
@@ -980,11 +983,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_info_file = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if file_data.path.is_empty() && file_data.url.is_empty() {
-                        if curr_info_file.is_empty() {
+                        if curr_file_info.is_null() {
                             if !final_default.is_null() {
                                 *final_value = final_default.clone();
                             } else {
@@ -1011,7 +1014,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            final_value = curr_info_file;
+                            *final_value = curr_file_info;
                             continue;
                         }
                     }
@@ -1065,7 +1068,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 //
-                "inputImage" => {
+                "InputImage" => {
                     //
                     let mut is_delete = false;
                     let is_create_thumbnails: bool = !final_widget.thumbnails.is_empty();
@@ -1116,11 +1119,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info: String = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if curr_info_file.is_empty() {
+                        if curr_file_info.is_empty() {
                             if !final_widget.value.is_empty() {
                                 // Get default value.
                                 field_value = serde_json::from_str(final_widget.value.trim())?;
@@ -1172,7 +1175,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            final_widget.value = curr_info_file;
+                            final_widget.value = curr_file_info;
                             continue;
                         }
                     }
