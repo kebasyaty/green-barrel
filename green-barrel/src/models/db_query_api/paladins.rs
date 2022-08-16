@@ -661,7 +661,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             |err| {
                                 is_err_symptom = true;
                                 *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string())?);
+                                    json!(Self::accumula_err(&final_field_type, &err.to_string())
+                                        .unwrap());
                             },
                         );
                     }
@@ -968,7 +969,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     // Delete file.
                     if is_delete && is_update && !ignore_fields.contains(&field_name) {
-                        if !final_widget.required
+                        if !is_required
                             || ((!_field_value.path.is_empty() && !_field_value.url.is_empty())
                                 || !final_widget.value.is_empty())
                         {
