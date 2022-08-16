@@ -1278,7 +1278,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
+                "RadioI32" | "NumberI32" | "RangeI32" => {
                     // Get field value for validation.
                     let mut field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -1371,8 +1371,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, bson_field_value);
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
-                | "hiddenU32" | "hiddenI64" => {
+                "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64" => {
                     // Get field value for validation.
                     let mut field_value: Option<i64> = pre_json_value.as_i64();
 
@@ -1464,7 +1463,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, bson_field_value);
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
+                "RadioF64" | "NumberF64" | "RangeF64" => {
                     // Get field value for validation.
                     let mut field_value: Option<f64> = pre_json_value.as_f64();
 
@@ -1560,7 +1559,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                "checkBox" => {
+                "CheckBox" => {
                     // Get field value for validation.
                     let field_value: bool = if !pre_json_value.is_null() {
                         pre_json_value.as_bool().unwrap()
