@@ -1551,8 +1551,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "CheckBox" => {
                     // Get field value for validation.
-                    let field_value: bool = if !pre_json_value.is_null() {
-                        pre_json_value.as_bool().unwrap()
+                    let curr_val = final_value
                     } else {
                         // Validation, if the field is required and empty, accumulate the error.
                         // ( The default value is used whenever possible )
