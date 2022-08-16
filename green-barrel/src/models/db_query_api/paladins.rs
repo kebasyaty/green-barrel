@@ -263,7 +263,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
                     if is_update && field_type == "InputPassword" {
-                        *final_value = serde_json::Value::Null;
+                        *final_value = json!(null);
                         continue;
                     }
 
