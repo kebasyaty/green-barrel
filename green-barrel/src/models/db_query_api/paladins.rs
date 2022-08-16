@@ -1060,11 +1060,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         *final_value = serde_json::to_value(file_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value = mongodb::bson::ser::to_bson(&file_data)?;
+                            let bson_field_value = mongodb::bson::ser::to_bson(final_value)?;
                             final_doc.insert(field_name, bson_field_value);
                         }
                     } else {
-                        *final_value = serde_json::Value::Null;
+                        *final_value = json!(null);
                     }
                 }
                 //
