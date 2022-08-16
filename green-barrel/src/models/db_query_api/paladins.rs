@@ -483,9 +483,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")
-                                );
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
@@ -734,9 +733,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")
-                                );
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -871,9 +869,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() = json!(
-                                    Self::accumula_err(&final_field_type, "Required field.")
-                                );
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1541,46 +1538,39 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "CheckBox" => {
                     // Get field value for validation.
-                    let curr_val = final_value.get
-                    } else {
-                        // Validation, if the field is required and empty, accumulate the error.
-                        // ( The default value is used whenever possible )
-                        if final_widget.required {
+                    let checked_json_val = final_field_type.get("checked").unwrap();
+                    // Validation, if the field is required and empty, accumulate the error.
+                    // ( The default value is used whenever possible )
+                    if checked_json_val.is_null() {
+                        if is_required {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"You must definitely choose.".to_owned(),
-                                );
+                            if !is_hide {
+                                *final_field_type.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field_type, "Required field."));
                             } else {
                                 Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                            Field: `is_hide` = `true` ; Method: `check()` => \
+                                            Hiding required fields is not allowed.\n\n",
+                                    model_name, field_name, field_type
                                 ))?
                             }
-                            false
-                        } else {
-                            // Apply the value default.
-                            final_widget.checked
                         }
-                    };
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.checked = field_value.clone();
+                        continue;
+                    }
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        let bson_field_value = Bson::Boolean(field_value);
-                        final_doc.insert(field_name, bson_field_value);
+                        let checked = checked_json_val.as_bool().unwrap();
+                        let field_value_bson = Bson::Boolean(checked);
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
                 _ => Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
                      Unsupported widget type - `{}`.",
-                    model_name, field_name, widget_type
+                    model_name, field_name, field_type
                 ))?,
             }
 
