@@ -942,30 +942,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of file type fields.
                 // *********************************************************************************
                 "InputFile" => {
-                    //
-                    let path;
-                    let url;
-                    let name;
-                    let size;
-                    let is_delete;
                     // Get field value for validation.
-                    if !final_value.is_null() {
-                        path = final_value.get("path").unwrap().as_str().unwrap();
-                        url = final_value.get("url").unwrap().as_str().unwrap();
-                        name = final_value.get("name").unwrap().as_str().unwrap();
-                        size = u32::try_from(final_value.get("size").unwrap().as_u64().unwrap())?;
-                        is_delete = final_value.get("is_delete").unwrap().as_bool().unwrap();
+                    let file_data = if !final_value.is_null() {
+                        serde_json::from_value(final_value.clone())?
                     } else {
-                        path = "";
-                        url = "";
-                        name = "";
-                        size = 0_u32;
-                        is_delete = false;
+                        FileData::default()
                     };
                     // Delete file.
-                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
+                    if file_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
                         if !is_required
-                            || ((!path.is_empty() && !url.is_empty()) || !final_default.is_null())
+                            || ((!file_data.path.is_empty() && !file_data.url.is_empty())
+                                || !final_default.is_null())
                         {
                             self.delete_file(
                                 &coll,
@@ -996,7 +983,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_info_file = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if path.is_empty() && url.is_empty() {
+                    if file_data.path.is_empty() && file_data.url.is_empty() {
                         if curr_info_file.is_empty() {
                             if !final_default.is_null() {
                                 *final_value = final_default.clone();
@@ -1030,8 +1017,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     // Flags to check.
-                    let is_emty_path = path.is_empty();
-                    let is_emty_url = url.is_empty();
+                    let is_emty_path = file_data.path.is_empty();
+                    let is_emty_url = file_data.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
@@ -1043,39 +1030,38 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(path.as_str());
+                    let f_path = std::path::Path::new(file_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => File is missing - {}\n\n",
-                            model_name, field_name, path
+                            model_name, field_name, file_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
                             "\n\nModel: `{}` > Field: `{}` ; Method: \
                                 `check()` => The path does not lead to a file - {}\n\n",
-                            model_name, field_name, path
+                            model_name, field_name, file_data.path
                         ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    _field_value.size = metadata.len() as u32;
+                    file_data.size = metadata.len() as u32;
                     // Get file name.
-                    _field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !ignore_fields.contains(&field_name) {
                         // Add file data to widget.
-                        final_widget.value = serde_json::to_string(&_field_value)?;
+                        *final_value = serde_json::to_value(file_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value =
-                                mongodb::bson::ser::to_bson(&_field_value.clone())?;
+                            let bson_field_value = mongodb::bson::ser::to_bson(&file_data)?;
                             final_doc.insert(field_name, bson_field_value);
                         }
                     } else {
-                        final_widget.value = String::new();
+                        *final_value = serde_json::Value::Null;
                     }
                 }
                 //
