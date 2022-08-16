@@ -30,8 +30,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         coll: &Collection,
         model_name: &str,
         field_name: &str,
-        field_default_value: &str,
-        is_image: bool,
+        file_default: Option<FileData>,
+        image_default: Option<ImageData>,
     ) -> Result<(), Box<dyn Error>> {
         //
         let hash = self.get_hash();
@@ -49,21 +49,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 coll.update_one(filter, update, None)?;
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
-                    if is_image {
-                        let default_path = if !field_default_value.is_empty() {
-                            serde_json::from_str::<ImageData>(field_default_value)?.path
-                        } else {
-                            String::new()
-                        };
+                    if let Some(file_default) = file_default {
+                        let path_default = file_default.path;
                         let path = info_file.get_str("path")?;
-                        if path != default_path {
+                        if path != path_default {
+                            let path = Path::new(path);
+                            if path.exists() {
+                                fs::remove_file(path)?;
+                            }
+                        }
+                    } else if let Some(image_default) = image_default {
+                        let path_default = image_default.path;
+                        let path = info_file.get_str("path")?;
+                        if path != path_default {
                             let path = Path::new(path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
                             // Remove thumbnails.
                             let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names.iter() {
+                            for size_name in size_names {
                                 let key_name = format!("path_{}", size_name);
                                 let path = info_file.get_str(key_name.as_str())?;
                                 if !path.is_empty() {
@@ -72,19 +77,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         fs::remove_file(path)?;
                                     }
                                 }
-                            }
-                        }
-                    } else {
-                        let default_path = if !field_default_value.is_empty() {
-                            serde_json::from_str::<FileData>(field_default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let path = info_file.get_str("path")?;
-                        if path != default_path {
-                            let path = Path::new(path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
                             }
                         }
                     }
@@ -951,27 +943,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "InputFile" => {
                     //
-                    let mut is_delete = false;
+                    let path;
+                    let url;
+                    let is_delete;
                     // Get field value for validation.
-                    let mut _field_value: FileData = if !pre_json_value.is_null() {
-                        let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_del) = serde_json::from_str::<
-                            serde_json::map::Map<String, serde_json::Value>,
-                        >(obj_str)
-                        .unwrap()
-                        .get("is_delete")
-                        {
-                            is_delete = is_del.as_bool().unwrap();
-                        }
-                        serde_json::from_str::<FileData>(obj_str)?
+                    if !final_value.is_null() {
+                        path = final_value.get("path").unwrap().as_str().unwrap();
+                        url = final_value.get("url").unwrap().as_str().unwrap();
+                        is_delete = final_value.get("is_delete").unwrap().as_bool().unwrap();
                     } else {
-                        FileData::default()
+                        path = "";
+                        url = "";
+                        is_delete = false;
                     };
                     // Delete file.
                     if is_delete && is_update && !ignore_fields.contains(&field_name) {
                         if !is_required
-                            || ((!_field_value.path.is_empty() && !_field_value.url.is_empty())
-                                || !final_widget.value.is_empty())
+                            || ((!path.is_empty() && !url.is_empty()) || !final_value.is_null())
                         {
                             self.delete_file(
                                 &coll,
@@ -999,7 +987,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
+                    let curr_info_file = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if _field_value.path.is_empty() && _field_value.url.is_empty() {
