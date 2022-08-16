@@ -1025,10 +1025,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` => Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
+                            "\n\nModel: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                            `check()` => Required `path` and `url` fields}\n\n",
                             model_name, field_name
                         ))?
                     }
