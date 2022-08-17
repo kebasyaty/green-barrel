@@ -8,7 +8,7 @@ pub struct HiddenHash {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
+    pub input_type: String, // "text | hidden" - The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
     pub default: Option<String>, // Value by default
@@ -35,7 +35,7 @@ impl Default for HiddenHash {
             id: String::new(),
             label: String::new(),
             field_type: String::from("HiddenHash"),
-            input_type: String::from("text"),
+            input_type: String::from("text"), // "text | hidden"
             name: String::new(),
             value: None,
             default: None,

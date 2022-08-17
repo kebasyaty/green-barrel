@@ -259,10 +259,12 @@ impl OutputDataCheck {
         for field_name in self.fields_name.iter() {
             let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
+                *field_type.get_mut("input_type").unwrap() = json!("datetime");
                 *field_type.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
                 *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("is_hide").unwrap() = json!(true);
                 *field_type.get_mut("value").unwrap() = json!("");
             }
             field_type_list.push(field_type);
