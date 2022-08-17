@@ -109,7 +109,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         let hash = self.get_hash();
         if !hash.is_empty() {
-            let object_id = self.object_id_from_hash()?;
+            let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
