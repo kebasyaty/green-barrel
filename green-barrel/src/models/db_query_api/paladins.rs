@@ -217,9 +217,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             model_name, field_name
                         ))?
                     }
-                    if let Some(field_type) = final_model_json.get_mut(field_name) {
-                        *field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&field_type, err_msg));
+                    if let Some(final_field) = final_model_json.get_mut(field_name) {
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, err_msg));
                     }
                 }
             }
