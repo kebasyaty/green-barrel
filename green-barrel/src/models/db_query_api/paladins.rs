@@ -1583,7 +1583,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // For update.
                     if is_save {
                         final_doc.insert("updated_at", Bson::DateTime(dt));
-                        final_widget_map.get_mut("updated_at").unwrap().value = dt_text.clone();
+                        *final_model_json
+                            .get_mut("updated_at")
+                            .unwrap()
+                            .get_mut("value")
+                            .unwrap() = json!(dt_text);
                         self.set_updated_at(dt_text);
                     }
                     // Get the `created_at` value from the database.
@@ -1596,7 +1600,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
                     //
                     final_doc.insert("created_at", dt);
-                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
+                    *final_model_json
+                        .get_mut("created_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
                     self.set_created_at(dt_text);
                 } else if is_save {
                     // For create.
@@ -1604,8 +1612,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert("updated_at", Bson::DateTime(dt));
                     self.set_created_at(dt_text.clone());
                     self.set_updated_at(dt_text.clone());
-                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
-                    final_widget_map.get_mut("updated_at").unwrap().value = dt_text;
+                    *final_model_json
+                        .get_mut("created_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
+                    *final_model_json
+                        .get_mut("updated_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
                 }
             }
         }
