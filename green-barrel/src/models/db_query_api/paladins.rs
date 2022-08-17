@@ -248,18 +248,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let final_field = final_model_json.get_mut(field_name).unwrap();
             let final_value = final_field.get_mut("value").unwrap();
             //
-            let final_default = final_field.get("default").unwrap().clone();
+            let final_default = final_field.get("default").unwrap();
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
-            let field_type = final_field
-                .get("field_type")
-                .unwrap()
-                .as_str()
-                .unwrap()
-                .to_string();
+            let field_type = final_field.get("field_type").unwrap().as_str().unwrap();
 
             // Field validation.
-            match field_type.as_str() {
+            match field_type {
                 // Validation of Text type fields.
                 // *********************************************************************************
                 "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
