@@ -52,6 +52,6 @@ impl Default for CheckBox {
 
 impl CheckBox {
     pub fn set(&mut self, value: bool) {
-        self.value = Some(value);
+        self.checked = value;
     }
 }
