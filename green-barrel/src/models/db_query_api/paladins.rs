@@ -1737,7 +1737,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
             if is_no_error && !is_update {
-                let wig_name = String::from("inputSlug");
+                let wig_name = String::from("AutoSlug");
                 let hash = String::from("hash");
                 for val in model_cache.widget_map.values() {
                     if val.widget == wig_name && val.slug_sources.contains(&hash) {
@@ -1793,7 +1793,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         let meta = Self::meta()?;
         Err(format!(
-            "Model: `{}` > Method: `save` => \
+            "Model: `{}` > Method: `save()` => \
                 !!!-Stub-!!!",
             meta.model_name
         ))?
