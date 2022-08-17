@@ -1629,10 +1629,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // If the validation is negative, delete the orphaned files.
         if is_save && is_err_symptom && !is_update {
             let default_value_map = meta.default_value_map;
+            //
             for field_name in meta.fields_name.iter() {
                 let mut field = final_model_json.get_mut(field_name).unwrap();
                 let mut value = field.get_mut("value").unwrap();
                 let default_value = field.get("default").unwrap();
+                //
                 match field.get("field_type").unwrap().as_str().unwrap() {
                     "InputFile" if !value.is_null() && !default_value.is_null() => {
                         let file_data = serde_json::from_value::<FileData>(*value)?;
@@ -1646,17 +1648,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             *value = json!(null);
                         }
                     }
-                    "InputImage" if !field.get("value").unwrap().is_null( => {
-                        let default_value = default_value_map.get(field_name).unwrap().1.as_str();
-                        let default_path = if !default_value.is_empty() {
-                            serde_json::from_str::<ImageData>(default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let current = serde_json::from_str::<ImageData>(widget.value.as_str())?;
+                    "InputImage" if !value.is_null() && !default_value.is_null() => {
+                        let img_data = serde_json::from_value::<ImageData>(*value)?;
+                        let img_data_default = serde_json::from_value::<ImageData>(*default_value)?;
                         // Exclude files by default.
-                        if current.path != default_path {
-                            let path = Path::new(&current.path);
+                        if img_data.path != img_data_default.path {
+                            let path = Path::new(&img_data.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
@@ -1664,20 +1661,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
                             for size_name in size_names {
                                 let path = match size_name {
-                                    "lg" => current.path_lg.clone(),
-                                    "md" => current.path_md.clone(),
-                                    "sm" => current.path_sm.clone(),
-                                    "xs" => current.path_xs.clone(),
-                                    _ => String::new(),
+                                    "lg" => img_data.path_lg.clone(),
+                                    "md" => img_data.path_md.clone(),
+                                    "sm" => img_data.path_sm.clone(),
+                                    "xs" => img_data.path_xs.clone(),
+                                    _ => Err("")?,
                                 };
                                 if !path.is_empty() {
-                                    let path = Path::new(path.as_str());
+                                    let path = Path::new(&path);
                                     if path.exists() {
                                         fs::remove_file(path)?;
                                     }
                                 }
                             }
-                            widget.value = String::new();
+                            *value = json!(null);
                         }
                     }
                     _ => {}
