@@ -1725,6 +1725,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
+            let mut final_model_json = verified_data.get_model_json();
             // Get cached Model data.
             let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
@@ -1737,12 +1738,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
             if is_no_error && !is_update {
-                let wig_name = String::from("AutoSlug");
-                let hash = String::from("hash");
-                for val in model_cache.widget_map.values() {
-                    if val.widget == wig_name && val.slug_sources.contains(&hash) {
-                        stop_step = 1;
-                        break;
+                let target_field_type = "AutoSlug";
+                let hash = "hash";
+                for (field_name, field_type) in meta.field_type_map.iter() {
+                    if field_type == &target_field_type {
+                        let slug_sources = final_model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("slug_sources")
+                            .unwrap()
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|item| item.as_str().unwrap())
+                            .collect::<Vec<&str>>();
+                        if slug_sources.contains(&hash) {
+                            stop_step = 1;
+                            break;
+                        }
                     }
                 }
             }
