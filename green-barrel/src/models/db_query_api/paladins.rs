@@ -1767,7 +1767,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 if is_update {
                     // Update document.
                     hash_line = self.get_hash();
-                    let object_id = ObjectId::with_string(hash_line.as_str())?;
+                    let object_id = ObjectId::with_string(&hash_line)?;
                     let query = doc! {"_id": object_id.clone()};
                     let update = doc! {
                         "$set": final_doc.clone(),
@@ -1792,9 +1792,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Mute document.
                 verified_data.set_doc(None);
                 // Add hash-line to final widget map.
-                let mut final_widget_map = verified_data.to_wig();
-                final_widget_map.get_mut("hash").unwrap().value = hash_line;
-                verified_data.set_wig(final_widget_map);
+                *final_model_json
+                    .get_mut("hash")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(hash_line);
+                verified_data.set_model_json(final_model_json);
             }
 
             // Return result.
