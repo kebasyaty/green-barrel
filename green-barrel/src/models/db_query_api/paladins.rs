@@ -207,16 +207,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if !error_map.is_empty() {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
-                    if !fields_name.contains(&field_name) {
-                        Err(format!(
-                            "\n\nModel: `{}` ;  Method: `add_validation()` => \
-                                The `{}` field is missing from the model.\n\n",
-                            model_name, field_name
-                        ))?
-                    }
                     if let Some(final_field) = final_model_json.get_mut(field_name) {
                         *final_field.get_mut("error").unwrap() =
                             json!(Self::accumula_err(&final_field, err_msg));
+                    } else {
+                        Err(format!(
+                            "\n\nModel: `{}` ;  Method: `add_validation()` => \
+                                The model has no field `{}`.\n\n",
+                            model_name, field_name
+                        ))?
                     }
                 }
             }
