@@ -1628,8 +1628,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // If the validation is negative, delete the orphaned files.
         if is_save && is_err_symptom && !is_update {
-            let default_value_map = meta.default_value_map;
-            //
             for field_name in meta.fields_name.iter() {
                 let mut field = final_model_json.get_mut(field_name).unwrap();
                 let field_type = field.get("field_type").unwrap().as_str().unwrap();
@@ -1646,6 +1644,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
+                            //
                             *value = json!(null);
                         }
                     }
@@ -1678,6 +1677,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     }
                                 }
                             }
+                            //
                             *value = json!(null);
                         }
                     }
