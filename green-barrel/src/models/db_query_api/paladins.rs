@@ -1632,11 +1632,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             //
             for field_name in meta.fields_name.iter() {
                 let mut field = final_model_json.get_mut(field_name).unwrap();
-                let mut value = field.get_mut("value").unwrap();
-                let default_value = field.get("default").unwrap();
+                let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
-                match field.get("field_type").unwrap().as_str().unwrap() {
-                    "InputFile" if !value.is_null() && !default_value.is_null() => {
+                if field_type == "InputFile" {
+                    let mut value = field.get_mut("value").unwrap();
+                    let default_value = field.get("default").unwrap();
+                    if !value.is_null() && !default_value.is_null() {
                         let file_data = serde_json::from_value::<FileData>(*value)?;
                         let file_data_default = serde_json::from_value::<FileData>(*default_value)?;
                         // Exclude files by default.
@@ -1648,7 +1649,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             *value = json!(null);
                         }
                     }
-                    "InputImage" if !value.is_null() && !default_value.is_null() => {
+                } else if field_type == "InputImage" {
+                    let mut value = field.get_mut("value").unwrap();
+                    let default_value = field.get("default").unwrap();
+                    if !value.is_null() && !default_value.is_null() {
                         let img_data = serde_json::from_value::<ImageData>(*value)?;
                         let img_data_default = serde_json::from_value::<ImageData>(*default_value)?;
                         // Exclude files by default.
@@ -1677,7 +1681,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             *value = json!(null);
                         }
                     }
-                    _ => {}
                 }
             }
         }
