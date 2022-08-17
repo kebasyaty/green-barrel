@@ -1867,9 +1867,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
-                for (field_name, widget_name) in meta.widget_type_map.iter() {
+                let mut final_model_json = self.self_to_json()?;
+                //
+                for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {
-                        match widget_name.as_str() {
+                        let mut field = final_model_json.get_mut(field_name).unwrap();
+                        let field_type = field.get("field_type").unwrap().as_str().unwrap();
+                        //
+                        match field_type {
                             "inputFile" => {
                                 if let Some(info_file) =
                                     document.get(field_name).unwrap().as_document()
