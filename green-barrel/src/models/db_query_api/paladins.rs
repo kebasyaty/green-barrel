@@ -246,12 +246,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
-            let final_value = final_field.get_mut("value").unwrap();
+            let final_value = final_field.get("value").unwrap().clone();
             //
-            let final_default = final_field.get("default").unwrap();
-            let is_required = final_field.get("required").unwrap().as_bool().unwrap();
-            let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
-            let field_type = final_field.get("field_type").unwrap().as_str().unwrap();
+            let final_default = final_field.get("default").unwrap().clone();
+            let is_required = final_field
+                .get("required")
+                .unwrap()
+                .as_bool()
+                .unwrap()
+                .clone();
+            let is_hide = final_field
+                .get("is_hide")
+                .unwrap()
+                .as_bool()
+                .unwrap()
+                .clone();
+            let field_type = final_field
+                .get("field_type")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string();
+            let field_type = field_type.as_str();
 
             // Field validation.
             match field_type {
@@ -262,7 +278,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 | "InputIPv6" | "TextArea" => {
                     // When updating, we skip field password type.
                     if is_update && field_type == "InputPassword" {
-                        *final_value = json!(null);
+                        *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
 
@@ -273,7 +289,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     if final_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
                         if field_type != "InputPassword" && !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -457,9 +473,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .map(|item| item.as_str().unwrap())
                         .collect::<Vec<&str>>();
                     //
+                    let tmp_model_json = self.self_to_json()?;
                     for field_name in slug_sources {
-                        if let Some(value) = final_model_json.get(field_name).unwrap().get("value")
-                        {
+                        if let Some(value) = tmp_model_json.get(field_name).unwrap().get("value") {
                             if value.is_string() {
                                 let text = value.as_str().unwrap().trim();
                                 slug = format!("{}-{}", slug, text);
@@ -499,7 +515,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     slug = slugify(slug);
-                    *final_value = json!(slug);
+                    *final_field.get_mut("value").unwrap() = json!(slug);
                     let field_value_bson = Bson::String(slug.clone());
                     // Validation of `unique`.
                     // Validation of `unique`.
@@ -530,7 +546,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -666,7 +682,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
                     {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -782,7 +798,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
                     {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -930,7 +946,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "InputFile" => {
                     // Get data for validation.
-                    let file_data = if !final_value.is_null() {
+                    let mut file_data = if !final_value.is_null() {
                         serde_json::from_value::<FileData>(final_value.clone())?
                     } else {
                         FileData::default()
@@ -972,7 +988,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if file_data.path.is_empty() && file_data.url.is_empty() {
                         if curr_file_info.is_null() {
                             if !final_default.is_null() {
-                                *final_value = final_default.clone();
+                                *final_field.get_mut("value").unwrap() = final_default.clone();
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
@@ -995,7 +1011,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            *final_value = curr_file_info;
+                            *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
                         }
                     }
@@ -1036,20 +1052,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     if !ignore_fields.contains(&field_name) {
                         // Add file data to widget.
-                        *final_value = serde_json::to_value(file_data)?;
+                        *final_field.get_mut("value").unwrap() = serde_json::to_value(file_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value = mongodb::bson::ser::to_bson(final_value)?;
+                            let value = final_field.get("value").unwrap();
+                            let bson_field_value = mongodb::bson::ser::to_bson(value)?;
                             final_doc.insert(field_name, bson_field_value);
                         }
                     } else {
-                        *final_value = json!(null);
+                        *final_field.get_mut("value").unwrap() = json!(null);
                     }
                 }
                 //
                 "InputImage" => {
                     // Get data for validation.
-                    let image_data = if !final_value.is_null() {
+                    let mut image_data = if !final_value.is_null() {
                         serde_json::from_value::<ImageData>(final_value.clone())?
                     } else {
                         ImageData::default()
@@ -1089,13 +1106,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
-                        *final_field.get("thumbnails").unwrap(),
+                        final_field.get("thumbnails").unwrap().clone(),
                     )?;
                     //
                     if image_data.path.is_empty() && image_data.url.is_empty() {
                         if curr_file_info.is_null() {
                             if !final_default.is_null() {
-                                *final_value = final_default.clone();
+                                *final_field.get_mut("value").unwrap() = final_default.clone();
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
@@ -1143,7 +1160,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         } else {
-                            *final_value = curr_file_info;
+                            *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
                         }
                     }
@@ -1244,14 +1261,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     if !ignore_fields.contains(&field_name) {
                         // Add file data to widget.
-                        *final_value = serde_json::to_value(image_data)?;
+                        *final_field.get_mut("value").unwrap() = serde_json::to_value(image_data)?;
                         //
                         if !is_err_symptom {
-                            let field_value_bson = mongodb::bson::ser::to_bson(final_value)?;
+                            let value = final_field.get("value").unwrap();
+                            let field_value_bson = mongodb::bson::ser::to_bson(value)?;
                             final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
-                        *final_value = json!(null);
+                        *final_field.get_mut("value").unwrap() = json!(null);
                     }
                 }
                 // Validation of number type fields.
@@ -1262,7 +1280,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1350,7 +1368,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1437,7 +1455,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     if final_value.is_null() {
                         if !final_default.is_null() {
-                            *final_value = final_default.clone();
+                            *final_field.get_mut("value").unwrap() = final_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1614,15 +1632,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // If the validation is negative, delete the orphaned files.
         if is_save && is_err_symptom && !is_update {
             for field_name in meta.fields_name.iter() {
-                let mut field = final_model_json.get_mut(field_name).unwrap();
+                let field = final_model_json.get(field_name).unwrap();
                 let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
                 if field_type == "InputFile" {
-                    let mut value = field.get_mut("value").unwrap();
+                    let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
-                        let file_data = serde_json::from_value::<FileData>(*value)?;
-                        let file_data_default = serde_json::from_value::<FileData>(*default_value)?;
+                        let file_data = serde_json::from_value::<FileData>(value.clone())?;
+                        let file_data_default =
+                            serde_json::from_value::<FileData>(default_value.clone())?;
                         // Exclude files by default.
                         if file_data.path != file_data_default.path {
                             let path = Path::new(&file_data.path);
@@ -1630,15 +1649,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 fs::remove_file(path)?;
                             }
                             //
-                            *value = json!(null);
+                            *final_model_json
+                                .get_mut(field_name)
+                                .unwrap()
+                                .get_mut("value")
+                                .unwrap() = json!(null);
                         }
                     }
                 } else if field_type == "InputImage" {
-                    let mut value = field.get_mut("value").unwrap();
+                    let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
-                        let img_data = serde_json::from_value::<ImageData>(*value)?;
-                        let img_data_default = serde_json::from_value::<ImageData>(*default_value)?;
+                        let img_data = serde_json::from_value::<ImageData>(value.clone())?;
+                        let img_data_default =
+                            serde_json::from_value::<ImageData>(default_value.clone())?;
                         // Exclude files by default.
                         if img_data.path != img_data_default.path {
                             let path = Path::new(&img_data.path);
@@ -1663,7 +1687,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             }
                             //
-                            *value = json!(null);
+                            *final_model_json
+                                .get_mut(field_name)
+                                .unwrap()
+                                .get_mut("value")
+                                .unwrap() = json!(null);
                         }
                     }
                 }
