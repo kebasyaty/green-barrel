@@ -1693,7 +1693,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
             &client_cache,
-            &final_model_json,
+            final_model_json,
             &meta.fields_name,
         )?;
 
