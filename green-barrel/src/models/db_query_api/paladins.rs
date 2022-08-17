@@ -1627,29 +1627,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
 
         // If the validation is negative, delete the orphaned files.
-        if is_err_symptom && !is_update {
+        if is_save && is_err_symptom && !is_update {
             let default_value_map = meta.default_value_map;
-            for (field, widget) in final_widget_map.iter_mut() {
-                match widget.widget.as_str() {
-                    "inputFile" if !widget.value.is_empty() => {
-                        let default_value = default_value_map.get(field).unwrap().1.as_str();
-                        let default_path = if !default_value.is_empty() {
-                            serde_json::from_str::<FileData>(default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let current = serde_json::from_str::<FileData>(widget.value.as_str())?;
+            for field_name in meta.fields_name.iter() {
+                let mut field = final_model_json.get_mut(field_name).unwrap();
+                let mut value = field.get_mut("value").unwrap();
+                let default_value = field.get("default").unwrap();
+                match field.get("field_type").unwrap().as_str().unwrap() {
+                    "InputFile" if !value.is_null() && !default_value.is_null() => {
+                        let file_data = serde_json::from_value::<FileData>(*value)?;
+                        let file_data_default = serde_json::from_value::<FileData>(*default_value)?;
                         // Exclude files by default.
-                        if current.path != default_path {
-                            let path = Path::new(&current.path);
+                        if file_data.path != file_data_default.path {
+                            let path = Path::new(&file_data.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
-                            widget.value = String::new();
+                            *value = json!(null);
                         }
                     }
-                    "inputImage" if !widget.value.is_empty() => {
-                        let default_value = default_value_map.get(field).unwrap().1.as_str();
+                    "InputImage" if !field.get("value").unwrap().is_null( => {
+                        let default_value = default_value_map.get(field_name).unwrap().1.as_str();
                         let default_path = if !default_value.is_empty() {
                             serde_json::from_str::<ImageData>(default_value)?.path
                         } else {
