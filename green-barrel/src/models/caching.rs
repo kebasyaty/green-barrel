@@ -103,7 +103,9 @@ pub trait Caching: Main + Converters {
             ))?
         }
         //
-        Ok(serde_json::from_value(model_cache.unwrap().model_json)?)
+        Ok(serde_json::from_value(
+            model_cache.unwrap().model_json.clone(),
+        )?)
     }
 
     /// Get field attributes in Json modelat for page templates.
@@ -171,12 +173,12 @@ pub trait Caching: Main + Converters {
         let mut field_type_list: Vec<Value> = Vec::new();
         // Get a list of fields in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut field_type = model_json.get(field_name).unwrap();
+            let mut field_type = model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
                 *field_type.get_mut("input_type").unwrap() = json!("datetime");
                 *field_type.get_mut("is_hide").unwrap() = json!(false);
             }
-            field_type_list.push(*field_type);
+            field_type_list.push(field_type);
         }
         //
         Ok(serde_json::to_string(&field_type_list)?)

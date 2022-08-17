@@ -87,7 +87,7 @@ pub trait Converters {
         field_type_map: &HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
-        mut model_json: &Value,
+        model_json: &mut Value,
     ) -> Result<(), Box<dyn Error>> {
         //
         let prepared_doc =
@@ -95,7 +95,7 @@ pub trait Converters {
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
-                let field_doc = prepared_doc.get(field_name).unwrap();
+                let field_doc = prepared_doc.get(field_name).unwrap().clone();
                 *model_json
                     .get_mut(field_name)
                     .unwrap()
