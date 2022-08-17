@@ -228,31 +228,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Loop over fields for validation.
         for field_name in fields_name {
             //
-            let mut final_field_type = final_model_json.get_mut(field_name).unwrap();
+            let mut final_field = final_model_json.get_mut(field_name).unwrap();
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
                 if is_err_symptom {
                     if !meta.is_add_docs {
-                        *final_field_type.get_mut("alert").unwrap() =
+                        *final_field.get_mut("alert").unwrap() =
                             json!("It is forbidden to perform saves.");
                     } else if !meta.is_up_docs {
-                        *final_field_type.get_mut("alert").unwrap() =
+                        *final_field.get_mut("alert").unwrap() =
                             json!("It is forbidden to perform updates.");
                     }
                 }
                 continue;
             }
             // Get field type value for validation.
-            let mut final_value = final_field_type.get_mut("value").unwrap();
-            let mut final_default = final_field_type.get_mut("default").unwrap();
-            let is_required = final_field_type.get("required").unwrap().as_bool().unwrap();
-            let is_hide = final_field_type.get("is_hide").unwrap().as_bool().unwrap();
-            let field_type = final_field_type
-                .get("field_type")
-                .unwrap()
-                .as_str()
-                .unwrap();
+            let mut final_value = final_field.get_mut("value").unwrap();
+            let mut final_default = final_field.get_mut("default").unwrap();
+            let is_required = final_field.get("required").unwrap().as_bool().unwrap();
+            let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
+            let field_type = final_field.get("field_type").unwrap().as_str().unwrap();
 
             // Field validation.
             match field_type {
@@ -279,9 +275,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -308,7 +303,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    let pattern = final_field_type.get("pattern");
+                    let pattern = final_field.get("pattern");
                     if pattern.is_some() {
                         Self::regex_pattern_validation(
                             curr_val,
@@ -317,8 +312,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -334,7 +329,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation in regular expression.
                     // Checking `minlength`.
                     // -----------------------------------------------------------------------------
-                    let minlength = final_field_type.get("minlength");
+                    let minlength = final_field.get("minlength");
                     if minlength.is_some() {
                         Self::check_minlength(
                             minlength.unwrap().as_i64().unwrap() as usize,
@@ -343,8 +338,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -357,7 +352,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         });
                     }
                     // Checking `maxlength`.
-                    let maxlength = final_field_type.get("maxlength");
+                    let maxlength = final_field.get("maxlength");
                     if maxlength.is_some() {
                         Self::check_maxlength(
                             maxlength.unwrap().as_i64().unwrap() as usize,
@@ -366,8 +361,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .unwrap_or_else(|err| {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, &err.to_string()));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
@@ -382,7 +377,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let unique = final_field_type.get("unique");
+                    let unique = final_field.get("unique");
                     if unique.is_some() {
                         let is_unique = unique.unwrap().as_bool().unwrap();
                         if field_type != "InputPassword" && is_unique {
@@ -390,8 +385,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field_type, &err.to_string())
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
@@ -412,8 +407,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
-                            *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field, &err.to_string()));
                         } else {
                             Err(format!(
                                 "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
@@ -450,7 +445,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "AutoSlug" => {
                     let mut slug = String::new();
-                    let slug_sources = final_field_type
+                    let slug_sources = final_field
                         .get("slug_sources")
                         .unwrap()
                         .as_array()
@@ -483,8 +478,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, "Required field."));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field (hidden): `{}` ; \
@@ -506,13 +501,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`.
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let is_unique = final_field_type.get("unique").unwrap().as_bool().unwrap();
+                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
                     if is_unique {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, &err.to_string()));
                             });
                     }
                     // Insert result.
@@ -537,9 +532,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -562,8 +556,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     if let Err(err) = Self::regex_validation(field_type, curr_val) {
                         is_err_symptom = true;
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &err.to_string()));
                         continue;
                     }
 
@@ -584,21 +578,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    let min = final_field_type.get("min").unwrap().as_str().unwrap();
-                    let max = final_field_type.get("max").unwrap().as_str().unwrap();
+                    let min = final_field.get("min").unwrap().as_str().unwrap();
+                    let max = final_field.get("max").unwrap().as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
                         // Validation in regular expression (min).
                         if let Err(err) = Self::regex_validation(field_type, min) {
                             is_err_symptom = true;
-                            *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field, &err.to_string()));
                             continue;
                         }
                         // Validation in regular expression (max).
                         if let Err(err) = Self::regex_validation(field_type, max) {
                             is_err_symptom = true;
-                            *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(&final_field, &err.to_string()));
                             continue;
                         }
                         // Date to DateTime (min).
@@ -628,11 +622,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Check hit in range (min <> max).
                         if dt_val < dt_min || dt_val > dt_max {
                             is_err_symptom = true;
-                            *final_field_type.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(
-                                    &final_field_type,
-                                    "Date out of range between `min` and` max`."
-                                ));
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                &final_field,
+                                "Date out of range between `min` and` max`."
+                            ));
                             continue;
                         }
                     }
@@ -643,13 +636,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    let is_unique = final_field_type.get("unique").unwrap().as_bool().unwrap();
+                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
                     if is_unique {
                         Self::check_unique(hash, field_name, &dt_val_bson, &coll).unwrap_or_else(
                             |err| {
                                 is_err_symptom = true;
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, &err.to_string()));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, &err.to_string()));
                             },
                         );
                     }
@@ -675,9 +668,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -733,8 +725,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, "Required field."));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -792,9 +784,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -869,8 +860,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, "Required field."));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -957,11 +948,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         } else {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(
-                                        &final_field_type,
-                                        "Upload a new file to delete the previous one."
-                                    ));
+                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                    &final_field,
+                                    "Upload a new file to delete the previous one."
+                                ));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -984,11 +974,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 if is_required {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() =
-                                            json!(Self::accumula_err(
-                                                &final_field_type,
-                                                "Required field."
-                                            ));
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, "Required field.")
+                                        );
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1079,11 +1067,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         } else {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(
-                                        &final_field_type,
-                                        "Upload a new file to delete the previous one."
-                                    ));
+                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                    &final_field,
+                                    "Upload a new file to delete the previous one."
+                                ));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1099,7 +1086,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
-                        *final_field_type.get("thumbnails").unwrap(),
+                        *final_field.get("thumbnails").unwrap(),
                     )?;
                     //
                     if image_data.path.is_empty() && image_data.url.is_empty() {
@@ -1135,11 +1122,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 if is_required {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() =
-                                            json!(Self::accumula_err(
-                                                &final_field_type,
-                                                "Required field."
-                                            ));
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, "Required field.")
+                                        );
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1279,9 +1264,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1303,7 +1287,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    let unique = final_field_type.get("unique");
+                    let unique = final_field.get("unique");
                     if unique.is_some() {
                         let is_unique = unique.unwrap().as_bool().unwrap();
                         if is_unique {
@@ -1311,8 +1295,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field_type, &err.to_string())
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
@@ -1329,26 +1313,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field_type.get("min").unwrap();
+                    let min = final_field.get("min").unwrap();
                     if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be less than min=`{}`.",
                             curr_val, min
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
                     //
-                    let max = final_field_type.get("max").unwrap();
+                    let max = final_field.get("max").unwrap();
                     if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be greater than max=`{}`.",
                             curr_val, max
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
 
                     // Insert result.
@@ -1368,9 +1352,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1392,7 +1375,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let unique = final_field_type.get("unique");
+                    let unique = final_field.get("unique");
                     if unique.is_some() {
                         let is_unique = unique.unwrap().as_bool().unwrap();
                         if is_unique {
@@ -1400,8 +1383,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field_type, &err.to_string())
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
@@ -1418,26 +1401,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field_type.get("min").unwrap();
+                    let min = final_field.get("min").unwrap();
                     if !min.is_null() && curr_val < min.as_i64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be less than min=`{}`.",
                             curr_val, min
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
                     //
-                    let max = final_field_type.get("max").unwrap();
+                    let max = final_field.get("max").unwrap();
                     if !max.is_null() && curr_val > max.as_i64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be greater than max=`{}`.",
                             curr_val, max
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1456,9 +1439,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if is_required {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field_type.get_mut("error").unwrap() = json!(
-                                        Self::accumula_err(&final_field_type, "Required field.")
-                                    );
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1480,7 +1462,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let unique = final_field_type.get("unique");
+                    let unique = final_field.get("unique");
                     if unique.is_some() {
                         let is_unique = unique.unwrap().as_bool().unwrap();
                         if is_unique {
@@ -1488,8 +1470,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field_type.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field_type, &err.to_string())
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(&final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
@@ -1506,26 +1488,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field_type.get("min").unwrap();
+                    let min = final_field.get("min").unwrap();
                     if !min.is_null() && curr_val < min.as_f64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be less than min=`{}`.",
                             curr_val, min
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
                     //
-                    let max = final_field_type.get("max").unwrap();
+                    let max = final_field.get("max").unwrap();
                     if !max.is_null() && curr_val > max.as_f64().unwrap() {
                         is_err_symptom = true;
                         let msg = format!(
                             "The number `{}` must not be greater than max=`{}`.",
                             curr_val, max
                         );
-                        *final_field_type.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field_type, &msg));
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(&final_field, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1538,15 +1520,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "CheckBox" => {
                     // Get field value for validation.
-                    let checked_json_val = final_field_type.get("checked").unwrap();
+                    let checked_json_val = final_field.get("checked").unwrap();
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if checked_json_val.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field_type.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field_type, "Required field."));
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(&final_field, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
