@@ -113,11 +113,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
-                    let result = serde_json::to_value(doc);
-                    if let Err(err) = result {
-                        Err(err.to_string())?
-                    }
-                    return Ok(result.unwrap());
+                    let result = serde_json::to_value(doc)?;
+                    return Ok(result);
                 }
             }
         }
@@ -228,24 +225,31 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Loop over fields for validation.
         for field_name in fields_name {
             //
-            let mut final_field = final_model_json.get_mut(field_name).unwrap();
+            //let final_field = final_model_json.get_mut(field_name).unwrap();
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
                 if is_err_symptom {
-                    if !meta.is_add_docs {
-                        *final_field.get_mut("alert").unwrap() =
-                            json!("It is forbidden to perform saves.");
-                    } else if !meta.is_up_docs {
-                        *final_field.get_mut("alert").unwrap() =
-                            json!("It is forbidden to perform updates.");
+                    if !is_update && !meta.is_add_docs {
+                        *final_model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("alert")
+                            .unwrap() = json!("It is forbidden to perform saves.");
+                    }
+                    if is_update && !meta.is_up_docs {
+                        *final_model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("alert")
+                            .unwrap() = json!("It is forbidden to perform updates.");
                     }
                 }
                 continue;
             }
             // Get field type value for validation.
-            let mut final_value = final_field.get_mut("value").unwrap();
-            let mut final_default = final_field.get_mut("default").unwrap();
+            let final_value = final_field.get_mut("value").unwrap();
+            let final_default = final_field.get("default").unwrap();
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
             let field_type = final_field.get("field_type").unwrap().as_str().unwrap();
