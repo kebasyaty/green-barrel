@@ -267,20 +267,6 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_and_delete_to_doc(filter, None)?;
     assert!(result.is_none(), "find_one_and_delete_to_doc == is_none");
-    // find_one_and_delete_to_json
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_json(filter, None)?;
-    assert!(
-        result.is_empty(),
-        "find_one_and_delete_to_json == is_empty()"
-    );
-    // find_one_and_delete_to_model_instance
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_model_instance(filter, None)?;
-    assert!(
-        result.is_none(),
-        "find_one_and_delete_to_model_instance == is_none"
-    );
     // name
     let result = TestModel::name()?;
     assert!(!result.is_empty(), "name == is_empty");

@@ -66,15 +66,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Test model instance.
     // *********************************************************************************************
-    let mut user = models::UserProfile {
-        username: Some("user_1".to_string()),
-        email: Some("user_1_@noreply.net".to_string()),
-        password: Some("12345678".to_string()),
-        confirm_password: Some("12345678".to_string()),
-        is_staff: Some(true),
-        is_active: Some(true),
-        ..Default::default()
-    };
+    let mut user = models::UserProfile::new()?;
+    user.username.set("user_1");
+    user.email.set("user_1_@noreply.net");
+    user.password.set("12345678");
+    user.confirm_password.set("12345678");
+    user.is_staff.set(true);
+    user.is_active.set(true);
 
     // Check model.
     // ---------------------------------------------------------------------------------------------
