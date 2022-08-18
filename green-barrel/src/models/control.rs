@@ -12,7 +12,7 @@
 ///     slug: AutoSlug,
 /// }
 ///
-/// impl Creator for ModelName {
+/// impl Control for ModelName {
 ///     fn custom_default() -> Self {
 ///         Self {
 ///             title: InputText {
@@ -28,6 +28,6 @@
 /// }
 /// ```
 ///
-pub trait Creator {
+pub trait Control {
     fn custom_default() -> Self;
 }

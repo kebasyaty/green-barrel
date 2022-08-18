@@ -33,8 +33,8 @@ pub use crate::{
     migration::Monitor,
     models::{
         caching::Caching,
+        control::Control,
         converters::Converters,
-        creator::Creator,
         db_query_api::{commons::QCommons, paladins::QPaladins},
         helpers::{ControlArr, FileData, ImageData, Meta},
         hooks::Hooks,

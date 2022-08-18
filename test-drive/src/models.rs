@@ -29,7 +29,7 @@ pub struct UserProfile {
     pub is_active: CheckBox,
 }
 
-impl Creator for UserProfile {
+impl Control for UserProfile {
     fn custom_default() -> Self {
         Self {
             username: InputText {
