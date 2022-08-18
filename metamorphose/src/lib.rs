@@ -436,7 +436,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// ObjectId to hash field.
             // -------------------------------------------------------------------------------------
-            fn object_id_to_hash(&mut self, object_id: mongodb::bson::oid::ObjectId) -> String {
+            fn object_id_to_hash(&mut self, object_id: mongodb::bson::oid::ObjectId) {
                 self.hash.value = Some(object_id.to_hex());
             }
 
