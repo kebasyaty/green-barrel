@@ -198,7 +198,7 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     // Module: mango-orm/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
     // new
-    //assert!(!TestModel::new()?, "to_wig == is_empty");
+    //assert!(!TestModel::new()?, "new() == is_empty");
     // to_json
     assert!(!TestModel::to_json()?.is_empty(), "to_json == is_empty");
     // model_to_json_for_admin
@@ -246,10 +246,10 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     let result = TestModel::estimated_document_count(None)?;
     assert_eq!(result, 0_i64, "estimated_document_count == 0_i64");
     // find_many_to_doc
-    let result = TestModel::find_many_to_doc(None, None)?;
+    let result = TestModel::find_many_to_doc_list(None, None)?;
     assert!(result.is_none(), "find_many_to_doc == is_none");
     // find_many_to_json
-    let result = TestModel::find_many_to_json(None, None)?;
+    let result = TestModel::find_many_to_json_line(None, None)?;
     assert!(result.is_empty());
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
@@ -257,12 +257,8 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     assert!(result.is_none(), "find_many_to_json == is_none");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json(filter, None)?;
+    let result = TestModel::find_one_to_json_line(filter, None)?;
     assert!(result.is_empty(), "find_one_to_json == is_empty");
-    // find_one_to_wig
-    let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_wig(filter, None)?;
-    assert!(result.is_none(), "find_one_to_wig == is_none");
     // find_one_to_model_instance
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_to_model_instance(filter, None)?;
