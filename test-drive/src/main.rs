@@ -88,18 +88,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         output_data.print_err();
     }
     //
-    println!(
-        "Slug: {}\n\n",
-        output_data
-            .to_json()
-            .get("slug")
-            .unwrap()
-            .get("value")
-            .unwrap()
-            .as_str()
-            .unwrap()
-    );
-    //
     //println!("Json:\n{}\n\n", output_data.to_json()?);
     //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
 
@@ -116,11 +104,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !output_data.is_valid() {
             output_data.print_err();
         }
-        //
-        println!(
-            "Slug: {}\n\n",
-            output_data.to_wig().get("slug").unwrap().value
-        );
         //
         //println!("Json:\n{}\n\n", output_data.to_json()?);
         //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
