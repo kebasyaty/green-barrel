@@ -38,7 +38,7 @@ impl Creator for UserProfile {
                 maxlength: 150,
                 required: true,
                 unique: true,
-                is_hide: String::feom("Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"),
+                is_hide: String::from("Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"),
                 ..Default::default()
             },
             slug: AutoSlug {

@@ -343,7 +343,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn creator_to_json_val() -> Result<serde_json::Value, Box<dyn Error>>
+            fn creator_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
@@ -442,7 +442,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// ObjectId from hash field.
             // -------------------------------------------------------------------------------------
-            fn object_id_from_hash(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn Error>> {
+            fn object_id_from_hash(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
                 let hash = self.hash.value.clone().unwrap_or_default();
                 let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
                 Ok(object_id)
