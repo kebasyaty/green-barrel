@@ -1714,8 +1714,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             !is_err_symptom,
             Some(final_doc),
             final_model_json,
-            meta.service_name,
-            meta.model_name,
             meta.fields_name,
         ))
     }

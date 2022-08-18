@@ -90,8 +90,6 @@ pub struct OutputDataCheck {
     is_valid: bool,
     final_doc: Option<Document>,
     final_model_json: Value,
-    service_name: String,
-    model_name: String,
     fields_name: Vec<String>,
 }
 
@@ -103,16 +101,12 @@ impl OutputDataCheck {
         is_valid: bool,
         final_doc: Option<Document>,
         final_model_json: Value,
-        service_name: String,
-        model_name: String,
         fields_name: Vec<String>,
     ) -> Self {
         Self {
             is_valid,
             final_doc,
             final_model_json,
-            service_name,
-            model_name,
             fields_name,
         }
     }
