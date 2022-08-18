@@ -93,6 +93,65 @@ mod app_name {
         pub textarea: TextArea,
     }
 
+    impl Creator for TestModel {
+        fn custom_default() -> Self {
+            Self {
+                checkbox: CheckBox::default(),
+                date: InputDate::default(),
+                datetime: InputDateTime::default(),
+                file: InputFile::default(),
+                image: InputImage::default(),
+                number_i32: NumberI32::default(),
+                radio_i32: RadioI32::default(),
+                range_i32: RangeI32::default(),
+                number_u32: NumberU32::default(),
+                radio_u32: RadioU32::default(),
+                range_u32: RangeU32::default(),
+                number_i64: NumberI64::default(),
+                radio_i64: RadioI64::default(),
+                range_i64: RangeI64::default(),
+                number_f64: NumberF64::default(),
+                radio_f64: RadioF64::default(),
+                range_f64: RangeF64::default(),
+                radio_text: RadioText::default(),
+                select_text: SelectText::default(),
+                select_text_dyn: SelectTextDyn::default(),
+                select_text_mult: SelectTextMult::default(),
+                select_text_mult_dyn: SelectTextMultDyn::default(),
+                select_i32: SelectI32::default(),
+                select_i32_dyn: SelectI32Dyn::default(),
+                select_i32_mult: SelectI32Mult::default(),
+                select_i32_mult_dyn: SelectI32MultDyn::default(),
+                select_u32: SelectU32::default(),
+                select_u32_dyn: SelectU32Dyn::default(),
+                select_u32_mult: SelectI32Mult::default(),
+                select_u32_mult_dyn: SelectU32MultDyn::default(),
+                select_i64: SelectI64::default(),
+                select_i64_dyn: SelectI64Dyn::default(),
+                select_i64_mult: SelectI64Mult::default(),
+                select_i64_mult_dyn: SelectI64MultDyn::default(),
+                select_f64: SelectF64::default(),
+                select_f64_dyn: SelectF64Dyn::default(),
+                select_f64_mult: SelectF64Mult::default(),
+                select_f64_mult_dyn: SelectF64MultDyn::default(),
+                text: InputText::default(),
+                slug: AutoSlug::default(),
+                color: InputColor::default(),
+                email: InputEmail::default(),
+                password: InputPassword::default(),
+                phone: InputPhone::default(),
+                url: InputUrl::default(),
+                ip: InputIP::default(),
+                ipv4: InputIPv4::default(),
+                ipv6: InputIPv6::default(),
+                textarea: TextArea::default(),
+                hash: HiddenHash::default(),
+                created_at: HiddenDateTime::default(),
+                updated_at: HiddenDateTime::default(),
+            }
+        }
+    }
+
     // Test migration
     // =============================================================================================
     // Model list
@@ -138,23 +197,14 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     //
     // Module: mango-orm/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
-    // to_wig
-    assert!(!TestModel::to_wig()?.is_empty(), "to_wig == is_empty");
+    // new
+    //assert!(!TestModel::new()?, "to_wig == is_empty");
     // to_json
     assert!(!TestModel::to_json()?.is_empty(), "to_json == is_empty");
     // model_to_json_for_admin
     assert!(
         !TestModel::model_to_json_for_admin()?.is_empty(),
         "model_to_json_for_admin == is_empty"
-    );
-    // to_html
-    assert!(
-        TestModel::to_html(None, None, None).is_ok(),
-        "to_html == is_ok"
-    );
-    assert!(
-        !TestModel::to_html(None, None, None)?.is_empty(),
-        "to_html == is_empty"
     );
     // Get cached Model data
     let _cache_data: (ModelCache, Client) = TestModel::get_cache_data_for_query()?;
