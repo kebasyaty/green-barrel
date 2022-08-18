@@ -29,11 +29,15 @@ pub trait Main {
     /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
     /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn control_to_json_val() -> Result<Value, Box<dyn Error>>;
+    fn control_to_json_val() -> Result<Value, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized;
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn Error>>;
+    fn meta() -> Result<Meta, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized;
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
@@ -71,7 +75,10 @@ pub trait Main {
         client: &Client,
         model_json: &mut Value,
         fields_name: &Vec<String>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+    {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic fields type.
