@@ -119,10 +119,10 @@ impl AdditionalValidation for UserProfile {
             std::collections::HashMap::new();
 
         // Get clean data
-        let hash = self.hash.clone().unwrap_or_default();
-        let password = self.password.clone().unwrap_or_default();
-        let confirm_password = self.confirm_password.clone().unwrap_or_default();
-        let username = self.username.clone().unwrap_or_default();
+        let hash = self.hash.value.clone().unwrap_or_default();
+        let password = self.password.value.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.value.clone().unwrap_or_default();
+        let username = self.username.value.clone().unwrap_or_default();
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
