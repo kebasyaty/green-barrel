@@ -50,14 +50,62 @@ impl Creator for UserProfile {
                 slug_sources: vec![String::from("hash"), String::from("username")],
                 ..Default::default()
             },
-            first_name: (),
-            last_name: (),
-            email: (),
-            phone: (),
-            password: (),
-            confirm_password: (),
-            is_staff: (),
-            is_active: (),
+            first_name: InputText {
+                label: String::from("First name"),
+                placeholder: String::from("Enter your First name"),
+                maxlength: 150,
+                ..Default::default()
+            },
+            last_name: InputText {
+                label: String::from("Last name"),
+                placeholder: String::from("Enter your Last name"),
+                maxlength: 150,
+                ..Default::default()
+            },
+            email: InputEmail {
+                label: String::from("E-mail"),
+                placeholder: String::from("Please enter your email"),
+                required: true,
+                unique: true,
+                maxlength: 320,
+                hint: String::from("Your actual E-mail"),
+                ..Default::default()
+            },
+            phone: InputPhone {
+                label: String::from("Phone number"),
+                placeholder: String::from("Please enter your phone number"),
+                unique: true,
+                maxlength: 30,
+                hint: String::from("Your actual phone number"),
+                ..Default::default()
+            },
+            password: InputPassword {
+                label: String::from("Password"),
+                placeholder: String::from("Enter your password"),
+                required: true,
+                minlength: 8,
+                hint: String::from(
+                    "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8",
+                ),
+                ..Default::default()
+            },
+            confirm_password: InputPassword {
+                label: String::from("Confirm password"),
+                placeholder: String::from("Repeat your password"),
+                required: true,
+                minlength: 8,
+                ..Default::default()
+            },
+            is_staff: CheckBox {
+                label: String::from("is staff?"),
+                hint: String::from("User can access the admin site?"),
+                ..Default::default()
+            },
+            is_active: CheckBox {
+                label: String::from("is active?"),
+                hint: String::from("Is this an active account?"),
+                ..Default::default()
+            },
             hash: HiddenHash::default(),
             created_at: HiddenDateTime::default(),
             updated_at: HiddenDateTime::default(),
