@@ -37,18 +37,22 @@ mod app_name {
         pub file: InputFile,
         pub image: InputImage,
         //
-        pub radio_f64: RadioF64,
-        pub number_f64: NumberF64,
-        pub range_f64: RangeF64,
-        pub radio_i32: RadioI32,
         pub number_i32: NumberI32,
+        pub radio_i32: RadioI32,
         pub range_i32: RangeI32,
-        pub radio_i64: RadioI64,
-        pub number_i64: NumberI64,
-        pub range_i64: RangeI64,
-        pub radio_u32: RadioU32,
+        //
         pub number_u32: NumberU32,
+        pub radio_u32: RadioU32,
         pub range_u32: RangeU32,
+        //
+        pub number_i64: NumberI64,
+        pub radio_i64: RadioI64,
+        pub range_i64: RangeI64,
+        //
+        pub number_f64: NumberF64,
+        pub radio_f64: RadioF64,
+        pub range_f64: RangeF64,
+        //
         pub radio_text: RadioText,
         //
         pub select_text: SelectText,
@@ -76,53 +80,17 @@ mod app_name {
         pub select_f64_mult: SelectF64Mult,
         pub select_f64_mult_dyn: SelectF64MultDyn,
         //
-        #[serde(default)]
-        #[field_attrs(widget = "inputText")]
-        pub text: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputSlug", slug_sources = r#"["email"]"#)]
-        pub slug: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "hiddenText")]
-        pub hidden_text: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputColor")]
-        pub color: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputEmail", maxlength = 320, unique = true)]
-        pub email: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputPassword")]
-        pub password: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputPhone")]
-        pub phone: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputUrl")]
-        pub url: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputIP")]
-        pub ip: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputIPv4")]
-        pub ipv4: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "inputIPv6")]
-        pub ipv6: Option<String>,
-        //
-        #[serde(default)]
-        #[field_attrs(widget = "textArea")]
-        pub textarea: Option<String>,
+        pub text: InputText,
+        pub slug: AutoSlug,
+        pub color: InputColor,
+        pub email: InputEmail,
+        pub password: InputPassword,
+        pub phone: InputPhone,
+        pub url: InputUrl,
+        pub ip: InputIP,
+        pub ipv4: InputIPv4,
+        pub ipv6: InputIPv6,
+        pub textarea: TextArea,
     }
 
     // Test migration
