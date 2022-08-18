@@ -245,9 +245,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
-            let final_value = final_field.get("value").unwrap().clone();
-            //
-            let final_default = final_field.get("default").unwrap().clone();
+            // Define conditional constants.
+            let const_value = final_field.get("value").unwrap().clone();
+            let const_default = final_field.get("default").unwrap().clone();
             let is_required = final_field
                 .get("required")
                 .unwrap()
@@ -284,11 +284,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    let val_str = final_value.as_str();
+                    let val_str = const_value.as_str();
                     //
-                    if final_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
-                        if field_type != "InputPassword" && !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                    if const_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
+                        if field_type != "InputPassword" && !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -311,7 +311,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    let curr_val = final_value.as_str().unwrap();
+                    let curr_val = const_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = if field_type != "InputPassword" {
                         Bson::String(curr_val.to_string())
@@ -478,18 +478,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if value.is_string() {
                                 let text = value.as_str().unwrap().trim();
                                 slug = format!("{}-{}", slug, text);
-                            } else if final_value.is_i64() {
+                            } else if const_value.is_i64() {
                                 let num = value.as_i64().unwrap();
                                 slug = format!("{}-{}", slug, num);
-                            } else if final_value.is_f64() {
+                            } else if const_value.is_f64() {
                                 let num = value.as_f64().unwrap();
                                 slug = format!("{}-{}", slug, num);
                             }
                         }
                     }
                     //
-                    if slug.is_empty() && !final_value.is_null() {
-                        slug = final_value.as_str().unwrap().trim().to_string();
+                    if slug.is_empty() && !const_value.is_null() {
+                        slug = const_value.as_str().unwrap().trim().to_string();
                     }
                     // Validation, if the field is required and empty, accumulate the error.
                     if slug.is_empty() {
@@ -543,9 +543,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if final_value.is_null() {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                    if const_value.is_null() {
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -568,7 +568,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    let curr_val = final_value.as_str().unwrap();
+                    let curr_val = const_value.as_str().unwrap();
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
@@ -675,13 +675,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64" => {
                     //
-                    let check_enpty_str = final_value.as_str();
+                    let check_enpty_str = const_value.as_str();
                     //
-                    if final_value.is_null()
+                    if const_value.is_null()
                         || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
                     {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -708,19 +708,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         field_name,
                         match field_type {
                             "SelectText" => {
-                                let val = final_value.as_str().unwrap();
+                                let val = const_value.as_str().unwrap();
                                 Bson::String(val.to_string())
                             }
                             "SelectI32" => {
-                                let val = i32::try_from(final_value.as_i64().unwrap())?;
+                                let val = i32::try_from(const_value.as_i64().unwrap())?;
                                 Bson::Int32(val)
                             }
                             "SelectU32" | "SelectI64" => {
-                                let val = final_value.as_i64().unwrap();
+                                let val = const_value.as_i64().unwrap();
                                 Bson::Int64(val)
                             }
                             "SelectF64" => {
-                                let val = final_value.as_f64().unwrap();
+                                let val = const_value.as_f64().unwrap();
                                 Bson::Double(val)
                             }
                             _ => Err(format!(
@@ -735,9 +735,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn"
                 | "SelectF64Dyn" => {
                     //
-                    let check_enpty_str = final_value.as_str();
+                    let check_enpty_str = const_value.as_str();
                     //
-                    if final_value.is_null()
+                    if const_value.is_null()
                         || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
                     {
                         if is_required {
@@ -764,19 +764,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         field_name,
                         match field_type {
                             "SelectTextDyn" => {
-                                let val = final_value.as_str().unwrap().to_string();
+                                let val = const_value.as_str().unwrap().to_string();
                                 Bson::String(val)
                             }
                             "SelectI32Dyn" => {
-                                let val = i32::try_from(final_value.as_i64().unwrap())?;
+                                let val = i32::try_from(const_value.as_i64().unwrap())?;
                                 Bson::Int32(val)
                             }
                             "SelectU32Dyn" | "SelectI64Dyn" => {
-                                let val = final_value.as_i64().unwrap();
+                                let val = const_value.as_i64().unwrap();
                                 Bson::Int64(val)
                             }
                             "SelectF64Dyn" => {
-                                let val = final_value.as_f64().unwrap();
+                                let val = const_value.as_f64().unwrap();
                                 Bson::Double(val)
                             }
                             _ => Err(format!(
@@ -791,13 +791,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult"
                 | "SelectF64Mult" => {
                     //
-                    let check_enpty_arr = final_value.as_array();
+                    let check_enpty_arr = const_value.as_array();
                     //
-                    if final_value.is_null()
+                    if const_value.is_null()
                         || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
                     {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -823,17 +823,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert(
                         field_name,
                         match field_type {
-                            "SelectTextMult" => {
-                                let val = final_value
+                            "SelectTextMult" => Bson::Array(
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
                                     .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                    .collect::<Vec<Bson>>();
-                                Bson::Array(val)
-                            }
+                                    .collect::<Vec<Bson>>(),
+                            ),
                             "SelectI32Mult" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -843,7 +842,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .collect::<Vec<Bson>>(),
                             ),
                             "SelectU32Mult" | "SelectI64Mult" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -851,7 +850,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .collect::<Vec<Bson>>(),
                             ),
                             "SelectF64Mult" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -870,9 +869,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 "SelectTextMultDyn" | "SelectI32MultDyn" | "SelectU32MultDyn"
                 | "SelectI64MultDyn" | "SelectF64MultDyn" => {
                     //
-                    let check_enpty_arr = final_value.as_array();
+                    let check_enpty_arr = const_value.as_array();
                     //
-                    if final_value.is_null()
+                    if const_value.is_null()
                         || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
                     {
                         if is_required {
@@ -898,17 +897,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     final_doc.insert(
                         field_name,
                         match field_type {
-                            "SelectTextMultDyn" => {
-                                let val = final_value
+                            "SelectTextMultDyn" => Bson::Array(
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
                                     .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                    .collect::<Vec<Bson>>();
-                                Bson::Array(val)
-                            }
+                                    .collect::<Vec<Bson>>(),
+                            ),
                             "SelectI32MultDyn" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -918,7 +916,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .collect::<Vec<Bson>>(),
                             ),
                             "SelectU32MultDyn" | "SelectI64MultDyn" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -926,7 +924,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .collect::<Vec<Bson>>(),
                             ),
                             "SelectF64MultDyn" => Bson::Array(
-                                final_value
+                                const_value
                                     .as_array()
                                     .unwrap()
                                     .iter()
@@ -945,8 +943,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 "InputFile" => {
                     // Get data for validation.
-                    let mut file_data = if !final_value.is_null() {
-                        serde_json::from_value::<FileData>(final_value.clone())?
+                    let mut file_data = if !const_value.is_null() {
+                        serde_json::from_value::<FileData>(const_value.clone())?
                     } else {
                         FileData::default()
                     };
@@ -954,13 +952,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if file_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
                         if !is_required
                             || ((!file_data.path.is_empty() && !file_data.url.is_empty())
-                                || !final_default.is_null())
+                                || !const_default.is_null())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(final_default.clone())?),
+                                Some(serde_json::from_value(const_default.clone())?),
                                 None,
                             )?;
                         } else {
@@ -986,8 +984,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     if file_data.path.is_empty() && file_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if !final_default.is_null() {
-                                *final_field.get_mut("value").unwrap() = final_default.clone();
+                            if !const_default.is_null() {
+                                *final_field.get_mut("value").unwrap() = const_default.clone();
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
@@ -1065,8 +1063,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 //
                 "InputImage" => {
                     // Get data for validation.
-                    let mut image_data = if !final_value.is_null() {
-                        serde_json::from_value::<ImageData>(final_value.clone())?
+                    let mut image_data = if !const_value.is_null() {
+                        serde_json::from_value::<ImageData>(const_value.clone())?
                     } else {
                         ImageData::default()
                     };
@@ -1074,13 +1072,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if image_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
                         if !is_required
                             || ((!image_data.path.is_empty() && !image_data.url.is_empty())
-                                || !final_default.is_null())
+                                || !const_default.is_null())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(final_default.clone())?),
+                                Some(serde_json::from_value(const_default.clone())?),
                                 None,
                             )?;
                         } else {
@@ -1110,8 +1108,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     if image_data.path.is_empty() && image_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if !final_default.is_null() {
-                                *final_field.get_mut("value").unwrap() = final_default.clone();
+                            if !const_default.is_null() {
+                                *final_field.get_mut("value").unwrap() = const_default.clone();
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
@@ -1277,9 +1275,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if final_value.is_null() {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                    if const_value.is_null() {
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1302,7 +1300,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get clean data.
-                    let curr_val = i32::try_from(final_value.as_i64().unwrap())?;
+                    let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
@@ -1365,9 +1363,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if final_value.is_null() {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                    if const_value.is_null() {
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1390,7 +1388,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get clean data.
-                    let curr_val = final_value.as_i64().unwrap();
+                    let curr_val = const_value.as_i64().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
@@ -1452,9 +1450,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if final_value.is_null() {
-                        if !final_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = final_default.clone();
+                    if const_value.is_null() {
+                        if !const_default.is_null() {
+                            *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
                                 is_err_symptom = true;
@@ -1477,7 +1475,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get clean data.
-                    let curr_val = final_value.as_f64().unwrap();
+                    let curr_val = const_value.as_f64().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
