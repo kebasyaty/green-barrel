@@ -301,18 +301,39 @@ impl<'a> Monitor<'a> {
                     // Get cursor to all documents of the current Model.
                     let mut cursor: Cursor = collection.find(None, None)?;
                     // Iterate through all documents in a current (model) collection.
-                    while let Some(result) = cursor.next() {
-                        let doc_from_db: Document = result.unwrap();
+                    while let Some(Ok(doc_from_db)) = cursor.next() {
                         // Create temporary blank document.
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
                         for (field_name, field_type) in field_type_map.iter() {
-                            if field_name == "hash"
-                                || field_name == "created_at"
-                                || field_name == "updated_at"
-                                || ignore_fields.contains(&field_name.as_str())
+                            if field_name == "hash" || ignore_fields.contains(&field_name.as_str())
                             {
                                 continue;
+                            }
+                            // Insert the reserved fields.
+                            if field_name == "created_at" || field_name == "updated_at" {
+                                if doc_from_db.contains_key(field_name) {
+                                    let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
+                                    if value_from_db.is_some() {
+                                        tmp_doc
+                                            .insert(field_name.to_string(), value_from_db.unwrap());
+                                    } else {
+                                        Err(format!(
+                                            "Service: `{}` > Model: `{}` ; \
+                                            Method: `migrat()` => \
+                                            Cannot get field value from database for \
+                                            field `{}`.",
+                                            meta.service_name, meta.model_name, field_name
+                                        ))?
+                                    }
+                                } else {
+                                    Err(format!(
+                                        "Service: `{}` > Model: `{}` ; Method: `migrat()` => \
+                                        Key `{}` was not found in the document from \
+                                        the database.",
+                                        meta.service_name, meta.model_name, field_name
+                                    ))?
+                                }
                             }
                             // If the field exists, get its value.
                             if !changed_fields.contains(&field_name.as_str()) {
@@ -559,30 +580,6 @@ impl<'a> Monitor<'a> {
                                         }
                                     },
                                 );
-                            }
-                        }
-                        // Insert the reserved fields.
-                        for field_name in vec!["created_at", "updated_at"] {
-                            if doc_from_db.contains_key(field_name) {
-                                let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
-                                if value_from_db.is_some() {
-                                    tmp_doc.insert(field_name.to_string(), value_from_db.unwrap());
-                                } else {
-                                    Err(format!(
-                                        "Service: `{}` > Model: `{}` ; \
-                                            Method: `migrat()` => \
-                                            Cannot get field value from database for \
-                                            field `{}`.",
-                                        meta.service_name, meta.model_name, field_name
-                                    ))?
-                                }
-                            } else {
-                                Err(format!(
-                                    "Service: `{}` > Model: `{}` ; Method: `migrat()` => \
-                                        Key `{}` was not found in the document from \
-                                        the database.",
-                                    meta.service_name, meta.model_name, field_name
-                                ))?
                             }
                         }
                         // Save updated document.
