@@ -172,12 +172,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let hash = &self.get_hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
-        let mut is_err_symptom =
-            if is_save && ((!is_update && !meta.is_add_docs) || (is_update && !meta.is_up_docs)) {
-                true
-            } else {
-                false
-            };
+        let mut is_err_symptom = false;
         // Get a list of fields that should not be included in the document.
         let ignore_fields = meta
             .ignore_fields
