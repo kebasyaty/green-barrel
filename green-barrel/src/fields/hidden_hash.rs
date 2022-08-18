@@ -8,7 +8,7 @@ pub struct HiddenHash {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // "text | hidden" - The value is determined automatically.
+    pub input_type: String, // "hidden | text" - The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
     pub default: Option<String>, // Value by default
