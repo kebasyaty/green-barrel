@@ -13,7 +13,6 @@ use crate::settings::{
     is_del_docs = false,
     is_use_add_valid = true,
     is_use_hooks = true,
-    is_use_custom_html = true,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -106,9 +105,7 @@ impl Creator for UserProfile {
                 hint: String::from("Is this an active account?"),
                 ..Default::default()
             },
-            hash: HiddenHash::default(),
-            created_at: HiddenDateTime::default(),
-            updated_at: HiddenDateTime::default(),
+            ..Default::default()
         }
     }
 }
@@ -172,46 +169,4 @@ impl Hooks for UserProfile {
     fn post_delete(&self) {
         println!("!!!Post Delet!!!");
     }
-}
-
-impl GenerateHtml for UserProfile {}
-
-#[Model]
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct Dynamic {
-    // text
-    #[serde(default)]
-    #[field_attrs(widget = "selectTextDyn")]
-    pub select_text_dyn: Option<String>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectTextMultDyn")]
-    pub select_text_mult_dyn: Option<Vec<String>>,
-    // i32
-    #[serde(default)]
-    #[field_attrs(widget = "selectI32Dyn")]
-    pub select_i32_dyn: Option<i32>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectI32MultDyn")]
-    pub select_i32_mult_dyn: Option<Vec<i32>>,
-    // u32
-    #[serde(default)]
-    #[field_attrs(widget = "selectU32Dyn")]
-    pub select_u32_dyn: Option<u32>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectU32MultDyn")]
-    pub select_u32_mult_dyn: Option<Vec<u32>>,
-    // i64
-    #[serde(default)]
-    #[field_attrs(widget = "selectI64Dyn")]
-    pub select_i64_dyn: Option<i64>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectI64MultDyn")]
-    pub select_i64_mult_dyn: Option<Vec<i64>>,
-    // f64
-    #[serde(default)]
-    #[field_attrs(widget = "selectF64Dyn")]
-    pub select_f64_dyn: Option<f64>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectF64MultDyn")]
-    pub select_f64_mult_dyn: Option<Vec<f64>>,
 }
