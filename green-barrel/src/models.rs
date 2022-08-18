@@ -29,7 +29,7 @@ pub trait Main {
     /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
     /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn creator_to_json_val() -> Result<Value, Box<dyn Error>>;
+    fn control_to_json_val() -> Result<Value, Box<dyn Error>>;
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------

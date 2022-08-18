@@ -36,7 +36,7 @@ pub trait Caching: Main + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
         // Get a fields.
-        let mut model_json = Self::creator_to_json_val()?;
+        let mut model_json = Self::control_to_json_val()?;
         // Enrich the field map with values for dynamic fields.
         Self::vitaminize(
             meta.project_name.as_str(),
