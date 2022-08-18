@@ -93,7 +93,7 @@ mod app_name {
         pub textarea: TextArea,
     }
 
-    impl Creator for TestModel {
+    impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
                 checkbox: CheckBox::default(),
