@@ -234,7 +234,7 @@ impl<'a> Monitor<'a> {
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (field_type, value)>
-            let default_value_map: HashMap<String, (String, String)> =
+            let default_value_map: HashMap<String, serde_json::Value> =
                 meta.default_value_map.clone();
             // Get map of fields types.
             let field_type_map = meta.field_type_map.clone();
@@ -306,12 +306,13 @@ impl<'a> Monitor<'a> {
                         // Create temporary blank document.
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
-                        for field_name in fields_name.iter() {
-                            if *field_name == "hash" || ignore_fields.contains(&field_name) {
+                        for (field_name, field_type) in field_type_map.iter() {
+                            if field_name == "hash" || ignore_fields.contains(&field_name.as_str())
+                            {
                                 continue;
                             }
                             // If the field exists, get its value.
-                            if !changed_fields.contains(field_name) {
+                            if !changed_fields.contains(&field_name.as_str()) {
                                 let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
                                 if value_from_db.is_some() {
                                     tmp_doc.insert(field_name.to_string(), value_from_db.unwrap());
@@ -325,29 +326,27 @@ impl<'a> Monitor<'a> {
                                 }
                             } else {
                                 // If no field exists, get default value.
-                                let value = default_value_map.get(*field_name).unwrap();
+                                let default_value = default_value_map.get(field_name).unwrap();
                                 tmp_doc.insert(
-                                    field_name.to_string(),
-                                    match value.0.as_str() {
+                                    field_name.clone(),
+                                    match field_type.as_str() {
                                          "RadioText" | "InputColor"
                                         | "InputEmail" | "InputPassword" | "InputPhone"
                                         | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
                                         | "InputIPv6" | "TextArea" | "SelectText" | "AutoSlug" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
-                                                Bson::String(val)
+                                            if !default_value.is_null() {
+                                                Bson::String(default_value.as_str().unwrap().to_string())
                                             } else {
                                                 Bson::Null
                                             }
                                         }
                                         "InputDate" => {
                                             // Example: "1970-02-28".
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 if !crate::store::REGEX_IS_DATE.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                                 Method: `migrat()` => Incorrect date \
-                                                                 format. Example: 1970-02-28",
+                                                            Method: `migrat()` => Incorrect date \
+                                                            format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
                                                 }
                                                 let val = format!("{}T00:00", val);
@@ -365,13 +364,12 @@ impl<'a> Monitor<'a> {
                                         }
                                         "InputDateTime" | "HiddenDateTime" => {
                                             // Example: "1970-02-28T00:00".
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 if !crate::store::REGEX_IS_DATETIME.is_match(&val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                                 Method: `migrat()` => \
-                                                                 Incorrect date and time format. \
-                                                                 Example: 1970-02-28T00:00",
+                                                            Method: `migrat()` => \
+                                                            Incorrect date and time format. \
+                                                            Example: 1970-02-28T00:00",
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
@@ -388,8 +386,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "RadioI32" | "NumberI32" | "RangeI32" | "SelectI32" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 Bson::Int32(
                                                     val.parse::<i32>()?
                                                 )
@@ -400,8 +397,7 @@ impl<'a> Monitor<'a> {
                                         "RadioU32" | "NumberU32" | "RangeU32"
                                         | "SelectU32" | "RadioI64" | "NumberI64"
                                         | "RangeI64" | "SelectI64" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 Bson::Int64(
                                                     val.parse::<i64>()?
                                                 )
@@ -411,8 +407,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "RadioF64" | "NumberF64" | "RangeF64" 
                                         | "SelectF64" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 Bson::Double(
                                                     val.parse::<f64>()?
                                                 )
@@ -421,8 +416,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "CheckBox" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 Bson::Boolean(
                                                     val.parse::<bool>()?
                                                 )
@@ -431,8 +425,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "InputFile" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_str::<FileData>(val.as_str())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
@@ -468,8 +461,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "InputImage" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_str::<ImageData>(val.as_str())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
@@ -509,8 +501,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "SelectTextMult" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let val = serde_json::from_str::<Vec<String>>(val.as_str())?
                                                     .iter().map(|item| Bson::String(item.clone()))
                                                     .collect::<Vec<Bson>>();
@@ -520,8 +511,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "SelectI32Mult" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let val = serde_json::from_str::<Vec<i32>>(val.as_str())?
                                                     .iter().map(|item| Bson::Int32(item.clone()))
                                                     .collect::<Vec<Bson>>();
@@ -531,8 +521,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                          "SelectU32Mult" | "SelectI64Mult"  => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let val = serde_json::from_str::<Vec<i64>>(val.as_str())?
                                                     .iter().map(|item| mongodb::bson::Bson::Int64(item.clone()))
                                                     .collect::<Vec<mongodb::bson::Bson>>();
@@ -542,8 +531,7 @@ impl<'a> Monitor<'a> {
                                             }
                                         }
                                         "SelectF64Mult" => {
-                                            let val: String = value.1.clone();
-                                            if !val.is_empty() {
+                                            if !default_value.is_null() {
                                                 let val = serde_json::from_str::<Vec<f64>>(val.as_str())?
                                                     .iter().map(|item| Bson::Double(item.clone()))
                                                     .collect::<Vec<Bson>>();
@@ -560,7 +548,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         _ => {
                                             Err(format!("Service: `{}` > Model: `{}` ; \
-                                                Method: `migrat()` => Invalid Field type.",
+                                                    Method: `migrat()` => Invalid Field type.",
                                                 meta.service_name, meta.model_name
                                             ))?
                                         }
