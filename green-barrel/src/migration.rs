@@ -51,11 +51,9 @@ impl<'a> Monitor<'a> {
         // Max size: 21
         let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$")?;
         if !re.is_match(self.project_name) {
-            Err(format!(
-                "PROJECT_NAME => Valid characters: _ a-z A-Z 0-9 and \
-                         Max size: 21 ; \
-                         First character: a-z A-Z"
-            ))?
+            Err("PROJECT_NAME => Valid characters: _ a-z A-Z 0-9 and \
+                    Max size: 21 ; \
+                    First character: a-z A-Z")?
         }
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
@@ -64,10 +62,8 @@ impl<'a> Monitor<'a> {
         // Example: "7rzgacfqQB3B7q7T"
         let re = Regex::new(r"^[a-zA-Z\d]{8,16}$")?;
         if !re.is_match(self.unique_project_key) {
-            Err(format!(
-                "UNIQUE_PROJECT_KEY => Valid characters: a-z A-Z 0-9 and \
-                         Size: 8-16."
-            ))?
+            Err("UNIQUE_PROJECT_KEY => Valid characters: a-z A-Z 0-9 and \
+                    Size: 8-16.")?
         }
         //
         Ok(format!(
