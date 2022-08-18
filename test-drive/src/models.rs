@@ -18,108 +18,51 @@ use crate::settings::{
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct UserProfile {
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Username",
-        placeholder = "Enter your username",
-        unique = true,
-        required = true,
-        maxlength = 150,
-        hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
-    )]
-    pub username: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputSlug",
-        label = "Slug",
-        unique = true,
-        readonly = true,
-        is_hide = true,
-        hint = "To create a human readable url",
-        slug_sources = r#"["hash", "username"]"#
-    )]
-    pub slug: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "First name",
-        placeholder = "Enter your First name",
-        maxlength = 150
-    )]
-    pub first_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Last name",
-        placeholder = "Enter your Last name",
-        maxlength = 150
-    )]
-    pub last_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputEmail",
-        label = "E-mail",
-        placeholder = "Please enter your email",
-        required = true,
-        unique = true,
-        maxlength = 320,
-        hint = "Your actual E-mail"
-    )]
-    pub email: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPhone",
-        label = "Phone number",
-        placeholder = "Please enter your phone number",
-        unique = true,
-        maxlength = 30,
-        hint = "Your actual phone number"
-    )]
-    pub phone: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Password",
-        placeholder = "Enter your password",
-        required = true,
-        minlength = 8,
-        hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
-    )]
-    pub password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Confirm password",
-        placeholder = "Repeat your password",
-        required = true,
-        minlength = 8,
-        hint = "Repeat your password"
-    )]
-    pub confirm_password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is staff?",
-        hint = "User can access the admin site?"
-    )]
-    pub is_staff: Option<bool>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is active?",
-        hint = "Is this an active account?"
-    )]
-    pub is_active: Option<bool>,
+    pub username: InputText,
+    pub slug: AutoSlug,
+    pub first_name: InputText,
+    pub last_name: InputText,
+    pub email: InputEmail,
+    pub phone: InputPhone,
+    pub password: InputPassword,
+    pub confirm_password: InputPassword,
+    pub is_staff: CheckBox,
+    pub is_active: CheckBox,
+}
+
+impl Creator for UserProfile {
+    fn custom_default() -> Self {
+        Self {
+            username: InputText {
+                label: String::from("Username"),
+                placeholder: String::from("Enter your username"),
+                maxlength: 150,
+                required: true,
+                unique: true,
+                is_hide: String::feom("Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"),
+                ..Default::default()
+            },
+            slug: AutoSlug {
+                label: String::from("Slug"),
+                unique: true,
+                readonly: true,
+                hint: String::from("To create a human readable url"),
+                slug_sources: vec![String::from("hash"), String::from("username")],
+                ..Default::default()
+            },
+            first_name: (),
+            last_name: (),
+            email: (),
+            phone: (),
+            password: (),
+            confirm_password: (),
+            is_staff: (),
+            is_active: (),
+            hash: HiddenHash::default(),
+            created_at: HiddenDateTime::default(),
+            updated_at: HiddenDateTime::default(),
+        }
+    }
 }
 
 impl AdditionalValidation for UserProfile {
