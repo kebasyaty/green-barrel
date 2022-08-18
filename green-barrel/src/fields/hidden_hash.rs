@@ -35,7 +35,7 @@ impl Default for HiddenHash {
             id: String::new(),
             label: String::new(),
             field_type: String::from("HiddenHash"),
-            input_type: String::from("text"), // "text | hidden"
+            input_type: String::from("hidden"), // "hidden | text"
             name: String::new(),
             value: None,
             default: None,
