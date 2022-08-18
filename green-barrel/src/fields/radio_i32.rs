@@ -23,7 +23,6 @@ pub struct RadioI32 {
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub alert: String, // Alert message for the entire web form. The value is determined automatically.
 }
 
 impl Default for RadioI32 {
@@ -47,7 +46,6 @@ impl Default for RadioI32 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            alert: String::new(),
         }
     }
 }
