@@ -1,6 +1,7 @@
 //! Collection of auxiliary Structures, Enumerations.
 
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 /// Metadata ( model parameters )
 // -------------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ pub struct Meta {
     // <field_name, field_type>
     pub field_type_map: std::collections::HashMap<String, String>,
     // <field_name, default_value>
-    pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
+    pub default_value_map: std::collections::HashMap<String, Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
 }
