@@ -443,11 +443,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             /// ObjectId from hash field.
             // -------------------------------------------------------------------------------------
             fn object_id_from_hash(&self) -> Result<ObjectId, Box<dyn Error>> {
-                let object_id = ObjectId::with_string(self.get_hash.as_str());
-                if let Err(err) = object_id {
-                    Err(err.to_string())?
-                }
-                Ok(object_id.unwrap())
+                let object_id = ObjectId::with_string(self.get_hash.as_str())?;
+                Ok(object_id)
             }
 
             /// Getter and Setter for field `created_at`.
