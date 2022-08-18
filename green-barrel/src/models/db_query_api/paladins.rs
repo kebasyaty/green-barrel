@@ -226,21 +226,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
-                if is_err_symptom {
-                    if !is_update && !meta.is_add_docs {
-                        *final_model_json
-                            .get_mut(field_name)
-                            .unwrap()
-                            .get_mut("alert")
-                            .unwrap() = json!("It is forbidden to perform saves.");
+                if !is_update && !meta.is_add_docs {
+                    if is_save {
+                        is_err_symptom = true;
                     }
-                    if is_update && !meta.is_up_docs {
-                        *final_model_json
-                            .get_mut(field_name)
-                            .unwrap()
-                            .get_mut("alert")
-                            .unwrap() = json!("It is forbidden to perform updates.");
+                    *final_model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!("It is forbidden to perform saves.");
+                }
+                if is_update && !meta.is_up_docs {
+                    if is_save {
+                        is_err_symptom = true;
                     }
+                    *final_model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!("It is forbidden to perform updates.");
                 }
                 continue;
             }
