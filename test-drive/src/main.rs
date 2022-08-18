@@ -24,7 +24,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        models: vec![models::Dynamic::meta()?, models::UserProfile::meta()?],
+        models: vec![models::UserProfile::meta()?],
     };
     monitor.migrat()?;
     //
