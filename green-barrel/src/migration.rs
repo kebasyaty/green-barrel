@@ -343,7 +343,8 @@ impl<'a> Monitor<'a> {
                                         "InputDate" => {
                                             // Example: "1970-02-28".
                                             if !default_value.is_null() {
-                                                if !crate::store::REGEX_IS_DATE.is_match(&val) {
+                                                let val = default_value.as_str().unwrap();
+                                                if !crate::store::REGEX_IS_DATE.is_match(val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
                                                             Method: `migrat()` => Incorrect date \
                                                             format. Example: 1970-02-28",
@@ -353,7 +354,7 @@ impl<'a> Monitor<'a> {
                                                 let dt: chrono::DateTime<chrono::Utc> =
                                                     chrono::DateTime::<chrono::Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
-                                                            &val,
+                                                            val.as_str(),
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, chrono::Utc,
                                                     );
@@ -365,7 +366,8 @@ impl<'a> Monitor<'a> {
                                         "InputDateTime" | "HiddenDateTime" => {
                                             // Example: "1970-02-28T00:00".
                                             if !default_value.is_null() {
-                                                if !crate::store::REGEX_IS_DATETIME.is_match(&val) {
+                                                let val = default_value.as_str().unwrap();
+                                                if !crate::store::REGEX_IS_DATETIME.is_match(val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
                                                             Method: `migrat()` => \
                                                             Incorrect date and time format. \
@@ -376,7 +378,7 @@ impl<'a> Monitor<'a> {
                                                 let dt: chrono::DateTime<chrono::Utc> =
                                                     chrono::DateTime::<chrono::Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
-                                                            &val,
+                                                            val,
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, chrono::Utc,
                                                     );
@@ -388,7 +390,7 @@ impl<'a> Monitor<'a> {
                                         "RadioI32" | "NumberI32" | "RangeI32" | "SelectI32" => {
                                             if !default_value.is_null() {
                                                 Bson::Int32(
-                                                    val.parse::<i32>()?
+                                                    i32::try_from(default_value.as_i64().unwrap())?
                                                 )
                                             } else {
                                                 Bson::Null
@@ -399,7 +401,7 @@ impl<'a> Monitor<'a> {
                                         | "RangeI64" | "SelectI64" => {
                                             if !default_value.is_null() {
                                                 Bson::Int64(
-                                                    val.parse::<i64>()?
+                                                    default_value.as_i64().unwrap()
                                                 )
                                             } else {
                                                 Bson::Null
@@ -409,7 +411,7 @@ impl<'a> Monitor<'a> {
                                         | "SelectF64" => {
                                             if !default_value.is_null() {
                                                 Bson::Double(
-                                                    val.parse::<f64>()?
+                                                   default_value.as_f64().unwrap()
                                                 )
                                             } else {
                                                 Bson::Null
@@ -418,7 +420,7 @@ impl<'a> Monitor<'a> {
                                         "CheckBox" => {
                                             if !default_value.is_null() {
                                                 Bson::Boolean(
-                                                    val.parse::<bool>()?
+                                                    default_value.as_bool().unwrap()
                                                 )
                                             } else {
                                                 Bson::Boolean(false)
@@ -426,7 +428,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "InputFile" => {
                                             if !default_value.is_null() {
-                                                let mut file_data = serde_json::from_str::<FileData>(val.as_str())?;
+                                                let mut file_data = serde_json::from_value::<FileData>(default_value.clone())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
@@ -462,7 +464,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "InputImage" => {
                                             if !default_value.is_null() {
-                                                let mut file_data = serde_json::from_str::<ImageData>(val.as_str())?;
+                                                let mut file_data = serde_json::from_value::<ImageData>(default_value.clone())?;
                                                 // Define flags to check.
                                                 let is_emty_path = file_data.path.is_empty();
                                                 let is_emty_url = file_data.url.is_empty();
@@ -502,7 +504,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "SelectTextMult" => {
                                             if !default_value.is_null() {
-                                                let val = serde_json::from_str::<Vec<String>>(val.as_str())?
+                                                let val = serde_json::from_value::<Vec<String>>(default_value.clone())?
                                                     .iter().map(|item| Bson::String(item.clone()))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
@@ -512,7 +514,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "SelectI32Mult" => {
                                             if !default_value.is_null() {
-                                                let val = serde_json::from_str::<Vec<i32>>(val.as_str())?
+                                                let val = serde_json::from_value::<Vec<i32>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Int32(item.clone()))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
@@ -522,9 +524,9 @@ impl<'a> Monitor<'a> {
                                         }
                                          "SelectU32Mult" | "SelectI64Mult"  => {
                                             if !default_value.is_null() {
-                                                let val = serde_json::from_str::<Vec<i64>>(val.as_str())?
+                                                let val = serde_json::from_value::<Vec<i64>>(default_value.clone())?
                                                     .iter().map(|item| mongodb::bson::Bson::Int64(item.clone()))
-                                                    .collect::<Vec<mongodb::bson::Bson>>();
+                                                    .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
                                             } else {
                                                 Bson::Null
@@ -532,7 +534,7 @@ impl<'a> Monitor<'a> {
                                         }
                                         "SelectF64Mult" => {
                                             if !default_value.is_null() {
-                                                let val = serde_json::from_str::<Vec<f64>>(val.as_str())?
+                                                let val = serde_json::from_value::<Vec<f64>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Double(item.clone()))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
