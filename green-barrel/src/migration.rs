@@ -334,6 +334,8 @@ impl<'a> Monitor<'a> {
                                         meta.service_name, meta.model_name, field_name
                                     ))?
                                 }
+                                //
+                                continue;
                             }
                             // If the field exists, get its value.
                             if !changed_fields.contains(&field_name.as_str()) {

@@ -37,7 +37,19 @@ pub trait Main {
     // ---------------------------------------------------------------------------------------------
     fn meta() -> Result<Meta, Box<dyn Error>> {
         let default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
-        for ()
+        let model_json = Self::creator_to_json_val()?;
+        for field_name in meta.fields_name.iter() {
+            if field_name != "hash"
+            default_value_map.insert(
+                field_name.to_string(),
+                model_json
+                    .get(field_name)
+                    .unwrap()
+                    .get("value")
+                    .unwrap()
+                    .clone(),
+            )
+        }
 
         Ok(Meta::default())
     }
