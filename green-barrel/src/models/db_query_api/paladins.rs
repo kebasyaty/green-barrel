@@ -1739,12 +1739,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Run hooks.
-        if self.get_hash().is_empty() {
-            self.pre_create();
-        } else {
-            self.pre_update();
-        }
         //
         let mut stop_step: u8 = 0;
         //
@@ -1800,13 +1794,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let update = doc! {
                         "$set": final_doc.clone(),
                     };
+                    // Run hook.
+                    self.pre_update();
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())?;
                     // Run hook.
-                    if stop_step == 0 {
-                        self.post_update();
-                    }
+                    self.post_update();
                 } else {
+                    // Run hook.
+                    self.pre_create();
                     // Create document.
                     let result: InsertOneResult =
                         coll.insert_one(final_doc.clone(), options_insert.clone())?;
