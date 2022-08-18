@@ -363,7 +363,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get metadata of Model.
             // -------------------------------------------------------------------------------------
-            fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
+            fn meta() -> Result<Meta, Box<dyn std::error::Error>>
+            where
+                Self: serde::de::DeserializeOwned + Sized,
+            {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
                 let mut meta = serde_json::from_str::<Meta>(&#trans_meta_json)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
