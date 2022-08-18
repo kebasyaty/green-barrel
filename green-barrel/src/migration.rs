@@ -234,7 +234,7 @@ impl<'a> Monitor<'a> {
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (field_type, value)>
-            let default_values_map: HashMap<String, (String, String)> =
+            let default_value_map: HashMap<String, (String, String)> =
                 meta.default_value_map.clone();
             // Get map of fields types.
             let field_type_map = meta.field_type_map.clone();
@@ -325,7 +325,7 @@ impl<'a> Monitor<'a> {
                                 }
                             } else {
                                 // If no field exists, get default value.
-                                let value = default_values_map.get(*field_name).unwrap();
+                                let value = default_value_map.get(*field_name).unwrap();
                                 tmp_doc.insert(
                                     field_name.to_string(),
                                     match value.0.as_str() {

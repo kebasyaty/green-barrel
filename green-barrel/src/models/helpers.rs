@@ -23,8 +23,8 @@ pub struct Meta {
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, field_type>
     pub field_type_map: std::collections::HashMap<String, String>,
-    // <field_name, (_type, value)>
-    pub default_value_map: std::collections::HashMap<String, (String, String)>,
+    // <field_name, default_value>
+    pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
 }
