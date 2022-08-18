@@ -307,7 +307,10 @@ impl<'a> Monitor<'a> {
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
                         for (field_name, field_type) in field_type_map.iter() {
-                            if field_name == "hash" || ignore_fields.contains(&field_name.as_str())
+                            if field_name == "hash"
+                                || field_name == "created_at"
+                                || field_name == "updated_at"
+                                || ignore_fields.contains(&field_name.as_str())
                             {
                                 continue;
                             }

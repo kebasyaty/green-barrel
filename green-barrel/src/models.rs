@@ -35,7 +35,12 @@ pub trait Main {
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn Error>>;
+    fn meta() -> Result<Meta, Box<dyn Error>> {
+        let default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
+        for ()
+
+        Ok(Meta::default())
+    }
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------

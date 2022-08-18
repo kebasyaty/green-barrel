@@ -397,6 +397,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 )
                 .to_lowercase();
 
+                // Add default_value_map
+                let default_value_map = std::collections::HashMap<String, serde_json::Value>::new();
+
                 Ok(meta)
             }
 
