@@ -103,9 +103,8 @@ pub trait Caching: Main + Converters {
             ))?
         }
         //
-        Ok(serde_json::from_value(
-            model_cache.unwrap().model_json.clone(),
-        )?)
+        let instance = serde_json::from_value(model_cache.unwrap().model_json.clone())?;
+        Ok(instance)
     }
 
     /// Get field attributes in Json modelat for page templates.
@@ -146,7 +145,8 @@ pub trait Caching: Main + Converters {
             ))?
         }
         //
-        Ok((serde_json::to_string(&model_cache.unwrap().model_json))?)
+        let json_line = serde_json::to_string(&model_cache.unwrap().model_json)?;
+        Ok(json_line)
     }
 
     /// Json-line for admin panel.
@@ -181,7 +181,8 @@ pub trait Caching: Main + Converters {
             field_type_list.push(field_type);
         }
         //
-        Ok(serde_json::to_string(&field_type_list)?)
+        let json_line = serde_json::to_string(&field_type_list)?;
+        Ok(json_line)
     }
 
     /// Get cached Model data.

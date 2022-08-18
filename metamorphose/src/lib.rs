@@ -428,41 +428,42 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             /// Getter and Setter for field `hash`.
             // -------------------------------------------------------------------------------------
             fn get_hash(&self) -> String {
-                self.hash.clone().unwrap_or_default()
+                self.hash.value.clone().unwrap_or_default()
             }
             fn set_hash(&mut self, value: String) {
-                self.hash = Some(value);
+                self.hash.value = Some(value);
             }
 
             /// ObjectId to hash field.
             // -------------------------------------------------------------------------------------
             fn object_id_to_hash(&mut self, object_id: mongodb::bson::oid::ObjectId) -> String {
-                self.hash = Some(object_id.to_hex());
+                self.hash.value = Some(object_id.to_hex());
             }
 
             /// ObjectId from hash field.
             // -------------------------------------------------------------------------------------
             fn object_id_from_hash(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn Error>> {
-                let object_id = mongodb::bson::oid::ObjectId::with_string(self.get_hash.as_str())?;
+                let hash = self.hash.value.clone().unwrap_or_default();
+                let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
                 Ok(object_id)
             }
 
             /// Getter and Setter for field `created_at`.
             // -------------------------------------------------------------------------------------
             fn get_created_at(&self) -> String {
-                self.created_at.clone().unwrap_or_default()
+                self.created_at.value.clone().unwrap_or_default()
             }
             fn set_created_at(&mut self, value: String) {
-                self.created_at = Some(value);
+                self.created_at.value = Some(value);
             }
 
             /// Getter and Setter for field `updated_at`.
             /// ------------------------------------------------------------------------------------
             fn get_updated_at(&self) -> String {
-                self.updated_at.clone().unwrap_or_default()
+                self.updated_at.value.clone().unwrap_or_default()
             }
             fn set_updated_at(&mut self, value: String) {
-                self.updated_at = Some(value);
+                self.updated_at.value = Some(value);
             }
 
             /// Serializing the model instance to serde_json::Value format.
