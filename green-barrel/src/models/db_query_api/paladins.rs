@@ -1897,7 +1897,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let field_type = field.get("field_type").unwrap().as_str().unwrap();
                         //
                         match field_type {
-                            "inputFile" => {
+                            "InputFile" => {
                                 if let Some(info_file) =
                                     document.get(field_name).unwrap().as_document()
                                 {
@@ -1923,7 +1923,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            "inputImage" => {
+                            "InputImage" => {
                                 if let Some(info_file) =
                                     document.get(field_name).unwrap().as_document()
                                 {
