@@ -1856,8 +1856,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Run hook.
-        self.pre_delete();
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -1973,6 +1971,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.model_name
                 ))?
             }
+            // Run hook.
+            self.pre_delete();
             // Execute query.
             coll.delete_one(query, options).is_ok()
         } else {
