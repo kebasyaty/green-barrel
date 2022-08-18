@@ -8,7 +8,7 @@ pub struct HiddenDateTime {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // "datetime | hidden" - The value is determined automatically.
+    pub input_type: String, // "hidden | datetime" - The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Default value.
     pub default: Option<String>, // Value by default
@@ -26,7 +26,6 @@ pub struct HiddenDateTime {
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub alert: String, // Alert message for the entire web form. The value is determined automatically.
 }
 
 impl Default for HiddenDateTime {
@@ -35,7 +34,7 @@ impl Default for HiddenDateTime {
             id: String::new(),
             label: String::new(),
             field_type: String::from("HiddenDateTime"),
-            input_type: String::from("datetime"), // "datetime | hidden"
+            input_type: String::from("hidden"), // "hidden | datetime"
             name: String::new(),
             value: None,
             default: None,
@@ -53,7 +52,6 @@ impl Default for HiddenDateTime {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            alert: String::new(),
         }
     }
 }
