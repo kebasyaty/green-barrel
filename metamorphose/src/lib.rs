@@ -436,14 +436,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// ObjectId to hash field.
             // -------------------------------------------------------------------------------------
-            fn object_id_to_hash(&mut self, object_id: ObjectId) -> String {
+            fn object_id_to_hash(&mut self, object_id: mongodb::bson::oid::ObjectId) -> String {
                 self.hash = Some(object_id.to_hex());
             }
 
             /// ObjectId from hash field.
             // -------------------------------------------------------------------------------------
-            fn object_id_from_hash(&self) -> Result<ObjectId, Box<dyn Error>> {
-                let object_id = ObjectId::with_string(self.get_hash.as_str())?;
+            fn object_id_from_hash(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn Error>> {
+                let object_id = mongodb::bson::oid::ObjectId::with_string(self.get_hash.as_str())?;
                 Ok(object_id)
             }
 

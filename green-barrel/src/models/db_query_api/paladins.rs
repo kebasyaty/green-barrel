@@ -1,5 +1,4 @@
 //! Query methods for a Model instance.
-
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, spec::ElementType, Bson},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
