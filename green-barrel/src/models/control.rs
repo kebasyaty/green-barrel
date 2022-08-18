@@ -1,6 +1,6 @@
-//! For describe a model with user defaults.
+//! For customizing fields controls.
 
-/// For describe a model with user defaults.
+/// For customizing fields controls.
 ///
 /// # Example:
 ///
