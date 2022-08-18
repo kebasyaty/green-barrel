@@ -1889,53 +1889,48 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
-                let mut final_model_json = self.self_to_json()?;
+                let model_json = self.self_to_json()?;
                 //
                 for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {
-                        let mut field = final_model_json.get_mut(field_name).unwrap();
+                        let field = model_json.get(field_name).unwrap();
                         let field_type = field.get("field_type").unwrap().as_str().unwrap();
                         //
-                        match field_type {
-                            "InputFile" => {
-                                if let Some(info_file) =
-                                    document.get(field_name).unwrap().as_document()
-                                {
-                                    let path = info_file.get_str("path")?;
-                                    let default_value =
-                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
-                                    let default_path = if !default_value.is_empty() {
-                                        serde_json::from_str::<FileData>(default_value)?.path
-                                    } else {
-                                        String::new()
-                                    };
-                                    if path != default_path {
+                        if field_type == "InputFile" {
+                            if let Some(info_file) = document.get(field_name).unwrap().as_document()
+                            {
+                                let path = info_file.get_str("path")?;
+                                let default_value = field.get("default").unwrap();
+                                //
+                                if !default_value.is_null() {
+                                    let file_data_default =
+                                        serde_json::from_value::<FileData>(default_value.clone())?;
+                                    // Exclude files by default.
+                                    if path != file_data_default.path {
                                         let path = Path::new(path);
                                         if path.exists() {
                                             fs::remove_file(path)?;
                                         }
                                     }
-                                } else {
-                                    Err(format!(
-                                        "Model: `{}` > Field: `{}` > \
-                                            Method: `delete()` => Document (info file) not found.",
-                                        meta.model_name, field_name
-                                    ))?
                                 }
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > \
+                                        Method: `delete()` => Document (info file) not found.",
+                                    meta.model_name, field_name
+                                ))?
                             }
-                            "InputImage" => {
-                                if let Some(info_file) =
-                                    document.get(field_name).unwrap().as_document()
-                                {
-                                    let path = info_file.get_str("path")?;
-                                    let default_value =
-                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
-                                    let default_path = if !default_value.is_empty() {
-                                        serde_json::from_str::<ImageData>(default_value)?.path
-                                    } else {
-                                        String::new()
-                                    };
-                                    if path != default_path {
+                        } else if field_type == "InputImage" {
+                            if let Some(info_file) = document.get(field_name).unwrap().as_document()
+                            {
+                                let path = info_file.get_str("path")?;
+                                let default_value = field.get("default").unwrap();
+                                //
+                                if !default_value.is_null() {
+                                    let img_data_default =
+                                        serde_json::from_value::<ImageData>(default_value.clone())?;
+                                    // Exclude files by default.
+                                    if path != img_data_default.path {
                                         let path = Path::new(path);
                                         if path.exists() {
                                             fs::remove_file(path)?;
@@ -1953,15 +1948,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             }
                                         }
                                     }
-                                } else {
-                                    Err(format!(
-                                        "Model: `{}` > Field: `{}` > \
-                                            Method: `delete()` => Document (info file) not found.",
-                                        meta.model_name, field_name
-                                    ))?
                                 }
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > \
+                                        Method: `delete()` => Document (info file) not found.",
+                                    meta.model_name, field_name
+                                ))?
                             }
-                            _ => {}
                         }
                     }
                 }
