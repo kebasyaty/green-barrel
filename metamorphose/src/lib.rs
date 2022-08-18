@@ -396,10 +396,29 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     re.replace_all(&meta.model_name[..], "_$upper_chr")
                 )
                 .to_lowercase();
-
                 // Add default_value_map
-                let default_value_map = std::collections::HashMap<String, serde_json::Value>::new();
-
+                let default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
+                let model_json = Self::creator_to_json_val()?;
+                for (field_name, field_type) in meta.field_type_map.iter() {
+                    let value = if field_type != "CheckBox" {
+                        model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("value")
+                            .unwrap()
+                            .clone()
+                    } else {
+                        model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("checked")
+                            .unwrap()
+                            .clone()
+                    };
+                    default_value_map.insert(field_name.to_string(), value)
+                }
+                meta.default_value_map = default_value_map;
+                //
                 Ok(meta)
             }
 

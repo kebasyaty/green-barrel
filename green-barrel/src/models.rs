@@ -29,30 +29,11 @@ pub trait Main {
     /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
     /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn creator_to_json_val() -> Result<Value, Box<dyn Error>>
-    where
-        Self: serde::de::DeserializeOwned + Sized;
+    fn creator_to_json_val() -> Result<Value, Box<dyn Error>>;
 
     /// Get metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn Error>> {
-        let default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
-        let model_json = Self::creator_to_json_val()?;
-        for field_name in meta.fields_name.iter() {
-            if field_name != "hash"
-            default_value_map.insert(
-                field_name.to_string(),
-                model_json
-                    .get(field_name)
-                    .unwrap()
-                    .get("value")
-                    .unwrap()
-                    .clone(),
-            )
-        }
-
-        Ok(Meta::default())
-    }
+    fn meta() -> Result<Meta, Box<dyn Error>>;
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
