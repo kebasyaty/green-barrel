@@ -196,8 +196,9 @@ impl<'a> Monitor<'a> {
                 .is_match(meta.service_name.as_str())
             {
                 Err(format!(
-                    "Model: `{}` > SERVICE_NAME => Valid characters: _ a-z A-Z 0-9 \
-                             ; Max size: 31 ; First character: _ a-z A-Z",
+                    "Model: `{}` > SERVICE_NAME => \
+                        Valid characters: _ a-z A-Z 0-9 \
+                        ; Max size: 31 ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
             }
@@ -207,8 +208,9 @@ impl<'a> Monitor<'a> {
                 .is_match(meta.database_name.as_str())
             {
                 Err(format!(
-                    "Model: `{}` > DATABASE_NAME => Valid characters: _ a-z A-Z 0-9 \
-                             ; Max size: 21 ; First character: _ a-z A-Z",
+                    "Model: `{}` > DATABASE_NAME => \
+                        Valid characters: _ a-z A-Z 0-9 \
+                        ; Max size: 21 ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
             }
