@@ -510,17 +510,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
 // AUXILIARY STRUCTURES AND FUNCTIONS
 // #################################################################################################
-/// Get ID for Widget.
-// *************************************************************************************************
-fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
-    let field_name_upper = field_name
-        .split('_')
-        .map(|word| word[0..1].to_uppercase() + &word[1..])
-        .collect::<Vec<String>>()
-        .join("");
-    format!("{}-{}", model_name, field_name_upper)
-}
-
 /// Transporting of metadate to implementation of methods.
 // *************************************************************************************************
 #[derive(Serialize)]
@@ -638,4 +627,15 @@ fn get_field_info<'a>(
     };
     //
     Ok(info)
+}
+
+/// Get ID for Widget.
+// *************************************************************************************************
+fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
+    let field_name_upper = field_name
+        .split('_')
+        .map(|word| word[0..1].to_uppercase() + &word[1..])
+        .collect::<Vec<String>>()
+        .join("");
+    format!("{}-{}", model_name, field_name_upper)
 }
