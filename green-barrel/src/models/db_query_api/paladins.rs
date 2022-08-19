@@ -241,7 +241,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
-            let const_value = final_field.get("value").unwrap().clone();
+            let const_value = if final_field.get("value").is_some() {
+                final_field.get("value").unwrap().clone()
+            } else {
+                json!(null)
+            };
             let const_default = if final_field.get("default").is_some() {
                 final_field.get("default").unwrap().clone()
             } else {
