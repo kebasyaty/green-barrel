@@ -14,7 +14,7 @@ pub struct Meta {
     pub database_name: String,
     pub db_client_name: String,
     pub db_query_docs_limit: u32,
-    pub collection_name: String,
+    pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
     pub is_add_docs: bool,

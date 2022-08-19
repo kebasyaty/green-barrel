@@ -404,7 +404,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Add default_value_map
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
                 let model_json = Self::control_to_json_val()?;
-                for (field_name, field_type) in meta.field_type_map.iter() {
+                for (field_name, field_type) in meta.controller_type_map.iter() {
                     let value = if field_type != "CheckBox" {
                         model_json
                             .get(field_name)
@@ -523,7 +523,7 @@ struct Meta {
     pub database_name: String,
     pub db_client_name: String,
     pub db_query_docs_limit: u32,
-    pub collection_name: String,
+    pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
     pub is_add_docs: bool,
