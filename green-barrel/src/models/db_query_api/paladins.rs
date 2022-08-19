@@ -1398,6 +1398,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             &final_field,
                             "The number must not be less than zero."
                         ));
+                        continue;
                     }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
