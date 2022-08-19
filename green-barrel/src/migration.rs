@@ -322,17 +322,17 @@ impl<'a> Monitor<'a> {
                                     } else {
                                         Err(format!(
                                             "Service: `{}` > Model: `{}` ; \
-                                            Method: `migrat()` => \
-                                            Cannot get field value from database for \
-                                            field `{}`.",
+                                                Method: `migrat()` => \
+                                                Cannot get field value from database for \
+                                                field `{}`.",
                                             meta.service_name, meta.model_name, field_name
                                         ))?
                                     }
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` ; Method: `migrat()` => \
-                                        Key `{}` was not found in the document from \
-                                        the database.",
+                                            Key `{}` was not found in the document from \
+                                            the database.",
                                         meta.service_name, meta.model_name, field_name
                                     ))?
                                 }
@@ -463,8 +463,8 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                    `migrat()` => Check the `path` and `url` \
-                                                    attributes in the `default` field parameter.",
+                                                        `migrat()` => Check the `path` and `url` \
+                                                        attributes in the `default` field parameter.",
                                                         meta.model_name, field_name)
                                                     )?
                                                 }
@@ -499,8 +499,8 @@ impl<'a> Monitor<'a> {
                                                 if (!is_emty_path && is_emty_url)
                                                     || (is_emty_path && !is_emty_url) {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => Check the `path` and `url` \
-                                                                 attributes in the `default` field parameter.",
+                                                        `migrat()` => Check the `path` and `url` \
+                                                        attributes in the `default` field parameter.",
                                                         meta.model_name, field_name
                                                     ))?
                                                 }
@@ -509,7 +509,7 @@ impl<'a> Monitor<'a> {
                                                 let f_path = Path::new(path.as_str());
                                                 if !f_path.exists() || !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                                 `migrat()` => File is missing - {}",
+                                                            `migrat()` => File is missing - {}",
                                                         meta.model_name, field_name, path
                                                     ))?
                                                 }
@@ -620,10 +620,8 @@ impl<'a> Monitor<'a> {
                     .list_collection_names(None)?
                     .contains(&"monitor_models".to_owned())
             {
-                Err(format!(
-                    "In the `refresh()` method, \
-                        no technical database has been created for the project."
-                ))?
+                Err("In the `refresh()` method, \
+                        no technical database has been created for the project.")?
             } else {
                 let collection: Collection = db.collection("monitor_models");
                 let filter = doc! {
@@ -657,10 +655,8 @@ impl<'a> Monitor<'a> {
                     .list_collection_names(None)?
                     .contains(&"dynamic_fields".to_owned())
             {
-                Err(format!(
-                    "In the `refresh()` method, \
-                        no technical database has been created for the project."
-                ))?
+                Err("In the `refresh()` method, \
+                        no technical database has been created for the project.")?
             }
             //
             let collection: Collection = db.collection("dynamic_fields");
