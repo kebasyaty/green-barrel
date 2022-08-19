@@ -97,11 +97,13 @@ impl Control for UserProfile {
             },
             is_staff: CheckBox {
                 label: String::from("is staff?"),
+                checked: true,
                 hint: String::from("User can access the admin site?"),
                 ..Default::default()
             },
             is_active: CheckBox {
                 label: String::from("is active?"),
+                checked: true,
                 hint: String::from("Is this an active account?"),
                 ..Default::default()
             },
