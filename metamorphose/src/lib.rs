@@ -629,7 +629,7 @@ fn get_field_info<'a>(
     Ok(info)
 }
 
-/// Get ID for Widget.
+/// Get Html-ID for Field.
 // *************************************************************************************************
 fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
     let field_name_upper = field_name
