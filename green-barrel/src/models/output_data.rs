@@ -127,14 +127,16 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn hash(&self) -> String {
-        self.final_model_json
+        let value = self
+            .final_model_json
             .get("hash")
             .unwrap()
             .get("value")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_string()
+            .unwrap();
+        if value.is_null() {
+            return String::new();
+        }
+        value.as_str().unwrap().to_string()
     }
 
     /// Get MongoDB ID from hash-line
