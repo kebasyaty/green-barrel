@@ -64,7 +64,7 @@ pub trait Main {
 
     /// Serializing the model instance to serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
-    fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
+    fn self_to_json_val(&self) -> Result<Value, Box<dyn Error>>;
 
     /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------

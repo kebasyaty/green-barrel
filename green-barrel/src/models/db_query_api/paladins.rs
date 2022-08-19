@@ -179,7 +179,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .database(&meta.database_name)
             .collection(&meta.collection_name);
         // Get preliminary data from model instance and use for final result.
-        let mut final_model_json = self.self_to_json()?;
+        let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.
         let mut final_doc = Document::new();
 
@@ -475,7 +475,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .map(|item| item.as_str().unwrap())
                         .collect::<Vec<&str>>();
                     //
-                    let tmp_model_json = self.self_to_json()?;
+                    let tmp_model_json = self.self_to_json_val()?;
                     for field_name in slug_sources {
                         if let Some(value) = tmp_model_json.get(field_name).unwrap().get("value") {
                             if value.is_string() {
@@ -1898,7 +1898,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
-                let model_json = self.self_to_json()?;
+                let model_json = self.self_to_json_val()?;
                 //
                 for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {

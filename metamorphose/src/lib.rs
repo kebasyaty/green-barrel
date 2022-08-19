@@ -470,7 +470,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Serializing the model instance to serde_json::Value format.
             // -------------------------------------------------------------------------------------
-            fn self_to_json(&self)
+            fn self_to_json_val(&self)
                 -> Result<serde_json::Value, Box<dyn std::error::Error>> {
                 Ok(serde_json::to_value(self)?)
             }
