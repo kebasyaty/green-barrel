@@ -18,7 +18,8 @@ pub struct SelectF64Dyn {
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub min: Option<f64>, // The lower value for entering a number.
     pub max: Option<f64>, // The top value for entering a number.
-    pub is_hide: bool, // Hide field from user.
+    pub options: Vec<(f64, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5.0, "Title"), (25.0, "Title 2")].
+    pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -42,6 +43,7 @@ impl Default for SelectF64Dyn {
             readonly: false,
             min: None,
             max: None,
+            options: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),

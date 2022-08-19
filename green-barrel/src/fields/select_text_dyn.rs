@@ -19,7 +19,8 @@ pub struct SelectTextDyn {
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub is_hide: bool, // Hide field from user.
+    pub options: Vec<(String, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![("value", "Title"), ("value 2", "Title 2")].
+    pub is_hide: bool,                  // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -44,6 +45,7 @@ impl Default for SelectTextDyn {
             unique: false,
             disabled: false,
             readonly: false,
+            options: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
