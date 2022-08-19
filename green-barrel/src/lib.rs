@@ -2,7 +2,7 @@
 //! ORM-like API MongoDB for Rust.
 
 pub mod administrator;
-pub mod fields;
+pub mod controllers;
 pub mod migration;
 pub mod models;
 pub mod store;
@@ -10,7 +10,7 @@ pub mod test_tool;
 
 pub use crate::{
     administrator::{Administrator, OutputDataAdmin},
-    fields::{
+    controllers::{
         auto_slug::AutoSlug, check_box::CheckBox, hidden_date_time::HiddenDateTime,
         hidden_hash::HiddenHash, input_color::InputColor, input_date::InputDate,
         input_date_time::InputDateTime, input_email::InputEmail, input_file::InputFile,
