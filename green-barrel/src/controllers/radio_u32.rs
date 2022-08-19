@@ -10,13 +10,13 @@ pub struct RadioU32 {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<u32>, // Default value.
-    pub default: Option<u32>, // Value by default.
+    pub value: Option<i64>, // Default value.
+    pub default: Option<i64>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub options: Vec<(u32, String)>, // Html tag: <option value="5">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
+    pub options: Vec<(i64, String)>, // Html tag: <option value="5">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -52,6 +52,6 @@ impl Default for RadioU32 {
 
 impl RadioU32 {
     pub fn set(&mut self, value: u32) {
-        self.value = Some(value);
+        self.value = Some(i64::from(value));
     }
 }

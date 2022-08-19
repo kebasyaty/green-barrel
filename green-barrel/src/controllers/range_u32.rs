@@ -10,16 +10,16 @@ pub struct RangeU32 {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<u32>, // Default value.
-    pub default: Option<u32>, // Value by default.
+    pub value: Option<i64>, // Default value.
+    pub default: Option<i64>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub step: u32,  // Increment step for numeric fields.
-    pub min: Option<u32>, // The lower value for entering a number or date.
-    pub max: Option<u32>, // The top value for entering a number or date.
+    pub step: i64,  // Increment step for numeric fields.
+    pub min: Option<i64>, // The lower value for entering a number or date.
+    pub max: Option<i64>, // The top value for entering a number or date.
     pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -58,6 +58,6 @@ impl Default for RangeU32 {
 
 impl RangeU32 {
     pub fn set(&mut self, value: u32) {
-        self.value = Some(value);
+        self.value = Some(i64::from(value));
     }
 }
