@@ -161,6 +161,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("is_use_add_valid") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        trans_meta.is_use_add_valid = lit_bool.value;
                         if lit_bool.value {
                             add_trait_custom_valid = quote! {};
                         }
@@ -173,6 +174,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("is_use_hooks") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        trans_meta.is_use_hooks = lit_bool.value;
                         if lit_bool.value {
                             add_trait_hooks = quote! {};
                         }
@@ -527,6 +529,8 @@ struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
+    pub is_use_add_valid: bool,
+    pub is_use_hooks: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, field_type>
@@ -553,6 +557,8 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
+            is_use_add_valid: false,
+            is_use_hooks: false,
             field_value_type_map: std::collections::HashMap::new(),
             field_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),

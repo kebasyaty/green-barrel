@@ -20,6 +20,8 @@ pub struct Meta {
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
+    pub is_use_add_valid: bool,
+    pub is_use_hooks: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, field_type>
@@ -46,6 +48,8 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
+            is_use_add_valid: false,
+            is_use_hooks: false,
             field_value_type_map: std::collections::HashMap::new(),
             field_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
