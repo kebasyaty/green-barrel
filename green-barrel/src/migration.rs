@@ -31,7 +31,7 @@ pub struct ModelState {
     pub database: String,
     pub collection: String,
     pub fields: Vec<String>,
-    pub controller_type_map: HashMap<String, String>,
+    pub controller_type_map: HashMap<String, String>, // Field type map
     pub status: bool,
 }
 
