@@ -198,7 +198,7 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     // Module: mango-orm/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
     // new
-    assert!(!TestModel::new().is_ok(), "new() == is_ok");
+    assert!(TestModel::new().is_ok(), "new() == is_ok");
     // to_json
     assert!(!TestModel::to_json()?.is_empty(), "to_json == is_empty");
     // model_to_json_for_admin
