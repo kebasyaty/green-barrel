@@ -1759,7 +1759,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if is_no_error && !is_update {
                 let target_field_type = "AutoSlug";
                 let hash = "hash";
-                for (field_name, field_type) in meta.field_type_map.iter() {
+                for (field_name, field_type) in meta.controller_type_map.iter() {
                     if field_type == &target_field_type {
                         let slug_sources = final_model_json
                             .get(field_name)

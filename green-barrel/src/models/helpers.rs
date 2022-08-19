@@ -24,8 +24,8 @@ pub struct Meta {
     pub is_use_hooks: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
-    // <field_name, field_type>
-    pub field_type_map: std::collections::HashMap<String, String>,
+    // <field_name, controller_type>
+    pub controller_type_map: std::collections::HashMap<String, String>,
     // <field_name, default_value>
     pub default_value_map: std::collections::HashMap<String, Value>,
     // List of field names that will not be saved to the database
@@ -51,7 +51,7 @@ impl Default for Meta {
             is_use_add_valid: false,
             is_use_hooks: false,
             field_value_type_map: std::collections::HashMap::new(),
-            field_type_map: std::collections::HashMap::new(),
+            controller_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             ignore_fields: Vec::new(),
         }

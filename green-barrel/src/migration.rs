@@ -31,7 +31,7 @@ pub struct ModelState {
     pub database: String,
     pub collection: String,
     pub fields: Vec<String>,
-    pub field_type_map: HashMap<String, String>,
+    pub controller_type_map: HashMap<String, String>,
     pub status: bool,
 }
 
@@ -239,15 +239,15 @@ impl<'a> Monitor<'a> {
             let default_value_map: HashMap<String, serde_json::Value> =
                 meta.default_value_map.clone();
             // Get map of fields types.
-            let field_type_map = meta.field_type_map.clone();
+            let controller_type_map = meta.controller_type_map.clone();
             // Get truncated map of fields types.
-            let trunc_field_type_map: HashMap<String, String> = field_type_map.clone();
-            trunc_field_type_map
+            let trunc_controller_type_map: HashMap<String, String> = controller_type_map.clone();
+            trunc_controller_type_map
                 .clone()
                 .retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
             // Get a map of fields type from the technical database,
             // from the `monitor_models` collection for current Model.
-            let monitor_field_type_map: HashMap<String, String>;
+            let monitor_controller_type_map: HashMap<String, String>;
 
             // Check the field changes in the Model and (if required)
             // update documents in the current Collection.
@@ -275,9 +275,9 @@ impl<'a> Monitor<'a> {
                 };
                 // Get a map of fields type from the technical database,
                 // from the `monitor_models` collection for current Model.
-                monitor_field_type_map = {
+                monitor_controller_type_map = {
                     model
-                        .get_document("field_map")
+                        .get_document("controller_type_map")
                         .unwrap()
                         .iter()
                         .map(|item| (item.0.clone(), item.1.as_str().unwrap().to_string()))
@@ -288,8 +288,10 @@ impl<'a> Monitor<'a> {
                 let mut changed_fields: Vec<&str> = Vec::new();
                 for field in trunc_fields_name_list.iter() {
                     if !monitor_models_fields_name.contains(&field.to_string())
-                        || (trunc_field_type_map.get(*field).unwrap()
-                            != monitor_field_type_map.get(*field).unwrap_or(&String::new()))
+                        || (trunc_controller_type_map.get(*field).unwrap()
+                            != monitor_controller_type_map
+                                .get(*field)
+                                .unwrap_or(&String::new()))
                     {
                         changed_fields.push(field);
                     }
@@ -307,7 +309,7 @@ impl<'a> Monitor<'a> {
                         // Create temporary blank document.
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
-                        for (field_name, field_type) in field_type_map.iter() {
+                        for (field_name, field_type) in controller_type_map.iter() {
                             if field_name == "hash" || ignore_fields.contains(&field_name.as_str())
                             {
                                 continue;
@@ -592,7 +594,7 @@ impl<'a> Monitor<'a> {
                     }
                 }
             } else {
-                monitor_field_type_map = HashMap::new();
+                monitor_controller_type_map = HashMap::new();
             }
 
             // Create a new database (if doesn't exist) and add new collection.
@@ -633,7 +635,7 @@ impl<'a> Monitor<'a> {
                     "collection": &meta.collection_name,
                     "fields": trunc_fields_name_list.iter().map(|item| item.to_string())
                         .collect::<Vec<String>>(),
-                    "field_type_map": to_bson(&trunc_field_type_map.clone())?,
+                    "controller_type_map": to_bson(&trunc_controller_type_map.clone())?,
                     "status": true
                 };
                 // Check if there is model state in the database.
@@ -675,7 +677,7 @@ impl<'a> Monitor<'a> {
                 };
                 // Add empty arrays to the new document.
                 let mut fields_doc = Document::new();
-                for (field_name, field_type) in field_type_map.clone() {
+                for (field_name, field_type) in controller_type_map.clone() {
                     if field_type.contains("Dyn") {
                         fields_doc.insert(field_name, Bson::Array(Vec::new()));
                     }
@@ -695,14 +697,14 @@ impl<'a> Monitor<'a> {
                 // Create an empty list for fields with dynamic field types.
                 let mut dyn_fields_from_model: Vec<String> = Vec::new();
                 // Add new (if any) fields in `fields_doc`.
-                for (field_name, field_type) in trunc_field_type_map.clone() {
+                for (field_name, field_type) in trunc_controller_type_map.clone() {
                     if field_type.contains("Dyn") {
                         dyn_fields_from_model.push(field_name.clone());
                         // If the new field or fields type do not match,
                         // initialize with an empty array.
                         if !dyn_fields_from_db.contains(&field_name)
                             || (field_type
-                                != *monitor_field_type_map
+                                != *monitor_controller_type_map
                                     .get(field_name.as_str())
                                     .unwrap_or(&String::new()))
                         {

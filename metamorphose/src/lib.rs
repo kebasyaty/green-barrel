@@ -278,7 +278,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 }
                 // Add field name and Widget name to map.
                 trans_meta
-                    .field_type_map
+                    .controller_type_map
                     .insert(field_name.clone(), field_type);
                 //
                 // Add field name and Widget html id to map.
@@ -533,8 +533,8 @@ struct Meta {
     pub is_use_hooks: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
-    // <field_name, field_type>
-    pub field_type_map: std::collections::HashMap<String, String>,
+    // <field_name, controller_type>
+    pub controller_type_map: std::collections::HashMap<String, String>,
     // <field_name, default_value>
     pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
     // List of field names that will not be saved to the database
@@ -560,7 +560,7 @@ impl Default for Meta {
             is_use_add_valid: false,
             is_use_hooks: false,
             field_value_type_map: std::collections::HashMap::new(),
-            field_type_map: std::collections::HashMap::new(),
+            controller_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             ignore_fields: Vec::new(),
         }
