@@ -124,20 +124,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
     fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
-        if width > height {
-            if width > max_size {
-                return (
-                    max_size,
-                    (height as f32 * (max_size as f32 / width as f32)).floor() as u32,
-                );
-            }
-        } else {
-            if height > max_size {
-                return (
-                    (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
-                    max_size,
-                );
-            }
+        if width > height && width > max_size {
+            return (
+                max_size,
+                (height as f32 * (max_size as f32 / width as f32)).floor() as u32,
+            );
+        } else if height > max_size {
+            return (
+                (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
+                max_size,
+            );
         }
         (0, 0)
     }
