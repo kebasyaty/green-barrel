@@ -263,7 +263,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Add field name and Widget value type to map.
+                // Add field name and Controller value type to map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let field_info = get_field_info(
