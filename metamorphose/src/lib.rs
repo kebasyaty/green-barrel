@@ -515,11 +515,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
     let field_name_upper = field_name
         .split('_')
-        .map(|word| {
-            let mut chr: Vec<char> = word.chars().collect();
-            chr[0] = chr[0].to_uppercase().nth(0).unwrap();
-            chr.into_iter().collect::<String>()
-        })
+        .map(|word| word[0..1].to_uppercase() + &word[1..])
         .collect::<Vec<String>>()
         .join("");
     format!("{}-{}", model_name, field_name_upper)
