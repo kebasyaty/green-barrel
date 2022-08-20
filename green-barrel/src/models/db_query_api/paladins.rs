@@ -1195,8 +1195,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
-                    image_data.width = u64::from(dimensions.0);
-                    image_data.height = u64::from(dimensions.1);
+                    image_data.width = dimensions.0.into();
+                    image_data.height = dimensions.1.into();
                     // Generate sub-size images.
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;

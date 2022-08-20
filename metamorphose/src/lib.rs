@@ -250,7 +250,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             fields.push(new_updated_at_field);
 
             // Get the number of fields.
-            trans_meta.fields_count = fields.len();
+            trans_meta.fields_count = fields.len() as u64;
 
             // Loop over fields.
             // -------------------------------------------------------------------------------------
@@ -524,7 +524,7 @@ struct Meta {
     pub db_client_name: String,
     pub db_query_docs_limit: u64,
     pub collection_name: String, // Field type map
-    pub fields_count: usize,
+    pub fields_count: u64,
     pub fields_name: Vec<String>,
     pub is_add_docs: bool,
     pub is_up_docs: bool,
@@ -552,7 +552,7 @@ impl Default for Meta {
             db_client_name: String::new(),
             db_query_docs_limit: 0_u64,
             collection_name: String::new(),
-            fields_count: 0_usize,
+            fields_count: 0_u64,
             fields_name: Vec::new(),
             is_add_docs: true,
             is_up_docs: true,
