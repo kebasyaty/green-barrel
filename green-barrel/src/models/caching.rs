@@ -407,11 +407,10 @@ pub trait Caching: Main + Converters {
                         ))?
                     }
                     let val = i32::try_from(val)?;
-                    let arr_vec = target_arr_bson
+                    target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_i32().unwrap())
-                        .collect::<Vec<i32>>();
-                    arr_vec.contains(&val)
+                        .any(|item| item == val)
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_field` > \
