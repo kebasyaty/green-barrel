@@ -130,7 +130,7 @@ pub trait Converters {
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,
-        ignore_fields: &Vec<String>,
+        ignore_fields: &[String],
         controller_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
