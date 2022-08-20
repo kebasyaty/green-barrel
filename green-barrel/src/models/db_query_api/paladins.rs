@@ -269,12 +269,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let const_group = final_field.get("group").unwrap().as_u64().unwrap().clone();
 
             // Field validation.
-            match field_type {
+            match const_group {
                 // Validation of Text type fields.
                 // *********************************************************************************
+                /*
                 "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
                 | "InputText" | "HiddenHash" | "InputUrl" | "InputIP" | "InputIPv4"
-                | "InputIPv6" | "TextArea" => {
+                | "InputIPv6" | "TextArea"
+                */
+                1 => {
                     // When updating, we skip field password type.
                     if is_update && field_type == "InputPassword" {
                         *final_field.get_mut("value").unwrap() = json!(null);
@@ -461,7 +464,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of Slug type fields.
                 // *********************************************************************************
-                "AutoSlug" => {
+                // "AutoSlug"
+                2 => {
                     let mut slug = String::new();
                     let slug_sources = final_field
                         .get("slug_sources")
@@ -535,7 +539,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of date type fields.
                 // *********************************************************************************
-                "InputDate" | "InputDateTime" | "HiddenDateTime" => {
+                // "InputDate" | "InputDateTime" | "HiddenDateTime"
+                3 => {
                     // Don't check the `created_at`and updated_at fields.
                     if field_name == "created_at" || field_name == "updated_at" {
                         continue;
@@ -673,7 +678,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64" => {
+                // "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64"
+                4 => {
                     //
                     let check_enpty_str = const_value.as_str();
                     //
@@ -732,8 +738,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     );
                 }
                 //
-                "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn"
-                | "SelectF64Dyn" => {
+                // "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn" | "SelectF64Dyn"
+                5 => {
                     //
                     let check_enpty_str = const_value.as_str();
                     //
@@ -788,8 +794,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     );
                 }
                 //
-                "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult"
-                | "SelectF64Mult" => {
+                // "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult" | "SelectF64Mult"
+                6 => {
                     //
                     let check_enpty_arr = const_value.as_array();
                     //
@@ -866,8 +872,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     );
                 }
                 //
+                /*
                 "SelectTextMultDyn" | "SelectI32MultDyn" | "SelectU32MultDyn"
-                | "SelectI64MultDyn" | "SelectF64MultDyn" => {
+                | "SelectI64MultDyn" | "SelectF64MultDyn"
+                */
+                7 => {
                     //
                     let check_enpty_arr = const_value.as_array();
                     //
@@ -941,7 +950,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
-                "InputFile" => {
+                // "InputFile"
+                8 => {
                     // Get data for validation.
                     let mut file_data = if !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
@@ -1061,7 +1071,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 //
-                "InputImage" => {
+                // "InputImage"
+                9 => {
                     // Get data for validation.
                     let mut image_data = if !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
@@ -1271,7 +1282,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "RadioI32" | "NumberI32" | "RangeI32" => {
+                // "RadioI32" | "NumberI32" | "RangeI32"
+                10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
@@ -1359,7 +1371,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64" => {
+                // "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64"
+                11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
@@ -1455,7 +1468,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                "RadioF64" | "NumberF64" | "RangeF64" => {
+                // "RadioF64" | "NumberF64" | "RangeF64"
+                12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
@@ -1545,7 +1559,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                "CheckBox" => {
+                // "CheckBox"
+                13 => {
                     // Get field value for validation.
                     let checked_json_val = final_field.get("checked").unwrap();
                     // Validation, if the field is required and empty, accumulate the error.
