@@ -15,14 +15,14 @@ pub trait Converters {
     // ---------------------------------------------------------------------------------------------
     fn to_prepared_doc(
         doc: Document,
-        ignore_fields: &Vec<String>,
+        ignore_fields: &[String],
         controller_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<Document, Box<dyn Error>> {
         //
         let mut accumula_doc = Document::new();
         for (field_name, field_type) in controller_type_map {
-            if ignore_fields.contains(&field_name) {
+            if ignore_fields.contains(field_name) {
                 continue;
             }
             if field_name == "hash" {
@@ -142,11 +142,9 @@ pub trait Converters {
                 Self::to_prepared_doc(db_doc, ignore_fields, controller_type_map, model_name)?;
             //
             json_line = format!(
-                "{},{}",
+                "{},{:?}",
                 json_line,
-                Bson::Document(prepared_doc)
-                    .into_relaxed_extjson()
-                    .to_string(),
+                Bson::Document(prepared_doc).into_relaxed_extjson()
             );
         }
 
