@@ -10,7 +10,7 @@ pub struct SelectTextMult {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<String>>, // Default value.
+    pub value: Option<Vec<String>>, // Sets the value of an element.
     pub default: Option<Vec<String>>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub minlength: usize, // The minimum number of characters allowed in the text.

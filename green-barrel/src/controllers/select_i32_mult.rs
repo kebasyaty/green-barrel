@@ -10,7 +10,7 @@ pub struct SelectI32Mult {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<i32>>, // Default value.
+    pub value: Option<Vec<i32>>, // Sets the value of an element.
     pub default: Option<Vec<i32>>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.

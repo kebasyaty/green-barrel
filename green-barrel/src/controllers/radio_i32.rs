@@ -10,7 +10,7 @@ pub struct RadioI32 {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<i32>, // Default value.
+    pub value: Option<i32>, // Sets the value of an element.
     pub default: Option<i32>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.

@@ -12,7 +12,7 @@ pub struct InputFile {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<FileData>, // Default value.
+    pub value: Option<FileData>, // Sets the value of an element.
     pub default: Option<FileData>, // Value by default
     pub accept: String, // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.

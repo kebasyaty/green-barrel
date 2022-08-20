@@ -10,7 +10,7 @@ pub struct HiddenHash {
     pub field_type: String, // Field type.
     pub input_type: String, // "hidden | text" - The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Default value.
+    pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub minlength: usize, // The minimum number of characters allowed in the text.

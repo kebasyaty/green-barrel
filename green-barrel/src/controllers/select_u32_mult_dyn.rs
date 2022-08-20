@@ -10,7 +10,7 @@ pub struct SelectU32MultDyn {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<i64>>, // Default value.
+    pub value: Option<Vec<i64>>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
