@@ -473,7 +473,7 @@ pub trait Caching: Main + Converters {
                             max.unwrap()
                         ))?
                     }
-                    if val < i64::MIN || val > i64::MAX {
+                    if !(i64::MIN..=i64::MAX).contains(&val) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
@@ -510,7 +510,7 @@ pub trait Caching: Main + Converters {
                             max.unwrap()
                         ))?
                     }
-                    if val < f64::MIN || val > f64::MAX {
+                    if !(f64::MIN..=f64::MAX).contains(&val) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field` > \
                                 Parameter: `dyn_data` > Field: `value` => \
@@ -674,9 +674,9 @@ pub trait Caching: Main + Converters {
             //
             let db = client_cache.database(meta.database_name.as_str());
             let coll = db.collection(meta.collection_name.as_str());
-            let mut cursor = coll.find(None, None)?;
+            let cursor = coll.find(None, None)?;
             // Iterate over all documents in the collection.
-            while let Some(doc_from_db) = cursor.next() {
+            for doc_from_db in cursor {
                 let mut is_changed = false;
                 let mut doc_from_db = doc_from_db?;
                 //
@@ -691,7 +691,7 @@ pub trait Caching: Main + Converters {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
-                            .map(|item| item.clone())
+                            .cloned()
                             .filter(|item| {
                                 const_control_arr
                                     .control_arr_str()
@@ -705,7 +705,7 @@ pub trait Caching: Main + Converters {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
-                            .map(|item| item.clone())
+                            .cloned()
                             .filter(|item| {
                                 const_control_arr
                                     .control_arr_i32()
@@ -719,7 +719,7 @@ pub trait Caching: Main + Converters {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
-                            .map(|item| item.clone())
+                            .cloned()
                             .filter(|item| {
                                 const_control_arr
                                     .control_arr_i64()
@@ -733,7 +733,7 @@ pub trait Caching: Main + Converters {
                         let tmp_arr_bson = doc_from_db.get_array(const_field_name)?;
                         truncated_arr_bson = tmp_arr_bson
                             .iter()
-                            .map(|item| item.clone())
+                            .cloned()
                             .filter(|item| {
                                 const_control_arr
                                     .control_arr_f64()
