@@ -83,7 +83,7 @@ pub trait Converters {
     // ---------------------------------------------------------------------------------------------
     fn one_to_json_val(
         db_doc: Document,
-        ignore_fields: &Vec<String>,
+        ignore_fields: &[String],
         controller_type_map: &HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
