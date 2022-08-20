@@ -446,13 +446,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !is_err_symptom && !ignore_fields.contains(&field_name) {
                         match field_type {
                             "InputPassword" => {
-                                if !curr_val.is_empty() {
-                                    if !is_update {
-                                        // Generate password hash and add to result document.
-                                        let password_hash: String =
-                                            Self::create_password_hash(curr_val)?;
-                                        final_doc.insert(field_name, Bson::String(password_hash));
-                                    }
+                                if !curr_val.is_empty() && !is_update {
+                                    // Generate password hash and add to result document.
+                                    let password_hash: String =
+                                        Self::create_password_hash(curr_val)?;
+                                    final_doc.insert(field_name, Bson::String(password_hash));
                                 }
                             }
                             _ => {
@@ -1574,8 +1572,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
                                     model_name, field_name, field_type
                                 ))?
                             }

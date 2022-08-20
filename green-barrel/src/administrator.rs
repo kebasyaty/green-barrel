@@ -71,9 +71,8 @@ pub trait Administrator: QCommons + QPaladins {
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        if doc_hash.is_some() {
+        if let Some(doc_hash) = doc_hash {
             // For - Get document
-            let doc_hash = doc_hash.unwrap();
             if doc_hash.is_empty() {
                 return Ok(OutputDataAdmin::EarlyResult(
                     Self::model_to_json_for_admin()?
@@ -93,23 +92,21 @@ pub trait Administrator: QCommons + QPaladins {
             Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
                 filter, None,
             )?))
-        } else if bytes.is_some() {
+        } else if let Some(bytes) = bytes {
             // For - Save document
             Ok(OutputDataAdmin::Instance(Some(serde_json::from_slice::<
                 Self,
-            >(
-                &bytes.unwrap()
-            )?)))
-        } else if filter.is_some() {
+            >(bytes)?)))
+        } else if let Some(filter) = filter {
             // For - Delete document
             Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
-                filter.unwrap().clone(),
+                filter.clone(),
                 None,
             )?))
-        } else if dyn_data.is_some() {
+        } else if let Some(dyn_data) = dyn_data {
             // Update dynamic field type data
-            Self::update_dyn_field(dyn_data.unwrap())?;
-            return Ok(OutputDataAdmin::EarlyResult(String::new()));
+            Self::update_dyn_field(dyn_data)?;
+            Ok(OutputDataAdmin::EarlyResult(String::new()))
         } else {
             Err(format!(
                 "Model: `{}` > \

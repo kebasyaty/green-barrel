@@ -42,16 +42,12 @@ pub trait Caching: Main + Converters {
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
-            &client_cache,
+            client_cache,
             &mut model_json,
             &meta.fields_name,
         )?;
         // Init new ModelCache.
-        let new_model_cache = ModelCache {
-            meta,
-            model_json,
-            ..Default::default()
-        };
+        let new_model_cache = ModelCache { meta, model_json };
         // Save structure `ModelCache` to store.
         model_store.insert(key, new_model_cache);
         //
@@ -169,7 +165,7 @@ pub trait Caching: Main + Converters {
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
-        let model_json = model_cache.model_json.clone();
+        let model_json = model_cache.model_json;
         let mut field_type_list: Vec<Value> = Vec::new();
         // Get a list of fields in the order of the model fields.
         for field_name in meta.fields_name.iter() {
@@ -338,8 +334,7 @@ pub trait Caching: Main + Converters {
         let coll = {
             let green_tech_keyword = format!(
                 "green_tech__{}__{}",
-                meta.project_name.clone(),
-                meta.unique_project_key.clone()
+                meta.project_name, meta.unique_project_key
             );
             let db = client_cache.database(&green_tech_keyword);
             db.collection("dynamic_fields")

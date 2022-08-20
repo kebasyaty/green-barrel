@@ -116,9 +116,9 @@ impl<'a> Monitor<'a> {
                 let green_tech_db: Database = client.database(&db_green_tech);
                 let collection_models: Collection =
                     green_tech_db.collection(collection_models_name);
-                let mut cursor: Cursor = collection_models.find(None, None)?;
+                let cursor: Cursor = collection_models.find(None, None)?;
 
-                while let Some(result) = cursor.next() {
+                for result in cursor {
                     let document = result?;
                     let mut model_state: ModelState = from_document(document)?;
                     model_state.status = false;
@@ -226,11 +226,11 @@ impl<'a> Monitor<'a> {
                 .map(|item| item.as_str())
                 .collect();
             // List field names without `hash` and ignored fields.
-            let trunc_fields_name_list: Vec<&str> = fields_name
+            let trunc_fields_name_list = fields_name
                 .iter()
                 .filter(|item| **item != "hash" && !ignore_fields.contains(item))
-                .map(|item| *item)
-                .collect();
+                .copied()
+                .collect::<Vec<&str>>();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             let database_names: Vec<String> = client.list_database_names(None, None)?;
@@ -262,8 +262,7 @@ impl<'a> Monitor<'a> {
                 .database(&db_green_tech)
                 .collection("monitor_models")
                 .find_one(filter, None)?;
-            if model.is_some() {
-                let model: Document = model.unwrap();
+            if let Some(model) = model {
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
                 let monitor_models_fields_name: Vec<String> = {
@@ -318,9 +317,8 @@ impl<'a> Monitor<'a> {
                             if field_name == "created_at" || field_name == "updated_at" {
                                 if doc_from_db.contains_key(field_name) {
                                     let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
-                                    if value_from_db.is_some() {
-                                        tmp_doc
-                                            .insert(field_name.to_string(), value_from_db.unwrap());
+                                    if let Some(value_from_db) = value_from_db {
+                                        tmp_doc.insert(field_name.to_string(), value_from_db);
                                     } else {
                                         Err(format!(
                                             "Service: `{}` > Model: `{}` ; \
@@ -344,8 +342,8 @@ impl<'a> Monitor<'a> {
                             // If the field exists, get its value.
                             if !changed_fields.contains(&field_name.as_str()) {
                                 let value_from_db: Option<&Bson> = doc_from_db.get(field_name);
-                                if value_from_db.is_some() {
-                                    tmp_doc.insert(field_name.to_string(), value_from_db.unwrap());
+                                if let Some(value_from_db) = value_from_db {
+                                    tmp_doc.insert(field_name.to_string(), value_from_db);
                                 } else {
                                     Err(format!(
                                         "Service: `{}` > Model: `{}` > Field: `{}` ; \
@@ -545,7 +543,7 @@ impl<'a> Monitor<'a> {
                                         "SelectI32Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i32>>(default_value.clone())?
-                                                    .iter().map(|item| Bson::Int32(item.clone()))
+                                                    .iter().map(|item| Bson::Int32(*item))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
                                             } else {
@@ -555,7 +553,7 @@ impl<'a> Monitor<'a> {
                                          "SelectU32Mult" | "SelectI64Mult"  => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i64>>(default_value.clone())?
-                                                    .iter().map(|item| mongodb::bson::Bson::Int64(item.clone()))
+                                                    .iter().map(|item| mongodb::bson::Bson::Int64(*item))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
                                             } else {
@@ -565,7 +563,7 @@ impl<'a> Monitor<'a> {
                                         "SelectF64Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<f64>>(default_value.clone())?
-                                                    .iter().map(|item| Bson::Double(item.clone()))
+                                                    .iter().map(|item| Bson::Double(*item))
                                                     .collect::<Vec<Bson>>();
                                                 Bson::Array(val)
                                             } else {
