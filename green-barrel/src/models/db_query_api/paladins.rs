@@ -348,49 +348,43 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Checking `minlength`.
                     // -----------------------------------------------------------------------------
                     let minlength = final_field.get("minlength");
-                    if minlength.is_some() {
-                        Self::check_minlength(
-                            minlength.unwrap().as_i64().unwrap() as usize,
-                            curr_val,
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field, &err.to_string()));
-                            } else {
-                                Err(format!(
+                    if let Some(minlength) = minlength {
+                        Self::check_minlength(minlength.as_i64().unwrap() as usize, curr_val)
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                } else {
+                                    Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
                                 ))
-                                .unwrap()
-                            }
-                        });
+                                    .unwrap()
+                                }
+                            });
                     }
                     // Checking `maxlength`.
                     let maxlength = final_field.get("maxlength");
-                    if maxlength.is_some() {
-                        Self::check_maxlength(
-                            maxlength.unwrap().as_i64().unwrap() as usize,
-                            curr_val,
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field, &err.to_string()));
-                            } else {
-                                Err(format!(
+                    if let Some(maxlength) = maxlength {
+                        Self::check_maxlength(maxlength.as_i64().unwrap() as usize, curr_val)
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                } else {
+                                    Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
                                 ))
-                                .unwrap()
-                            }
-                        });
+                                    .unwrap()
+                                }
+                            });
                     }
 
                     // Validation of `unique`.
