@@ -124,11 +124,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
     fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
-        if width > height && width > max_size {
-            return (
-                max_size,
-                (height as f32 * (max_size as f32 / width as f32)).floor() as u32,
-            );
+        if width > height {
+            if width > max_size {
+                return (
+                    max_size,
+                    u32::from(
+                        (f64::from(height) * (f64::from(max_size) / f64::from(width))).floor(),
+                    ),
+                );
+            }
         } else if height > max_size {
             return (
                 (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
@@ -1394,6 +1398,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_val = const_value.as_i64().unwrap();
                     // Check for unsigned type
                     if field_type.contains("U") && curr_val < 0 {
+                        is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                             &final_field,
                             "The number must not be less than zero."
