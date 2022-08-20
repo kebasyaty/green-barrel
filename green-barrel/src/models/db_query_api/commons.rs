@@ -324,8 +324,7 @@ pub trait QCommons: Main + Caching + Converters {
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
-        let options = if options.is_some() {
-            let mut options = options.unwrap();
+        let options = if let Some(mut options) = options {
             if options.limit == Some(0_i64) {
                 options.limit = Some(meta.db_query_docs_limit as i64);
             }
