@@ -218,7 +218,7 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     assert!(result.is_err(), "aggregate == is_err");
     // count_documents
     let result = TestModel::count_documents(None, None)?;
-    assert_eq!(result, 0_i64, "count_documents == 0_i64");
+    assert_eq!(result, 0, "count_documents == 0_i64");
     // delete_many
     let query = doc! {};
     let result = TestModel::delete_many(query, None)?;
@@ -244,7 +244,7 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     assert!(result.is_empty(), "distinct == is_empty");
     // estimated_document_count
     let result = TestModel::estimated_document_count(None)?;
-    assert_eq!(result, 0_i64, "estimated_document_count == 0_i64");
+    assert_eq!(result, 0, "estimated_document_count == 0_i64");
     // find_many_to_doc
     let result = TestModel::find_many_to_doc_list(None, None)?;
     assert!(result.is_none(), "find_many_to_doc == is_none");
