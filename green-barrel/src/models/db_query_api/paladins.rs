@@ -123,21 +123,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
-    fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
+    fn calculate_thumbnail_size(width: u64, height: u64, max_size: u64) -> (u64, u64) {
         if width > height {
             if width > max_size {
-                return (
-                    max_size,
-                    u32::from(
-                        (f64::from(height) * (f64::from(max_size) / f64::from(width))).floor(),
-                    ),
-                );
+                return (max_size, height * (max_size / width));
             }
         } else if height > max_size {
-            return (
-                (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
-                max_size,
-            );
+            return (width * (max_size / height), max_size);
         }
         (0, 0)
     }
@@ -1050,7 +1042,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    file_data.size = u32::try_from(metadata.len())?;
+                    file_data.size = metadata.len();
                     // Get file name.
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
@@ -1203,15 +1195,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
-                    image_data.width = dimensions.0;
-                    image_data.height = dimensions.1;
+                    image_data.width = u64::from(dimensions.0);
+                    image_data.height = u64::from(dimensions.1);
                     // Generate sub-size images.
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
-                            let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
-                                dimensions.0,
-                                dimensions.1,
+                            let thumbnail_size: (u64, u64) = Self::calculate_thumbnail_size(
+                                dimensions.0.into(),
+                                dimensions.1.into(),
                                 max_size.1,
                             );
                             if thumbnail_size.0 > 0 && thumbnail_size.1 > 0 {
@@ -1227,8 +1219,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .clone()
                                     .replace(image_data.name.as_str(), thumb_name.as_str());
                                 img = img.resize_exact(
-                                    width,
-                                    height,
+                                    width.try_into()?,
+                                    height.try_into()?,
                                     image::imageops::FilterType::Triangle,
                                 );
                                 match max_size.0.as_str() {
