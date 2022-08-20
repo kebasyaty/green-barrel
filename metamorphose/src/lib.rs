@@ -104,7 +104,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
                     if let syn::Lit::Int(lit_int) = &mnv.lit {
-                        trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
+                        trans_meta.db_query_docs_limit = lit_int.base10_parse::<u64>().unwrap();
                     } else {
                         panic!(
                             "Model: `{}` => Could not determine value for \
@@ -522,7 +522,7 @@ struct Meta {
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
-    pub db_query_docs_limit: u32,
+    pub db_query_docs_limit: u64,
     pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
@@ -550,7 +550,7 @@ impl Default for Meta {
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),
-            db_query_docs_limit: 0_u32,
+            db_query_docs_limit: 0_u64,
             collection_name: String::new(),
             fields_count: 0_usize,
             fields_name: Vec::new(),
