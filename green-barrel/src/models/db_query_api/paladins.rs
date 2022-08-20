@@ -325,26 +325,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
                     let pattern = final_field.get("pattern");
-                    if pattern.is_some() {
-                        Self::regex_pattern_validation(
-                            curr_val,
-                            pattern.unwrap().as_str().unwrap(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field, &err.to_string()));
-                            } else {
-                                Err(format!(
+                    if let Some(pattern) = pattern {
+                        Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                } else {
+                                    Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
                                     model_name,
                                     field_name,
                                     err.to_string()
                                 ))
-                                .unwrap()
-                            }
-                        });
+                                    .unwrap()
+                                }
+                            });
                     }
 
                     // Validation in regular expression.
