@@ -1,4 +1,4 @@
-//! SelectI64Dyn
+//! SelectI64Dyn - Controller (field type)
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-//! SelectF64Mult
+//! SelectF64Mult - Controller (field type)
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

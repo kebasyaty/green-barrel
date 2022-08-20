@@ -1,4 +1,4 @@
-//! RangeI64
+//! RangeI64 - Controller (field type)
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
