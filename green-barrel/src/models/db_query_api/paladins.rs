@@ -1109,7 +1109,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
+                    let thumbnails = serde_json::from_value::<Vec<(String, u64)>>(
                         final_field.get("thumbnails").unwrap().clone(),
                     )?;
                     //
