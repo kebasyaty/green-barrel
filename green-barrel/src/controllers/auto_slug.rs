@@ -10,7 +10,7 @@ pub struct AutoSlug {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Default value.
+    pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.

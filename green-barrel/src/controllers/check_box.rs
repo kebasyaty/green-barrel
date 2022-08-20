@@ -10,10 +10,9 @@ pub struct CheckBox {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub default: Option<bool>, // Value by default
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
-    pub checked: bool, // A pre-activated radio button or checkbox.
+    pub checked: bool, // A pre-activated radio button or checkbox. Hint: Use as value by default.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub is_hide: bool, // Hide field from user.
@@ -33,10 +32,9 @@ impl Default for CheckBox {
             field_type: String::from("CheckBox"),
             input_type: String::from("checkbox"),
             name: String::new(),
-            default: None,
             placeholder: String::new(),
             required: false,
-            checked: false,
+            checked: false, // Hint: Use as value by default.
             disabled: false,
             readonly: false,
             is_hide: false,
