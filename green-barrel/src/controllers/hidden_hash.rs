@@ -26,6 +26,7 @@ pub struct HiddenHash {
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
     pub alert: String, // Alert message for the entire web form. The value is determined automatically.
+    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for HiddenHash {
@@ -52,6 +53,7 @@ impl Default for HiddenHash {
             warning: String::new(),
             error: String::new(),
             alert: String::new(),
+            group: 1,
         }
     }
 }

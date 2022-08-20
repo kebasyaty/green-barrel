@@ -22,6 +22,7 @@ pub struct CheckBox {
     pub hint: String, // Additional explanation for the user.
     pub warning: String, // The value is determined automatically.
     pub error: String, // The value is determined automatically.
+    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for CheckBox {
@@ -44,6 +45,7 @@ impl Default for CheckBox {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
+            group: 13,
         }
     }
 }
