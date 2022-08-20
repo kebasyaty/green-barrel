@@ -22,7 +22,7 @@ mod app_name {
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
     pub const DB_CLIENT_NAME: &str = "default";
-    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+    const DB_QUERY_DOCS_LIMIT: u64 = 1000;
 
     // Models
     // =============================================================================================
