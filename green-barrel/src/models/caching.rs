@@ -369,11 +369,10 @@ pub trait Caching: Main + Converters {
                             meta.model_name, val_len, minlength, maxlength
                         ))?
                     }
-                    let arr_vec = target_arr_bson
+                    target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_str().unwrap())
-                        .collect::<Vec<&str>>();
-                    arr_vec.contains(&val)
+                        .any(|item| item == val)
                 } else {
                     Err(format!(
                         "Model: {} > Method: `update_dyn_field` > \
