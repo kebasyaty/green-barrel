@@ -311,14 +311,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         }
     }
     // trans_meta to Json-line.
-    let trans_meta_json: String = match serde_json::to_string(&trans_meta) {
+    let trans_meta_json = match serde_json::to_string(&trans_meta) {
         Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{}` => {}", model_name_str, err),
+        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
     };
     // html_id_map to Json-line.
     let html_id_map_json = match serde_json::to_string(&html_id_map) {
         Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{}` => {}", model_name_str, err),
+        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
     };
 
     // Implementation of methods.
