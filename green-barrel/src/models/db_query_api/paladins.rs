@@ -1274,7 +1274,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, "Required field."));
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1305,15 +1305,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     is_err_symptom = true;
                                     if !is_hide {
                                         *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field, &err.to_string())
+                                            Self::accumula_err(final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}\n\n",
-                                            model_name,
-                                            field_name,
-                                            err.to_string()
+                                            model_name, field_name, err
                                         ))
                                         .unwrap()
                                     }
@@ -1330,7 +1328,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
                     //
                     let max = final_field.get("max").unwrap();
@@ -1341,7 +1339,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
 
                     // Insert result.
@@ -1363,7 +1361,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, "Required field."));
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1394,15 +1392,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     is_err_symptom = true;
                                     if !is_hide {
                                         *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field, &err.to_string())
+                                            Self::accumula_err(final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}\n\n",
-                                            model_name,
-                                            field_name,
-                                            err.to_string()
+                                            model_name, field_name, err
                                         ))
                                         .unwrap()
                                     }
@@ -1419,7 +1415,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
                     //
                     let max = final_field.get("max").unwrap();
@@ -1430,7 +1426,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1451,7 +1447,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, "Required field."));
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -1482,15 +1478,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     is_err_symptom = true;
                                     if !is_hide {
                                         *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(&final_field, &err.to_string())
+                                            Self::accumula_err(final_field, &err.to_string())
                                         );
                                     } else {
                                         Err(format!(
                                             "\n\nModel: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}\n\n",
-                                            model_name,
-                                            field_name,
-                                            err.to_string()
+                                            model_name, field_name, err
                                         ))
                                         .unwrap()
                                     }
@@ -1507,7 +1501,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, min
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
                     //
                     let max = final_field.get("max").unwrap();
@@ -1518,7 +1512,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             curr_val, max
                         );
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, &msg));
+                            json!(Self::accumula_err(final_field, &msg));
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
@@ -1540,7 +1534,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             is_err_symptom = true;
                             if !is_hide {
                                 *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(&final_field, "Required field."));
+                                    json!(Self::accumula_err(final_field, "Required field."));
                             } else {
                                 Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
