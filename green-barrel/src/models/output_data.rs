@@ -111,7 +111,7 @@ impl OutputDataCheck {
         }
     }
 
-    /// Get Hash-line
+    /// Get/Set Hash-line
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -137,6 +137,14 @@ impl OutputDataCheck {
             return String::new();
         }
         value.as_str().unwrap().to_string()
+    }
+    pub fn set_hash(&mut self, hash: String) {
+        *self
+            .final_model_json
+            .get_mut("hash")
+            .unwrap()
+            .get_mut("value")
+            .unwrap() = json!(hash);
     }
 
     /// Get MongoDB ID from hash-line
@@ -183,7 +191,7 @@ impl OutputDataCheck {
         self.final_doc = new_doc;
     }
 
-    /// Get/Set Model instance in serde_json::Value format.
+    /// Get Model instance in serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -196,14 +204,10 @@ impl OutputDataCheck {
     /// let output_data = model_name.save(None, None)?;
     ///
     /// println!("{:?}", output_data.get_model_json());
-    /// println!("{:?}", output_data.set_model_json(updated_model_json));
     /// ```
     ///
     pub fn get_model_json(&self) -> Value {
         self.final_model_json.clone()
-    }
-    pub fn set_model_json(&mut self, new_model_json: Value) {
-        self.final_model_json = new_model_json
     }
 
     /// Get Model instance in Json-line format.

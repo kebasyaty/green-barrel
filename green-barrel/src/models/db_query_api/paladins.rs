@@ -1729,7 +1729,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            let mut final_model_json = verified_data.get_model_json();
+            let final_model_json = verified_data.get_model_json();
             // Get cached Model data.
             let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
@@ -1797,13 +1797,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Mute document.
                 verified_data.set_doc(None);
-                // Add hash-line to final widget map.
-                *final_model_json
-                    .get_mut("hash")
-                    .unwrap()
-                    .get_mut("value")
-                    .unwrap() = json!(hash_line);
-                verified_data.set_model_json(final_model_json);
+                // Add hash-line to final_model_json.
+                verified_data.set_hash(hash_line);
             }
 
             // Return result.
