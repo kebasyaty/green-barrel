@@ -247,18 +247,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             } else {
                 json!(null)
             };
-            let is_required = final_field
-                .get("required")
-                .unwrap()
-                .as_bool()
-                .unwrap()
-                .clone();
-            let is_hide = final_field
-                .get("is_hide")
-                .unwrap()
-                .as_bool()
-                .unwrap()
-                .clone();
+            let is_required = final_field.get("required").unwrap().as_bool().unwrap();
+            let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
             let field_type = final_field
                 .get("field_type")
                 .unwrap()

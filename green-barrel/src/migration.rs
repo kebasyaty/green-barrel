@@ -521,8 +521,8 @@ impl<'a> Monitor<'a> {
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.
                                                 let dimensions: (u32, u32) = image::image_dimensions(path)?;
-                                                file_data.width = dimensions.0.into();
-                                                file_data.height = dimensions.1.into();
+                                                file_data.width = dimensions.0;
+                                                file_data.height = dimensions.1;
                                                 // Create doc.
                                                 let result = to_document(&file_data)?;
                                                 Bson::Document(result)
