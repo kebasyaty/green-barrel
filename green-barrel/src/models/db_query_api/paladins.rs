@@ -2136,7 +2136,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .modified_count
                 == 1_i64;
             if !result_bool {
-                err_msg = format!("An error occurred while updating the password.")
+                err_msg = "An error occurred while updating the password.".to_string();
             }
         }
         //
