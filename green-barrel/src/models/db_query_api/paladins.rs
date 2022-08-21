@@ -1755,8 +1755,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let target_field_type = "AutoSlug";
                 let hash = "hash";
                 for (field_name, field_type) in meta.controller_type_map.iter() {
-                    if field_type == &target_field_type {
-                        let slug_sources = final_model_json
+                    if field_type == target_field_type {
+                        let flag = final_model_json
                             .get(field_name)
                             .unwrap()
                             .get("slug_sources")
@@ -1765,8 +1765,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .unwrap()
                             .iter()
                             .map(|item| item.as_str().unwrap())
-                            .collect::<Vec<&str>>();
-                        if slug_sources.contains(&hash) {
+                            .any(|item| item == hash);
+                        if flag {
                             stop_step = 1;
                             break;
                         }
