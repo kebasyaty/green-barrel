@@ -13,9 +13,9 @@ pub struct Meta {
     pub service_name: String,
     pub database_name: String,
     pub db_client_name: String,
-    pub db_query_docs_limit: u64,
+    pub db_query_docs_limit: u32,
     pub collection_name: String, // Field type map
-    pub fields_count: u64,
+    pub fields_count: usize,
     pub fields_name: Vec<String>,
     pub is_add_docs: bool,
     pub is_up_docs: bool,
@@ -41,9 +41,9 @@ impl Default for Meta {
             service_name: String::new(),
             database_name: String::new(),
             db_client_name: String::new(),
-            db_query_docs_limit: 0_u64,
+            db_query_docs_limit: 0_u32,
             collection_name: String::new(),
-            fields_count: 0_u64,
+            fields_count: 0_usize,
             fields_name: Vec::new(),
             is_add_docs: true,
             is_up_docs: true,
@@ -65,7 +65,7 @@ pub struct FileData {
     pub path: String,
     pub url: String,
     pub name: String,
-    pub size: u64, // bytes
+    pub size: u32, // bytes
     pub is_delete: bool,
 }
 
@@ -75,7 +75,7 @@ impl Default for FileData {
             path: String::new(),
             url: String::new(),
             name: String::new(),
-            size: 0_u64,
+            size: 0_u32,
             is_delete: false,
         }
     }
@@ -96,9 +96,9 @@ pub struct ImageData {
     pub url_md: String,
     pub url_lg: String,
     pub name: String,
-    pub size: u64,   // bytes
-    pub width: u64,  // pixels
-    pub height: u64, // pixels
+    pub size: u32,   // bytes
+    pub width: u32,  // pixels
+    pub height: u32, // pixels
     pub is_delete: bool,
 }
 
@@ -116,9 +116,9 @@ impl Default for ImageData {
             url_md: String::new(),
             url_lg: String::new(),
             name: String::new(),
-            size: 0_u64,
-            width: 0_u64,
-            height: 0_u64,
+            size: 0_u32,
+            width: 0_u32,
+            height: 0_u32,
             is_delete: false,
         }
     }
