@@ -10,22 +10,22 @@ pub struct SelectU32Mult {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<i64>>, // Sets the value of an element.
-    pub default: Option<Vec<i64>>, // Value by default.
+    pub value: Option<Vec<u32>>, // Sets the value of an element.
+    pub default: Option<Vec<u32>>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub min: Option<i64>, // The lower value for entering a number.
-    pub max: Option<i64>, // The top value for entering a number.
-    pub options: Vec<(i64, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
+    pub min: Option<u32>, // The lower value for entering a number.
+    pub max: Option<u32>, // The top value for entering a number.
+    pub options: Vec<(u32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for SelectU32Mult {
@@ -51,14 +51,13 @@ impl Default for SelectU32Mult {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 6,
+            group: 6_u32,
         }
     }
 }
 
 impl SelectU32Mult {
     pub fn set(&mut self, value: Vec<u32>) {
-        let arr = value.iter().map(|num| i64::from(*num)).collect();
-        self.value = Some(arr);
+        self.value = Some(value);
     }
 }

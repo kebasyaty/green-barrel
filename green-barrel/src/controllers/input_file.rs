@@ -25,7 +25,7 @@ pub struct InputFile {
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for InputFile {
@@ -49,7 +49,7 @@ impl Default for InputFile {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 8,
+            group: 8_u32,
         }
     }
 }

@@ -29,7 +29,7 @@ pub struct TextArea {
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for TextArea {
@@ -44,22 +44,22 @@ impl Default for TextArea {
             default: None,
             placeholder: String::new(),
             pattern: String::new(),
-            minlength: 0,
-            maxlength: 2000,
+            minlength: 0_usize,
+            maxlength: 2000_usize,
             required: false,
             unique: false,
             disabled: false,
             readonly: false,
             is_hide: false,
-            cols: 20,
-            rows: 2,
+            cols: 20_u32,
+            rows: 2_u32,
             wrap: String::from("soft"),
             other_attrs: String::new(),
             css_classes: String::new(),
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 1,
+            group: 1_u32,
         }
     }
 }

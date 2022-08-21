@@ -23,7 +23,7 @@ pub struct RadioI32 {
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // The value is determined automatically.
     pub error: String,       // The value is determined automatically.
-    pub group: u64, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
 impl Default for RadioI32 {
@@ -47,7 +47,7 @@ impl Default for RadioI32 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 10,
+            group: 10_u32,
         }
     }
 }

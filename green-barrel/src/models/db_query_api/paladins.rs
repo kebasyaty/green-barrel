@@ -1391,15 +1391,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get clean data.
                     let curr_val = const_value.as_i64().unwrap();
-                    // Check for unsigned type
-                    if field_type.contains("U") && curr_val < 0 {
-                        is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                            &final_field,
-                            "The number must not be less than zero."
-                        ));
-                        continue;
-                    }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
