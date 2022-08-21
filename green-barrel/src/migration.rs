@@ -480,7 +480,7 @@ impl<'a> Monitor<'a> {
                                                 // Get file metadata.
                                                 let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
-                                                file_data.size = metadata.len();
+                                                file_data.size = metadata.len() as u32;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Create doc.
@@ -516,7 +516,7 @@ impl<'a> Monitor<'a> {
                                                 // Get file metadata.
                                                 let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
-                                                file_data.size = metadata.len();
+                                                file_data.size = metadata.len() as u32;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.

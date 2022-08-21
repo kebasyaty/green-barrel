@@ -123,7 +123,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
-    fn calculate_thumbnail_size(width: u64, height: u64, max_size: u64) -> (u64, u64) {
+    fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
         if width > height {
             if width > max_size {
                 return (max_size, height * (max_size / width));
@@ -1042,7 +1042,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    file_data.size = metadata.len();
+                    file_data.size = metadata.len() as u32;
                     // Get file name.
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
@@ -1102,7 +1102,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    let thumbnails = serde_json::from_value::<Vec<(String, u64)>>(
+                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
                         final_field.get("thumbnails").unwrap().clone(),
                     )?;
                     //
@@ -1191,7 +1191,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    image_data.size = metadata.len();
+                    image_data.size = metadata.len() as u32;
                     // Get file name
                     image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
@@ -1202,7 +1202,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
-                            let thumbnail_size: (u64, u64) = Self::calculate_thumbnail_size(
+                            let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
                                 dimensions.0.into(),
                                 dimensions.1.into(),
                                 max_size.1,
