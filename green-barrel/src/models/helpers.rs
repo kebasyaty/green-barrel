@@ -60,7 +60,7 @@ impl Default for Meta {
 
 /// Helper structures for inputFile fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 pub struct FileData {
     pub path: String,
     pub url: String,
@@ -69,21 +69,9 @@ pub struct FileData {
     pub is_delete: bool,
 }
 
-impl Default for FileData {
-    fn default() -> Self {
-        Self {
-            path: String::new(),
-            url: String::new(),
-            name: String::new(),
-            size: 0_u32,
-            is_delete: false,
-        }
-    }
-}
-
 /// Helper structures for inputImage fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 pub struct ImageData {
     pub path: String, // max size == original
     pub path_xs: String,
@@ -100,28 +88,6 @@ pub struct ImageData {
     pub width: u32,  // pixels
     pub height: u32, // pixels
     pub is_delete: bool,
-}
-
-impl Default for ImageData {
-    fn default() -> Self {
-        Self {
-            path: String::new(),
-            path_xs: String::new(),
-            path_sm: String::new(),
-            path_md: String::new(),
-            path_lg: String::new(),
-            url: String::new(),
-            url_xs: String::new(),
-            url_sm: String::new(),
-            url_md: String::new(),
-            url_lg: String::new(),
-            name: String::new(),
-            size: 0_u32,
-            width: 0_u32,
-            height: 0_u32,
-            is_delete: false,
-        }
-    }
 }
 
 /// To optimize the update_dyn_wig method.
