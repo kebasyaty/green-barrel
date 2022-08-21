@@ -1724,7 +1724,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         let mut stop_step: u8 = 0;
         //
-        for num in 0_u8..=1_u8 {
+        for step in 0_u8..=1_u8 {
             // Get checked data from the `check()` method.
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
@@ -1808,7 +1808,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
             // Return result.
             // -------------------------------------------------------------------------------------
-            if num == stop_step {
+            if step == stop_step {
                 return Ok(verified_data);
             }
         }

@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = models::UserProfile::new()?;
-    user.username.set("user_1");
-    user.email.set("user_1_@noreply.net");
+    user.username.set("user_3");
+    user.email.set("user_3_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
