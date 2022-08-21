@@ -266,7 +266,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .unwrap()
                 .to_string();
             let field_type = field_type.as_str();
-            let const_group = final_field.get("group").unwrap().as_u64().unwrap().clone();
+            let const_group = final_field.get("group").unwrap().as_i64().unwrap().clone() as u32;
 
             // Field validation.
             match const_group {

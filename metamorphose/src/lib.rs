@@ -396,7 +396,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
                 }
                 // Add a limit on the number of documents when querying the database.
-                if meta.db_query_docs_limit == 0_u64 {
+                if meta.db_query_docs_limit == 0_u32 {
                     meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
                 }
                 // Add collection name.
