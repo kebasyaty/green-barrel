@@ -123,10 +123,11 @@ impl OutputDataCheck {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{}", output_data.hash());
+    /// println!("{}", output_data.get_hash());
+    /// println!("{}", output_data.set_hash(hash_line));
     /// ```
     ///
-    pub fn hash(&self) -> String {
+    pub fn get_hash(&self) -> String {
         let value = self
             .final_model_json
             .get("hash")
@@ -162,8 +163,8 @@ impl OutputDataCheck {
     /// println!("{:?}", output_data.object_id()?);
     /// ```
     ///
-    pub fn object_id(&self) -> Result<ObjectId, Box<dyn Error>> {
-        let hash_line = self.hash();
+    pub fn get_object_id(&self) -> Result<ObjectId, Box<dyn Error>> {
+        let hash_line = self.get_hash();
         let object_id = ObjectId::with_string(hash_line.as_str())?;
         Ok(object_id)
     }
@@ -309,7 +310,7 @@ impl OutputDataCheck {
     /// }
     /// ```
     ///
-    pub fn err_msg(&self) -> String {
+    pub fn get_err_msg(&self) -> String {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
@@ -343,7 +344,7 @@ impl OutputDataCheck {
     /// ```
     ///
     pub fn print_err(&self) {
-        let errors = self.err_msg();
+        let errors = self.get_err_msg();
         if !errors.is_empty() {
             println!("\nERRORS:{}\n", errors);
         }
