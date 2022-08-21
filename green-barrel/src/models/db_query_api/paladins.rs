@@ -1293,8 +1293,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
-                    if unique.is_some() {
-                        let is_unique = unique.unwrap().as_bool().unwrap();
+                    if let Some(unique) = unique {
+                        let is_unique = unique.as_bool().unwrap();
                         if is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .unwrap_or_else(|err| {
