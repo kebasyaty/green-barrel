@@ -1729,7 +1729,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            let final_model_json = verified_data.get_model_json();
             // Get cached Model data.
             let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
             // Get Model metadata.
@@ -1742,8 +1741,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .collection(meta.collection_name.as_str());
             // Having fields with a widget of inputSlug type.
             if is_no_error && !is_update {
-                let target_field_type = "AutoSlug";
                 let hash = "hash";
+                let target_field_type = "AutoSlug";
+                let final_model_json = verified_data.get_model_json();
                 for (field_name, field_type) in meta.controller_type_map.iter() {
                     if field_type == target_field_type {
                         let flag = final_model_json
