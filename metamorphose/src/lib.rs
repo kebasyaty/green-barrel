@@ -358,6 +358,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         .unwrap()
                         .get_mut("id")
                         .unwrap() = serde_json::json!(id_name);
+                    *instance_json_val
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("name")
+                        .unwrap() = serde_json::json!(field_name);
                 }
                 //
                 Ok(instance_json_val)
