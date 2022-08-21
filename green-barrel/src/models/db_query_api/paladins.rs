@@ -1723,7 +1723,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     ///
     // *********************************************************************************************
-    fn save<'a>(
+    fn save(
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
