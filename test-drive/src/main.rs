@@ -62,8 +62,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     /*
     let output_data = user.check(None)?;
     println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.hash());
-    println!("Object Id: {:?}", output_data.object_id());
+    println!("Hash: {}", output_data.get_hash());
+    println!("Object Id: {:?}", output_data.get_object_id());
     //
     // Printing errors to the console ( for development ).
     if !output_data.is_valid() {
@@ -78,8 +78,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ---------------------------------------------------------------------------------------------
     let output_data = user.save(None, None)?;
     println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.hash());
-    println!("Object Id: {:?}", output_data.object_id());
+    println!("Hash: {}", output_data.get_hash());
+    println!("Object Id: {:?}", output_data.get_object_id());
     println!("Created at: {}", user.get_created_at());
     println!("Updated at: {}", user.get_updated_at());
     //
@@ -96,8 +96,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if output_data.is_valid() {
         let output_data = user.save(None, None)?;
         println!("Boolean: {}", output_data.is_valid());
-        println!("Hash: {}", output_data.hash());
-        println!("Object Id: {:?}", output_data.object_id());
+        println!("Hash: {}", output_data.get_hash());
+        println!("Object Id: {:?}", output_data.get_object_id());
         println!("Created at: {}", user.get_created_at());
         println!("Updated at: {}", user.get_updated_at());
         // Printing errors to the console ( for development ).
