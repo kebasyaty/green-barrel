@@ -195,7 +195,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 for (field_name, err_msg) in error_map {
                     if let Some(final_field) = final_model_json.get_mut(field_name) {
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(&final_field, err_msg));
+                            json!(Self::accumula_err(final_field, err_msg));
                     } else {
                         Err(format!(
                             "\n\nModel: `{}` ;  Method: `add_validation()` => \
@@ -287,7 +287,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, "Required field."));
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 } else {
                                     Err(format!(
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
@@ -321,13 +321,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
                                     model_name,
                                     field_name,
-                                    err.to_string()
+                                    err
                                 ))
                                     .unwrap()
                                 }
@@ -344,13 +344,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
                                     model_name,
                                     field_name,
-                                    err.to_string()
+                                    err
                                 ))
                                     .unwrap()
                                 }
@@ -364,13 +364,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 is_err_symptom = true;
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(&final_field, &err.to_string()));
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
                                     model_name,
                                     field_name,
-                                    err.to_string()
+                                    err
                                 ))
                                     .unwrap()
                                 }
