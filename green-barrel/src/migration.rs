@@ -218,19 +218,13 @@ impl<'a> Monitor<'a> {
             }
             //
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            let fields_name: Vec<&str> =
-                meta.fields_name.iter().map(|item| item.as_str()).collect();
-            let ignore_fields: Vec<&str> = meta
-                .ignore_fields
-                .iter()
-                .map(|item| item.as_str())
-                .collect();
+            let fields_name = &meta.fields_name;
+            let ignore_fields = &meta.ignore_fields;
             // List field names without `hash` and ignored fields.
             let trunc_fields_name_list = fields_name
                 .iter()
-                .filter(|item| **item != "hash" && !ignore_fields.contains(item))
-                .copied()
-                .collect::<Vec<&str>>();
+                .filter(|item| *item != "hash" && !ignore_fields.contains(*item))
+                .collect::<Vec<&String>>();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             let database_names: Vec<String> = client.list_database_names(None, None)?;
@@ -239,12 +233,12 @@ impl<'a> Monitor<'a> {
             let default_value_map: HashMap<String, serde_json::Value> =
                 meta.default_value_map.clone();
             // Get map of fields types.
-            let controller_type_map = meta.controller_type_map.clone();
+            let controller_type_map = &meta.controller_type_map;
             // Get truncated map of fields types.
-            let trunc_controller_type_map: HashMap<String, String> = controller_type_map.clone();
+            let trunc_controller_type_map = controller_type_map.clone();
             trunc_controller_type_map
                 .clone()
-                .retain(|k, _| k != "hash" && !ignore_fields.contains(&k.as_str()));
+                .retain(|item, _| item != "hash" && !ignore_fields.contains(item));
             // Get a map of fields type from the technical database,
             // from the `monitor_models` collection for current Model.
             let monitor_controller_type_map: HashMap<String, String>;
@@ -309,8 +303,7 @@ impl<'a> Monitor<'a> {
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
                         for (field_name, field_type) in controller_type_map.iter() {
-                            if field_name == "hash" || ignore_fields.contains(&field_name.as_str())
-                            {
+                            if field_name == "hash" || ignore_fields.contains(field_name) {
                                 continue;
                             }
                             // Insert the reserved fields.
