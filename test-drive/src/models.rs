@@ -33,78 +33,77 @@ impl Control for UserProfile {
     fn custom_default() -> Self {
         Self {
             username: InputText {
-                label: String::from("Username"),
-                placeholder: String::from("Enter your username"),
+                label: "Username".into(),
+                placeholder: "Enter your username".into(),
                 maxlength: 150,
                 required: true,
                 unique: true,
-                hint: String::from("Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"),
+                hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
                 ..Default::default()
             },
             slug: AutoSlug {
-                label: String::from("Slug"),
+                label: "Slug".into(),
                 unique: true,
                 readonly: true,
-                hint: String::from("To create a human readable url"),
-                slug_sources: vec![String::from("hash"), String::from("username")],
+                hint: "To create a human readable url".into(),
+                slug_sources: vec!["hash".into(), "username".into()],
                 ..Default::default()
             },
             first_name: InputText {
-                label: String::from("First name"),
-                placeholder: String::from("Enter your First name"),
+                label: "First name".into(),
+                placeholder: "Enter your First name".into(),
                 maxlength: 150,
                 ..Default::default()
             },
             last_name: InputText {
-                label: String::from("Last name"),
-                placeholder: String::from("Enter your Last name"),
+                label: "Last name".into(),
+                placeholder: "Enter your Last name".into(),
                 maxlength: 150,
                 ..Default::default()
             },
             email: InputEmail {
-                label: String::from("E-mail"),
-                placeholder: String::from("Please enter your email"),
+                label: "E-mail".into(),
+                placeholder: "Please enter your email".into(),
                 required: true,
                 unique: true,
                 maxlength: 320,
-                hint: String::from("Your actual E-mail"),
+                hint: "Your actual E-mail".into(),
                 ..Default::default()
             },
             phone: InputPhone {
-                label: String::from("Phone number"),
-                placeholder: String::from("Please enter your phone number"),
+                label: "Phone number".into(),
+                placeholder: "Please enter your phone number".into(),
                 unique: true,
                 maxlength: 30,
-                hint: String::from("Your actual phone number"),
+                hint: "Your actual phone number".into(),
                 ..Default::default()
             },
             password: InputPassword {
-                label: String::from("Password"),
-                placeholder: String::from("Enter your password"),
+                label: "Password".into(),
+                placeholder: "Enter your password".into(),
                 required: true,
                 minlength: 8,
-                hint: String::from(
-                    "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8",
-                ),
+                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
+                    .into(),
                 ..Default::default()
             },
             confirm_password: InputPassword {
-                label: String::from("Confirm password"),
-                placeholder: String::from("Repeat your password"),
+                label: "Confirm password".into(),
+                placeholder: "Repeat your password".into(),
                 required: true,
                 minlength: 8,
                 ..Default::default()
             },
             is_staff: CheckBox {
-                label: String::from("is staff?"),
+                label: "is staff?".into(),
                 checked: true,
-                hint: String::from("User can access the admin site?"),
+                hint: "User can access the admin site?".into(),
                 ..Default::default()
             },
             is_active: CheckBox {
-                label: String::from("is active?"),
+                label: "is active?".into(),
                 checked: true,
-                hint: String::from("Is this an active account?"),
+                hint: "Is this an active account?".into(),
                 ..Default::default()
             },
             ..Default::default()
