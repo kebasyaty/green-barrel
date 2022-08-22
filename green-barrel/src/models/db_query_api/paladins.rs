@@ -165,11 +165,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // User input error detection symptom.
         let mut is_err_symptom = false;
         // Get a list of fields that should not be included in the document.
-        let ignore_fields = meta
-            .ignore_fields
-            .iter()
-            .map(|item| item.as_str())
-            .collect::<Vec<&str>>();
+        let ignore_fields = &meta.ignore_fields;
         // Access the collection.
         let coll: Collection = client_cache
             .database(&meta.database_name)
@@ -181,11 +177,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
-        let fields_name = meta
-            .fields_name
-            .iter()
-            .map(|item| item.as_str())
-            .collect::<Vec<&str>>();
+        let fields_name = &meta.fields_name;
 
         // Apply additional validation.
         if meta.is_use_add_valid {
@@ -297,7 +289,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -420,7 +412,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
                             "InputPassword" => {
                                 if !curr_val.is_empty() && !is_update {
@@ -486,7 +478,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(&field_name) {
+                        if !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
@@ -508,7 +500,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             });
                     }
                     // Insert result.
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -541,7 +533,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -647,7 +639,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, dt_val_bson);
                     }
                 }
@@ -678,7 +670,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -735,7 +727,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(&field_name) {
+                        if !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
@@ -794,7 +786,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -872,7 +864,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(&field_name) {
+                        if !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
@@ -934,7 +926,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         FileData::default()
                     };
                     // Delete file.
-                    if file_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
+                    if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
                             || ((!file_data.path.is_empty() && !file_data.url.is_empty())
                                 || !const_default.is_null())
@@ -987,7 +979,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         ))?
                                     }
                                 }
-                                if !is_update && !ignore_fields.contains(&field_name) {
+                                if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
                                 }
                                 continue;
@@ -1032,7 +1024,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file name.
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
-                    if !ignore_fields.contains(&field_name) {
+                    if !ignore_fields.contains(field_name) {
                         // Add file data to widget.
                         *final_field.get_mut("value").unwrap() = serde_json::to_value(file_data)?;
                         //
@@ -1055,7 +1047,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ImageData::default()
                     };
                     // Delete file.
-                    if image_data.is_delete && is_update && !ignore_fields.contains(&field_name) {
+                    if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
                             || ((!image_data.path.is_empty() && !image_data.url.is_empty())
                                 || !const_default.is_null())
@@ -1137,7 +1129,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         ))?
                                     }
                                 }
-                                if !is_update && !ignore_fields.contains(&field_name) {
+                                if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
                                 }
                                 continue;
@@ -1242,7 +1234,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Insert result.
-                    if !ignore_fields.contains(&field_name) {
+                    if !ignore_fields.contains(field_name) {
                         // Add file data to widget.
                         *final_field.get_mut("value").unwrap() = serde_json::to_value(image_data)?;
                         //
@@ -1280,7 +1272,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1340,7 +1332,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1367,7 +1359,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1426,7 +1418,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1453,7 +1445,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(&field_name) {
+                            if !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1512,7 +1504,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1545,7 +1537,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
+                    if !is_err_symptom && !ignore_fields.contains(field_name) {
                         let checked = checked_json_val.as_bool().unwrap();
                         let field_value_bson = Bson::Boolean(checked);
                         final_doc.insert(field_name, field_value_bson);
