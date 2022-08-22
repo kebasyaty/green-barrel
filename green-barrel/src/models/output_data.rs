@@ -87,30 +87,15 @@ impl OutputData {
 // *************************************************************************************************
 #[derive(Debug)]
 pub struct OutputDataCheck {
-    is_valid: bool,
-    final_doc: Option<Document>,
-    final_model_json: Value,
-    fields_name: Vec<String>,
+    pub is_valid: bool,
+    pub final_doc: Option<Document>,
+    pub final_model_json: Value,
+    pub fields_name: Vec<String>,
 }
 
 impl Converters for OutputDataCheck {}
 
 impl OutputDataCheck {
-    /// Output data initialization.
-    pub fn from(
-        is_valid: bool,
-        final_doc: Option<Document>,
-        final_model_json: Value,
-        fields_name: Vec<String>,
-    ) -> Self {
-        Self {
-            is_valid,
-            final_doc,
-            final_model_json,
-            fields_name,
-        }
-    }
-
     /// Get/Set Hash-line
     // ---------------------------------------------------------------------------------------------
     ///

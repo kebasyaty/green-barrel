@@ -1691,12 +1691,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputDataCheck::from(
-            !is_err_symptom,
-            Some(final_doc),
+        Ok(OutputDataCheck {
+            is_valid: !is_err_symptom,
+            final_doc: Some(final_doc),
             final_model_json,
-            meta.fields_name,
-        ))
+            fields_name: meta.fields_name.clone(),
+        })
     }
 
     /// Save to database as a new document or update an existing document.
