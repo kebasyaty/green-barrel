@@ -177,7 +177,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
-        let fields_name = &meta.fields_name;
+        let controller_type_map = &meta.controller_type_map;
 
         // Apply additional validation.
         if meta.is_use_add_valid {
@@ -200,7 +200,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
 
         // Loop over fields for validation.
-        for field_name in fields_name {
+        for (field_name, controller_name) in controller_type_map {
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
@@ -241,14 +241,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             };
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
-            let field_type = final_field
-                .get("field_type")
-                .unwrap()
-                .as_str()
-                .unwrap()
-                .to_string();
-            let field_type = field_type.as_str();
             let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
+            let controller_name = controller_name.as_str();
 
             // Field validation.
             match const_group {
@@ -261,7 +255,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 */
                 1 => {
                     // When updating, we skip field password type.
-                    if is_update && field_type == "InputPassword" {
+                    if is_update && controller_name == "InputPassword" {
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
@@ -272,7 +266,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let val_str = const_value.as_str();
                     //
                     if const_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
-                        if field_type != "InputPassword" && !const_default.is_null() {
+                        if controller_name != "InputPassword" && !const_default.is_null() {
                             *final_field.get_mut("value").unwrap() = const_default.clone();
                         } else {
                             if is_required {
@@ -285,7 +279,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -298,7 +292,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     let curr_val = const_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if field_type != "InputPassword" {
+                    let field_value_bson = if controller_name != "InputPassword" {
                         Bson::String(curr_val.to_string())
                     } else {
                         Bson::Null
@@ -374,7 +368,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
-                        if field_type != "InputPassword" && is_unique {
+                        if controller_name != "InputPassword" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
@@ -396,7 +390,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
+                    Self::regex_validation(controller_name, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
                             *final_field.get_mut("error").unwrap() =
@@ -413,7 +407,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if !is_err_symptom && !ignore_fields.contains(field_name) {
-                        match field_type {
+                        match controller_name {
                             "InputPassword" => {
                                 if !curr_val.is_empty() && !is_update {
                                     // Generate password hash and add to result document.
@@ -529,7 +523,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -544,7 +538,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
-                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
+                    if let Err(err) = Self::regex_validation(controller_name, curr_val) {
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() =
                             json!(Self::accumula_err(final_field, &err.to_string()));
@@ -555,7 +549,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
                     let dt_val: chrono::DateTime<chrono::Utc> = {
-                        let val = if field_type == "InputDate" {
+                        let val = if controller_name == "InputDate" {
                             format!("{}T00:00", curr_val)
                         } else {
                             curr_val.to_string()
@@ -572,14 +566,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let max = final_field.get("max").unwrap().as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
                         // Validation in regular expression (min).
-                        if let Err(err) = Self::regex_validation(field_type, min) {
+                        if let Err(err) = Self::regex_validation(controller_name, min) {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &err.to_string()));
                             continue;
                         }
                         // Validation in regular expression (max).
-                        if let Err(err) = Self::regex_validation(field_type, max) {
+                        if let Err(err) = Self::regex_validation(controller_name, max) {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &err.to_string()));
@@ -587,7 +581,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         // Date to DateTime (min).
                         let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_val: String = if field_type == "InputDate" {
+                            let min_val: String = if controller_name == "InputDate" {
                                 format!("{}T00:00", min)
                             } else {
                                 min.to_string()
@@ -599,7 +593,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         };
                         // Date to DateTime (max).
                         let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_val: String = if field_type == "InputDate" {
+                            let max_val: String = if controller_name == "InputDate" {
                                 format!("{}T00:00", max)
                             } else {
                                 max.to_string()
@@ -666,7 +660,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -679,7 +673,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get selected items.
                     final_doc.insert(
                         field_name,
-                        match field_type {
+                        match controller_name {
                             "SelectText" => {
                                 let val = const_value.as_str().unwrap();
                                 Bson::String(val.to_string())
@@ -698,8 +692,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                             _ => Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                    Unsupported widget type - `{}`.\n\n",
-                                model_name, field_name, field_type
+                                    Unsupported controller type - `{}`.\n\n",
+                                model_name, field_name, controller_name
                             ))?,
                         },
                     );
@@ -723,7 +717,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name, field_type
+                                    model_name, field_name, controller_name
                                 ))?
                             }
                         }
@@ -735,7 +729,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get selected items.
                     final_doc.insert(
                         field_name,
-                        match field_type {
+                        match controller_name {
                             "SelectTextDyn" => {
                                 let val = const_value.as_str().unwrap().to_string();
                                 Bson::String(val)
@@ -754,8 +748,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                             _ => Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                    Unsupported widget type - `{}`.\n\n",
-                                model_name, field_name, field_type
+                                    Unsupported controller type - `{}`.\n\n",
+                                model_name, field_name, controller_name
                             ))?,
                         },
                     );
@@ -782,7 +776,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -795,7 +789,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get selected items.
                     final_doc.insert(
                         field_name,
-                        match field_type {
+                        match controller_name {
                             "SelectTextMult" => Bson::Array(
                                 const_value
                                     .as_array()
@@ -832,8 +826,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             ),
                             _ => Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                    Unsupported widget type - `{}`.\n\n",
-                                model_name, field_name, field_type
+                                    Unsupported controller type - `{}`.\n\n",
+                                model_name, field_name, controller_name
                             ))?,
                         },
                     );
@@ -860,7 +854,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name, field_type
+                                    model_name, field_name, controller_name
                                 ))?
                             }
                         }
@@ -872,7 +866,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get selected items.
                     final_doc.insert(
                         field_name,
-                        match field_type {
+                        match controller_name {
                             "SelectTextMultDyn" => Bson::Array(
                                 const_value
                                     .as_array()
@@ -909,8 +903,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             ),
                             _ => Err(format!(
                                 "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                    Unsupported widget type - `{}`.\n\n",
-                                model_name, field_name, field_type
+                                    Unsupported controller type - `{}`.\n\n",
+                                model_name, field_name, controller_name
                             ))?,
                         },
                     );
@@ -918,7 +912,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of file type fields.
                 // *********************************************************************************
                 // "InputFile"
-                8 => {
+                8 if is_save => {
                     // Get data for validation.
                     let mut file_data = if !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
@@ -950,7 +944,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name, field_type
+                                    model_name, field_name, controller_name
                                 ))?
                             }
                         }
@@ -975,7 +969,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                                 Field: `is_hide` = `true` ; Method: `check()` => \
                                                 Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name, field_type
+                                            model_name, field_name, controller_name
                                         ))?
                                     }
                                 }
@@ -1025,7 +1019,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !ignore_fields.contains(field_name) {
-                        // Add file data to widget.
+                        // Add file data to controller.
                         *final_field.get_mut("value").unwrap() = serde_json::to_value(file_data)?;
                         //
                         if !is_err_symptom {
@@ -1039,7 +1033,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 //
                 // "InputImage"
-                9 => {
+                9 if is_save => {
                     // Get data for validation.
                     let mut image_data = if !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
@@ -1071,7 +1065,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name, field_type
+                                    model_name, field_name, controller_name
                                 ))?
                             }
                         }
@@ -1125,7 +1119,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                                 Field: `is_hide` = `true` ; Method: `check()` => \
                                                 Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name, field_type
+                                            model_name, field_name, controller_name
                                         ))?
                                     }
                                 }
@@ -1235,7 +1229,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     if !ignore_fields.contains(field_name) {
-                        // Add file data to widget.
+                        // Add file data to controller.
                         *final_field.get_mut("value").unwrap() = serde_json::to_value(image_data)?;
                         //
                         if !is_err_symptom {
@@ -1268,7 +1262,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -1355,7 +1349,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -1441,7 +1435,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, field_type
+                                        model_name, field_name, controller_name
                                     ))?
                                 }
                             }
@@ -1528,7 +1522,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name, field_type
+                                    model_name, field_name, controller_name
                                 ))?
                             }
                         }
@@ -1545,8 +1539,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 _ => Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                     Unsupported widget type - `{}`.",
-                    model_name, field_name, field_type
+                     Unsupported controller type - `{}`.",
+                    model_name, field_name, controller_name
                 ))?,
             }
 
@@ -1556,6 +1550,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
                 let dt_text: String = dt.to_rfc3339()[..19].into();
                 if is_update {
+                    // Get the `created_at` value from the database.
+                    let doc = {
+                        let object_id = ObjectId::with_string(hash)?;
+                        let filter = doc! {"_id": object_id};
+                        coll.find_one(filter, None)?.unwrap()
+                    };
+                    let dt2 = doc.get("created_at").unwrap();
+                    let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    //
+                    final_doc.insert("created_at", dt);
+                    *final_model_json
+                        .get_mut("created_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text2);
+                    self.set_created_at(dt_text2);
                     // For update.
                     if is_save {
                         final_doc.insert("updated_at", Bson::DateTime(dt));
@@ -1565,23 +1575,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .get_mut("value")
                             .unwrap() = json!(dt_text);
                         self.set_updated_at(dt_text);
+                    } else {
+                        let dt = doc.get("updated_at").unwrap();
+                        let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                        final_doc.insert("updated_at", dt);
+                        *final_model_json
+                            .get_mut("updated_at")
+                            .unwrap()
+                            .get_mut("value")
+                            .unwrap() = json!(dt_text);
+                        self.set_updated_at(dt_text);
                     }
-                    // Get the `created_at` value from the database.
-                    let doc = {
-                        let object_id = ObjectId::with_string(hash)?;
-                        let filter = doc! {"_id": object_id};
-                        coll.find_one(filter, None)?.unwrap()
-                    };
-                    let dt = doc.get("created_at").unwrap();
-                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
-                    //
-                    final_doc.insert("created_at", dt);
-                    *final_model_json
-                        .get_mut("created_at")
-                        .unwrap()
-                        .get_mut("value")
-                        .unwrap() = json!(dt_text);
-                    self.set_created_at(dt_text);
                 } else if is_save {
                     // For create.
                     final_doc.insert("created_at", Bson::DateTime(dt));
@@ -1606,9 +1610,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if is_save && is_err_symptom && !is_update {
             for field_name in meta.fields_name.iter() {
                 let field = final_model_json.get(field_name).unwrap();
-                let field_type = field.get("field_type").unwrap().as_str().unwrap();
+                let controller_name = field.get("field_type").unwrap().as_str().unwrap();
                 //
-                if field_type == "InputFile" {
+                if controller_name == "InputFile" {
                     let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
@@ -1629,7 +1633,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap() = json!(null);
                         }
                     }
-                } else if field_type == "InputImage" {
+                } else if controller_name == "InputImage" {
                     let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
@@ -1671,7 +1675,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
 
-        // Enrich the widget map with values for dynamic widgets.
+        // Enrich the controller map with values for dynamic controllers.
         Self::vitaminize(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
@@ -1731,13 +1735,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
-            // Having fields with a widget of inputSlug type.
+            // Having fields with a controller of inputSlug type.
             if is_no_error && !is_update {
                 let hash = "hash";
-                let target_field_type = "AutoSlug";
+                let target_controller_name = "AutoSlug";
                 let final_model_json = verified_data.get_model_json();
-                for (field_name, field_type) in meta.controller_type_map.iter() {
-                    if field_type == target_field_type {
+                for (field_name, controller_name) in meta.controller_type_map.iter() {
+                    if controller_name == target_controller_name {
                         let flag = final_model_json
                             .get(field_name)
                             .unwrap()
@@ -1863,9 +1867,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {
                         let field = model_json.get(field_name).unwrap();
-                        let field_type = field.get("field_type").unwrap().as_str().unwrap();
+                        let controller_name = field.get("field_type").unwrap().as_str().unwrap();
                         //
-                        if field_type == "InputFile" {
+                        if controller_name == "InputFile" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
@@ -1889,7 +1893,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     meta.model_name, field_name
                                 ))?
                             }
-                        } else if field_type == "InputImage" {
+                        } else if controller_name == "InputImage" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
