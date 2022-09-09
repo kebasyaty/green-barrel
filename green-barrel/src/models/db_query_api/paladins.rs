@@ -1676,7 +1676,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
 
         // Enrich the controller map with values for dynamic controllers.
-        Self::vitaminize(
+        Self::injection(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),

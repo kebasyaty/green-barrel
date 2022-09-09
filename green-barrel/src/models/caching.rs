@@ -38,7 +38,7 @@ pub trait Caching: Main + Converters {
         // Get a fields.
         let mut model_json = Self::control_to_json_val()?;
         // Enrich the field map with values for dynamic fields.
-        Self::vitaminize(
+        Self::injection(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),

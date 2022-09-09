@@ -68,7 +68,7 @@ pub trait Main {
 
     /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
-    fn vitaminize(
+    fn injection(
         project_name: &str,
         unique_project_key: &str,
         collection_name: &str,
