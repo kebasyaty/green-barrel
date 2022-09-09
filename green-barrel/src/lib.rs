@@ -38,7 +38,7 @@ pub use crate::{
         db_query_api::{commons::QCommons, paladins::QPaladins},
         helpers::{ControlArr, FileData, ImageData, Meta},
         hooks::Hooks,
-        output_data::{OutputData, OutputDataCheck},
+        output_data::{OutputData, OutputData2},
         validation::{AdditionalValidation, Validation},
         Main,
     },

@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = models::UserProfile::new()?;
-    user.username.set("user_7");
-    user.email.set("user_7_@noreply.net");
+    user.username.set("user_8");
+    user.email.set("user_8_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
@@ -59,18 +59,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Check model.
     // ---------------------------------------------------------------------------------------------
-
+    /*
     let output_data = user.check(None)?;
     println!("Boolean: {}", output_data.is_valid());
     println!("Hash: {}", output_data.get_hash());
-    if output_data.get_object_id().is_ok() {
-        println!("Object Id: {:?}", output_data.get_object_id());
+    if output_data.get_obj_id().is_ok() {
+        println!("Object Id: {:?}", output_data.get_obj_id());
     }
     //
     // Printing errors to the console ( for development ).
     if !output_data.is_valid() {
         output_data.print_err();
     }
+    */
     //
     //println!("Json:\n{}\n\n", output_data.to_json()?);
     //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
@@ -80,8 +81,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let output_data = user.save(None, None)?;
     println!("Boolean: {}", output_data.is_valid());
     println!("Hash: {}", output_data.get_hash());
-    if output_data.get_object_id().is_ok() {
-        println!("Object Id: {:?}", output_data.get_object_id());
+    if output_data.get_obj_id().is_ok() {
+        println!("Object Id: {:?}", output_data.get_obj_id());
     }
     println!("Created at: {}", user.get_created_at());
     println!("Updated at: {}", user.get_updated_at());
@@ -100,7 +101,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let output_data = user.save(None, None)?;
         println!("Boolean: {}", output_data.is_valid());
         println!("Hash: {}", output_data.get_hash());
-        println!("Object Id: {:?}", output_data.get_object_id());
+        if output_data.get_obj_id().is_ok() {
+            println!("Object Id: {:?}", output_data.get_obj_id());
+        }
         println!("Created at: {}", user.get_created_at());
         println!("Updated at: {}", user.get_updated_at());
         // Printing errors to the console ( for development ).

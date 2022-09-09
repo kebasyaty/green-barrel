@@ -16,7 +16,7 @@ use crate::models::{
     caching::Caching,
     helpers::{FileData, ImageData, Meta},
     hooks::Hooks,
-    output_data::{OutputData, OutputDataCheck},
+    output_data::{OutputData, OutputData2},
     validation::{AdditionalValidation, Validation},
     Main,
 };
@@ -147,7 +147,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn check(&mut self, is_save: Option<bool>) -> Result<OutputDataCheck, Box<dyn Error>>
+    fn check(&mut self, is_save: Option<bool>) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -1687,7 +1687,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputDataCheck {
+        Ok(OutputData2 {
             is_valid: !is_err_symptom,
             final_doc: Some(final_doc),
             final_model_json,
@@ -1713,7 +1713,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputDataCheck, Box<dyn Error>>
+    ) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -1739,7 +1739,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if is_no_error && !is_update {
                 let hash = "hash";
                 let target_controller_name = "AutoSlug";
-                let final_model_json = verified_data.get_model_json();
+                let final_model_json = verified_data.get_val_json();
                 for (field_name, controller_name) in meta.controller_type_map.iter() {
                     if controller_name == target_controller_name {
                         let flag = final_model_json

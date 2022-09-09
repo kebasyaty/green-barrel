@@ -86,16 +86,16 @@ impl OutputData {
 /// Helper methods for converting output data (use in the paladins.rs module).
 // *************************************************************************************************
 #[derive(Debug)]
-pub struct OutputDataCheck {
+pub struct OutputData2 {
     pub is_valid: bool,
     pub final_doc: Option<Document>,
     pub final_model_json: Value,
     pub fields_name: Vec<String>,
 }
 
-impl Converters for OutputDataCheck {}
+impl Converters for OutputData2 {}
 
-impl OutputDataCheck {
+impl OutputData2 {
     /// Get/Set Hash-line
     // ---------------------------------------------------------------------------------------------
     ///
@@ -145,10 +145,10 @@ impl OutputDataCheck {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.object_id()?);
+    /// println!("{:?}", output_data.get_obj_id()?);
     /// ```
     ///
-    pub fn get_object_id(&self) -> Result<ObjectId, Box<dyn Error>> {
+    pub fn get_obj_id(&self) -> Result<ObjectId, Box<dyn Error>> {
         let hash_line = self.get_hash();
         let object_id = ObjectId::with_string(hash_line.as_str())?;
         Ok(object_id)
@@ -189,10 +189,10 @@ impl OutputDataCheck {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.get_model_json());
+    /// println!("{:?}", output_data.get_val_json());
     /// ```
     ///
-    pub fn get_model_json(&self) -> Value {
+    pub fn get_val_json(&self) -> Value {
         self.final_model_json.clone()
     }
 
