@@ -1555,68 +1555,68 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     model_name, field_name, controller_name
                 ))?,
             }
+        }
 
-            // Insert or update fields for timestamps `created_at` and `updated_at`.
-            // -------------------------------------------------------------------------------------
-            if !is_err_symptom {
-                let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
-                let dt_text: String = dt.to_rfc3339()[..19].into();
-                if is_update {
-                    // Get the `created_at` value from the database.
-                    let doc = {
-                        let object_id = ObjectId::with_string(hash)?;
-                        let filter = doc! {"_id": object_id};
-                        coll.find_one(filter, None)?.unwrap()
-                    };
-                    let dt2 = doc.get("created_at").unwrap();
-                    let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
-                    //
-                    *final_model_json
-                        .get_mut("created_at")
-                        .unwrap()
-                        .get_mut("value")
-                        .unwrap() = json!(dt_text2);
-                    self.set_created_at(dt_text2);
-                    // For update.
-                    if is_save {
-                        final_doc.insert("created_at", dt2);
-                        final_doc.insert("updated_at", Bson::DateTime(dt));
-                        *final_model_json
-                            .get_mut("updated_at")
-                            .unwrap()
-                            .get_mut("value")
-                            .unwrap() = json!(dt_text);
-                        self.set_updated_at(dt_text);
-                    } else {
-                        let dt = doc.get("updated_at").unwrap();
-                        let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
-                        if is_save {
-                            final_doc.insert("updated_at", dt);
-                        }
-                        *final_model_json
-                            .get_mut("updated_at")
-                            .unwrap()
-                            .get_mut("value")
-                            .unwrap() = json!(dt_text);
-                        self.set_updated_at(dt_text);
-                    }
-                } else if is_save {
-                    // For create.
-                    final_doc.insert("created_at", Bson::DateTime(dt));
+        // Insert or update fields for timestamps `created_at` and `updated_at`.
+        // -------------------------------------------------------------------------------------
+        if !is_err_symptom {
+            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
+            let dt_text: String = dt.to_rfc3339()[..19].into();
+            if is_update {
+                // Get the `created_at` value from the database.
+                let doc = {
+                    let object_id = ObjectId::with_string(hash)?;
+                    let filter = doc! {"_id": object_id};
+                    coll.find_one(filter, None)?.unwrap()
+                };
+                let dt2 = doc.get("created_at").unwrap();
+                let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                //
+                *final_model_json
+                    .get_mut("created_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text2);
+                self.set_created_at(dt_text2);
+                // For update.
+                if is_save {
+                    final_doc.insert("created_at", dt2);
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    self.set_created_at(dt_text.clone());
-                    self.set_updated_at(dt_text.clone());
-                    *final_model_json
-                        .get_mut("created_at")
-                        .unwrap()
-                        .get_mut("value")
-                        .unwrap() = json!(dt_text);
                     *final_model_json
                         .get_mut("updated_at")
                         .unwrap()
                         .get_mut("value")
                         .unwrap() = json!(dt_text);
+                    self.set_updated_at(dt_text);
+                } else {
+                    let dt = doc.get("updated_at").unwrap();
+                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    if is_save {
+                        final_doc.insert("updated_at", dt);
+                    }
+                    *final_model_json
+                        .get_mut("updated_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
+                    self.set_updated_at(dt_text);
                 }
+            } else if is_save {
+                // For create.
+                final_doc.insert("created_at", Bson::DateTime(dt));
+                final_doc.insert("updated_at", Bson::DateTime(dt));
+                self.set_created_at(dt_text.clone());
+                self.set_updated_at(dt_text.clone());
+                *final_model_json
+                    .get_mut("created_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text);
+                *final_model_json
+                    .get_mut("updated_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text);
             }
         }
 
