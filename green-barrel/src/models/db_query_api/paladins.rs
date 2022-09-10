@@ -283,7 +283,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -406,7 +406,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match controller_name {
                             "InputPassword" => {
                                 if !curr_val.is_empty() && !is_update {
@@ -472,7 +472,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(field_name) {
+                        if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
@@ -494,7 +494,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             });
                     }
                     // Insert result.
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -527,7 +527,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -633,7 +633,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, dt_val_bson);
                     }
                 }
@@ -664,39 +664,41 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
                         }
                     }
                     // Get selected items.
-                    final_doc.insert(
-                        field_name,
-                        match controller_name {
-                            "SelectText" => {
-                                let val = const_value.as_str().unwrap();
-                                Bson::String(val.to_string())
-                            }
-                            "SelectI32" => {
-                                let val = i32::try_from(const_value.as_i64().unwrap())?;
-                                Bson::Int32(val)
-                            }
-                            "SelectU32" | "SelectI64" => {
-                                let val = const_value.as_i64().unwrap();
-                                Bson::Int64(val)
-                            }
-                            "SelectF64" => {
-                                let val = const_value.as_f64().unwrap();
-                                Bson::Double(val)
-                            }
-                            _ => Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match controller_name {
+                                "SelectText" => {
+                                    let val = const_value.as_str().unwrap();
+                                    Bson::String(val.to_string())
+                                }
+                                "SelectI32" => {
+                                    let val = i32::try_from(const_value.as_i64().unwrap())?;
+                                    Bson::Int32(val)
+                                }
+                                "SelectU32" | "SelectI64" => {
+                                    let val = const_value.as_i64().unwrap();
+                                    Bson::Int64(val)
+                                }
+                                "SelectF64" => {
+                                    let val = const_value.as_f64().unwrap();
+                                    Bson::Double(val)
+                                }
+                                _ => Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                model_name, field_name, controller_name
-                            ))?,
-                        },
-                    );
+                                    model_name, field_name, controller_name
+                                ))?,
+                            },
+                        );
+                    }
                 }
                 //
                 // "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn" | "SelectF64Dyn"
@@ -721,38 +723,40 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(field_name) {
+                        if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
                     }
                     // Get selected items.
-                    final_doc.insert(
-                        field_name,
-                        match controller_name {
-                            "SelectTextDyn" => {
-                                let val = const_value.as_str().unwrap().to_string();
-                                Bson::String(val)
-                            }
-                            "SelectI32Dyn" => {
-                                let val = i32::try_from(const_value.as_i64().unwrap())?;
-                                Bson::Int32(val)
-                            }
-                            "SelectU32Dyn" | "SelectI64Dyn" => {
-                                let val = const_value.as_i64().unwrap();
-                                Bson::Int64(val)
-                            }
-                            "SelectF64Dyn" => {
-                                let val = const_value.as_f64().unwrap();
-                                Bson::Double(val)
-                            }
-                            _ => Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match controller_name {
+                                "SelectTextDyn" => {
+                                    let val = const_value.as_str().unwrap().to_string();
+                                    Bson::String(val)
+                                }
+                                "SelectI32Dyn" => {
+                                    let val = i32::try_from(const_value.as_i64().unwrap())?;
+                                    Bson::Int32(val)
+                                }
+                                "SelectU32Dyn" | "SelectI64Dyn" => {
+                                    let val = const_value.as_i64().unwrap();
+                                    Bson::Int64(val)
+                                }
+                                "SelectF64Dyn" => {
+                                    let val = const_value.as_f64().unwrap();
+                                    Bson::Double(val)
+                                }
+                                _ => Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                model_name, field_name, controller_name
-                            ))?,
-                        },
-                    );
+                                    model_name, field_name, controller_name
+                                ))?,
+                            },
+                        );
+                    }
                 }
                 //
                 // "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult" | "SelectF64Mult"
@@ -780,57 +784,61 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
                         }
                     }
                     // Get selected items.
-                    final_doc.insert(
-                        field_name,
-                        match controller_name {
-                            "SelectTextMult" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectI32Mult" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| {
-                                        Bson::Int32(i32::try_from(item.as_i64().unwrap()).unwrap())
-                                    })
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectU32Mult" | "SelectI64Mult" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::Int64(item.as_i64().unwrap()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectF64Mult" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::Double(item.as_f64().unwrap()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            _ => Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match controller_name {
+                                "SelectTextMult" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectI32Mult" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| {
+                                            Bson::Int32(
+                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                            )
+                                        })
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectU32Mult" | "SelectI64Mult" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectF64Mult" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                _ => Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                model_name, field_name, controller_name
-                            ))?,
-                        },
-                    );
+                                    model_name, field_name, controller_name
+                                ))?,
+                            },
+                        );
+                    }
                 }
                 //
                 /*
@@ -858,56 +866,60 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 ))?
                             }
                         }
-                        if !ignore_fields.contains(field_name) {
+                        if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
                     }
                     // Get selected items.
-                    final_doc.insert(
-                        field_name,
-                        match controller_name {
-                            "SelectTextMultDyn" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectI32MultDyn" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| {
-                                        Bson::Int32(i32::try_from(item.as_i64().unwrap()).unwrap())
-                                    })
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectU32MultDyn" | "SelectI64MultDyn" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::Int64(item.as_i64().unwrap()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            "SelectF64MultDyn" => Bson::Array(
-                                const_value
-                                    .as_array()
-                                    .unwrap()
-                                    .iter()
-                                    .map(|item| Bson::Double(item.as_f64().unwrap()))
-                                    .collect::<Vec<Bson>>(),
-                            ),
-                            _ => Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match controller_name {
+                                "SelectTextMultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectI32MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| {
+                                            Bson::Int32(
+                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                            )
+                                        })
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectU32MultDyn" | "SelectI64MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectF64MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                _ => Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                model_name, field_name, controller_name
-                            ))?,
-                        },
-                    );
+                                    model_name, field_name, controller_name
+                                ))?,
+                            },
+                        );
+                    }
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
@@ -1266,7 +1278,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1326,7 +1338,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1353,7 +1365,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1412,7 +1424,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1439,7 +1451,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))?
                                 }
                             }
-                            if !ignore_fields.contains(field_name) {
+                            if is_save && !ignore_fields.contains(field_name) {
                                 final_doc.insert(field_name, Bson::Null);
                             }
                             continue;
@@ -1498,7 +1510,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
@@ -1531,7 +1543,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(field_name) {
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         let checked = checked_json_val.as_bool().unwrap();
                         let field_value_bson = Bson::Boolean(checked);
                         final_doc.insert(field_name, field_value_bson);
@@ -1559,7 +1571,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let dt2 = doc.get("created_at").unwrap();
                     let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
                     //
-                    final_doc.insert("created_at", dt);
                     *final_model_json
                         .get_mut("created_at")
                         .unwrap()
@@ -1568,6 +1579,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     self.set_created_at(dt_text2);
                     // For update.
                     if is_save {
+                        final_doc.insert("created_at", dt2);
                         final_doc.insert("updated_at", Bson::DateTime(dt));
                         *final_model_json
                             .get_mut("updated_at")
@@ -1578,7 +1590,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         let dt = doc.get("updated_at").unwrap();
                         let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
-                        final_doc.insert("updated_at", dt);
+                        if is_save {
+                            final_doc.insert("updated_at", dt);
+                        }
                         *final_model_json
                             .get_mut("updated_at")
                             .unwrap()
@@ -1676,14 +1690,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
 
         // Enrich the controller map with values for dynamic controllers.
-        Self::injection(
-            meta.project_name.as_str(),
-            meta.unique_project_key.as_str(),
-            meta.collection_name.as_str(),
-            &client_cache,
-            &mut final_model_json,
-            &meta.fields_name,
-        )?;
+        if is_save {
+            Self::injection(
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
+                meta.collection_name.as_str(),
+                &client_cache,
+                &mut final_model_json,
+                &meta.fields_name,
+            )?;
+        }
 
         // Return result.
         // -----------------------------------------------------------------------------------------
