@@ -417,13 +417,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .get("checked")
                             .unwrap()
                             .clone()
+                    } else if let Some(val) = model_json.get(field_name).unwrap().get("default") {
+                            val.clone()
                     } else {
-                        model_json
-                            .get(field_name)
-                            .unwrap()
-                            .get("default")
-                            .unwrap()
-                            .clone()
+                        serde_json::json!(null)
                     };
                     default_value_map.insert(field_name.to_string(), default);
                     //
