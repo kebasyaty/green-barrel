@@ -409,23 +409,39 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Add default_value_map
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
                 let model_json = Self::control_to_json_val()?;
-                for (field_name, field_type) in meta.controller_type_map.iter() {
-                    let value = if field_type != "CheckBox" {
-                        model_json
-                            .get(field_name)
-                            .unwrap()
-                            .get("value")
-                            .unwrap()
-                            .clone()
-                    } else {
+                for (field_name, controller_name) in meta.controller_type_map.iter() {
+                    let default = if controller_name == "CheckBox" {
                         model_json
                             .get(field_name)
                             .unwrap()
                             .get("checked")
                             .unwrap()
                             .clone()
+                    } else {
+                        model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("default")
+                            .unwrap()
+                            .clone()
                     };
-                    default_value_map.insert(field_name.to_string(), value);
+                    default_value_map.insert(field_name.to_string(), default);
+                    //
+                    if !meta.is_use_hash_slug && controller_name == "AutoSlug" {
+                        let flag = model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("slug_sources")
+                            .unwrap()
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|item| item.as_str().unwrap())
+                            .any(|item| item == "hash");
+                            if flag {
+                                meta.is_use_hash_slug = flag;
+                            }
+                    }
                 }
                 meta.default_value_map = default_value_map;
                 //
@@ -536,6 +552,7 @@ struct Meta {
     pub is_del_docs: bool,
     pub is_use_add_valid: bool,
     pub is_use_hooks: bool,
+    pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, controller_type>
@@ -564,6 +581,7 @@ impl Default for Meta {
             is_del_docs: true,
             is_use_add_valid: false,
             is_use_hooks: false,
+            is_use_hash_slug: false,
             field_value_type_map: std::collections::HashMap::new(),
             controller_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),

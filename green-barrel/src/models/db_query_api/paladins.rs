@@ -1752,28 +1752,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Having fields with a controller of inputSlug type.
-            if is_no_error && !is_update {
-                let hash = "hash";
-                let target_controller_name = "AutoSlug";
-                let final_model_json = verified_data.get_model_json();
-                for (field_name, controller_name) in meta.controller_type_map.iter() {
-                    if controller_name == target_controller_name {
-                        let flag = final_model_json
-                            .get(field_name)
-                            .unwrap()
-                            .get("slug_sources")
-                            .unwrap()
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|item| item.as_str().unwrap())
-                            .any(|item| item == hash);
-                        if flag {
-                            stop_step = 1;
-                            break;
-                        }
-                    }
-                }
+            if !is_update && is_no_error && meta.is_use_hash_slug {
+                stop_step = 1;
             }
 
             // Save to database.

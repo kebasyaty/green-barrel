@@ -22,6 +22,7 @@ pub struct Meta {
     pub is_del_docs: bool,
     pub is_use_add_valid: bool,
     pub is_use_hooks: bool,
+    pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
     // <field_name, controller_type>
@@ -50,6 +51,7 @@ impl Default for Meta {
             is_del_docs: true,
             is_use_add_valid: false,
             is_use_hooks: false,
+            is_use_hash_slug: false,
             field_value_type_map: std::collections::HashMap::new(),
             controller_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
