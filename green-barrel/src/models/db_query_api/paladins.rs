@@ -1739,7 +1739,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if is_no_error && !is_update {
                 let hash = "hash";
                 let target_controller_name = "AutoSlug";
-                let final_model_json = verified_data.get_val_json();
+                let final_model_json = verified_data.get_model_json();
                 for (field_name, controller_name) in meta.controller_type_map.iter() {
                     if controller_name == target_controller_name {
                         let flag = final_model_json

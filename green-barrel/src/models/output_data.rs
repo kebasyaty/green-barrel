@@ -189,10 +189,10 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.get_val_json());
+    /// println!("{:?}", output_data.get_model_json());
     /// ```
     ///
-    pub fn get_val_json(&self) -> Value {
+    pub fn get_model_json(&self) -> Value {
         self.final_model_json.clone()
     }
 
