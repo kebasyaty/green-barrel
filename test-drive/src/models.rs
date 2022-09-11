@@ -96,13 +96,13 @@ impl Control for User {
             },
             is_staff: CheckBox {
                 label: "is staff?".into(),
-                checked: true,
+                checked: Some(true),
                 hint: "User can access the admin site?".into(),
                 ..Default::default()
             },
             is_active: CheckBox {
                 label: "is active?".into(),
-                checked: true,
+                checked: Some(true),
                 hint: "Is this an active account?".into(),
                 ..Default::default()
             },

@@ -230,11 +230,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
             let const_value = if let Some(val) = final_field.get("value") {
-                val.clone()
-            } else if controller_name != "CheckBox" {
-                let default = final_field.get("default").unwrap_or(&json!(null)).clone();
-                *final_field.get_mut("value").unwrap() = default.clone();
-                default
+                if (val.is_string() && val.as_str().unwrap().is_empty())
+                    || (val.is_array() && val.as_array().unwrap().is_empty())
+                {
+                    json!(null)
+                } else {
+                    val.clone()
+                }
+            } else if let Some(val) = final_field.get("default") {
+                let val = val.clone();
+                *final_field.get_mut("value").unwrap() = val.clone();
+                val
             } else {
                 json!(null)
             };
@@ -263,9 +269,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    let val_str = const_value.as_str();
-                    //
-                    if const_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
+                    if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
@@ -634,11 +638,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64"
                 4 => {
                     //
-                    let check_enpty_str = const_value.as_str();
-                    //
-                    if const_value.is_null()
-                        || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
-                    {
+                    if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
@@ -692,11 +692,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn" | "SelectF64Dyn"
                 5 => {
                     //
-                    let check_enpty_str = const_value.as_str();
-                    //
-                    if const_value.is_null()
-                        || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
-                    {
+                    if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
@@ -750,11 +746,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult" | "SelectF64Mult"
                 6 => {
                     //
-                    let check_enpty_arr = const_value.as_array();
-                    //
-                    if const_value.is_null()
-                        || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
-                    {
+                    if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
@@ -831,11 +823,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 */
                 7 => {
                     //
-                    let check_enpty_arr = const_value.as_array();
-                    //
-                    if const_value.is_null()
-                        || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
-                    {
+                    if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
