@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
-    user.username.set("user_1");
-    user.email.set("user_1_@noreply.net");
+    user.username.set("user_3");
+    user.email.set("user_3_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
@@ -104,7 +104,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Update document in database.
     // ---------------------------------------------------------------------------------------------
     if output_data.is_valid() {
-        user.username.set("user_1_update");
+        user.username.set("user_3_update");
         let output_data = user.save(None, None)?;
         println!("Boolean: {}", output_data.is_valid());
         println!("Hash: {}", output_data.get_hash());
@@ -126,7 +126,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         //
         //println!("Json:\n{}\n\n", output_data.to_json()?);
         //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
-    }
+
+        // Delete document in database.
+        let output_data = user.delete(None)?;
+        if !output_data.is_valid() {
+            println!("{}", output_data.err_msg());
+        }
+    };
     //
     Ok(())
 }

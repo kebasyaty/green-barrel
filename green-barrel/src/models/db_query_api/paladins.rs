@@ -1768,12 +1768,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.delete(None)?;
-    /// if !output_data.is_valid()? {
-    ///     println!("{}", output_data.err_msg()?);
+    /// let mut user = User{...};
+    /// let output_data = user.delete(None)?;
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
-    /// ```
+    ///
     ///
     fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>>
     where
