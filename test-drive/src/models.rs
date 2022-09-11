@@ -16,7 +16,7 @@ use crate::settings::{
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
-pub struct UserProfile {
+pub struct User {
     pub username: InputText,
     pub slug: AutoSlug,
     pub first_name: InputText,
@@ -29,7 +29,7 @@ pub struct UserProfile {
     pub is_active: CheckBox,
 }
 
-impl Control for UserProfile {
+impl Control for User {
     fn custom_default() -> Self {
         Self {
             username: InputText {
@@ -111,7 +111,7 @@ impl Control for UserProfile {
     }
 }
 
-impl AdditionalValidation for UserProfile {
+impl AdditionalValidation for User {
     fn add_validation<'a>(
         &self,
     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
@@ -146,7 +146,7 @@ impl AdditionalValidation for UserProfile {
     }
 }
 
-impl Hooks for UserProfile {
+impl Hooks for User {
     fn pre_create(&self) {
         println!("!!!Pre Create!!!");
     }

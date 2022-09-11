@@ -24,7 +24,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        models: vec![models::UserProfile::meta()?],
+        models: vec![models::User::meta()?],
     };
     monitor.migrat()?;
     //
@@ -49,9 +49,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create model instance.
     // *********************************************************************************************
-    let mut user = models::UserProfile::new()?;
-    user.username.set("user_14");
-    user.email.set("user_14_@noreply.net");
+    let mut user = models::User::new()?;
+    user.username.set("user_15");
+    user.email.set("user_15_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
@@ -104,7 +104,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Update document in database.
     // ---------------------------------------------------------------------------------------------
     if output_data.is_valid() {
-        user.username.set("user_14_update");
+        user.username.set("user_15_update");
         let output_data = user.save(None, None)?;
         println!("Boolean: {}", output_data.is_valid());
         println!("Hash: {}", output_data.get_hash());
