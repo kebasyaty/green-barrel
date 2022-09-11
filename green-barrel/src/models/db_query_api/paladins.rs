@@ -231,14 +231,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Define conditional constants.
             let const_value = if let Some(val) = final_field.get("value") {
                 val.clone()
-            } else {
+            } else if controller_name != "CheckBox" {
                 let default = final_field.get("default").unwrap_or(&json!(null)).clone();
                 *final_field.get_mut("value").unwrap() = default.clone();
                 default
+            } else {
+                json!(null)
             };
+            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
+            //
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
-            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
             let controller_name = controller_name.as_str();
 
             // Field validation.
