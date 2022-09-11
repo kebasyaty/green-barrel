@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Test model instance.
     // *********************************************************************************************
     let mut user = models::UserProfile::new()?;
-    user.username.set("user_10");
-    user.email.set("user_10_@noreply.net");
+    user.username.set("user_11");
+    user.email.set("user_11_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
@@ -92,6 +92,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         output_data.print_err();
     }
     //
+    // If there are AutoSlug fields, do an update.
+    if output_data.is_valid() {
+        user = output_data.update()?;
+        println!("Slug: {}", user.slug.value.clone().unwrap_or_default())
+    }
+    //
     //println!("Json:\n{}\n\n", output_data.to_json()?);
     //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
 
@@ -109,6 +115,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Printing errors to the console ( for development ).
         if !output_data.is_valid() {
             output_data.print_err();
+        }
+        //
+        // If there are AutoSlug fields, do an update.
+        if output_data.is_valid() {
+            user = output_data.update()?;
+            println!("Slug: {}", user.slug.value.clone().unwrap_or_default())
         }
         //
         //println!("Json:\n{}\n\n", output_data.to_json()?);

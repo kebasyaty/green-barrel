@@ -259,6 +259,28 @@ impl OutputData2 {
         Ok(serde_json::to_string(&field_type_list)?)
     }
 
+    /// If there are AutoSlug fields, do an update.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// if output_data.is_valid() {
+    ///     model_name = output_data.update()?;
+    /// }
+    /// ```
+    ///
+    pub fn update<T>(&self) -> Result<T, serde_json::Error>
+    where
+        T: serde::de::DeserializeOwned + Sized,
+    {
+        serde_json::from_value::<T>(self.final_model_json.clone())
+    }
+
     /// Get validation status (boolean).
     // ---------------------------------------------------------------------------------------------
     ///
