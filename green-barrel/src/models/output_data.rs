@@ -32,7 +32,7 @@ impl OutputData {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.delete()?;
     /// // or
@@ -55,7 +55,7 @@ impl OutputData {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.delete()?;
     /// // or
@@ -102,7 +102,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check(None)?;
     /// // or
@@ -139,7 +139,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -160,7 +160,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -183,7 +183,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?
+    /// let mut model_name = ModelName::new()?
     /// ;
     /// let output_data = model_name.check()?;
     /// // or
@@ -202,7 +202,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -222,7 +222,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -287,7 +287,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -306,7 +306,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
@@ -339,7 +339,7 @@ impl OutputData2 {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName::new()?;
+    /// let mut model_name = ModelName::new()?;
     ///
     /// let output_data = model_name.check()?;
     /// // or
