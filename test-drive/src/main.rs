@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
-    user.username.set("user_15");
-    user.email.set("user_15_@noreply.net");
+    user.username.set("user_1");
+    user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
@@ -104,7 +104,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Update document in database.
     // ---------------------------------------------------------------------------------------------
     if output_data.is_valid() {
-        user.username.set("user_15_update");
+        user.username.set("user_1_update");
         let output_data = user.save(None, None)?;
         println!("Boolean: {}", output_data.is_valid());
         println!("Hash: {}", output_data.get_hash());
