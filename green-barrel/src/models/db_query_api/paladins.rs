@@ -140,7 +140,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name  = ModelName {...}
+    /// let mut model_name = ModelName::new()?;
     /// let output_data = model_name.check(None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
@@ -229,15 +229,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
-            let const_value = if final_field.get("value").is_some() {
-                final_field.get("value").unwrap().clone()
+            let const_value = if let Some(val) = final_field.get("value") {
+                val.clone()
             } else {
-                json!(null)
-            };
-            let const_default = if final_field.get("default").is_some() {
-                final_field.get("default").unwrap().clone()
-            } else {
-                json!(null)
+                let default = final_field.get("default").unwrap_or(&json!(null)).clone();
+                *final_field.get_mut("value").unwrap() = default.clone();
+                default
             };
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
@@ -266,28 +263,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let val_str = const_value.as_str();
                     //
                     if const_value.is_null() || (val_str.is_some() && val_str.unwrap().is_empty()) {
-                        if controller_name != "InputPassword" && !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
@@ -510,28 +503,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if const_value.is_null() {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
@@ -647,28 +636,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null()
                         || (check_enpty_str.is_some() && check_enpty_str.unwrap().is_empty())
                     {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get selected items.
                     if is_save {
@@ -767,28 +752,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null()
                         || (check_enpty_arr.is_some() && check_enpty_arr.unwrap().is_empty())
                     {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
-                                            Field: `is_hide` = `true` ; Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                                        Field: `is_hide` = `true` ; Method: `check()` => \
+                                        Hiding required fields is not allowed.\n\n",
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get selected items.
                     if is_save {
@@ -935,13 +916,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
                             || ((!file_data.path.is_empty() && !file_data.url.is_empty())
-                                || !const_default.is_null())
+                                || !const_value.is_null())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(const_default.clone())?),
+                                Some(serde_json::from_value(const_value.clone())?),
                                 None,
                             )?;
                         } else {
@@ -967,29 +948,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     if file_data.path.is_empty() && file_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if !const_default.is_null() {
-                                *final_field.get_mut("value").unwrap() = const_default.clone();
-                            } else {
-                                if is_required {
-                                    is_err_symptom = true;
-                                    if !is_hide {
-                                        *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(final_field, "Required field.")
-                                        );
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                            if is_required {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, "Required field."));
+                                } else {
+                                    Err(format!(
+                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                                 Field: `is_hide` = `true` ; Method: `check()` => \
                                                 Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name, controller_name
-                                        ))?
-                                    }
+                                        model_name, field_name, controller_name
+                                    ))?
                                 }
-                                if !is_update && !ignore_fields.contains(field_name) {
-                                    final_doc.insert(field_name, Bson::Null);
-                                }
-                                continue;
                             }
+                            if !is_update && !ignore_fields.contains(field_name) {
+                                final_doc.insert(field_name, Bson::Null);
+                            }
+                            continue;
                         } else {
                             *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
@@ -1056,13 +1032,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
                             || ((!image_data.path.is_empty() && !image_data.url.is_empty())
-                                || !const_default.is_null())
+                                || !const_value.is_null())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(const_default.clone())?),
+                                Some(serde_json::from_value(const_value.clone())?),
                                 None,
                             )?;
                         } else {
@@ -1092,8 +1068,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     if image_data.path.is_empty() && image_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if !const_default.is_null() {
-                                *final_field.get_mut("value").unwrap() = const_default.clone();
+                            if !const_value.is_null() {
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
@@ -1261,28 +1236,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if const_value.is_null() {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
                     let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
@@ -1348,28 +1319,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if const_value.is_null() {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
                     let curr_val = const_value.as_i64().unwrap();
@@ -1434,28 +1401,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
                     if const_value.is_null() {
-                        if !const_default.is_null() {
-                            *final_field.get_mut("value").unwrap() = const_default.clone();
-                        } else {
-                            if is_required {
-                                is_err_symptom = true;
-                                if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
+                            } else {
+                                Err(format!(
+                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                             Field: `is_hide` = `true` ; Method: `check()` => \
                                             Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name, controller_name
-                                    ))?
-                                }
+                                    model_name, field_name, controller_name
+                                ))?
                             }
-                            if is_save && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
                     let curr_val = const_value.as_f64().unwrap();
@@ -1717,7 +1680,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name  = ModelName {...}
+    /// let mut model_name = ModelName::new()?;
     /// let output_data = model_name.save(None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
@@ -1814,7 +1777,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...}
+    /// let mut model_name = ModelName::new()?;
     /// let output_data = model_name.delete(None)?;
     /// if !output_data.is_valid()? {
     ///     println!("{}", output_data.err_msg()?);
@@ -1958,9 +1921,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user = UserProfile {...};
+    /// let user = User {...};
     /// let field_value = user.password;
-    /// println!("{}", user_profile.create_password_hash(field_value)?);
+    /// println!("{}", user.create_password_hash(field_value)?);
     /// ```
     ///
     fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
@@ -1987,9 +1950,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user_profile = UserProfile {...};
+    /// let user = User {...};
     /// let password = "12345678";
-    /// assert!(user_profile.create_password_hash(password, None)?);
+    /// assert!(user.create_password_hash(password, None)?);
     /// ```
     ///
     fn verify_password(
@@ -2060,7 +2023,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user = UserProfile {...};
+    /// let user = User {...};
     /// let old_password = "12345678";
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
