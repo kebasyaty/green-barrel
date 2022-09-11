@@ -423,7 +423,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         serde_json::json!(null)
                     };
                     default_value_map.insert(field_name.to_string(), default);
-                    //
+                    // Determine if there are fields of type AutoSlug and if they use a hash field as a source.
                     if !meta.is_use_hash_slug && controller_name == "AutoSlug" {
                         let flag = model_json
                             .get(field_name)
