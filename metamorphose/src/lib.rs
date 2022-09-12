@@ -410,14 +410,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
                 let model_json = Self::control_to_json_val()?;
                 for (field_name, controller_name) in meta.controller_type_map.iter() {
-                    let default = if controller_name == "CheckBox" {
-                        model_json
-                            .get(field_name)
-                            .unwrap()
-                            .get("checked")
-                            .unwrap()
-                            .clone()
-                    } else if let Some(val) = model_json.get(field_name).unwrap().get("default") {
+                    let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
+                            val.clone()
+                    } else if let Some(val) = model_json.get(field_name).unwrap().get("checked") {
                             val.clone()
                     } else {
                         serde_json::json!(null)
