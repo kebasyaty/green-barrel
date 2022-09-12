@@ -241,6 +241,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let val = val.clone();
                 *final_field.get_mut("value").unwrap() = val.clone();
                 val
+            } else if let Some(val) = final_field.get("checked") {
+                val.clone()
             } else {
                 json!(null)
             };
@@ -1473,24 +1475,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 // "CheckBox"
                 13 => {
-                    // Get field value for validation.
-                    let checked_json_val = final_field.get("checked").unwrap();
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if checked_json_val.is_null() {
-                        if is_required {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, "Required field."));
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
+                    if const_value.is_null() && is_required {
+                        is_err_symptom = true;
+                        if !is_hide {
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
+                        } else {
+                            Err(format!(
+                                "\n\nModel: `{}` > Field: `{}` > Field type: {} > \
                                         Field: `is_hide` = `true` ; Method: `check()` => \
                                         Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name, controller_name
-                                ))?
-                            }
+                                model_name, field_name, controller_name
+                            ))?
                         }
                         continue;
                     }
@@ -1498,8 +1496,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
-                        let checked = checked_json_val.as_bool().unwrap();
-                        let field_value_bson = Bson::Boolean(checked);
+                        let is_checked = if !const_value.is_null() {
+                            const_value.as_bool().unwrap()
+                        } else {
+                            false
+                        };
+                        let field_value_bson = Bson::Boolean(is_checked);
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
