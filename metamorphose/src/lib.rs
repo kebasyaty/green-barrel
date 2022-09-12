@@ -353,6 +353,19 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let html_id_map =
                     serde_json::from_str::<std::collections::HashMap<&str, &str>>(&#html_id_map_json)?;
                 for (field_name, id_name) in html_id_map {
+                    // Check field attributes.
+                    if instance_json_val.get(field_name).unwrap().get("required").unwrap()
+                        && (instance_json_val.get(field_name).unwrap().get("disabled").unwrap()
+                        || instance_json_val.get(field_name).unwrap().get("readonly").unwrap()
+                        || instance_json_val.get(field_name).unwrap().get("is_hide").unwrap()) {
+                        //
+                        Err(format!(
+                            "\n\nField: `{}` => Attribute required=true incompatible with \
+                            disabled=true or readonly=true or is_hide=true.\n\n",
+                            field_name
+                        ))?
+                    }
+                    // Add `id` and `name`
                     *instance_json_val
                         .get_mut(field_name)
                         .unwrap()
