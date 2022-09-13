@@ -367,7 +367,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                     // Thumbnails sorting and validation.
                     if let Some(arr) = instance_json_val.get(field_name).unwrap().get("thumbnails") {
-                        let mut arr = serde_json::from_value::<Vec<(String, u32)>>(arr)?;
+                        let mut arr = serde_json::from_value::<Vec<(String, u32)>>(arr.clone())?;
                         arr.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
                         let valid_size_names: [&str; 4] = ["xs", "sm", "md", "lg"];
                         for size in arr.iter() {
@@ -378,6 +378,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                                 ))?
                             }
                         }
+                        *instance_json_val
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("thumbnails")
+                            .unwrap() = serde_json::json!(arr);
                     }
                     // Add `id` and `name`
                     *instance_json_val
