@@ -37,13 +37,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Convert Model
     // *********************************************************************************************
-    //println!("{}", models::UserProfile::to_json()?);
-    //println!("{}", models::UserProfile::model_to_json_for_admin()?);
+    //println!("{}", models::User::json()?);
+    //println!("{}", models::User::model_json_for_admin()?);
     //
     /*
         println!(
             "Model instance:\n{:?}",
-            models::UserProfile::find_one_to_model_instance(doc! {"username": "user_1"}, None)?
+            models::User::find_one_to_instance(doc! {"username": "user_1"}, None)?
         );
     */
 
@@ -59,80 +59,76 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Check model.
     // ---------------------------------------------------------------------------------------------
-    /*
     let output_data = user.check(None)?;
-    println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.get_hash());
-    if let Ok(obj_id) = output_data.get_obj_id() {
-        println!("Object Id: {:?}", obj_id);
-    }
-    //
-    // Printing errors to the console ( for development ).
-    if !output_data.is_valid() {
+    if output_data.is_valid() {
+        println!("Hash: {}", output_data.hash());
+
+        if let Ok(obj_id) = output_data.obj_id() {
+            println!("Object Id: {:?}", obj_id);
+        }
+    } else {
+        // Printing errors to the console ( for development ).
         output_data.print_err();
     }
-    */
-    //
-    //println!("Json:\n{}\n\n", output_data.to_json()?);
-    //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
+
+    //println!("Json:\n{}", output_data.json()?);
+    //println!("Json for admin:\n{}", output_data.json_for_admin()?);
 
     // Create document in database.
     // ---------------------------------------------------------------------------------------------
     let output_data = user.save(None, None)?;
-    println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.get_hash());
-    if let Ok(obj_id) = output_data.get_obj_id() {
-        println!("Object Id: {:?}", obj_id);
-    }
-    println!("Created at: {}", user.get_created_at());
-    println!("Updated at: {}", user.get_updated_at());
-    //
-    // Printing errors to the console ( for development ).
-    if !output_data.is_valid() {
+    if output_data.is_valid() {
+        println!("Hash: {}", output_data.hash());
+        println!("Created at: {}", user.created_at.value.clone().unwrap());
+        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
+
+        if let Ok(obj_id) = output_data.obj_id() {
+            println!("Object Id: {:?}", obj_id);
+        }
+
+        // If there are AutoSlug fields, do an update.
+        if output_data.is_valid() {
+            user = output_data.update()?;
+            println!("Slug: {}", user.slug.value.clone().unwrap())
+        }
+
+        //println!("Json:\n{}", output_data.json()?);
+        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+    } else {
         output_data.print_err();
     }
-    //
-    // If there are AutoSlug fields, do an update.
-    if output_data.is_valid() {
-        user = output_data.update()?;
-        println!("Slug: {}", user.slug.value.clone().unwrap_or_default())
-    }
-    //
-    //println!("Json:\n{}\n\n", output_data.to_json()?);
-    //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
 
     // Update document in database.
     // ---------------------------------------------------------------------------------------------
     if output_data.is_valid() {
         user.username.set("user_3_update");
         let output_data = user.save(None, None)?;
-        println!("Boolean: {}", output_data.is_valid());
-        println!("Hash: {}", output_data.get_hash());
-        if let Ok(obj_id) = output_data.get_obj_id() {
+        println!("Hash: {}", output_data.hash());
+        println!("Created at: {}", user.created_at.value.clone().unwrap());
+        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
+
+        if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);
         }
-        println!("Created at: {}", user.get_created_at());
-        println!("Updated at: {}", user.get_updated_at());
-        // Printing errors to the console ( for development ).
-        if !output_data.is_valid() {
-            output_data.print_err();
-        }
-        //
+
         // If there are AutoSlug fields, do an update.
         if output_data.is_valid() {
             user = output_data.update()?;
-            println!("Slug: {}", user.slug.value.clone().unwrap_or_default())
+            println!("Slug: {}", user.slug.value.clone().unwrap())
         }
-        //
-        //println!("Json:\n{}\n\n", output_data.to_json()?);
-        //println!("Json for admin:\n{}\n\n", output_data.to_json_for_admin()?);
+
+        //println!("Json:\n{}", output_data.json()?);
+        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
 
         // Delete document in database.
         let output_data = user.delete(None)?;
         if !output_data.is_valid() {
             println!("{}", output_data.err_msg());
         }
-    };
+    } else {
+        // Printing errors to the console ( for development ).
+        output_data.print_err();
+    }
     //
     Ok(())
 }

@@ -203,7 +203,7 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     // new
     assert!(TestModel::new().is_ok(), "new() == is_ok");
     // to_json
-    assert!(!TestModel::to_json()?.is_empty(), "to_json == is_empty");
+    assert!(!TestModel::json()?.is_empty(), "to_json == is_empty");
     // model_to_json_for_admin
     assert!(
         !TestModel::model_to_json_for_admin()?.is_empty(),

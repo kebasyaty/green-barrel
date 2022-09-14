@@ -113,7 +113,7 @@ pub trait Caching: Main + Converters {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn to_json() -> Result<String, Box<dyn Error>>
+    fn json() -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

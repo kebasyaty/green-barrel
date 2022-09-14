@@ -108,11 +108,11 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{}", output_data.get_hash());
+    /// println!("{}", output_data.hash());
     /// println!("{}", output_data.set_hash(hash_line));
     /// ```
     ///
-    pub fn get_hash(&self) -> String {
+    pub fn hash(&self) -> String {
         let value = self
             .final_model_json
             .get("hash")
@@ -145,11 +145,11 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.get_obj_id()?);
+    /// println!("{:?}", output_data.obj_id()?);
     /// ```
     ///
-    pub fn get_obj_id(&self) -> Result<ObjectId, Box<dyn Error>> {
-        let hash_line = self.get_hash();
+    pub fn obj_id(&self) -> Result<ObjectId, Box<dyn Error>> {
+        let hash_line = self.hash();
         let object_id = ObjectId::with_string(hash_line.as_str())?;
         Ok(object_id)
     }
@@ -189,10 +189,10 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{:?}", output_data.get_model_json());
+    /// println!("{:?}", output_data.model_json());
     /// ```
     ///
-    pub fn get_model_json(&self) -> Value {
+    pub fn model_json(&self) -> Value {
         self.final_model_json.clone()
     }
 
@@ -208,10 +208,10 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{}", output_data.to_json()?);
+    /// println!("{}", output_data.json()?);
     /// ```
     ///
-    pub fn to_json(&self) -> Result<String, Box<dyn Error>> {
+    pub fn json(&self) -> Result<String, Box<dyn Error>> {
         Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
@@ -228,10 +228,10 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{}", output_data.to_json_for_admin()?);
+    /// println!("{}", output_data.json_for_admin()?);
     /// ```
     ///
-    pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+    pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         let mut field_type_list: Vec<Value> = Vec::new();
         let hash = self
             .final_model_json
@@ -317,7 +317,7 @@ impl OutputData2 {
     /// }
     /// ```
     ///
-    pub fn get_err_msg(&self) -> String {
+    pub fn err_msg(&self) -> String {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
@@ -351,7 +351,7 @@ impl OutputData2 {
     /// ```
     ///
     pub fn print_err(&self) {
-        let errors = self.get_err_msg();
+        let errors = self.err_msg();
         if !errors.is_empty() {
             println!("\nERRORS:{}\n", errors);
         }

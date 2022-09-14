@@ -62,7 +62,7 @@ impl Default for Meta {
 
 /// Helper structures for inputFile fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug)]
 pub struct FileData {
     pub path: String,
     pub url: String,
@@ -73,7 +73,7 @@ pub struct FileData {
 
 /// Helper structures for inputImage fields type.
 // -------------------------------------------------------------------------------------------------
-#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug)]
 pub struct ImageData {
     pub path: String, // max size == original
     pub path_xs: String,

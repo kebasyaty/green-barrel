@@ -135,7 +135,7 @@ pub trait Administrator: QCommons + QPaladins {
         } else if bytes.is_some() {
             // Save document
             let output_data = self.save(None, None)?;
-            return output_data.to_json_for_admin();
+            return output_data.json_for_admin();
         } else if filter.is_some() {
             // Delete document
             let output_data = self.delete(None)?;

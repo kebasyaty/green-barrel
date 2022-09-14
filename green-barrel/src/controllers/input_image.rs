@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::helpers::ImageData;
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct InputImage {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
