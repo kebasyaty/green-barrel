@@ -6,7 +6,7 @@ use std::error::Error;
 
 use crate::models::converters::Converters;
 
-/// Helper methods for converting output data (use in the paladins.rs module).
+/// Output data for delete(), update_password(), delete_many(), delete_one, drop() methods.
 // *************************************************************************************************
 #[derive(Debug)]
 pub enum OutputData {
@@ -83,7 +83,7 @@ impl OutputData {
     }
 }
 
-/// Helper methods for converting output data (use in the paladins.rs module).
+/// Output data for check() and save() methods.
 // *************************************************************************************************
 #[derive(Debug)]
 pub struct OutputData2 {
