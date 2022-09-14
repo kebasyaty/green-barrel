@@ -89,7 +89,7 @@ pub trait Administrator: QCommons + QPaladins {
             }
             let object_id = object_id.unwrap();
             let filter = doc! {"_id": object_id};
-            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_instance(
                 filter, None,
             )?))
         } else if let Some(bytes) = bytes {
@@ -99,7 +99,7 @@ pub trait Administrator: QCommons + QPaladins {
             >(bytes)?)))
         } else if let Some(filter) = filter {
             // For - Delete document
-            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_instance(
                 filter.clone(),
                 None,
             )?))

@@ -126,7 +126,7 @@ pub trait Converters {
 
     /// Get json-line from document list ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
-    fn many_to_json_line(
+    fn many_to_json(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,

@@ -30,8 +30,8 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let documents  = ModelName::aggregate(pipeline, None)?;
-    /// println!("{:?}", documents);
+    /// let doc_list  = ModelName::aggregate(pipeline, None)?;
+    /// println!("{:?}", doc_list);
     /// ```
     ///
     fn aggregate(
@@ -303,8 +303,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// ```
     /// let result = ModelName::find_many_to_doc_list(None, None)?;
-    /// if result.is_some() {
-    ///     println!("{:?}", result.unwrap());
+    /// if let Some(doc_list) = result {
+    ///     println!("{:?}", doc_list);
     /// }
     /// ```
     ///
@@ -350,13 +350,11 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json_line(None, None);
-    /// if result.is_ok() {
-    ///     println!("{}", result?);
-    /// }
+    /// let json = ModelName::find_many_to_json(None, None)?;
+    /// println!("{}", json);
     /// ```
     ///
-    fn find_many_to_json_line(
+    fn find_many_to_json(
         filter: Option<Document>,
         options: Option<FindOptions>,
     ) -> Result<String, Box<dyn Error>>
@@ -383,7 +381,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        Self::many_to_json_line(
+        Self::many_to_json(
             filter,
             Some(options),
             coll,
@@ -403,13 +401,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_doc(filter, None)?;
-    /// if result.is_some() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result = ModelName::find_one(filter, None)?;
+    /// if let Some(doc) = result {
+    ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
-    fn find_one_to_doc(
+    fn find_one(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
@@ -437,13 +435,11 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_json_line(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{}", result);
-    /// }
+    /// let json = ModelName::find_one_to_json(filter, None)?;
+    /// println!("{}", json);
     /// ```
     ///
-    fn find_one_to_json_line(
+    fn find_one_to_json(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
@@ -484,13 +480,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_model_instance(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result  = ModelName::find_one_to_instance(filter, None)?;
+    /// if let Some(instance) = result {
+    ///     println!("{:?}", instance);
     /// }
     /// ```
     ///
-    fn find_one_to_model_instance(
+    fn find_one_to_instance(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
@@ -533,13 +529,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete_to_doc(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result  = ModelName::find_one_and_delete(filter, None)?;
+    /// if let Some(doc) = result) {
+    ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
-    fn find_one_and_delete_to_doc(
+    fn find_one_and_delete(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
