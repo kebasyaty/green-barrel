@@ -252,23 +252,23 @@ fn test_model_all_default() -> Result<(), Box<dyn Error>> {
     let result = TestModel::find_many_to_doc_list(None, None)?;
     assert!(result.is_none(), "find_many_to_doc == is_none");
     // find_many_to_json
-    let result = TestModel::find_many_to_json_line(None, None)?;
+    let result = TestModel::find_many_to_json(None, None)?;
     assert!(result.is_empty());
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_doc(filter, None)?;
+    let result = TestModel::find_one(filter, None)?;
     assert!(result.is_none(), "find_many_to_json == is_none");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json_line(filter, None)?;
+    let result = TestModel::find_one_to_json(filter, None)?;
     assert!(result.is_empty(), "find_one_to_json == is_empty");
     // find_one_to_model_instance
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_model_instance(filter, None)?;
+    let result = TestModel::find_one_to_instance(filter, None)?;
     assert!(result.is_none(), "find_one_to_model_instance == is_none");
     // find_one_and_delete_to_doc
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete_to_doc(filter, None)?;
+    let result = TestModel::find_one_and_delete(filter, None)?;
     assert!(result.is_none(), "find_one_and_delete_to_doc == is_none");
     // name
     let result = TestModel::name()?;
