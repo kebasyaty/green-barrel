@@ -57,6 +57,9 @@ impl Default for SelectU32 {
 }
 
 impl SelectU32 {
+    pub fn get(&self) -> Option<u32> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: u32) {
         self.value = Some(value);
     }

@@ -59,6 +59,9 @@ impl Default for NumberI32 {
 }
 
 impl NumberI32 {
+    pub fn get(&self) -> Option<i32> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: i32) {
         self.value = Some(value);
     }

@@ -55,6 +55,9 @@ impl Default for SelectI32Dyn {
 }
 
 impl SelectI32Dyn {
+    pub fn get(&self) -> Option<i32> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: i32) {
         self.value = Some(value);
     }

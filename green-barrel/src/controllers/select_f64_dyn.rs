@@ -55,6 +55,9 @@ impl Default for SelectF64Dyn {
 }
 
 impl SelectF64Dyn {
+    pub fn get(&self) -> Option<f64> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: f64) {
         self.value = Some(value);
     }

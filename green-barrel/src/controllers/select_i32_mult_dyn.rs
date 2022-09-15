@@ -55,6 +55,9 @@ impl Default for SelectI32MultDyn {
 }
 
 impl SelectI32MultDyn {
+    pub fn get(&self) -> Option<Vec<i32>> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: Vec<i32>) {
         self.value = Some(value);
     }

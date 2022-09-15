@@ -57,6 +57,9 @@ impl Default for InputImage {
 }
 
 impl InputImage {
+    pub fn get(&self) -> Option<ImageData> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: ImageData) {
         self.value = Some(value);
     }

@@ -65,6 +65,9 @@ impl Default for TextArea {
 }
 
 impl TextArea {
+    pub fn get(&self) -> Option<String> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }

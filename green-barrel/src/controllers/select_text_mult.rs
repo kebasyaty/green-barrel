@@ -59,6 +59,9 @@ impl Default for SelectTextMult {
 }
 
 impl SelectTextMult {
+    pub fn get(&self) -> Option<Vec<String>> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: Vec<&str>) {
         let value = value
             .iter()

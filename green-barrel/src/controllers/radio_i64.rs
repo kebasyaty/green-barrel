@@ -53,6 +53,9 @@ impl Default for RadioI64 {
 }
 
 impl RadioI64 {
+    pub fn get(&self) -> Option<i64> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: i64) {
         self.value = Some(value);
     }

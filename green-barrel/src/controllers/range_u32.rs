@@ -59,6 +59,9 @@ impl Default for RangeU32 {
 }
 
 impl RangeU32 {
+    pub fn get(&self) -> Option<u32> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: u32) {
         self.value = Some(value);
     }

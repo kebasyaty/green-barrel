@@ -55,6 +55,9 @@ impl Default for SelectI64MultDyn {
 }
 
 impl SelectI64MultDyn {
+    pub fn get(&self) -> Option<Vec<i64>> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: Vec<i64>) {
         self.value = Some(value);
     }

@@ -55,6 +55,9 @@ impl Default for InputFile {
 }
 
 impl InputFile {
+    pub fn get(&self) -> Option<FileData> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: FileData) {
         self.value = Some(value);
     }
