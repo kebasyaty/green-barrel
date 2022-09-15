@@ -68,8 +68,9 @@ impl HiddenHash {
         self.value = Some(String::from(value));
     }
     pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
-        if let Some(hash) = self.value.clone() {
-            return Ok(Some(ObjectId::with_string(hash.as_str())?));
+        let hash = self.value.clone().unwrap_or_default();
+        if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
+            return Ok(Some(obj_id));
         }
         Ok(None)
     }

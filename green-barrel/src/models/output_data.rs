@@ -190,10 +190,12 @@ impl OutputData2 {
     /// println!("{:?}", output_data.obj_id()?);
     /// ```
     ///
-    pub fn obj_id(&self) -> Result<ObjectId, Box<dyn Error>> {
-        let hash_line = self.hash();
-        let object_id = ObjectId::with_string(hash_line.as_str())?;
-        Ok(object_id)
+    pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
+        let hash = self.hash();
+        if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
+            return Ok(Some(obj_id));
+        }
+        Ok(None)
     }
 
     /// Get Model instance in Json-line format.

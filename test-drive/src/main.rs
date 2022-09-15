@@ -63,6 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
     if output_data.is_valid() {
+        println!("Hash: {:?}", user.hash.get());
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {:?}", user.created_at.get());
@@ -70,9 +71,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Created at: {:?}", output_data.created_at());
         println!("Updated at: {:?}", output_data.updated_at());
 
-        if let Ok(obj_id) = output_data.obj_id() {
-            println!("Object Id: {:?}", obj_id);
-        }
+        println!("Object Id: {:?}", user.hash.obj_id()?);
+        println!("Object Id: {:?}", output_data.obj_id()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
@@ -86,6 +86,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
     if output_data.is_valid() {
+        println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {}", user.created_at.get().unwrap());
@@ -93,13 +94,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Created at: {}", output_data.created_at().unwrap());
         println!("Updated at: {}", output_data.updated_at().unwrap());
 
-        if let Ok(obj_id) = output_data.obj_id() {
-            println!("Object Id: {:?}", obj_id);
-        }
+        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
         // If there are AutoSlug fields, do an update.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.value.clone().unwrap())
+        println!("Slug: {}", user.slug.get().unwrap())
 
         //println!("Json:\n{}", output_data.json()?);
         //println!("Json for admin:\n{}", output_data.json_for_admin()?);
@@ -113,6 +113,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if output_data.is_valid() {
         user.username.set("user_3_update");
         let output_data = user.save(None, None)?;
+        println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {}", user.created_at.get().unwrap());
@@ -120,13 +121,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Created at: {}", output_data.created_at().unwrap());
         println!("Updated at: {}", output_data.updated_at().unwrap());
 
-        if let Ok(obj_id) = output_data.obj_id() {
-            println!("Object Id: {:?}", obj_id);
-        }
+        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
         // If there are AutoSlug fields, do an update.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.value.clone().unwrap());
+        println!("Slug: {}", user.slug.get().unwrap())
 
         //println!("Json:\n{}", output_data.json()?);
         //println!("Json for admin:\n{}", output_data.json_for_admin()?);

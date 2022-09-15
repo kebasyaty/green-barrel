@@ -58,7 +58,7 @@ impl Default for SelectI64 {
 
 impl SelectI64 {
     pub fn get(&self) -> Option<i64> {
-        self.value.clone()
+        self.value
     }
     pub fn set(&mut self, value: i64) {
         self.value = Some(value);

@@ -60,7 +60,7 @@ impl Default for RangeI32 {
 
 impl RangeI32 {
     pub fn get(&self) -> Option<i32> {
-        self.value.clone()
+        self.value
     }
     pub fn set(&mut self, value: i32) {
         self.value = Some(value);
