@@ -88,10 +88,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if output_data.is_valid() {
         println!("Hash: {}", output_data.hash());
 
-        println!("Created at: {:?}", user.created_at.value.clone());
-        println!("Updated at: {:?}", user.updated_at.value.clone());
-        println!("Created at: {:?}", output_data.created_at());
-        println!("Updated at: {:?}", output_data.updated_at());
+        println!("Created at: {}", user.created_at.value.clone().unwrap());
+        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
+        println!("Created at: {}", output_data.created_at().unwrap());
+        println!("Updated at: {}", output_data.updated_at().unwrap());
 
         if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);
@@ -115,10 +115,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let output_data = user.save(None, None)?;
         println!("Hash: {}", output_data.hash());
 
-        println!("Created at: {:?}", user.created_at.value.clone());
-        println!("Updated at: {:?}", user.updated_at.value.clone());
-        println!("Created at: {:?}", output_data.created_at());
-        println!("Updated at: {:?}", output_data.updated_at());
+        println!("Created at: {}", user.created_at.value.clone().unwrap());
+        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
+        println!("Created at: {}", output_data.created_at().unwrap());
+        println!("Updated at: {}", output_data.updated_at().unwrap());
 
         if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);

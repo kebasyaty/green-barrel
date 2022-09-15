@@ -231,7 +231,12 @@ impl OutputData2 {
     /// ```
     ///
     pub fn created_at(&self) -> Option<&str> {
-        self.final_model_json.get("created_at").unwrap().as_str()
+        self.final_model_json
+            .get("created_at")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
     }
 
     /// Get the date the document was updated.
@@ -250,7 +255,12 @@ impl OutputData2 {
     /// ```
     ///
     pub fn updated_at(&self) -> Option<&str> {
-        self.final_model_json.get("updated_at").unwrap().as_str()
+        self.final_model_json
+            .get("updated_at")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
     }
 
     /// Get errors message ( for user side ).
