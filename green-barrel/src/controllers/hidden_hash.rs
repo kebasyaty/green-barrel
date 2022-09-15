@@ -1,7 +1,9 @@
 //! HiddenHash - Controller (field type)
 
 use core::fmt::Debug;
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct HiddenHash {
@@ -64,5 +66,11 @@ impl HiddenHash {
     }
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
+    }
+    pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
+        if let Some(hash) = self.value.clone() {
+            return Ok(Some(ObjectId::with_string(hash.as_str())?));
+        }
+        Ok(None)
     }
 }
