@@ -1,13 +1,14 @@
 //! Output data for QPaladins.
 
 use mongodb::bson::{document::Document, oid::ObjectId};
+use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use std::error::Error;
 
 use crate::models::converters::Converters;
 
 /// Output data for delete(), update_password(), delete_many(), delete_one, drop() methods.
-// *************************************************************************************************
+// =================================================================================================
 #[derive(Debug)]
 pub enum OutputData {
     Delete(
@@ -84,7 +85,7 @@ impl OutputData {
 }
 
 /// Output data for check() and save() methods.
-// *************************************************************************************************
+// =================================================================================================
 #[derive(Debug)]
 pub struct OutputData2 {
     pub is_valid: bool,
@@ -96,6 +97,47 @@ pub struct OutputData2 {
 impl Converters for OutputData2 {}
 
 impl OutputData2 {
+    /// Get validation status (boolean).
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// assert!(output_data.is_valid());
+    /// ```
+    ///
+    pub fn is_valid(&self) -> bool {
+        self.is_valid
+    }
+
+    /// If there are AutoSlug fields, do an update. Use only for save() method.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// if output_data.is_valid() {
+    ///     model_name = output_data.update()?;
+    /// }
+    /// ```
+    ///
+    pub fn update<T>(&self) -> Result<T, serde_json::Error>
+    where
+        T: DeserializeOwned + Sized,
+    {
+        serde_json::from_value::<T>(self.final_model_json.clone())
+    }
+
     /// Get/Set Hash-line
     // ---------------------------------------------------------------------------------------------
     ///
@@ -154,48 +196,6 @@ impl OutputData2 {
         Ok(object_id)
     }
 
-    /// Get/Set final document
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let mut model_name = ModelName::new()?;
-    ///
-    /// let output_data = model_name.check()?;
-    /// // or
-    /// let output_data = model_name.save(None, None)?;
-    ///
-    /// println!("{:?}", output_data.get_doc());
-    /// println!("{:?}", output_data.set_doc(Some(new_doc)));
-    /// ```
-    ///
-    pub fn get_doc(&self) -> Option<Document> {
-        self.final_doc.clone()
-    }
-    pub fn set_doc(&mut self, new_doc: Option<Document>) {
-        self.final_doc = new_doc;
-    }
-
-    /// Get Model instance in serde_json::Value format.
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let mut model_name = ModelName::new()?
-    /// ;
-    /// let output_data = model_name.check()?;
-    /// // or
-    /// let output_data = model_name.save(None, None)?;
-    ///
-    /// println!("{:?}", output_data.model_json());
-    /// ```
-    ///
-    pub fn model_json(&self) -> Value {
-        self.final_model_json.clone()
-    }
-
     /// Get Model instance in Json-line format.
     // ---------------------------------------------------------------------------------------------
     ///
@@ -215,9 +215,8 @@ impl OutputData2 {
         Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
-    /// Get field type list in json-line format for admin panel.
+    /// Get the creation date of the document.
     // ---------------------------------------------------------------------------------------------
-    /// ( converts a field type map to a list, in the order of the Model fields )
     ///
     /// # Example:
     ///
@@ -228,60 +227,19 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// println!("{}", output_data.json_for_admin()?);
+    /// println!("{}", output_data.created_at());
     /// ```
     ///
-    pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
-        let mut field_type_list: Vec<Value> = Vec::new();
-        let hash = self
-            .final_model_json
-            .get("hash")
-            .unwrap()
-            .get("value")
+    pub fn created_at(&self) -> String {
+        self.final_model_json
+            .get("created_at")
             .unwrap()
             .as_str()
-            .unwrap();
-        // Get a list of fields type in the order of the model fields.
-        for field_name in self.fields_name.iter() {
-            let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
-            if field_name == "created_at" || field_name == "updated_at" {
-                *field_type.get_mut("input_type").unwrap() = json!("datetime");
-                *field_type.get_mut("is_hide").unwrap() = json!(false);
-            }
-            if field_name.contains("password") && !hash.is_empty() {
-                *field_type.get_mut("input_type").unwrap() = json!("hidden");
-                *field_type.get_mut("is_hide").unwrap() = json!(true);
-                *field_type.get_mut("value").unwrap() = json!("");
-            }
-            field_type_list.push(field_type);
-        }
-        //
-        Ok(serde_json::to_string(&field_type_list)?)
+            .unwrap_or_default()
+            .into()
     }
 
-    /// If there are AutoSlug fields, do an update.
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let mut model_name = ModelName::new()?;
-    ///
-    /// let output_data = model_name.save(None, None)?;
-    ///
-    /// if output_data.is_valid() {
-    ///     model_name = output_data.update()?;
-    /// }
-    /// ```
-    ///
-    pub fn update<T>(&self) -> Result<T, serde_json::Error>
-    where
-        T: serde::de::DeserializeOwned + Sized,
-    {
-        serde_json::from_value::<T>(self.final_model_json.clone())
-    }
-
-    /// Get validation status (boolean).
+    /// Get the date the document was updated.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
@@ -293,11 +251,16 @@ impl OutputData2 {
     /// // or
     /// let output_data = model_name.save(None, None)?;
     ///
-    /// assert!(output_data.is_valid());
+    /// println!("{}", output_data.updated_at());
     /// ```
     ///
-    pub fn is_valid(&self) -> bool {
-        self.is_valid
+    pub fn updated_at(&self) -> String {
+        self.final_model_json
+            .get("updated_at")
+            .unwrap()
+            .as_str()
+            .unwrap_or_default()
+            .into()
     }
 
     /// Get errors message ( for user side ).
@@ -355,5 +318,93 @@ impl OutputData2 {
         if !errors.is_empty() {
             println!("\nERRORS:{}\n", errors);
         }
+    }
+
+    // Methods for internal needs.
+    // *********************************************************************************************
+    /// Get field type list in json-line format for admin panel.
+    // ---------------------------------------------------------------------------------------------
+    /// ( converts a field type map to a list, in the order of the Model fields )
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{}", output_data.json_for_admin()?);
+    /// ```
+    ///
+    pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+        let mut field_type_list: Vec<Value> = Vec::new();
+        let hash = self
+            .final_model_json
+            .get("hash")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        // Get a list of fields type in the order of the model fields.
+        for field_name in self.fields_name.iter() {
+            let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
+            if field_name == "created_at" || field_name == "updated_at" {
+                *field_type.get_mut("input_type").unwrap() = json!("datetime");
+                *field_type.get_mut("is_hide").unwrap() = json!(false);
+            }
+            if field_name.contains("password") && !hash.is_empty() {
+                *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("is_hide").unwrap() = json!(true);
+                *field_type.get_mut("value").unwrap() = json!("");
+            }
+            field_type_list.push(field_type);
+        }
+        //
+        Ok(serde_json::to_string(&field_type_list)?)
+    }
+
+    /// Get/Set final document
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{:?}", output_data.get_doc());
+    /// println!("{:?}", output_data.set_doc(Some(new_doc)));
+    /// ```
+    ///
+    pub fn get_doc(&self) -> Option<Document> {
+        self.final_doc.clone()
+    }
+    pub fn set_doc(&mut self, new_doc: Option<Document>) {
+        self.final_doc = new_doc;
+    }
+
+    /// Get Model instance in serde_json::Value format.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?
+    /// ;
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{:?}", output_data.model_json());
+    /// ```
+    ///
+    pub fn model_json(&self) -> Value {
+        self.final_model_json.clone()
     }
 }
