@@ -37,6 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Convert Model
     // *********************************************************************************************
+    // println!("Convert Model:\n");
     //println!("{}", models::User::json()?);
     //println!("{}", models::User::model_json_for_admin()?);
     //
@@ -57,16 +58,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     user.is_staff.set(true);
     user.is_active.set(true);
 
-    // Check model.
+    // Check Model.
     // ---------------------------------------------------------------------------------------------
+    println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
     if output_data.is_valid() {
         println!("Hash: {}", output_data.hash());
 
-        println!("Created at: {}", user.created_at.value.clone().unwrap());
-        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
-        println!("Created at: {}", output_data.created_at());
-        println!("Updated at: {}", output_data.updated_at());
+        println!("Created at: {:?}", user.created_at.value.clone());
+        println!("Updated at: {:?}", user.updated_at.value.clone());
+        println!("Created at: {:?}", output_data.created_at());
+        println!("Updated at: {:?}", output_data.updated_at());
 
         if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);
@@ -81,14 +83,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create document in database.
     // ---------------------------------------------------------------------------------------------
+    println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
     if output_data.is_valid() {
         println!("Hash: {}", output_data.hash());
 
-        println!("Created at: {}", user.created_at.value.clone().unwrap());
-        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
-        println!("Created at: {}", output_data.created_at());
-        println!("Updated at: {}", output_data.updated_at());
+        println!("Created at: {:?}", user.created_at.value.clone());
+        println!("Updated at: {:?}", user.updated_at.value.clone());
+        println!("Created at: {:?}", output_data.created_at());
+        println!("Updated at: {:?}", output_data.updated_at());
 
         if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);
@@ -106,15 +109,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Update document in database.
     // ---------------------------------------------------------------------------------------------
+    println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
         user.username.set("user_3_update");
         let output_data = user.save(None, None)?;
         println!("Hash: {}", output_data.hash());
 
-        println!("Created at: {}", user.created_at.value.clone().unwrap());
-        println!("Updated at: {}", user.updated_at.value.clone().unwrap());
-        println!("Created at: {}", output_data.created_at());
-        println!("Updated at: {}", output_data.updated_at());
+        println!("Created at: {:?}", user.created_at.value.clone());
+        println!("Updated at: {:?}", user.updated_at.value.clone());
+        println!("Created at: {:?}", output_data.created_at());
+        println!("Updated at: {:?}", output_data.updated_at());
 
         if let Ok(obj_id) = output_data.obj_id() {
             println!("Object Id: {:?}", obj_id);
@@ -132,6 +136,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Delete document in database.
+    println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
     if !output_data.is_valid() {
         println!("{}", output_data.err_msg());
