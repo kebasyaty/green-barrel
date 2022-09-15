@@ -59,6 +59,9 @@ impl Default for InputDate {
 }
 
 impl InputDate {
+    pub fn get(&self) -> Option<String> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }

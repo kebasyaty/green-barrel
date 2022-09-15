@@ -49,6 +49,9 @@ impl Default for CheckBox {
 }
 
 impl CheckBox {
+    pub fn get(&self) -> Option<bool> {
+        self.checked
+    }
     pub fn set(&mut self, value: bool) {
         self.checked = Some(value);
     }

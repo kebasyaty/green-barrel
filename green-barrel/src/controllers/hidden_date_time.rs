@@ -59,6 +59,9 @@ impl Default for HiddenDateTime {
 }
 
 impl HiddenDateTime {
+    pub fn get(&self) -> Option<String> {
+        self.value.clone()
+    }
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }
