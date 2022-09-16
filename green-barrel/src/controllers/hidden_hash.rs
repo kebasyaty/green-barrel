@@ -67,11 +67,15 @@ impl HiddenHash {
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }
+
     pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
         let hash = self.value.clone().unwrap_or_default();
         if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
             return Ok(Some(obj_id));
         }
         Ok(None)
+    }
+    pub fn set_obj_id(&mut self, obj_id: ObjectId) {
+        self.value = Some(obj_id.to_hex());
     }
 }

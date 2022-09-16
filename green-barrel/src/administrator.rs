@@ -40,7 +40,7 @@ pub trait Administrator: QCommons + QPaladins {
         //
         let model_json = self.self_to_json_val()?;
         let mut field_type_list = Vec::<Value>::new();
-        let hash = self.get_hash();
+        let hash = self.hash();
         // Get a list of fields type in the order of the model fields.
         for field_name in meta.fields_name.iter() {
             let mut field_type = model_json.get(field_name).unwrap().clone();

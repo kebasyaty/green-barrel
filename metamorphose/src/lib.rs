@@ -474,30 +474,32 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Getter and Setter for field `hash`.
             // -------------------------------------------------------------------------------------
-            fn get_hash(&self) -> String {
+            fn hash(&self) -> String {
                 self.hash.value.clone().unwrap_or_default()
             }
             fn set_hash(&mut self, value: String) {
                 self.hash.value = Some(value);
             }
 
-            /// ObjectId to hash field.
-            // -------------------------------------------------------------------------------------
-            fn object_id_to_hash(&mut self, object_id: mongodb::bson::oid::ObjectId) {
-                self.hash.value = Some(object_id.to_hex());
-            }
-
             /// ObjectId from hash field.
             // -------------------------------------------------------------------------------------
-            fn object_id_from_hash(&self) -> Result<mongodb::bson::oid::ObjectId, Box<dyn std::error::Error>> {
+            fn obj_id(&self) -> Result<Option<mongodb::bson::oid::ObjectId>, Box<dyn std::error::Error>> {
                 let hash = self.hash.value.clone().unwrap_or_default();
-                let object_id = mongodb::bson::oid::ObjectId::with_string(hash.as_str())?;
-                Ok(object_id)
+                if let Ok(obj_id) = mongodb::bson::oid::ObjectId::with_string(hash.as_str()) {
+                    return Ok(Some(obj_id));
+                }
+                Ok(None)
+            }
+
+            /// ObjectId to hash field.
+            // -------------------------------------------------------------------------------------
+            fn set_obj_id(&mut self, obj_id: mongodb::bson::oid::ObjectId) {
+                self.hash.value = Some(obj_id.to_hex());
             }
 
             /// Getter and Setter for field `created_at`.
             // -------------------------------------------------------------------------------------
-            fn get_created_at(&self) -> String {
+            fn created_at(&self) -> String {
                 self.created_at.value.clone().unwrap_or_default()
             }
             fn set_created_at(&mut self, value: String) {
@@ -506,7 +508,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Getter and Setter for field `updated_at`.
             /// ------------------------------------------------------------------------------------
-            fn get_updated_at(&self) -> String {
+            fn updated_at(&self) -> String {
                 self.updated_at.value.clone().unwrap_or_default()
             }
             fn set_updated_at(&mut self, value: String) {

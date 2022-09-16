@@ -41,25 +41,25 @@ pub trait Main {
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
-    fn get_hash(&self) -> String;
+    fn hash(&self) -> String;
     fn set_hash(&mut self, value: String);
-
-    /// ObjectId to hash field.
-    // ---------------------------------------------------------------------------------------------
-    fn object_id_to_hash(&mut self, object_id: ObjectId);
 
     /// ObjectId from hash field.
     // ---------------------------------------------------------------------------------------------
-    fn object_id_from_hash(&self) -> Result<ObjectId, Box<dyn Error>>;
+    fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>>;
+
+    /// ObjectId to hash field.
+    // ---------------------------------------------------------------------------------------------
+    fn set_obj_id(&mut self, object_id: ObjectId);
 
     /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_created_at(&self) -> String;
+    fn created_at(&self) -> String;
     fn set_created_at(&mut self, value: String);
 
     /// Getter and Setter for field `updated_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_updated_at(&self) -> String;
+    fn updated_at(&self) -> String;
     fn set_updated_at(&mut self, value: String);
 
     /// Serializing the model instance to serde_json::Value format.
@@ -169,7 +169,7 @@ pub trait Main {
                     } else {
                         Err(format!(
                             "Model: {} > Method: `vitaminize` => \
-                            Invalid data type.",
+                                Invalid data type.",
                             Self::meta()?.model_name,
                         ))?
                     }
@@ -178,7 +178,7 @@ pub trait Main {
         } else {
             Err(format!(
                 "Model: {} ; Method: `vitaminize()` => \
-                Document with values for dynamic fields type not found.",
+                    Document with values for dynamic fields type not found.",
                 Self::meta()?.model_name
             ))?
         }

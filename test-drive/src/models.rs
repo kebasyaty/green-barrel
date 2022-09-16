@@ -2,6 +2,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
 use crate::settings::{
@@ -111,12 +112,9 @@ impl Control for User {
 }
 
 impl AdditionalValidation for User {
-    fn add_validation<'a>(
-        &self,
-    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
-        let mut error_map: std::collections::HashMap<&'a str, &'a str> =
-            std::collections::HashMap::new();
+        let mut error_map = HashMap::<&'a str, &'a str>::new();
 
         // Get clean data
         let hash = self.hash.value.clone().unwrap_or_default();

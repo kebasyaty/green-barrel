@@ -33,7 +33,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         image_default: Option<ImageData>,
     ) -> Result<(), Box<dyn Error>> {
         //
-        let hash = self.get_hash();
+        let hash = self.hash();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
@@ -106,7 +106,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         field_name: &str,
     ) -> Result<Value, Box<dyn Error>> {
         //
-        let hash = self.get_hash();
+        let hash = self.hash();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
@@ -160,7 +160,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
         // Determines the mode of accessing the database (insert or update).
-        let hash = &self.get_hash();
+        let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
         let mut is_err_symptom = false;
@@ -1568,7 +1568,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get Model metadata.
             let meta: Meta = model_cache.meta;
             //
-            let is_update: bool = !self.get_hash().is_empty();
+            let is_update: bool = !self.hash().is_empty();
             //
             let coll: Collection = client_cache
                 .database(meta.database_name.as_str())
@@ -1584,7 +1584,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let hash_line;
                 if is_update {
                     // Update document.
-                    hash_line = self.get_hash();
+                    hash_line = self.hash();
                     let object_id = ObjectId::with_string(hash_line.as_str())?;
                     let query = doc! {"_id": object_id.clone()};
                     let update = doc! {
@@ -1667,7 +1667,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get Model hash  for ObjectId.
-            let hash = self.get_hash();
+            let hash = self.hash();
             if hash.is_empty() {
                 Err(format!(
                     "Model: `{}` > Field: `hash` => \
@@ -1831,7 +1831,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get hash-line of Model.
-        let hash = self.get_hash();
+        let hash = self.hash();
         if hash.is_empty() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
@@ -1919,7 +1919,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get hash-line of Model.
-            let hash = self.get_hash();
+            let hash = self.hash();
             // Convert hash-line to ObjectId.
             let object_id = ObjectId::with_string(hash.as_str())?;
             // Create a filter to search for a document.
