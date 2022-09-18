@@ -267,9 +267,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let field_info = get_field_info(
-                        field_type.as_str(),
                         model_name_str.as_str(),
                         field_name.as_str(),
+                        field_type.as_str(),
                     )
                     .unwrap();
                     trans_meta
@@ -619,11 +619,11 @@ impl Default for Meta {
 /// Get widget info.
 // *************************************************************************************************
 fn get_field_info<'a>(
-    widget_name: &'a str,
     model_name: &'a str,
     field_name: &'a str,
+    field_type: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
-    let info: (&'a str, &'a str) = match widget_name {
+    let info: (&'a str, &'a str) = match field_type {
         "CheckBox" => ("bool", "checkbox"),
         "InputColor" => ("String", "color"),
         "InputDate" => ("String", "date"),
@@ -676,8 +676,8 @@ fn get_field_info<'a>(
         "HiddenHash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
         _ => Err(format!(
-            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid Widget type.",
-            model_name, field_name, widget_name,
+            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid field type.",
+            model_name, field_name, field_type,
         ))?,
     };
     //
