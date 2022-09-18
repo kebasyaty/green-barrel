@@ -263,7 +263,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Add field name and Controller value type to map.
+                // Add field name and field value type to map.
                 if let Path(ty) = &field.ty {
                     field_type = quote! {#ty}.to_string();
                     let field_info = get_field_info(
@@ -278,7 +278,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 }
                 // Add field name and Widget name to map.
                 trans_meta
-                    .controller_type_map
+                    .field_type_map
                     .insert(field_name.clone(), field_type);
                 //
                 // Add field name and Widget html id to map.
@@ -441,7 +441,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 // Add default_value_map
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
                 let model_json = Self::control_to_json_val()?;
-                for (field_name, controller_name) in meta.controller_type_map.iter() {
+                for (field_name, field_type) in meta.field_type_map.iter() {
                     let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
                             val.clone()
                     } else if let Some(val) = model_json.get(field_name).unwrap().get("checked") {
@@ -451,7 +451,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     };
                     default_value_map.insert(field_name.to_string(), default);
                     // Determine if there are fields of type AutoSlug and if they use a hash field as a source.
-                    if !meta.is_use_hash_slug && controller_name == "AutoSlug" {
+                    if !meta.is_use_hash_slug && field_type == "AutoSlug" {
                         let flag = model_json
                             .get(field_name)
                             .unwrap()
@@ -581,8 +581,8 @@ struct Meta {
     pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
     pub field_value_type_map: std::collections::HashMap<String, String>,
-    // <field_name, controller_type>
-    pub controller_type_map: std::collections::HashMap<String, String>,
+    // <field_name, field_type>
+    pub field_type_map: std::collections::HashMap<String, String>,
     // <field_name, default_value>
     pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
     // List of field names that will not be saved to the database
@@ -609,7 +609,7 @@ impl Default for Meta {
             is_use_hooks: false,
             is_use_hash_slug: false,
             field_value_type_map: std::collections::HashMap::new(),
-            controller_type_map: std::collections::HashMap::new(),
+            field_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             ignore_fields: Vec::new(),
         }

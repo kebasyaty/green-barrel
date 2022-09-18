@@ -386,7 +386,7 @@ pub trait QCommons: Main + Caching + Converters {
             Some(options),
             coll,
             &meta.ignore_fields,
-            &meta.controller_type_map,
+            &meta.field_type_map,
             meta.model_name.as_str(),
         )
     }
@@ -459,7 +459,7 @@ pub trait QCommons: Main + Caching + Converters {
             Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
-                &meta.controller_type_map,
+                &meta.field_type_map,
                 &meta.model_name,
                 &meta.fields_name,
                 &mut model_json,
@@ -506,7 +506,7 @@ pub trait QCommons: Main + Caching + Converters {
             Self::one_to_json_val(
                 db_doc,
                 &meta.ignore_fields,
-                &meta.controller_type_map,
+                &meta.field_type_map,
                 &meta.model_name,
                 &meta.fields_name,
                 &mut model_json,

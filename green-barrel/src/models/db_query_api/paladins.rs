@@ -177,7 +177,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
-        let controller_type_map = &meta.controller_type_map;
+        let field_type_map = &meta.field_type_map;
 
         // Apply additional validation.
         if meta.is_use_add_valid {
@@ -200,7 +200,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
 
         // Loop over fields for validation.
-        for (field_name, controller_name) in controller_type_map {
+        for (field_name, field_type) in field_type_map {
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
@@ -250,7 +250,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             //
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
-            let controller_name = controller_name.as_str();
+            let field_type = field_type.as_str();
 
             // Field validation.
             match const_group {
@@ -263,7 +263,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 */
                 1 => {
                     // When updating, we skip field password type.
-                    if is_update && controller_name == "InputPassword" {
+                    if is_update && field_type == "InputPassword" {
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
@@ -285,7 +285,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     let curr_val = const_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if controller_name != "InputPassword" {
+                    let field_value_bson = if field_type != "InputPassword" {
                         Bson::String(curr_val.to_string())
                     } else {
                         Bson::Null
@@ -361,7 +361,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
-                        if controller_name != "InputPassword" && is_unique {
+                        if field_type != "InputPassword" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
@@ -383,7 +383,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(controller_name, curr_val).unwrap_or_else(|err| {
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
                             *final_field.get_mut("error").unwrap() =
@@ -400,7 +400,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
-                        match controller_name {
+                        match field_type {
                             "InputPassword" => {
                                 if !curr_val.is_empty() && !is_update {
                                     // Generate password hash and add to result document.
@@ -509,7 +509,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
-                    if let Err(err) = Self::regex_validation(controller_name, curr_val) {
+                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() =
                             json!(Self::accumula_err(final_field, &err.to_string()));
@@ -520,7 +520,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
                     let dt_val: chrono::DateTime<chrono::Utc> = {
-                        let val = if controller_name == "InputDate" {
+                        let val = if field_type == "InputDate" {
                             format!("{}T00:00", curr_val)
                         } else {
                             curr_val.to_string()
@@ -537,14 +537,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let max = final_field.get("max").unwrap().as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
                         // Validation in regular expression (min).
-                        if let Err(err) = Self::regex_validation(controller_name, min) {
+                        if let Err(err) = Self::regex_validation(field_type, min) {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &err.to_string()));
                             continue;
                         }
                         // Validation in regular expression (max).
-                        if let Err(err) = Self::regex_validation(controller_name, max) {
+                        if let Err(err) = Self::regex_validation(field_type, max) {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &err.to_string()));
@@ -552,7 +552,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         // Date to DateTime (min).
                         let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_val: String = if controller_name == "InputDate" {
+                            let min_val: String = if field_type == "InputDate" {
                                 format!("{}T00:00", min)
                             } else {
                                 min.to_string()
@@ -564,7 +564,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         };
                         // Date to DateTime (max).
                         let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_val: String = if controller_name == "InputDate" {
+                            let max_val: String = if field_type == "InputDate" {
                                 format!("{}T00:00", max)
                             } else {
                                 max.to_string()
@@ -628,7 +628,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if is_save {
                         final_doc.insert(
                             field_name,
-                            match controller_name {
+                            match field_type {
                                 "SelectText" => {
                                     let val = const_value.as_str().unwrap();
                                     Bson::String(val.to_string())
@@ -648,7 +648,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                    model_name, field_name, controller_name
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
@@ -673,7 +673,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if is_save {
                         final_doc.insert(
                             field_name,
-                            match controller_name {
+                            match field_type {
                                 "SelectTextDyn" => {
                                     let val = const_value.as_str().unwrap().to_string();
                                     Bson::String(val)
@@ -693,7 +693,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                    model_name, field_name, controller_name
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
@@ -718,7 +718,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if is_save {
                         final_doc.insert(
                             field_name,
-                            match controller_name {
+                            match field_type {
                                 "SelectTextMult" => Bson::Array(
                                     const_value
                                         .as_array()
@@ -758,7 +758,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                    model_name, field_name, controller_name
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
@@ -786,7 +786,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if is_save {
                         final_doc.insert(
                             field_name,
-                            match controller_name {
+                            match field_type {
                                 "SelectTextMultDyn" => Bson::Array(
                                     const_value
                                         .as_array()
@@ -826,7 +826,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 _ => Err(format!(
                                     "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
                                     Unsupported controller type - `{}`.\n\n",
-                                    model_name, field_name, controller_name
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
@@ -1374,7 +1374,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 _ => Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
                      Unsupported controller type - `{}`.",
-                    model_name, field_name, controller_name
+                    model_name, field_name, field_type
                 ))?,
             }
         }
@@ -1446,9 +1446,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if is_save && is_err_symptom && !is_update {
             for field_name in meta.fields_name.iter() {
                 let field = final_model_json.get(field_name).unwrap();
-                let controller_name = field.get("field_type").unwrap().as_str().unwrap();
+                let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
-                if controller_name == "InputFile" {
+                if field_type == "InputFile" {
                     let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
@@ -1469,7 +1469,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap() = json!(null);
                         }
                     }
-                } else if controller_name == "InputImage" {
+                } else if field_type == "InputImage" {
                     let value = field.get("value").unwrap();
                     let default_value = field.get("default").unwrap();
                     if !value.is_null() && !default_value.is_null() {
@@ -1685,9 +1685,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {
                         let field = model_json.get(field_name).unwrap();
-                        let controller_name = field.get("field_type").unwrap().as_str().unwrap();
+                        let field_type = field.get("field_type").unwrap().as_str().unwrap();
                         //
-                        if controller_name == "InputFile" {
+                        if field_type == "InputFile" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
@@ -1711,7 +1711,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     meta.model_name, field_name
                                 ))?
                             }
-                        } else if controller_name == "InputImage" {
+                        } else if field_type == "InputImage" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;

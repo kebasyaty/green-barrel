@@ -176,7 +176,7 @@ mod app_name {
             project_name: PROJECT_NAME,
             unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
-            models: model_list()?,
+            metadata_list: model_list()?,
         };
         monitor.migrat()?;
         // Add metadata and widgects map to cache.
