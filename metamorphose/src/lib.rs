@@ -265,7 +265,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 }
                 // Add field name and field value type to map.
                 if let Path(ty) = &field.ty {
-                    field_type = quote! {#ty}.to_string();
+                    field_type = {
+                        let tmp_str = quote! {#ty}.to_string();
+                        let tmp_vec = tmp_str.split("::").collect::<Vec<&str>>();
+                        tmp_vec[tmp_vec.len() - 1].trim().to_string()
+                    };
                     let field_info = get_field_info(
                         model_name_str.as_str(),
                         field_name.as_str(),
@@ -616,7 +620,7 @@ impl Default for Meta {
     }
 }
 
-/// Get widget info.
+/// Get field info.
 // *************************************************************************************************
 fn get_field_info<'a>(
     model_name: &'a str,
