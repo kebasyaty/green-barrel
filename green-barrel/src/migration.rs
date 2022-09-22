@@ -94,10 +94,10 @@ impl<'a> Monitor<'a> {
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             // Collection for monitoring the state of Models.
-            let collection_models_name: &str = "monitor_models";
+            let collection_models: &str = "monitor_models";
             // Used to store selection items, for
             // Fields type like selectTextDyn, selectTextMultDyn, etc.
-            let collection_dyn_fields_type: &str = "dynamic_fields";
+            let collection_dyn_fields: &str = "dynamic_fields";
             //Get a list of databases.
             let database_names: Vec<String> = client.list_database_names(None, None)?;
             // Create a technical database for the project if it doesn't exist.
@@ -105,17 +105,16 @@ impl<'a> Monitor<'a> {
                 // Create a collection for models.
                 client
                     .database(&db_green_tech)
-                    .create_collection(collection_models_name, None)?;
+                    .create_collection(collection_models, None)?;
                 // Create a collection for fields types of `select`.
                 // (selectTextDyn, selectTextMultDyn, etc.)
                 client
                     .database(&db_green_tech)
-                    .create_collection(collection_dyn_fields_type, None)?;
+                    .create_collection(collection_dyn_fields, None)?;
             } else {
                 // Reset models state information.
                 let green_tech_db: Database = client.database(&db_green_tech);
-                let collection_models: Collection =
-                    green_tech_db.collection(collection_models_name);
+                let collection_models: Collection = green_tech_db.collection(collection_models);
                 let cursor: Cursor = collection_models.find(None, None)?;
 
                 for result in cursor {
@@ -146,12 +145,11 @@ impl<'a> Monitor<'a> {
             let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
-            let collection_models_name: &str = "monitor_models";
-            let collection_dyn_fields_type: &str = "dynamic_fields";
+            let collection_models: &str = "monitor_models";
+            let collection_dyn_fields: &str = "dynamic_fields";
             let green_tech_db: Database = client.database(&db_green_tech);
-            let collection_models: Collection = green_tech_db.collection(collection_models_name);
-            let collection_dyn_fields: Collection =
-                green_tech_db.collection(collection_dyn_fields_type);
+            let collection_models: Collection = green_tech_db.collection(collection_models);
+            let collection_dyn_fields: Collection = green_tech_db.collection(collection_dyn_fields);
             // Delete orphaned Collections.
             let cursor: Cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();

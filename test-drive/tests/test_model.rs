@@ -158,8 +158,9 @@ mod app_name {
     // Test migration
     // =============================================================================================
     // Model list
-    pub fn model_list() -> Result<Vec<Meta>, Box<dyn std::error::Error>> {
-        Ok(vec![TestModel::meta()?])
+    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn std::error::Error>> {
+        let metadata_list = vec![TestModel::meta()?];
+        Ok(metadata_list)
     }
     // Test, migration service `Mango`
     pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
@@ -170,13 +171,13 @@ mod app_name {
         );
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &model_list()?)?;
+        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &get_metadata_list()?)?;
         // Migration
         let monitor = Monitor {
             project_name: PROJECT_NAME,
             unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
-            metadata_list: model_list()?,
+            metadata_list: get_metadata_list()?,
         };
         monitor.migrat()?;
         // Add metadata and widgects map to cache.
@@ -289,7 +290,7 @@ fn test_model() -> Result<(), Box<dyn Error>> {
     del_test_db(
         app_name::PROJECT_NAME,
         app_name::UNIQUE_PROJECT_KEY,
-        &app_name::model_list()?,
+        &app_name::get_metadata_list()?,
     )?;
     //
     Ok(())

@@ -168,7 +168,7 @@ pub trait Main {
                             .unwrap() = json!(options);
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `vitaminize` => \
+                            "Model: {} > Method: `injection()` => \
                                 Invalid data type.",
                             Self::generate_metadata()?.0.model_name,
                         ))?
@@ -177,7 +177,7 @@ pub trait Main {
             }
         } else {
             Err(format!(
-                "Model: {} ; Method: `vitaminize()` => \
+                "Model: {} ; Method: `injection()` => \
                     Document with values for dynamic fields type not found.",
                 Self::generate_metadata()?.0.model_name
             ))?
