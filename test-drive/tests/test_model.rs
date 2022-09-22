@@ -157,13 +157,13 @@ mod app_name {
 
     // Test migration
     // =============================================================================================
-    // Model list
+    // Get metadata list
     pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn std::error::Error>> {
         let metadata_list = vec![TestModel::meta()?];
         Ok(metadata_list)
     }
-    // Test, migration service `Mango`
-    pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
+    // Migration
+    pub fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
         // Caching MongoDB clients
         MONGODB_CLIENT_STORE.write()?.insert(
             "default".to_string(),
@@ -180,8 +180,6 @@ mod app_name {
             metadata_list: get_metadata_list()?,
         };
         monitor.migrat()?;
-        // Add metadata and widgects map to cache.
-        TestModel::to_cache()?;
         //
         Ok(())
     }
@@ -193,7 +191,7 @@ mod app_name {
 fn test_model() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
-    app_name::mango_migration()?;
+    app_name::run_migration()?;
 
     // Body of test
     // =============================================================================================

@@ -4,8 +4,8 @@ mod settings;
 use green_barrel::*;
 //use mongodb::bson::doc;
 
-// Migration Service `Mango`.
-fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
+// Migration
+fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
     // Caching MongoDB clients.
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
@@ -32,7 +32,7 @@ fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Run migration.
-    mango_migration()?;
+    run_migration()?;
 
     // Convert Model
     // *********************************************************************************************
