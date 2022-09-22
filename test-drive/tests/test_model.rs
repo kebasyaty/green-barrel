@@ -157,7 +157,7 @@ mod data_test {
     // =============================================================================================
     // Get metadata list
     pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
-        let metadata_list = vec![TestModel::meta()?];
+        let metadata_list = vec![TestModel::truncmeta()?];
         Ok(metadata_list)
     }
 

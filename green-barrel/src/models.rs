@@ -39,6 +39,16 @@ pub trait Main {
     where
         Self: serde::de::DeserializeOwned + Sized;
 
+    /// To get truncated metadata.
+    // ---------------------------------------------------------------------------------------------
+    fn truncmeta() -> Result<Meta, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+    {
+        let result = Self::generate_metadata()?;
+        Ok(result.0)
+    }
+
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
     fn hash(&self) -> String;
