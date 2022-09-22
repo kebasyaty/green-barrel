@@ -31,12 +31,10 @@ pub trait Caching: Main + Converters {
         // Get write access in cache.
         let mut model_store = MODEL_STORE.write()?;
         // Create `ModelCache` default and add map of fields and metadata of model.
-        let meta: Meta = Self::meta()?;
+        let (meta, mut model_json) = Self::generate_metadata()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
-        // Get a fields.
-        let mut model_json = Self::control_to_json_val()?;
         // Enrich the field map with values for dynamic fields.
         Self::injection(
             meta.project_name.as_str(),
@@ -52,6 +50,49 @@ pub trait Caching: Main + Converters {
         model_store.insert(key, new_model_cache);
         //
         Ok(())
+    }
+
+    /// Get metadata of Model.
+    // *********************************************************************************************
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let metadata = ModelName::meta()?;
+    ///
+    /// println!("{:?}", metadata);
+    /// ```
+    ///
+    fn meta() -> Result<Meta, Box<dyn std::error::Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get a key to access Model data in the cache.
+        let key: String = Self::key()?;
+        // Get read access from cache.
+        let mut model_store = MODEL_STORE.read()?;
+        // Check if there is metadata for the Model in the cache.
+        if !model_store.contains_key(key.as_str()) {
+            // Unlock.
+            drop(model_store);
+            // Add metadata and widgects map to cache.
+            Self::to_cache()?;
+            // Reaccess.
+            model_store = MODEL_STORE.read()?;
+        }
+        // Get model_cache.
+        let model_cache = model_store.get(key.as_str());
+        if model_cache.is_none() {
+            let metadata = Self::generate_metadata()?;
+            Err(format!(
+                "Model: `{}` ; Method: `meta()` => \
+                    Failed to get data from cache.",
+                metadata.0.model_name
+            ))?
+        }
+        //
+        let meta = model_cache.unwrap().meta.clone();
+        Ok(meta)
     }
 
     /// Get a new model instance with custom settings.
@@ -93,7 +134,7 @@ pub trait Caching: Main + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `new` => \
+                "Model: `{}` ; Method: `new()` => \
                     Failed to get data from cache.",
                 meta.model_name
             ))?
@@ -109,7 +150,7 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::to_json()?;
+    /// let json_line = UserProfile::json()?;
     /// println!("{}", json_line);
     /// ```
     ///
@@ -135,7 +176,7 @@ pub trait Caching: Main + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` ; Method: `to_json` => \
+                "Model: `{}` ; Method: `json()` => \
                     Failed to get data from cache.",
                 meta.model_name
             ))?
@@ -152,7 +193,7 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::to_json_for_admin()?;
+    /// let json_line = UserProfile::model_to_json_for_admin()?;
     ///
     /// println!("{}", json_line);
     /// ```
@@ -213,7 +254,7 @@ pub trait Caching: Main + Converters {
         if model_cache.is_none() {
             let meta = Self::meta()?;
             Err(format!(
-                "Model: `{}` > Method: `get_cache_data_for_query` => \
+                "Model: `{}` > Method: `get_cache_data_for_query()` => \
                     Failed to get data from cache.",
                 meta.model_name
             ))?
@@ -221,7 +262,7 @@ pub trait Caching: Main + Converters {
         //
         let model_cache = model_cache.unwrap();
         // Get model metadata from cache.
-        let meta: &Meta = &model_cache.meta;
+        let meta = &model_cache.meta;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client: &Client = client_store.get(&meta.db_client_name).unwrap();
@@ -262,7 +303,7 @@ pub trait Caching: Main + Converters {
                 field_name
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` > \
+                    "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `field_name` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -273,7 +314,7 @@ pub trait Caching: Main + Converters {
             if let Some(title) = dyn_data["title"].as_str() {
                 if title.len() > 150 {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `title` => \
                             The maximum title length is 150 characters.",
                         Self::meta()?.model_name
@@ -282,7 +323,7 @@ pub trait Caching: Main + Converters {
                 title
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` > \
+                    "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `title` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -294,7 +335,7 @@ pub trait Caching: Main + Converters {
                 is_delete
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` > \
+                    "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `is_delete` => \
                         The field is missing.",
                     Self::meta()?.model_name
@@ -314,7 +355,7 @@ pub trait Caching: Main + Converters {
                 field
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` => \
+                    "Model: {} > Method: `update_dyn_field()` => \
                         There is no field named `{}` in the model.",
                     meta.model_name, const_field_name
                 ))?
@@ -324,7 +365,7 @@ pub trait Caching: Main + Converters {
         // Check the Field type for belonging to dynamic types.
         if !const_field_type.contains("Dyn") {
             Err(format!(
-                "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
+                "Model: {} > Field: `{}` ; Method: `update_dyn_field()` => \
                     Field `{}` is not dynamic.",
                 meta.model_name, const_field_name, const_field_type
             ))?
@@ -363,7 +404,7 @@ pub trait Caching: Main + Converters {
                     let maxlength = const_field.get("maxlength").unwrap().as_u64().unwrap();
                     if val_len < minlength || val_len > maxlength {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Characters = {} ; Min length = {} ; Max length = {}",
                             meta.model_name, val_len, minlength, maxlength
@@ -375,7 +416,7 @@ pub trait Caching: Main + Converters {
                         .any(|item| item == val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `&str` type.",
                         meta.model_name
@@ -389,7 +430,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -400,7 +441,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `i32` type.",
                             meta.model_name, val
@@ -413,7 +454,7 @@ pub trait Caching: Main + Converters {
                         .any(|item| item == val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i32` type.",
                         meta.model_name
@@ -427,7 +468,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -438,7 +479,7 @@ pub trait Caching: Main + Converters {
                     }
                     if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `u32` type.",
                             meta.model_name, val
@@ -450,7 +491,7 @@ pub trait Caching: Main + Converters {
                         .any(|x| x == val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `u32` type.",
                         meta.model_name
@@ -464,7 +505,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -475,7 +516,7 @@ pub trait Caching: Main + Converters {
                     }
                     if !(i64::MIN..=i64::MAX).contains(&val) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `i64` type.",
                             meta.model_name, val
@@ -487,7 +528,7 @@ pub trait Caching: Main + Converters {
                         .any(|item| item == val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i64` type.",
                         meta.model_name
@@ -501,7 +542,7 @@ pub trait Caching: Main + Converters {
                         || (max.is_some() && val > max.unwrap())
                     {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 Number = {} ; Min = {} ; Max = {}",
                             meta.model_name,
@@ -512,7 +553,7 @@ pub trait Caching: Main + Converters {
                     }
                     if !(f64::MIN..=f64::MAX).contains(&val) {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` > \
+                            "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `f64` type.",
                             meta.model_name, val
@@ -524,7 +565,7 @@ pub trait Caching: Main + Converters {
                         .any(|item| item == val)
                 } else {
                     Err(format!(
-                        "Model: {} > Method: `update_dyn_field` > \
+                        "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `f64` type.",
                         meta.model_name
@@ -535,14 +576,14 @@ pub trait Caching: Main + Converters {
             };
             if !const_is_delete && is_value_exist {
                 Err(format!(
-                    "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_field()` => \
                     Cannot add new value, similar value already exists.",
                     meta.model_name, const_field_name
                 ))?
             }
             if const_is_delete && !is_value_exist {
                 Err(format!(
-                    "Model: {} > Field: `{}` ; Method: `update_dyn_field` => \
+                    "Model: {} > Field: `{}` ; Method: `update_dyn_field()` => \
                         The value cannot be deleted, it is missing.",
                     meta.model_name, const_field_name
                 ))?
@@ -584,7 +625,7 @@ pub trait Caching: Main + Converters {
                         }
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` => \
+                            "Model: {} > Method: `update_dyn_field()` => \
                                 Invalid data type.",
                             meta.model_name,
                         ))?
@@ -616,7 +657,7 @@ pub trait Caching: Main + Converters {
                 target_arr_bson.push(arr_bson);
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` => \
+                    "Model: {} > Method: `update_dyn_field()` => \
                         Invalid data type.",
                     meta.model_name,
                 ))?
@@ -666,7 +707,7 @@ pub trait Caching: Main + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model: {} > Method: `update_dyn_field` => \
+                    "Model: {} > Method: `update_dyn_field()` => \
                         Invalid data type.",
                     meta.model_name,
                 ))?
@@ -769,7 +810,7 @@ pub trait Caching: Main + Converters {
                         !const_control_arr.control_arr_f64().contains(&val)
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `update_dyn_field` => \
+                            "Model: {} > Method: `update_dyn_field()` => \
                                 Invalid data type.",
                             meta.model_name,
                         ))?

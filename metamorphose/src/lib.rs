@@ -349,7 +349,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn control_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
+            fn custom_default_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
@@ -404,9 +404,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(instance_json_val)
             }
 
-            /// Get metadata of Model.
+            /// Generate metadata of Model.
             // -------------------------------------------------------------------------------------
-            fn meta() -> Result<Meta, Box<dyn std::error::Error>>
+            fn generate_metadata() -> Result<(Meta, serde_json::Value), Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
@@ -444,7 +444,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 .to_lowercase();
                 // Add default_value_map
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
-                let model_json = Self::control_to_json_val()?;
+                let model_json = Self::custom_default_to_json_val()?;
                 for (field_name, field_type) in meta.field_type_map.iter() {
                     let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
                             val.clone()
@@ -473,7 +473,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 }
                 meta.default_value_map = default_value_map;
                 //
-                Ok(meta)
+                Ok((meta, model_json))
             }
 
             /// Getter and Setter for field `hash`.

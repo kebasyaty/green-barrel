@@ -29,13 +29,13 @@ pub trait Main {
     /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
     /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn control_to_json_val() -> Result<Value, Box<dyn Error>>
+    fn custom_default_to_json_val() -> Result<Value, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized;
 
-    /// Get metadata of Model.
+    /// Generate metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn Error>>
+    fn generate_metadata() -> Result<(Meta, Value), Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized;
 
@@ -170,7 +170,7 @@ pub trait Main {
                         Err(format!(
                             "Model: {} > Method: `vitaminize` => \
                                 Invalid data type.",
-                            Self::meta()?.model_name,
+                            Self::generate_metadata()?.0.model_name,
                         ))?
                     }
                 }
@@ -179,7 +179,7 @@ pub trait Main {
             Err(format!(
                 "Model: {} ; Method: `vitaminize()` => \
                     Document with values for dynamic fields type not found.",
-                Self::meta()?.model_name
+                Self::generate_metadata()?.0.model_name
             ))?
         }
         //
