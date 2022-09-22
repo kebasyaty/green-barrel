@@ -20,9 +20,9 @@ use crate::{
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
 pub trait Caching: Main + Converters {
-    /// Add metadata and widgects map to cache.
+    /// Add metadata to cache.
     // *********************************************************************************************
-    fn to_cache() -> Result<(), Box<dyn Error>>
+    fn caching() -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -76,7 +76,7 @@ pub trait Caching: Main + Converters {
             // Unlock.
             drop(model_store);
             // Add metadata and widgects map to cache.
-            Self::to_cache()?;
+            Self::caching()?;
             // Reaccess.
             model_store = MODEL_STORE.read()?;
         }
@@ -125,7 +125,7 @@ pub trait Caching: Main + Converters {
             // Unlock.
             drop(model_store);
             // Add metadata and widgects map to cache.
-            Self::to_cache()?;
+            Self::caching()?;
             // Reaccess.
             model_store = MODEL_STORE.read()?;
         }
@@ -167,7 +167,7 @@ pub trait Caching: Main + Converters {
             // Unlock.
             drop(model_store);
             // Add metadata and widgects to cache.
-            Self::to_cache()?;
+            Self::caching()?;
             // Reaccess.
             model_store = MODEL_STORE.read()?;
         }
@@ -245,7 +245,7 @@ pub trait Caching: Main + Converters {
             // Unlock.
             drop(model_store);
             // Add metadata and widgects map to cache.
-            Self::to_cache()?;
+            Self::caching()?;
             // Reaccess.
             model_store = MODEL_STORE.read()?;
         }
@@ -830,7 +830,7 @@ pub trait Caching: Main + Converters {
         }
 
         // Update metadata and fields map to cache.
-        Self::to_cache()?;
+        Self::caching()?;
         //
         Ok(())
     }
