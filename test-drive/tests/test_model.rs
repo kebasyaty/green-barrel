@@ -171,7 +171,6 @@ mod data_test {
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        let metadata_list = vec![TestModel::meta()?];
         del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &metadata_list)?;
 
         // Monitor initialization.
