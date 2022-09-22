@@ -2,10 +2,11 @@ mod models;
 mod settings;
 
 use green_barrel::*;
+use std::error::Error;
 //use mongodb::bson::doc;
 
 // Migration
-fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
+fn run_migration() -> Result<(), Box<dyn Error>> {
     // Caching MongoDB clients.
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
@@ -30,7 +31,7 @@ fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     // Run migration.
     run_migration()?;
 
