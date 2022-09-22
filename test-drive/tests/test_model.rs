@@ -164,15 +164,20 @@ mod app_name {
     }
     // Migration
     pub fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
-        // Caching MongoDB clients
-        MONGODB_CLIENT_STORE.write()?.insert(
-            "default".to_string(),
-            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-        );
+        // Caching MongoDB clients.
+        {
+            let mut client_store = MONGODB_CLIENT_STORE.write()?;
+            client_store.insert(
+                "default".to_string(),
+                mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
+            );
+        }
+
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &get_metadata_list()?)?;
-        // Migration
+
+        // Monitor initialization.
         let monitor = Monitor {
             project_name: PROJECT_NAME,
             unique_project_key: UNIQUE_PROJECT_KEY,
@@ -180,7 +185,7 @@ mod app_name {
             metadata_list: get_metadata_list()?,
         };
         monitor.migrat()?;
-        //
+
         Ok(())
     }
 }

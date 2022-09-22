@@ -26,7 +26,7 @@ fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
         metadata_list: vec![models::User::meta()?],
     };
     monitor.migrat()?;
-    //
+
     Ok(())
 }
 
