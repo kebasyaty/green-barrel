@@ -12,13 +12,16 @@ use slug::slugify;
 use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
-use crate::models::{
-    caching::Caching,
-    helpers::{FileData, ImageData, Meta},
-    hooks::Hooks,
-    output_data::{OutputData, OutputData2},
-    validation::{AdditionalValidation, Validation},
-    Main,
+use crate::{
+    models::{
+        caching::Caching,
+        helpers::{FileData, ImageData, Meta},
+        hooks::Hooks,
+        output_data::{OutputData, OutputData2},
+        validation::{AdditionalValidation, Validation},
+        Main,
+    },
+    store::MONGODB_CLIENT_STORE,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -153,10 +156,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     {
         //
         let is_save = is_save.unwrap_or(false);
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
-        let meta: Meta = model_cache.meta;
+        let meta = Self::meta()?;
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
         // Determines the mode of accessing the database (insert or update).
@@ -167,7 +170,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a list of fields that should not be included in the document.
         let ignore_fields = &meta.ignore_fields;
         // Access the collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(&meta.database_name)
             .collection(&meta.collection_name);
         // Get preliminary data from model instance and use for final result.
@@ -1517,7 +1520,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 meta.project_name.as_str(),
                 meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
-                &client_cache,
+                client,
                 &mut final_model_json,
                 &meta.fields_name,
             )?;
@@ -1564,13 +1567,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             // Get cached Model data.
-            let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-            // Get Model metadata.
-            let meta: Meta = model_cache.meta;
+            let meta = Self::meta()?;
+            let client_store = MONGODB_CLIENT_STORE.read()?;
+            let client = client_store.get(&meta.db_client_name).unwrap();
             //
             let is_update: bool = !self.hash().is_empty();
             //
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Having fields with a controller of inputSlug type.

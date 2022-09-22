@@ -265,7 +265,7 @@ pub trait Caching: Main + Converters {
         let meta = &model_cache.meta;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client: &Client = client_store.get(&meta.db_client_name).unwrap();
+        let client = client_store.get(&meta.db_client_name).unwrap();
         //
         Ok((model_cache.clone(), client.clone()))
     }
