@@ -189,7 +189,7 @@ mod app_name {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_all_default() -> Result<(), Box<dyn Error>> {
+fn test_model() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     app_name::mango_migration()?;
