@@ -5,9 +5,7 @@ use mongodb::{bson::doc, sync::Client};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
-// APP NAME
-// #################################################################################################
-mod app_name {
+mod data_test {
     use super::*;
 
     // Test application settings
@@ -196,11 +194,11 @@ mod app_name {
 fn test_model() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
-    app_name::run_migration()?;
+    data_test::run_migration()?;
 
     // Body of test
     // =============================================================================================
-    type TestModel = app_name::TestModel;
+    type TestModel = data_test::TestModel;
     //
     // Module: mango-orm/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
@@ -291,10 +289,10 @@ fn test_model() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
-        app_name::PROJECT_NAME,
-        app_name::UNIQUE_PROJECT_KEY,
-        &app_name::get_metadata_list()?,
+        data_test::PROJECT_NAME,
+        data_test::UNIQUE_PROJECT_KEY,
+        &data_test::get_metadata_list()?,
     )?;
-    //
+
     Ok(())
 }
