@@ -156,12 +156,12 @@ mod data_test {
     // Test migration
     // =============================================================================================
     // Get metadata list
-    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn std::error::Error>> {
+    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
         let metadata_list = vec![TestModel::meta()?];
         Ok(metadata_list)
     }
     // Migration
-    pub fn run_migration() -> Result<(), Box<dyn std::error::Error>> {
+    pub fn run_migration() -> Result<(), Box<dyn Error>> {
         // Caching MongoDB clients.
         {
             let mut client_store = MONGODB_CLIENT_STORE.write()?;
