@@ -10,14 +10,14 @@ use crate::{models::helpers::Meta, store::MONGODB_CLIENT_STORE};
 pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
-    models: &Vec<Meta>,
+    metadata_list: Vec<Meta>,
 ) -> Result<(), Box<dyn Error>> {
     // Name of the technical database for testing
     let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
     //
     let client_store = MONGODB_CLIENT_STORE.read()?;
     // Removing databases
-    for meta in models {
+    for meta in metadata_list.iter() {
         let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let database_names: Vec<String> = client.list_database_names(None, None)?;
         //

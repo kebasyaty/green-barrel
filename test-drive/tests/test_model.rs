@@ -173,7 +173,7 @@ mod data_test {
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &get_metadata_list()?)?;
+        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, get_metadata_list()?)?;
 
         // Monitor initialization.
         let monitor = Monitor {
@@ -291,7 +291,7 @@ fn test_model() -> Result<(), Box<dyn Error>> {
     del_test_db(
         data_test::PROJECT_NAME,
         data_test::UNIQUE_PROJECT_KEY,
-        &data_test::get_metadata_list()?,
+        data_test::get_metadata_list()?,
     )?;
 
     Ok(())
