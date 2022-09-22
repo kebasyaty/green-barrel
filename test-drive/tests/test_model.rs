@@ -155,11 +155,6 @@ mod data_test {
 
     // Test migration
     // =============================================================================================
-    // Get metadata list
-    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
-        let metadata_list = vec![TestModel::meta()?];
-        Ok(metadata_list)
-    }
     // Migration
     pub fn run_migration() -> Result<(), Box<dyn Error>> {
         // Caching MongoDB clients.
@@ -171,16 +166,20 @@ mod data_test {
             );
         }
 
+        // Get metadata list
+        let metadata_list = vec![TestModel::meta()?];
+
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, get_metadata_list()?)?;
+        let metadata_list = vec![TestModel::meta()?];
+        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, &metadata_list)?;
 
         // Monitor initialization.
         let monitor = Monitor {
             project_name: PROJECT_NAME,
             unique_project_key: UNIQUE_PROJECT_KEY,
             // Register models
-            metadata_list: get_metadata_list()?,
+            metadata_list,
         };
         monitor.migrat()?;
 
