@@ -34,13 +34,13 @@ pub trait Caching: Main + Converters {
         let (meta, mut model_json) = Self::generate_metadata()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client_cache: &Client = client_store.get(&meta.db_client_name).unwrap();
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Enrich the field map with values for dynamic fields.
         Self::injection(
             meta.project_name.as_str(),
             meta.unique_project_key.as_str(),
             meta.collection_name.as_str(),
-            client_cache,
+            client,
             &mut model_json,
             &meta.fields_name,
         )?;
