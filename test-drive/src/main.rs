@@ -24,7 +24,7 @@ fn run_migration() -> Result<(), Box<dyn Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
-        metadata_list: vec![models::User::truncmeta()?],
+        metadata_list: vec![models::User::meta()?],
     };
     monitor.migrat()?;
 
