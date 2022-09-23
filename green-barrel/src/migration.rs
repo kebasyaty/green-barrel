@@ -190,6 +190,9 @@ impl<'a> Monitor<'a> {
 
         // Get model metadata
         for meta in self.metadata_list.iter() {
+            if !meta.is_add_docs {
+                continue;
+            }
             // Service_name validation.
             if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$")
                 .unwrap()

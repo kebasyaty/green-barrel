@@ -1559,15 +1559,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        let mut stop_step: u8 = 0;
+        let mut stop_step: u8 = 1;
         //
-        for step in 0_u8..=1_u8 {
+        for step in 1_u8..=2_u8 {
+            // Get metadata of Model.
+            let meta = Self::meta()?;
+            //
+            if !meta.is_add_docs {
+                Err(format!(
+                    "Model: `{}` > Method: `save()` => \
+                        The ability to add documents is blocked - is_add_docs = false.",
+                    meta.model_name
+                ))?
+            }
             // Get checked data from the `check()` method.
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            // Get cached Model data.
-            let meta = Self::meta()?;
+            // Get client of MongoDB.
             let client_store = MONGODB_CLIENT_STORE.read()?;
             let client = client_store.get(&meta.db_client_name).unwrap();
             //
@@ -1578,7 +1587,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .collection(meta.collection_name.as_str());
             // Having fields with a controller of inputSlug type.
             if !is_update && is_no_error && meta.is_use_hash_slug {
-                stop_step = 1;
+                stop_step = 2;
             }
 
             // Save to database.
