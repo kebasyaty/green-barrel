@@ -1,7 +1,6 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, sync::Client};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -203,6 +202,13 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     //
     // ???
     // ---------------------------------------------------------------------------------------------
+    let mut test_model = TestModel::new()?;
+    let output_data = test_model.check(None)?;
+    //
+    assert!(
+        output_data.is_valid(),
+        "is_valid() => {{output_data.err_msg()}}"
+    );
 
     // Delete test database
     // =============================================================================================
