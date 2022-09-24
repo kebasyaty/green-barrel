@@ -192,7 +192,7 @@ mod data_test {
 // TEST
 // #################################################################################################
 #[test]
-fn test_model_full_default() -> Result<(), Box<dyn Error>> {
+fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     data_test::run_migration()?;
@@ -201,7 +201,7 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
     //
-    // Module: mango-orm/src/models/caching.rs
+    // ???
     // ---------------------------------------------------------------------------------------------
 
     // Delete test database
