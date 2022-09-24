@@ -344,7 +344,7 @@ mod data_test {
                 },
                 password: InputPassword {
                     required: true,
-                    default: Some("j2972K4R3uQeVFPF".to_string()),
+                    value: Some("j2972K4R3uQeVFPF".to_string()),
                     ..Default::default()
                 },
                 phone: InputPhone {
