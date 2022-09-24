@@ -364,8 +364,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         || instance_json_val.get(field_name).unwrap().get("is_hide").unwrap().as_bool().unwrap()) {
                         //
                         Err(format!(
-                            "\n\nField: `{}` => Attribute required=true incompatible with \
-                            disabled=true or readonly=true or is_hide=true.\n\n",
+                            "Field: `{}` => Attribute required=true incompatible with \
+                                disabled=true or readonly=true or is_hide=true.",
                             field_name
                         ))?
                     }
@@ -377,7 +377,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         for size in arr.iter() {
                             if !valid_size_names.contains(&size.0.as_str()) {
                                 Err(format!(
-                                    "\n\nField: `{}` => Valid size names - `xs`, `sm`, `md`, `lg`.\n\n",
+                                    "Field: `{}` => \
+                                        Valid size names - `xs`, `sm`, `md`, `lg`.",
                                     field_name
                                 ))?
                             }
@@ -387,6 +388,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .unwrap()
                             .get_mut("thumbnails")
                             .unwrap() = serde_json::json!(arr);
+                    }
+                    // Forbid the use of the `value` field attribute.
+                    if let Some(val) = instance_json_val.get(field_name).unwrap().get("value") {
+                        Err(format!(
+                            "Field: `{}` => \
+                                For default values, use the `default` field attribute.",
+                            field_name
+                        ))?
                     }
                     // Add `id` and `name`
                     *instance_json_val
