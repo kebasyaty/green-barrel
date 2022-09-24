@@ -201,7 +201,7 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
     //
-    // Module: mango-orm/src/models/caching.rs
+    // Module: green-barrel/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
     // new
     assert!(TestModel::new().is_ok(), "new() == is_ok()");
@@ -216,7 +216,7 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     let _cache_data: (ModelCache, Client) = TestModel::get_cache_data_for_query()?;
     //
     //
-    // Module: mango-orm/src/models/db_query_api/commons.rs
+    // Module: green-barrel/src/models/db_query_api/commons.rs
     // ---------------------------------------------------------------------------------------------
     // aggregate
     let pipeline = vec![doc! {}];
