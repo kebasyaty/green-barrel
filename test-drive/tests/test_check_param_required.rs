@@ -344,7 +344,6 @@ mod data_test {
                 },
                 password: InputPassword {
                     required: true,
-                    value: Some("j2972K4R3uQeVFPF".to_string()),
                     ..Default::default()
                 },
                 phone: InputPhone {
@@ -438,6 +437,7 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     // Positive
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
+    test_model.password.set("j2972K4R3uQeVFPF");
     let output_data = test_model.check(None)?;
     assert!(
         output_data.is_valid(),
