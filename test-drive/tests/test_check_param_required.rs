@@ -99,12 +99,12 @@ mod data_test {
                 },
                 date: InputDate {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("1900-01-31".to_string()),
                     ..Default::default()
                 },
                 datetime: InputDateTime {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("1900-01-31T00:00".to_string()),
                     ..Default::default()
                 },
                 file: InputFile {
@@ -339,37 +339,37 @@ mod data_test {
                 },
                 email: InputEmail {
                     required: true,
-                    default: Some("x@x.xx".to_string()),
+                    default: Some("jane32@enhanceronly.com".to_string()),
                     ..Default::default()
                 },
                 password: InputPassword {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("j2972K4R3uQeVFPF".to_string()),
                     ..Default::default()
                 },
                 phone: InputPhone {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("+1 202-918-2132".to_string()),
                     ..Default::default()
                 },
                 url: InputUrl {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("https://ru.wikipedia.org/wiki/URL".to_string()),
                     ..Default::default()
                 },
                 ip: InputIP {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("123.45.789.101".to_string()),
                     ..Default::default()
                 },
                 ipv4: InputIPv4 {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("123.45.789.101".to_string()),
                     ..Default::default()
                 },
                 ipv6: InputIPv6 {
                     required: true,
-                    default: Some("".to_string()),
+                    default: Some("::ffff:10.120.78.40".to_string()),
                     ..Default::default()
                 },
                 textarea: TextArea {
