@@ -207,7 +207,8 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     //
     assert!(
         output_data.is_valid(),
-        "is_valid() => {{output_data.err_msg()}}"
+        "is_valid() => {}",
+        output_data.err_msg()
     );
 
     // Delete test database
