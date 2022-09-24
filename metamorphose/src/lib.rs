@@ -391,11 +391,13 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                     // Forbid the use of the `value` field attribute.
                     if let Some(val) = instance_json_val.get(field_name).unwrap().get("value") {
-                        Err(format!(
-                            "Field: `{}` => \
-                                For default values, use the `default` field attribute.",
-                            field_name
-                        ))?
+                        if !val.is_null() {
+                            Err(format!(
+                                "Field: `{}` => \
+                                    For default values, use the `default` field attribute.",
+                                field_name
+                            ))?
+                        }
                     }
                     // Add `id` and `name`
                     *instance_json_val
