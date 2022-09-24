@@ -342,14 +342,14 @@ impl OutputData2 {
     ///
     pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
         let mut field_type_list: Vec<Value> = Vec::new();
-        let hash = self
+        let hash: &str = self
             .final_model_json
             .get("hash")
             .unwrap()
             .get("value")
             .unwrap()
             .as_str()
-            .unwrap();
+            .unwrap_or_default();
         // Get a list of fields type in the order of the model fields.
         for field_name in self.fields_name.iter() {
             let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
