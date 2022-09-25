@@ -282,6 +282,7 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.textarea.set("Some text");
 
     let output_data = test_model.check(None)?;
+
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
