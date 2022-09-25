@@ -339,7 +339,6 @@ mod data_test {
                 },
                 email: InputEmail {
                     required: true,
-                    default: Some("jane32@enhanceronly.com".to_string()),
                     ..Default::default()
                 },
                 password: InputPassword {
@@ -438,6 +437,7 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     test_model.password.set("j2972K4R3uQeVFPF");
+    test_model.email.set("jane32@enhanceronly.com");
     //
     let output_data = test_model.check(None)?;
     //
