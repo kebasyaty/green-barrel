@@ -438,6 +438,18 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     let mut test_model = TestModel::new()?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
+    test_model.select_text_dyn.set("Some text");
+    test_model
+        .select_text_mult_dyn
+        .set(vec!["Some text", "Some text 2"]);
+    test_model.select_i32_dyn.set(0);
+    test_model.select_i32_mult_dyn.set(vec![0, 1]);
+    test_model.select_u32_dyn.set(0);
+    test_model.select_u32_mult_dyn.set(vec![0, 1]);
+    test_model.select_i64_dyn.set(0);
+    test_model.select_i64_mult_dyn.set(vec![0, 1]);
+    test_model.select_f64_dyn.set(0.0);
+    test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
     //
     let output_data = test_model.check(None)?;
     //
@@ -446,16 +458,16 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
-    assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
+    assert!(output_data.hash().is_empty(), "hash() != is_empty()");
     assert!(
-        output_data.created_at().is_some(),
+        output_data.created_at().is_none(),
         "created_at() != is_none()"
     );
     assert!(
-        output_data.updated_at().is_some(),
-        "updated_at() != is_some()"
+        output_data.updated_at().is_none(),
+        "updated_at() != is_none()"
     );
-    assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
+    assert!(output_data.obj_id()?.is_none(), "obj_id() != is_none()");
     assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
     assert!(
         !output_data.json_for_admin()?.is_empty(),
