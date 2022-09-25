@@ -11,7 +11,6 @@ pub struct InputEmail {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
-    pub default: Option<String>, // Value by default
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub minlength: usize, // The minimum number of characters allowed in the text.
@@ -38,7 +37,6 @@ impl Default for InputEmail {
             input_type: String::from("email"),
             name: String::new(),
             value: None,
-            default: None,
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0,

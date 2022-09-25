@@ -438,7 +438,9 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     test_model.password.set("j2972K4R3uQeVFPF");
+    //
     let output_data = test_model.check(None)?;
+    //
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
