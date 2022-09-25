@@ -232,22 +232,30 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
-            let const_value = if let Some(val) = final_field.get("value") {
-                if (val.is_string() && val.as_str().unwrap().is_empty())
-                    || (val.is_array() && val.as_array().unwrap().is_empty())
-                {
-                    json!(null)
-                } else {
-                    val.clone()
+            let const_value = {
+                let mut tmp = json!(null);
+                if let Some(val) = final_field.get("value") {
+                    if (val.is_string() && val.as_str().unwrap().is_empty())
+                        || (val.is_array() && val.as_array().unwrap().is_empty())
+                    {
+                        tmp = json!(null);
+                    } else {
+                        tmp = val.clone();
+                    }
+                };
+                if tmp.is_null() {
+                    if let Some(val) = final_field.get("default") {
+                        let val = val.clone();
+                        *final_field.get_mut("value").unwrap() = val.clone();
+                        tmp = val;
+                    }
                 }
-            } else if let Some(val) = final_field.get("default") {
-                let val = val.clone();
-                *final_field.get_mut("value").unwrap() = val.clone();
-                val
-            } else if let Some(val) = final_field.get("checked") {
-                val.clone()
-            } else {
-                json!(null)
+                if tmp.is_null() {
+                    if let Some(val) = final_field.get("checked") {
+                        tmp = val.clone();
+                    }
+                }
+                tmp
             };
             let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
             //
@@ -1180,26 +1188,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field.get("min").unwrap();
-                    if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be less than min=`{}`.",
-                            curr_val, min
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     //
-                    let max = final_field.get("max").unwrap();
-                    if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be greater than max=`{}`.",
-                            curr_val, max
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
 
                     // Insert result.
@@ -1254,26 +1264,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field.get("min").unwrap();
-                    if !min.is_null() && curr_val < min.as_i64().unwrap() {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be less than min=`{}`.",
-                            curr_val, min
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < min.as_i64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     //
-                    let max = final_field.get("max").unwrap();
-                    if !max.is_null() && curr_val > max.as_i64().unwrap() {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be greater than max=`{}`.",
-                            curr_val, max
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > max.as_i64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
