@@ -1341,26 +1341,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min = final_field.get("min").unwrap();
-                    if !min.is_null() && curr_val < min.as_f64().unwrap() {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be less than min=`{}`.",
-                            curr_val, min
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < min.as_f64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     //
-                    let max = final_field.get("max").unwrap();
-                    if !max.is_null() && curr_val > max.as_f64().unwrap() {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "The number `{}` must not be greater than max=`{}`.",
-                            curr_val, max
-                        );
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &msg));
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > max.as_f64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
