@@ -29,7 +29,7 @@ pub struct User {
     pub is_active: CheckBox,
     //
     pub file: InputFile,
-    pub image: InputImage,
+    //pub image: InputImage,
 }
 
 impl Control for User {
@@ -112,20 +112,22 @@ impl Control for User {
             //
             file: InputFile {
                 default: Some(FileData {
-                    path: "./media/hello_world.odt".into(),
+                    path: "./test-drive/media/hello_world.odt".into(),
                     url: "/media/hello_world.odt".into(),
                     ..Default::default()
                 }),
                 ..Default::default()
             },
+            /*
             image: InputImage {
                 default: Some(ImageData {
-                    path: "./media/no-image-found.png".into(),
+                    path: "./test-drive/media/no-image-found.png".into(),
                     url: "/media/no-image-found.png".into(),
                     ..Default::default()
                 }),
                 ..Default::default()
             },
+            */
             ..Default::default()
         }
     }
