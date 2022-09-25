@@ -357,17 +357,17 @@ mod data_test {
                 },
                 ip: InputIP {
                     required: true,
-                    default: Some("123.45.789.101".to_string()),
+                    default: Some("192.168.123.132".to_string()),
                     ..Default::default()
                 },
                 ipv4: InputIPv4 {
                     required: true,
-                    default: Some("123.45.789.101".to_string()),
+                    default: Some("192.168.50.1".to_string()),
                     ..Default::default()
                 },
                 ipv6: InputIPv6 {
                     required: true,
-                    default: Some("::ffff:10.120.78.40".to_string()),
+                    default: Some("1050:0:0:0:5:600:300c:326b".to_string()),
                     ..Default::default()
                 },
                 textarea: TextArea {
