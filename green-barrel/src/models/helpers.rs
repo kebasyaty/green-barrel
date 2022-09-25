@@ -67,7 +67,7 @@ pub struct FileData {
     pub path: String,
     pub url: String,
     pub name: String,
-    pub size: u32, // bytes
+    pub size: f64, // bytes
     pub is_delete: bool,
 }
 
@@ -86,9 +86,9 @@ pub struct ImageData {
     pub url_md: String,
     pub url_lg: String,
     pub name: String,
-    pub size: u32,   // bytes
-    pub width: u32,  // pixels
-    pub height: u32, // pixels
+    pub size: f64,   // bytes
+    pub width: f64,  // pixels
+    pub height: f64, // pixels
     pub is_delete: bool,
 }
 

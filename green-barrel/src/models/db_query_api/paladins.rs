@@ -126,15 +126,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
-    fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
+    fn calculate_thumbnail_size(width: f64, height: f64, max_size: f64) -> (f64, f64) {
         if width > height {
             if width > max_size {
-                return (max_size, height * (max_size / width));
+                return (max_size, (height * (max_size / width)).floor());
             }
         } else if height > max_size {
-            return (width * (max_size / height), max_size);
+            return ((width * (max_size / height)).floor(), max_size);
         }
-        (0, 0)
+        (0.0, 0.0)
     }
 
     /// Checking the Model before queries the database.
@@ -923,7 +923,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    file_data.size = metadata.len() as u32;
+                    file_data.size = metadata.len() as f64;
                     // Get file name.
                     file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
@@ -1056,23 +1056,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    image_data.size = metadata.len() as u32;
+                    image_data.size = metadata.len() as f64;
                     // Get file name
                     image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
-                    image_data.width = dimensions.0;
-                    image_data.height = dimensions.1;
+                    image_data.width = dimensions.0 as f64;
+                    image_data.height = dimensions.1 as f64;
                     // Generate sub-size images.
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
-                            let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
-                                dimensions.0,
-                                dimensions.1,
-                                max_size.1,
+                            let thumbnail_size: (f64, f64) = Self::calculate_thumbnail_size(
+                                image_data.width,
+                                image_data.height,
+                                max_size.1 as f64,
                             );
-                            if thumbnail_size.0 > 0 && thumbnail_size.1 > 0 {
+                            if thumbnail_size.0 > 0.0 && thumbnail_size.1 > 0.0 {
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
                                 let thumb_name = format!("{}_{}", max_size.0, image_data.name);
@@ -1085,8 +1085,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     .clone()
                                     .replace(image_data.name.as_str(), thumb_name.as_str());
                                 img = img.resize_exact(
-                                    width,
-                                    height,
+                                    width as u32,
+                                    height as u32,
                                     image::imageops::FilterType::Triangle,
                                 );
                                 match max_size.0.as_str() {

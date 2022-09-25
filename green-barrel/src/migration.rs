@@ -474,7 +474,7 @@ impl<'a> Monitor<'a> {
                                                 // Get file metadata.
                                                 let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
-                                                file_data.size = metadata.len() as u32;
+                                                file_data.size = metadata.len() as f64;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Create doc.
@@ -510,13 +510,13 @@ impl<'a> Monitor<'a> {
                                                 // Get file metadata.
                                                 let metadata: Metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
-                                                file_data.size = metadata.len() as u32;
+                                                file_data.size = metadata.len() as f64;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.
                                                 let dimensions: (u32, u32) = image::image_dimensions(path)?;
-                                                file_data.width = dimensions.0;
-                                                file_data.height = dimensions.1;
+                                                file_data.width = dimensions.0 as f64;
+                                                file_data.height = dimensions.1 as f64;
                                                 // Create doc.
                                                 let result = to_document(&file_data)?;
                                                 Bson::Document(result)
