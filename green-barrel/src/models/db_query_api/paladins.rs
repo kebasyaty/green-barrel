@@ -193,8 +193,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(final_field, err_msg));
                     } else {
                         Err(format!(
-                            "\n\nModel: `{}` ;  Method: `add_validation()` => \
-                                The model has no field `{}`.\n\n",
+                            "Model: `{}` ;  Method: `add_validation()` => \
+                                The model has no field `{}`.",
                             model_name, field_name
                         ))?
                     }
@@ -314,11 +314,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err
-                                ))
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
+                                    ))
                                     .unwrap()
                                 }
                             });
@@ -337,11 +335,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err
-                                ))
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
+                                    ))
                                     .unwrap()
                                 }
                             });
@@ -357,11 +353,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {:?}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err
-                                ))
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
+                                    ))
                                     .unwrap()
                                 }
                             });
@@ -382,8 +376,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {:?}\n\n",
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {:?}",
                                             model_name, field_name, err
                                         ))
                                         .unwrap()
@@ -657,8 +651,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Bson::Double(val)
                                 }
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.\n\n",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
                                     model_name, field_name, field_type
                                 ))?,
                             },
@@ -702,8 +696,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Bson::Double(val)
                                 }
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.\n\n",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
                                     model_name, field_name, field_type
                                 ))?,
                             },
@@ -767,8 +761,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         .collect::<Vec<Bson>>(),
                                 ),
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.\n\n",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
                                     model_name, field_name, field_type
                                 ))?,
                             },
@@ -835,8 +829,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         .collect::<Vec<Bson>>(),
                                 ),
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.\n\n",
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
                                     model_name, field_name, field_type
                                 ))?,
                             },
@@ -905,8 +899,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                                `check()` => Required `path` and `url` fields.\n\n",
+                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                                `check()` => Required `path` and `url` fields.",
                             model_name, field_name
                         ))?
                     }
@@ -914,15 +908,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let f_path = std::path::Path::new(file_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}\n\n",
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => File is missing - {}",
                             model_name, field_name, file_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}\n\n",
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => The path does not lead to a file - {}",
                             model_name, field_name, file_data.path
                         ))?
                     }
@@ -1038,8 +1032,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                            `check()` => Required `path` and `url` fields.\n\n",
+                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                            `check()` => Required `path` and `url` fields.",
                             model_name, field_name
                         ))?
                     }
@@ -1047,15 +1041,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let f_path = std::path::Path::new(image_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}\n\n",
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => File is missing - {}",
                             model_name, field_name, image_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}\n\n",
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => The path does not lead to a file - {}",
                             model_name, field_name, image_data.path
                         ))?
                     }
@@ -1117,9 +1111,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` > Type: `ImageData` ; \
+                                        "Model: `{}` > Field: `{}` > Type: `ImageData` ; \
                                             Method: `check()` => Valid size names -\
-                                            `xs`, `sm`, `md`, `lg`.\n\n",
+                                            `xs`, `sm`, `md`, `lg`.",
                                         model_name, field_name
                                     ))?,
                                 }
@@ -1177,8 +1171,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {}\n\n",
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
                                             model_name, field_name, err
                                         ))
                                         .unwrap()
@@ -1253,8 +1247,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {}\n\n",
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
                                             model_name, field_name, err
                                         ))
                                         .unwrap()
@@ -1330,8 +1324,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "\n\nModel: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {}\n\n",
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
                                             model_name, field_name, err
                                         ))
                                         .unwrap()

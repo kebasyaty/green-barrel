@@ -34,7 +34,7 @@ pub trait Converters {
                     } else {
                         Err(format!(
                             "Model: `{}` > Field: `hash` ; Method: `find_one()` => \
-                            Missing document identifier `_id`.",
+                                Missing document identifier `_id`.",
                             model_name
                         ))?
                     },

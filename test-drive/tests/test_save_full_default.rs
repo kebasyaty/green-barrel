@@ -236,8 +236,16 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
-    test_model.file.set(FileData::default());
-    test_model.image.set(ImageData::default());
+    test_model.file.set(FileData {
+        path: "./media/hello_world.odt".into(),
+        url: "/media/hello_world.odt".into(),
+        ..Default::default()
+    });
+    test_model.image.set(ImageData {
+        path: "./media/no-image-found.png".into(),
+        url: "/media/no-image-found.png".into(),
+        ..Default::default()
+    });
     test_model.number_i32.set(0);
     test_model.radio_i32.set(0);
     test_model.range_i32.set(0);
