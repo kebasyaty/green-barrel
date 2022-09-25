@@ -1033,7 +1033,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
                             "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                            `check()` => Required `path` and `url` fields.",
+                                `check()` => Required `path` and `url` fields.",
                             model_name, field_name
                         ))?
                     }
