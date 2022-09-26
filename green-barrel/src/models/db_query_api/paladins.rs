@@ -841,16 +841,34 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 // "InputFile"
                 8 => {
-                    //
-                    if !is_save {
-                        continue;
-                    }
                     // Get data for validation.
                     let mut file_data = if !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
                     } else {
                         FileData::default()
                     };
+                    //
+                    if !is_save {
+                        if !file_data.path.is_empty() {
+                            // Create path for validation of file.
+                            let f_path = std::path::Path::new(file_data.path.as_str());
+                            if !f_path.exists() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => File is missing - {}",
+                                    model_name, field_name, file_data.path
+                                ))?
+                            }
+                            if !f_path.is_file() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => The path does not lead to a file - {}",
+                                    model_name, field_name, file_data.path
+                                ))?
+                            }
+                        }
+                        continue;
+                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
@@ -943,16 +961,34 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 //
                 // "InputImage"
                 9 => {
-                    //
-                    if !is_save {
-                        continue;
-                    }
                     // Get data for validation.
                     let mut image_data = if !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
                     } else {
                         ImageData::default()
                     };
+                    //
+                    if !is_save {
+                        if !image_data.path.is_empty() {
+                            // Create path for validation of file.
+                            let f_path = std::path::Path::new(image_data.path.as_str());
+                            if !f_path.exists() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => Image is missing - {}",
+                                    model_name, field_name, image_data.path
+                                ))?
+                            }
+                            if !f_path.is_file() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => The path does not lead to a file - {}",
+                                    model_name, field_name, image_data.path
+                                ))?
+                            }
+                        }
+                        continue;
+                    }
                     // Delete file.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
@@ -1042,7 +1078,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !f_path.exists() {
                         Err(format!(
                             "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}",
+                                `check()` => Image is missing - {}",
                             model_name, field_name, image_data.path
                         ))?
                     }
@@ -1060,7 +1096,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get file name
                     image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
-                    let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
+                    let dimensions = image::image_dimensions(f_path)?;
                     image_data.width = dimensions.0 as f64;
                     image_data.height = dimensions.1 as f64;
                     // Generate sub-size images.

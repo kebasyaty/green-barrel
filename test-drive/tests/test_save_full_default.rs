@@ -14,7 +14,7 @@ mod data_test {
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "testfDdm119i7vf";
+    pub const UNIQUE_PROJECT_KEY: &str = "testDfdm119i7vfa";
     //
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
