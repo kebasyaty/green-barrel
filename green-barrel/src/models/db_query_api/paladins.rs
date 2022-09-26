@@ -873,9 +873,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
-                        if !is_required
-                            || ((!file_data.path.is_empty() && !file_data.url.is_empty())
-                                || !const_value.is_null())
+                        if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
                         {
                             self.delete_file(
                                 &coll,
@@ -896,17 +894,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if file_data.path.is_empty() && file_data.url.is_empty() {
+                    if is_use_default {
                         if curr_file_info.is_null() {
-                            if is_required {
-                                is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, "Required field."));
+                            if const_value.is_null() {
+                                if is_required {
+                                    is_err_symptom = true;
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, "Required field."));
+                                }
+                                if !is_update && !ignore_fields.contains(field_name) {
+                                    final_doc.insert(field_name, Bson::Null);
+                                }
+                                continue;
                             }
-                            if !is_update && !ignore_fields.contains(field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         } else {
                             *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
