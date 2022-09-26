@@ -120,10 +120,16 @@ impl Control for User {
             },
             image: InputImage {
                 default: Some(ImageData {
-                    path: "./test-drive/media/no-image-found.png".into(),
+                    path: "./test-drive/media/beautiful-mountains.jpg".into(),
                     url: "/media/no-image-found.png".into(),
                     ..Default::default()
                 }),
+                thumbnails: vec![
+                    ("xs".into(), 150),
+                    ("sm".into(), 300),
+                    ("md".into(), 600),
+                    ("lg".into(), 1200),
+                ],
                 ..Default::default()
             },
             ..Default::default()

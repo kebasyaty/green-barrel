@@ -232,6 +232,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
+            let mut is_use_default = false;
             let const_value = {
                 let mut tmp = json!(null);
                 if let Some(val) = final_field.get("value") {
@@ -248,9 +249,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let val = val.clone();
                         *final_field.get_mut("value").unwrap() = val.clone();
                         tmp = val;
+                        is_use_default = true;
                     }
                 }
-                if tmp.is_null() {
+                if tmp.is_null() && !is_use_default {
                     if let Some(val) = final_field.get("checked") {
                         tmp = val.clone();
                     }
@@ -992,8 +994,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Delete file.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
-                            || ((!image_data.path.is_empty() && !image_data.url.is_empty())
-                                || !const_value.is_null())
+                            || (!image_data.path.is_empty() && !image_data.url.is_empty())
                         {
                             self.delete_file(
                                 &coll,
@@ -1018,7 +1019,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_field.get("thumbnails").unwrap().clone(),
                     )?;
                     //
-                    if image_data.path.is_empty() && image_data.url.is_empty() {
+                    if is_use_default {
                         if curr_file_info.is_null() {
                             if !const_value.is_null() {
                                 // Copy the default image to the default section.
