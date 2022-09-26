@@ -399,17 +399,6 @@ pub trait Caching: Main + Converters {
         {
             let is_value_exist = if const_field_type.contains("Text") {
                 if let Some(val) = dyn_data["value"].as_str() {
-                    let val_len = val.len() as u64;
-                    let minlength = const_field.get("minlength").unwrap().as_u64().unwrap();
-                    let maxlength = const_field.get("maxlength").unwrap().as_u64().unwrap();
-                    if val_len < minlength || val_len > maxlength {
-                        Err(format!(
-                            "Model: {} > Method: `update_dyn_field()` > \
-                                Parameter: `dyn_data` > Field: `value` => \
-                                Characters = {} ; Min length = {} ; Max length = {}",
-                            meta.model_name, val_len, minlength, maxlength
-                        ))?
-                    }
                     target_arr_bson
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_str().unwrap())
@@ -424,21 +413,6 @@ pub trait Caching: Main + Converters {
                 }
             } else if const_field_type.contains("I32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    let min = const_field.get("min").unwrap().as_i64();
-                    let max = const_field.get("max").unwrap().as_i64();
-                    if (min.is_some() && val < min.unwrap())
-                        || (max.is_some() && val > max.unwrap())
-                    {
-                        Err(format!(
-                            "Model: {} > Method: `update_dyn_field()` > \
-                                Parameter: `dyn_data` > Field: `value` => \
-                                Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name,
-                            val,
-                            min.unwrap(),
-                            max.unwrap()
-                        ))?
-                    }
                     if val < (i32::MIN as i64) || val > (i32::MAX as i64) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` > \
@@ -462,21 +436,6 @@ pub trait Caching: Main + Converters {
                 }
             } else if const_field_type.contains("U32") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    let min = const_field.get("min").unwrap().as_i64();
-                    let max = const_field.get("max").unwrap().as_i64();
-                    if (min.is_some() && val < min.unwrap())
-                        || (max.is_some() && val > max.unwrap())
-                    {
-                        Err(format!(
-                            "Model: {} > Method: `update_dyn_field()` > \
-                                Parameter: `dyn_data` > Field: `value` => \
-                                Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name,
-                            val,
-                            min.unwrap(),
-                            max.unwrap()
-                        ))?
-                    }
                     if val < (u32::MIN as i64) || val > (u32::MAX as i64) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` > \
@@ -499,21 +458,6 @@ pub trait Caching: Main + Converters {
                 }
             } else if const_field_type.contains("I64") {
                 if let Some(val) = dyn_data["value"].as_i64() {
-                    let min = const_field.get("min").unwrap().as_i64();
-                    let max = const_field.get("max").unwrap().as_i64();
-                    if (min.is_some() && val < min.unwrap())
-                        || (max.is_some() && val > max.unwrap())
-                    {
-                        Err(format!(
-                            "Model: {} > Method: `update_dyn_field()` > \
-                                Parameter: `dyn_data` > Field: `value` => \
-                                Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name,
-                            val,
-                            min.unwrap(),
-                            max.unwrap()
-                        ))?
-                    }
                     if !(i64::MIN..=i64::MAX).contains(&val) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` > \
@@ -536,21 +480,6 @@ pub trait Caching: Main + Converters {
                 }
             } else if const_field_type.contains("F64") {
                 if let Some(val) = dyn_data["value"].as_f64() {
-                    let min = const_field.get("min").unwrap().as_f64();
-                    let max = const_field.get("max").unwrap().as_f64();
-                    if (min.is_some() && val < min.unwrap())
-                        || (max.is_some() && val > max.unwrap())
-                    {
-                        Err(format!(
-                            "Model: {} > Method: `update_dyn_field()` > \
-                                Parameter: `dyn_data` > Field: `value` => \
-                                Number = {} ; Min = {} ; Max = {}",
-                            meta.model_name,
-                            val,
-                            min.unwrap(),
-                            max.unwrap()
-                        ))?
-                    }
                     if !(f64::MIN..=f64::MAX).contains(&val) {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` > \
