@@ -913,6 +913,245 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         TestModel::update_dyn_field(dyn_data).is_err(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
+    //
+    //
+    // POSITIVE TESTS
+    // *********************************************************************************************
+    //
+    // Delete dynamic data.
+    // ---------------------------------------------------------------------------------------------
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_dyn",
+        "value": "Some text",
+        "title": "x".repeat(150),
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_dyn -> title == 150 characters"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_dyn",
+        "value": "Some text 2",
+        "title": "x".repeat(150),
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_dyn -> title == 150 characters"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_mult_dyn",
+        "value": "Some text",
+        "title": "x".repeat(150),
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_mult_dyn -> title == 150 characters"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_mult_dyn",
+        "value": "Some text 2",
+        "title": "x".repeat(150),
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_mult_dyn -> title == 150 characters"
+    );
+    //
+    //
+    // Test of extreme numerical values.
+    // ---------------------------------------------------------------------------------------------
+    //
+    // I32
+    //
+    let dyn_data = json!({
+        "field_name": "select_i32_dyn",
+        "value": i32::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i32_dyn, value = i32::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i32_dyn",
+        "value": i32::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i32_dyn, value = i32::MAX"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i32_mult_dyn",
+        "value": i32::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i32_mult_dyn, value = i32::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i32_mult_dyn",
+        "value": i32::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i32_mult_dyn, value = i32::MAX"
+    );
+    //
+    // U32
+    //
+    let dyn_data = json!({
+        "field_name": "select_u32_dyn",
+        "value": u32::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_u32_dyn, value = u32::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_u32_dyn",
+        "value": u32::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_u32_dyn, value = u32::MAX"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_u32_mult_dyn",
+        "value": u32::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_u32_mult_dyn, value = u32::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_u32_mult_dyn",
+        "value": u32::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_u32_mult_dyn, value = u32::MAX"
+    );
+    //
+    // I64
+    //
+    let dyn_data = json!({
+        "field_name": "select_i64_dyn",
+        "value": i64::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i64_dyn, value = i64::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i64_dyn",
+        "value": i64::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i64_dyn, value = i64::MAX"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i64_mult_dyn",
+        "value": i64::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i64_mult_dyn, value = i64::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_i64_mult_dyn",
+        "value": i64::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_i64_mult_dyn, value = i64::MAX"
+    );
+    //
+    // F64
+    //
+    let dyn_data = json!({
+        "field_name": "select_f64_dyn",
+        "value": f64::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_f64_dyn, value = f64::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_f64_dyn",
+        "value": f64::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_f64_dyn, value = f64::MAX"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_f64_mult_dyn",
+        "value": f64::MIN,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_f64_mult_dyn, value = f64::MIN"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_f64_mult_dyn",
+        "value": f64::MAX,
+        "title": "Title",
+        "is_delete": true,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_f64_mult_dyn, value = f64::MAX"
+    );
 
     // Delete test database
     // =============================================================================================
