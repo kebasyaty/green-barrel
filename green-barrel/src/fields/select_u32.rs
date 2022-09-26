@@ -16,8 +16,6 @@ pub struct SelectU32 {
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub min: Option<u32>, // The lower value for entering a number.
-    pub max: Option<u32>, // The top value for entering a number.
     pub options: Vec<(u32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
@@ -42,8 +40,6 @@ impl Default for SelectU32 {
             required: false,
             disabled: false,
             readonly: false,
-            min: None,
-            max: None,
             options: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
