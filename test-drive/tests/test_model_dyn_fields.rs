@@ -375,8 +375,30 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     );
     //
     let dyn_data = json!({
+        "field_name": "select_text_dyn",
+        "value": "Some text 2",
+        "title": "x".repeat(150),
+        "is_delete": false,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_dyn -> title == 150 characters"
+    );
+    //
+    let dyn_data = json!({
         "field_name": "select_text_mult_dyn",
         "value": "Some text",
+        "title": "x".repeat(150),
+        "is_delete": false,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_ok(),
+        "select_text_mult_dyn -> title == 150 characters"
+    );
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_mult_dyn",
+        "value": "Some text 2",
         "title": "x".repeat(150),
         "is_delete": false,
     });
@@ -584,8 +606,8 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     };
     //
     assert!(
-        obj_fields_doc.get_array("select_text_dyn").unwrap().len() == 1,
-        "select_text_dyn ; len == 1"
+        obj_fields_doc.get_array("select_text_dyn").unwrap().len() == 2,
+        "select_text_dyn ; len != 2"
     );
     //
     assert!(
@@ -593,13 +615,13 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             .get_array("select_text_mult_dyn")
             .unwrap()
             .len()
-            == 1,
-        "select_text_mult_dyn ; len == 1"
+            == 2,
+        "select_text_mult_dyn ; len != 2"
     );
     //
     assert!(
         obj_fields_doc.get_array("select_i32_dyn").unwrap().len() == 2,
-        "select_i32_dyn ; len == 2"
+        "select_i32_dyn ; len != 2"
     );
     //
     assert!(
@@ -608,12 +630,12 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             .unwrap()
             .len()
             == 2,
-        "select_i32_mult_dyn ; len == 2"
+        "select_i32_mult_dyn ; len != 2"
     );
     //
     assert!(
         obj_fields_doc.get_array("select_u32_dyn").unwrap().len() == 2,
-        "select_u32_dyn ; len == 2"
+        "select_u32_dyn ; len != 2"
     );
     //
     assert!(
@@ -622,12 +644,12 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             .unwrap()
             .len()
             == 2,
-        "select_u32_mult_dyn ; len == 2"
+        "select_u32_mult_dyn ; len != 2"
     );
     //
     assert!(
         obj_fields_doc.get_array("select_i64_dyn").unwrap().len() == 2,
-        "select_i64_dyn ; len == 2"
+        "select_i64_dyn ; len != 2"
     );
     //
     assert!(
@@ -636,12 +658,12 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             .unwrap()
             .len()
             == 2,
-        "select_i64_mult_dyn ; len == 2"
+        "select_i64_mult_dyn ; len != 2"
     );
     //
     assert!(
         obj_fields_doc.get_array("select_f64_dyn").unwrap().len() == 2,
-        "select_f64_dyn ; len == 2"
+        "select_f64_dyn ; len != 2"
     );
     //
     assert!(
@@ -650,7 +672,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             .unwrap()
             .len()
             == 2,
-        "select_f64_mult_dyn ; len == 2"
+        "select_f64_mult_dyn ; len != 2"
     );
 
     // Delete test database
