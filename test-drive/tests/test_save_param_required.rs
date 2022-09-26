@@ -14,7 +14,7 @@ mod data_test {
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "testYb6990O4XH7c";
+    pub const UNIQUE_PROJECT_KEY: &str = "testA7l0d16sw8xc";
     //
     pub const SERVICE_NAME: &str = "service_name";
     pub const DATABASE_NAME: &str = "database_name";
@@ -123,8 +123,8 @@ mod data_test {
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
-                        path: "./media/no-image-found.png".into(),
-                        url: "/media/no-image-found.png".into(),
+                        path: "./media/beautiful-mountains.jpg".into(),
+                        url: "/media/beautiful-mountains.jpg".into(),
                         ..Default::default()
                     }),
                     thumbnails: vec![
@@ -458,7 +458,7 @@ mod data_test {
 // TEST
 // #################################################################################################
 #[test]
-fn test_check_param_required() -> Result<(), Box<dyn Error>> {
+fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     data_test::run_migration()?;
@@ -482,28 +482,39 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     test_model.select_i64_mult_dyn.set(vec![0, 1]);
     test_model.select_f64_dyn.set(0.0);
     test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
-    //
-    let output_data = test_model.check(None)?;
+
+    // Create document
+    // ---------------------------------------------------------------------------------------------
+    let output_data = test_model.save(None, None)?;
     //
     assert!(
         output_data.is_valid(),
-        "is_valid(): {}",
+        "Create document - is_valid(): {}",
         output_data.err_msg()
     );
-    assert!(output_data.hash().is_empty(), "hash() != is_empty()");
+    assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
-        output_data.created_at().is_none(),
-        "created_at() != is_none()"
+        output_data.created_at().is_some(),
+        "created_at() != is_some()"
     );
     assert!(
-        output_data.updated_at().is_none(),
-        "updated_at() != is_none()"
+        output_data.updated_at().is_some(),
+        "updated_at() != is_some()"
     );
-    assert!(output_data.obj_id()?.is_none(), "obj_id() != is_none()");
+    assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
     assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
     assert!(
         !output_data.json_for_admin()?.is_empty(),
         "json_for_admin() == is_empty()"
+    );
+
+    // Delete document
+    // ---------------------------------------------------------------------------------------------
+    let output_data = test_model.delete(None)?;
+    assert!(
+        output_data.is_valid(),
+        "Delete document - is_valid(): {}",
+        output_data.err_msg()
     );
 
     // Delete test database
