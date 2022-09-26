@@ -572,6 +572,86 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         TestModel::update_dyn_field(dyn_data).is_ok(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
+    //
+    //
+    // Check for saved dynamic data.
+    // ---------------------------------------------------------------------------------------------
+    //
+    // Get the target array from the dynamic data collection.
+    let obj_fields_doc = {
+        let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+        curr_dyn_date_doc.get_document("fields").unwrap().clone()
+    };
+    //
+    assert!(
+        obj_fields_doc.get_array("select_text_dyn").unwrap().len() == 1,
+        "select_text_dyn ; len == 1"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_text_mult_dyn")
+            .unwrap()
+            .len()
+            == 1,
+        "select_text_mult_dyn ; len == 1"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_i32_dyn").unwrap().len() == 2,
+        "select_i32_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_i32_mult_dyn")
+            .unwrap()
+            .len()
+            == 2,
+        "select_i32_mult_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_u32_dyn").unwrap().len() == 2,
+        "select_u32_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_u32_mult_dyn")
+            .unwrap()
+            .len()
+            == 2,
+        "select_u32_mult_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_i64_dyn").unwrap().len() == 2,
+        "select_i64_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_i64_mult_dyn")
+            .unwrap()
+            .len()
+            == 2,
+        "select_i64_mult_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_f64_dyn").unwrap().len() == 2,
+        "select_f64_dyn ; len == 2"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_f64_mult_dyn")
+            .unwrap()
+            .len()
+            == 2,
+        "select_f64_mult_dyn ; len == 2"
+    );
 
     // Delete test database
     // =============================================================================================
