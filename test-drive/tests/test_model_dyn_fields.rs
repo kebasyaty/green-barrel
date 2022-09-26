@@ -122,7 +122,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             meta.unique_project_key.clone()
         );
         let db = client_cache.database(&green_tech_keyword);
-        db.collection("dynamic_widgets")
+        db.collection("dynamic_fields")
     };
     //
     let filter = doc! {
