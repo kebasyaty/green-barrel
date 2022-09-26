@@ -13,8 +13,6 @@ pub struct SelectText {
     pub value: Option<String>, // Sets the value of an element.
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
-    pub minlength: usize, // The minimum number of characters allowed in the text.
-    pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
@@ -40,8 +38,6 @@ impl Default for SelectText {
             value: None,
             default: None,
             placeholder: String::new(),
-            minlength: 0_usize,
-            maxlength: 256_usize,
             required: false,
             unique: false,
             disabled: false,

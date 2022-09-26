@@ -115,7 +115,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // Get Model metadata.
     let meta: Meta = model_cache.meta;
     // Get access to the technical base of the project.
-    let _coll = {
+    let coll = {
         let green_tech_keyword = format!(
             "green_tech__{}__{}",
             meta.project_name.clone(),
@@ -125,7 +125,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         db.collection("dynamic_widgets")
     };
     //
-    let _filter = doc! {
+    let filter = doc! {
         "database": meta.database_name.clone(),
         "collection": meta.collection_name.clone()
     };
@@ -145,10 +145,10 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     });
     assert!(
         TestModel::update_dyn_field(dyn_data).is_err(),
-        "field_name, value = 0"
+        "field_name not match"
     );
     //
-    // Error: Value type does not match widget type.
+    // Error: Value type does not match field type.
     // ---------------------------------------------------------------------------------------------
     //
     let dyn_data = json!({
@@ -262,6 +262,99 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     );
     //
     //
+    // Error: Title length is more than 150 characters.
+    // ---------------------------------------------------------------------------------------------
+    //
+    let dyn_data = json!({
+        "field_name": "select_text_dyn",
+        "value": "Some text",
+        "title": "x".repeat(151),
+        "is_delete": false,
+    });
+    assert!(
+        TestModel::update_dyn_field(dyn_data).is_err(),
+        "title > 150 characters"
+    );
+    //
+    //
+    // Check that if there are errors, the dynamic data is not saved.
+    // ---------------------------------------------------------------------------------------------
+    //
+    // Get the target array from the dynamic data collection.
+    let obj_fields_doc = {
+        let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+        curr_dyn_date_doc.get_document("fields").unwrap().clone()
+    };
+    //
+    assert!(
+        obj_fields_doc.get_array("select_text_dyn").unwrap().len() == 0,
+        "select_text_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_text_mult_dyn")
+            .unwrap()
+            .len()
+            == 0,
+        "select_text_mult_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_i32_dyn").unwrap().len() == 0,
+        "select_i32_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_i32_mult_dyn")
+            .unwrap()
+            .len()
+            == 0,
+        "select_i32_mult_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_u32_dyn").unwrap().len() == 0,
+        "select_u32_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_u32_mult_dyn")
+            .unwrap()
+            .len()
+            == 0,
+        "select_u32_mult_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_i64_dyn").unwrap().len() == 0,
+        "select_i64_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_i64_mult_dyn")
+            .unwrap()
+            .len()
+            == 0,
+        "select_i64_mult_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc.get_array("select_f64_dyn").unwrap().len() == 0,
+        "select_f64_dyn ; len == 0"
+    );
+    //
+    assert!(
+        obj_fields_doc
+            .get_array("select_f64_mult_dyn")
+            .unwrap()
+            .len()
+            == 0,
+        "select_f64_mult_dyn ; len == 0"
+    );
 
     // Delete test database
     // =============================================================================================
