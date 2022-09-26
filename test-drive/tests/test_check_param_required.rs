@@ -99,27 +99,41 @@ mod data_test {
                 },
                 date: InputDate {
                     required: true,
-                    default: Some("1900-01-31".to_string()),
+                    default: Some("1970-02-28".to_string()),
+                    min: "1970-01-01".into(),
+                    max: "1970-03-01".into(),
                     ..Default::default()
                 },
                 datetime: InputDateTime {
                     required: true,
-                    default: Some("1900-01-31T00:00".to_string()),
+                    default: Some("1970-02-28T00:00".to_string()),
+                    min: "1970-01-01T00:00".into(),
+                    max: "1970-03-01T00:00".into(),
                     ..Default::default()
                 },
                 file: InputFile {
                     required: true,
-                    default: Some(FileData::default()),
+                    default: Some(FileData {
+                        path: "./media/hello_world.odt".into(),
+                        url: "/media/hello_world.odt".into(),
+                        ..Default::default()
+                    }),
                     ..Default::default()
                 },
                 image: InputImage {
                     required: true,
-                    default: Some(ImageData::default()),
+                    default: Some(ImageData {
+                        path: "./media/no-image-found.png".into(),
+                        url: "/media/no-image-found.png".into(),
+                        ..Default::default()
+                    }),
                     ..Default::default()
                 },
                 number_i32: NumberI32 {
                     required: true,
                     default: Some(0),
+                    min: Some(-1),
+                    max: Some(1),
                     ..Default::default()
                 },
                 radio_i32: RadioI32 {
@@ -130,11 +144,15 @@ mod data_test {
                 range_i32: RangeI32 {
                     required: true,
                     default: Some(0),
+                    min: Some(-1),
+                    max: Some(1),
                     ..Default::default()
                 },
                 number_u32: NumberU32 {
                     required: true,
                     default: Some(0),
+                    min: Some(0),
+                    max: Some(1),
                     ..Default::default()
                 },
                 radio_u32: RadioU32 {
@@ -144,12 +162,16 @@ mod data_test {
                 },
                 range_u32: RangeU32 {
                     required: true,
-                    default: Some(0),
+                    default: Some(1),
+                    min: Some(0),
+                    max: Some(1),
                     ..Default::default()
                 },
                 number_i64: NumberI64 {
                     required: true,
                     default: Some(0),
+                    min: Some(-1),
+                    max: Some(1),
                     ..Default::default()
                 },
                 radio_i64: RadioI64 {
@@ -160,11 +182,15 @@ mod data_test {
                 range_i64: RangeI64 {
                     required: true,
                     default: Some(0),
+                    min: Some(-1),
+                    max: Some(1),
                     ..Default::default()
                 },
                 number_f64: NumberF64 {
                     required: true,
                     default: Some(0.0),
+                    min: Some(0.0),
+                    max: Some(1.0),
                     ..Default::default()
                 },
                 radio_f64: RadioF64 {
@@ -175,6 +201,8 @@ mod data_test {
                 range_f64: RangeF64 {
                     required: true,
                     default: Some(0.0),
+                    min: Some(-1.0),
+                    max: Some(1.0),
                     ..Default::default()
                 },
                 radio_text: RadioText {
