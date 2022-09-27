@@ -95,12 +95,16 @@ pub trait Converters {
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
-                let val_doc = prepared_doc.get(field_name).unwrap().clone();
+                let val_json = prepared_doc
+                    .get(field_name)
+                    .unwrap()
+                    .clone()
+                    .into_relaxed_extjson();
                 if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("value") {
-                    *val = val_doc.into_relaxed_extjson();
+                    *val = val_json;
                 } else if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("checked")
                 {
-                    *val = val_doc.into_relaxed_extjson();
+                    *val = val_json;
                 }
             }
         }
