@@ -14,7 +14,7 @@ pub const PROJECT_NAME: &str = "project_name";
 // Size: 8-16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key: https://randompasswordgen.com/
-pub const UNIQUE_PROJECT_KEY: &str = "9a27HO765AQ9Rq2z";
+pub const UNIQUE_PROJECT_KEY: &str = "q25347r611K6pJ02";
 
 // Default settings.
 pub mod default {
