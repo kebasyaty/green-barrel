@@ -295,6 +295,9 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // count_documents
     let result = TestModel::count_documents(None, None)?;
     assert_eq!(result, 10, "count_documents() != 10");
+    // estimated_document_count
+    let result = TestModel::estimated_document_count(None)?;
+    assert_eq!(result, 10, "estimated_document_count() != 10");
 
     // Delete test database
     // =============================================================================================
