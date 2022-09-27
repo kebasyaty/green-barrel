@@ -59,7 +59,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if field_type == "InputDateTime" {
+            } else if field_type == "InputDateTime" || field_type == "HiddenDateTime" {
                 let bson_val = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
