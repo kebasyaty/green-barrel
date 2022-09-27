@@ -240,11 +240,7 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // delete_one
     let query = doc! {};
     let result = TestModel::delete_one(query, None)?;
-    assert!(result.is_valid(), "delete_one() no is_valid()");
-    assert!(
-        result.err_msg().is_empty(),
-        "delete_one(): err_msg() != is_empty()"
-    );
+    assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 0, "delete_one() != 0");
     // distinct
     let field_name = "checkbox";

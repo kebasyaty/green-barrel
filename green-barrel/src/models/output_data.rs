@@ -74,6 +74,30 @@ impl OutputData {
         }
     }
 
+    /// Printing errors to the console ( for development ).
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.delete()?;
+    /// // or
+    /// let output_data = model_name.update_password()?;
+    ///
+    /// if !output_data.is_valid() {
+    ///     output_data.print_err();
+    /// }
+    /// ```
+    ///
+    pub fn print_err(&self) {
+        let errors = self.err_msg();
+        if !errors.is_empty() {
+            println!("\nERRORS:{}\n", errors);
+        }
+    }
+
     /// Get deleted count.
     // ---------------------------------------------------------------------------------------------
     pub fn deleted_count(&self) -> Result<i64, Box<dyn Error>> {
