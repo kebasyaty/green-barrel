@@ -16,12 +16,12 @@ pub trait Converters {
     fn to_prepared_doc(
         doc: Document,
         ignore_fields: &[String],
-        controller_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<Document, Box<dyn Error>> {
         //
         let mut accumula_doc = Document::new();
-        for (field_name, field_type) in controller_type_map {
+        for (field_name, field_type) in field_type_map {
             if ignore_fields.contains(field_name) {
                 continue;
             }
@@ -84,14 +84,14 @@ pub trait Converters {
     fn one_to_json_val(
         db_doc: Document,
         ignore_fields: &[String],
-        controller_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
         fields_name: &Vec<String>,
         model_json: &mut Value,
     ) -> Result<(), Box<dyn Error>> {
         //
         let prepared_doc =
-            Self::to_prepared_doc(db_doc, ignore_fields, controller_type_map, model_name)?;
+            Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
@@ -132,7 +132,7 @@ pub trait Converters {
         find_options: Option<FindOptions>,
         collection: Collection,
         ignore_fields: &[String],
-        controller_type_map: &HashMap<String, String>,
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
@@ -140,7 +140,7 @@ pub trait Converters {
         let mut cursor = collection.find(filter, find_options)?;
         while let Some(Ok(db_doc)) = cursor.next() {
             let prepared_doc =
-                Self::to_prepared_doc(db_doc, ignore_fields, controller_type_map, model_name)?;
+                Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
             //
             json_line = format!(
                 "{},{:?}",

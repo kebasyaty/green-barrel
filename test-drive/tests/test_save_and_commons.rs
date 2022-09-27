@@ -318,6 +318,10 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let filter = doc! {"email": "x5@x.xx"};
     let result = TestModel::find_one_to_json(filter, None)?;
     assert!(!result.is_empty(), "find_one_to_json() == is_empty()");
+    // find_one_to_instance
+    let filter = doc! {"email": "x1@x.xx"};
+    let result = TestModel::find_one_to_instance(filter, None)?;
+    assert!(result.is_some(), "find_one_to_instance() != is_some()");
 
     // Delete test database
     // =============================================================================================

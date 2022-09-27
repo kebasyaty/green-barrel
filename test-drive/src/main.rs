@@ -2,8 +2,8 @@ mod models;
 mod settings;
 
 use green_barrel::*;
-use std::error::Error;
 //use mongodb::bson::doc;
+use std::error::Error;
 
 // Migration
 fn run_migration() -> Result<(), Box<dyn Error>> {
@@ -133,6 +133,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
+    }
+
+    let filter = mongodb::bson::doc! {"email": "user_1_@noreply.net"};
+    if let Some(result) = models::User::find_one_to_instance(filter, None)? {
+        println!("\n\n{:?}\n\n", result);
     }
 
     // Delete document in database.

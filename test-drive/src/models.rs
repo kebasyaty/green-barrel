@@ -27,9 +27,6 @@ pub struct User {
     pub confirm_password: InputPassword,
     pub is_staff: CheckBox,
     pub is_active: CheckBox,
-    //
-    pub file: InputFile,
-    pub image: InputImage,
 }
 
 impl Control for User {
@@ -107,29 +104,6 @@ impl Control for User {
                 label: "is active?".into(),
                 checked: Some(true),
                 hint: "Is this an active account?".into(),
-                ..Default::default()
-            },
-            //
-            file: InputFile {
-                default: Some(FileData {
-                    path: "./test-drive/media/hello_world.odt".into(),
-                    url: "/media/hello_world.odt".into(),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            },
-            image: InputImage {
-                default: Some(ImageData {
-                    path: "./test-drive/media/beautiful-mountains.jpg".into(),
-                    url: "/media/no-image-found.png".into(),
-                    ..Default::default()
-                }),
-                thumbnails: vec![
-                    ("xs".into(), 150),
-                    ("sm".into(), 300),
-                    ("md".into(), 600),
-                    ("lg".into(), 1200),
-                ],
                 ..Default::default()
             },
             ..Default::default()
