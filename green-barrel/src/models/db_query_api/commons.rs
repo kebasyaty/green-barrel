@@ -570,7 +570,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", name);
     /// ```
     ///
-    fn name() -> Result<String, Box<dyn Error>>
+    fn collection_name() -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

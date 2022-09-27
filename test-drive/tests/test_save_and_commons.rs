@@ -322,6 +322,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let filter = doc! {"email": "x1@x.xx"};
     let result = TestModel::find_one_to_instance(filter, None)?;
     assert!(result.is_some(), "find_one_to_instance() != is_some()");
+    // collection_name
+    let result = TestModel::collection_name()?;
+    assert!(!result.is_empty(), "collection_name() == is_empty()");
+    // namespace
+    let result = TestModel::namespace()?;
+    assert!(!result.db.is_empty(), "namespace(): db == is_empty()");
+    assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
 
     // Delete test database
     // =============================================================================================
