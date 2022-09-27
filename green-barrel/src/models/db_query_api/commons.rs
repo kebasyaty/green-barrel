@@ -511,7 +511,7 @@ pub trait QCommons: Main + Caching + Converters {
                 &meta.fields_name,
                 &mut model_json,
             )?;
-            return Ok(serde_json::from_value(model_json)?);
+            return Ok(Some(serde_json::from_value(model_json)?));
         }
         //
         Ok(None)
