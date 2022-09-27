@@ -26,11 +26,11 @@ pub trait Converters {
                 continue;
             }
             if field_name == "hash" {
-                let bson_val = doc.get("_id").unwrap();
+                let val_bson = doc.get("_id").unwrap();
                 accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_object_id().unwrap().to_hex())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
                             "Model: `{}` > Field: `hash` ; Method: `find_one()` => \
@@ -40,38 +40,38 @@ pub trait Converters {
                     },
                 );
             } else if field_type == "InputPassword" {
-                let bson_val = doc.get(field_name).unwrap();
+                let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
+                    if val_bson.element_type() != ElementType::Null {
                         Bson::String(String::new())
                     } else {
                         Bson::Null
                     },
                 );
             } else if field_type == "InputDate" {
-                let bson_val = doc.get(field_name).unwrap();
+                let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..10].into())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_datetime().unwrap().to_rfc3339()[..10].into())
                     } else {
                         Bson::Null
                     },
                 );
             } else if field_type.contains("DateTime") {
-                let bson_val = doc.get(field_name).unwrap();
+                let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..19].into())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_datetime().unwrap().to_rfc3339()[..19].into())
                     } else {
                         Bson::Null
                     },
                 );
             } else {
-                let bson_val = doc.get(field_name).unwrap();
-                accumula_doc.insert(field_name, bson_val);
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(field_name, val_bson);
             }
         }
 

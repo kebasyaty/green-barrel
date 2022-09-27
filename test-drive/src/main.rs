@@ -135,11 +135,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         output_data.print_err();
     }
 
-    let filter = mongodb::bson::doc! {"email": "user_1_@noreply.net"};
-    if let Some(result) = models::User::find_one_to_instance(filter, None)? {
-        println!("\n\n{:?}\n\n", result);
-    }
-
     // Delete document in database.
     println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
