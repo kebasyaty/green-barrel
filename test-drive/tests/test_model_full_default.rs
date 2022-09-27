@@ -228,7 +228,6 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // delete_many
     let query = doc! {};
     let result = TestModel::delete_many(query, None)?;
-    assert!(result.is_valid(), "delete_many no is_valid()");
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 0,
