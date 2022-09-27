@@ -351,7 +351,7 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let result = TestModel::estimated_document_count(None)?;
     assert_eq!(result, 8, "estimated_document_count() != 8");
     // delete_many
-    let query = doc! {"$or": [{"email": "x4@x.xx"}, {"email": "x6@x.xx"}]};
+    let query = doc! {"email": {"$in": ["x4@x.xx", "x6@x.xx"]}};
     let result = TestModel::delete_many(query, None)?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
