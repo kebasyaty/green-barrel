@@ -90,16 +90,17 @@ pub trait Converters {
         model_json: &mut Value,
     ) -> Result<(), Box<dyn Error>> {
         //
-        let prepared_doc =
-            Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
+        let doc_json = Bson::Document(Self::to_prepared_doc(
+            db_doc,
+            ignore_fields,
+            field_type_map,
+            model_name,
+        )?)
+        .into_relaxed_extjson();
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
-                let val_json = prepared_doc
-                    .get(field_name)
-                    .unwrap()
-                    .clone()
-                    .into_relaxed_extjson();
+                let val_json = doc_json.get(field_name).unwrap().clone();
                 if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("value") {
                     *val = val_json;
                 } else if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("checked")
