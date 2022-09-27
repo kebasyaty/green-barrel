@@ -272,7 +272,7 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_to_instance(filter, None)?;
     assert!(result.is_none(), "find_one_to_instance() != is_none()");
-    // find_one_and_delete_to_doc
+    // find_one_and_delete
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_and_delete(filter, None)?;
     assert!(result.is_none(), "find_one_and_delete() != is_none()");

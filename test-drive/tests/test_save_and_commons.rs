@@ -329,6 +329,16 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let result = TestModel::namespace()?;
     assert!(!result.db.is_empty(), "namespace(): db == is_empty()");
     assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
+    // find_one_and_delete
+    let filter = doc! {"email": "x2@x.xx"};
+    let result = TestModel::find_one_and_delete(filter, None)?;
+    assert!(result.is_some(), "find_one_and_delete() != is_some()");
+    // count_documents
+    let result = TestModel::count_documents(None, None)?;
+    assert_eq!(result, 9, "count_documents() != 9");
+    // estimated_document_count
+    let result = TestModel::estimated_document_count(None)?;
+    assert_eq!(result, 9, "estimated_document_count() != 9");
 
     // Delete test database
     // =============================================================================================
