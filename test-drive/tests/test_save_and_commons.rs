@@ -1,6 +1,7 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
+use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -200,7 +201,7 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
 
-    for _ in 1..=10 {
+    for num in 1..=10 {
         let mut test_model = TestModel::new()?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
@@ -254,7 +255,7 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
         test_model.text.set("Some text");
         test_model.color.set("#ffffff");
-        test_model.email.set("jane32@enhanceronly.com");
+        test_model.email.value = Some(format!("x{num}@x.xx"));
         test_model.password.set("j2972K4R3uQeVFPF");
         test_model.phone.set("+1 202-918-2132");
         test_model.url.set("https://ru.wikipedia.org/wiki/URL");
@@ -298,6 +299,21 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // estimated_document_count
     let result = TestModel::estimated_document_count(None)?;
     assert_eq!(result, 10, "estimated_document_count() != 10");
+    // find_many_to_doc_list
+    let result = TestModel::find_many_to_doc_list(None, None)?;
+    assert!(result.is_some(), "find_many_to_doc_list() != is_some()");
+    assert_eq!(
+        result.unwrap().len(),
+        10,
+        "find_many_to_doc_list(): len() != 10"
+    );
+    // find_many_to_json
+    let result = TestModel::find_many_to_json(None, None)?;
+    assert!(!result.is_empty(), "find_many_to_json() == is_empty()");
+    // find_one_to_doc
+    let filter = doc! {"email": "x1@x.xx"};
+    let result = TestModel::find_one_to_doc(filter, None)?;
+    assert!(result.is_some(), "find_many_to_json() != is_some()");
 
     // Delete test database
     // =============================================================================================

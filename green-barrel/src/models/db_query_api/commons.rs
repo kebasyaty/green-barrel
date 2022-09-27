@@ -401,13 +401,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result = ModelName::find_one(filter, None)?;
+    /// let result = ModelName::find_one_to_doc(filter, None)?;
     /// if let Some(doc) = result {
     ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
-    fn find_one(
+    fn find_one_to_doc(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
