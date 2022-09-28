@@ -458,6 +458,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Delete document in database.
+    // ---------------------------------------------------------------------------------------------
     println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
     if !output_data.is_valid() {
