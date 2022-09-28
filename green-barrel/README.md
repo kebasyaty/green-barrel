@@ -53,7 +53,7 @@
 
 ## Field types
 
-See documentation -**fields**.
+See documentation -**[fields](https://docs.rs/green-barrel/1.0.0-beta/green_barrel/fields/index.html "fields")**.
 
 ## Install mongodb (if not installed)
 
