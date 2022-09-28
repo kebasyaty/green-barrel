@@ -51,7 +51,7 @@
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 
-## Fields type
+## Field types
 
 See documentation -**fields**.
 
