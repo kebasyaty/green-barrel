@@ -9,15 +9,15 @@ mod data_test {
 
     // Test application settings
     // =============================================================================================
-    pub const PROJECT_NAME: &str = "project_name";
+    pub const PROJECT_NAME: &str = "test_project_name";
     // The unique key for this test.
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 8-16
-    pub const UNIQUE_PROJECT_KEY: &str = "testA7l0d16sw8xc";
+    pub const UNIQUE_PROJECT_KEY: &str = "4c571936Hk318vAp";
     //
-    pub const SERVICE_NAME: &str = "service_name";
-    pub const DATABASE_NAME: &str = "database_name";
+    pub const SERVICE_NAME: &str = "test_service_name";
+    pub const DATABASE_NAME: &str = "test_database_name";
     pub const DB_CLIENT_NAME: &str = "default";
     const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 

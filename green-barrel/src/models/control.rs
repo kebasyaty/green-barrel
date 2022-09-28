@@ -22,7 +22,7 @@
 ///                 unique: true,
 ///                 ..Default::default()
 ///             },
-///             ..Default::default() // For `hash`, `created_at`, `updated_at`
+///             ..Default::default() // For `hash`, `created_at`, `updated_at` etc
 ///         }
 ///     }
 /// }
