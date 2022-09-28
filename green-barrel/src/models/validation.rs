@@ -5,12 +5,10 @@ use mongodb::{
     sync::Collection,
 };
 use regex::Regex;
+use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::{
-    store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD},
-    widgets::Widget,
-};
+use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
@@ -35,63 +33,61 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(widget: &Widget, err: &String) -> Result<String, Box<dyn Error>> {
-        let mut tmp = widget.error.clone();
-        tmp = if !tmp.is_empty() {
-            format!("{}<br>", tmp)
-        } else {
-            String::new()
-        };
-        Ok(format!("{}{}", tmp, err))
+    fn accumula_err(field: &Value, err: &str) -> String {
+        let mut msg = field.get("error").unwrap().as_str().unwrap().to_string();
+        if !msg.is_empty() {
+            msg = format!("{}<br>", msg)
+        }
+        format!("{}{}", msg, err)
     }
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
     fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
-            "inputEmail" => {
+            "InputEmail" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?
                 }
             }
-            "inputColor" => {
+            "InputColor" => {
                 if !REGEX_IS_COLOR_CODE.is_match(value) {
                     Err("Invalid Color code.")?
                 }
             }
-            "inputUrl" => {
+            "InputUrl" => {
                 if !validator::validate_url(value) {
                     Err("Invalid Url.")?
                 }
             }
-            "inputIP" => {
+            "InputIP" => {
                 if !validator::validate_ip(value) {
                     Err("Invalid IP address.")?
                 }
             }
-            "inputIPv4" => {
+            "InputIPv4" => {
                 if !validator::validate_ip_v4(value) {
                     Err("Invalid IPv4 address.")?
                 }
             }
-            "inputIPv6" => {
+            "InputIPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err("Invalid IPv6 address.")?
                 }
             }
-            "inputPassword" => {
+            "InputPassword" => {
                 if !REGEX_IS_PASSWORD.is_match(value) {
                     Err("Size 8-256 chars.<br>\
                         Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (")?
                 }
             }
-            "inputDate" => {
+            "InputDate" => {
                 if !REGEX_IS_DATE.is_match(value) {
                     Err("Incorrect date format.<br>\
                          Example: 1970-02-28")?
                 }
             }
-            "inputDateTime" => {
+            "InputDateTime" | "HiddenDateTime" => {
                 if !REGEX_IS_DATETIME.is_match(value) {
                     Err("Incorrect date and time format.<br>\
                          Example: 1970-02-28T00:00")?
@@ -107,12 +103,12 @@ pub trait Validation {
     fn check_unique(
         hash: &str,
         field_name: &str,
-        bson_field_value: &Bson,
+        field_value_bson: &Bson,
         coll: &Collection,
     ) -> Result<(), Box<dyn Error>> {
         //
         let object_id = ObjectId::with_string(hash);
-        let mut filter = doc! { field_name: bson_field_value };
+        let mut filter = doc! { field_name: field_value_bson };
         if let Ok(id) = object_id {
             // If the document is will updated.
             filter = doc! {

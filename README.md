@@ -1,10 +1,10 @@
-[![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/mango-orm "Logo")
+[![Logo](https://github.com/kebasyaty/green-barrel/raw/master/images/logo.svg "Logo")](https://github.com/kebasyaty/green-barrel "Logo")
 
 # Green Barrel
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Dynamic Widgets) is used. For examples of how to add fields to the Model, see [tests](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "tests"). For maximum convenience use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel").**
+**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Types of selective fields with dynamic addition of elements) is used. Support for Actix-GreenPanel is temporarily unavailable.**
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
@@ -17,7 +17,7 @@
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-**[Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") is the recommended part of the entire ecosystem ( [Green Barrel](https://github.com/kebasyaty/green-barrel "green-barrel"), [Metamorphose](https://github.com/kebasyaty/green-barrel/tree/master/metamorphose "metamorphose"), [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") ). For those who use [Actix-Greenpanel](https://github.com/kebasyaty/actix-greenpanel "actix-greenpanel") - Follow our updates.**
+**Support for Actix-GreenPanel is temporarily unavailable.**
 
 ## Requirements
 
@@ -50,111 +50,10 @@
 | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                  |
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
-| is_use_custom_html  | false        | Allows the ability to customization html code for web forms - **impl GenerateHtml for ModelName**.   |
 
-## Match field types and widget types
+## Field types
 
-| Field type:             | Widget type:        |
-| :---------------------- | :------------------ |
-| Option< bool >          | "checkBox"          |
-| -                       | -                   |
-| Option< String >        | "inputSlug"         |
-| -                       | -                   |
-| Option< String >        | "inputColor"        |
-| Option< String >        | "inputDate"         |
-| Option< String >        | "inputDateTime"     |
-| Option< String >        | "inputEmail"        |
-| Option< String >        | "inputPassword"     |
-| Option< String >        | "inputPhone"        |
-| Option< String >        | "inputText"         |
-| Option< String >        | "inputUrl"          |
-| Option< String >        | "inputIP"           |
-| Option< String >        | "inputIPv4"         |
-| Option< String >        | "inputIPv6"         |
-| -                       | -                   |
-| Option< String >        | "textArea"          |
-| -                       | -                   |
-| Option< String >        | "inputFile"         |
-| Option< String >        | "inputImage"        |
-| -                       | -                   |
-| Option< i32 >           | "numberI32"         |
-| Option< u32 >           | "numberU32"         |
-| Option< i64 >           | "numberI64"         |
-| Option< f64 >           | "numberF64"         |
-| -                       | -                   |
-| Option< String >        | "radioText"         |
-| Option< i32 >           | "radioI32"          |
-| Option< u32 >           | "radioU32"          |
-| Option< i64 >           | "radioI64"          |
-| Option< f64 >           | "radioF64"          |
-| -                       | -                   |
-| Option< i32 >           | "rangeI32"          |
-| Option< u32 >           | "rangeU32"          |
-| Option< i64 >           | "rangeI64"          |
-| Option< f64 >           | "rangeF64"          |
-| -                       | -                   |
-| Option< String >        | "selectText"        |
-| Option< String >        | "selectTextDyn"     |
-| Option< Vec< String > > | "selectTextMult"    |
-| Option< Vec< String > > | "selectTextMultDyn" |
-| Option< i32 >           | "selectI32"         |
-| Option< i32 >           | "selectI32Dyn"      |
-| Option< Vec< i32 > >    | "selectI32Mult"     |
-| Option< Vec< i32 > >    | "selectI32MultDyn"  |
-| Option< u32 >           | "selectU32"         |
-| Option< u32 >           | "selectU32Dyn"      |
-| Option< Vec< u32 > >    | "selectU32Mult"     |
-| Option< Vec< u32 > >    | "selectU32MultDyn"  |
-| Option< i64 >           | "selectI64"         |
-| Option< i64 >           | "selectI64Dyn"      |
-| Option< Vec< i64 > >    | "selectI64Mult"     |
-| Option< Vec< i64 > >    | "selectI64MultDyn"  |
-| Option< f64 >           | "selectF64"         |
-| Option< f64 >           | "selectF64Dyn"      |
-| Option< Vec< f64 > >    | "selectF64Mult"     |
-| Option< Vec< f64 > >    | "selectF64MultDyn"  |
-| -                       | -                   |
-| Option< String >        | "hiddenText"        |
-| Option< i32 >           | "hiddenI32"         |
-| Option< u32 >           | "hiddenU32"         |
-| Option< i64 >           | "hiddenI64"         |
-| Option< f64 >           | "hiddenF64"         |
-
-## Field attributes
-
-**_( all attributes are optional )_**
-
-| Attribute:   | Default:     | Description:                                                                                                                                         |
-| :----------- | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id           | empty string | The value is determined automatically. Format: "model-name--field-name".                                                                             |
-| label        | empty string | Web form field name.                                                                                                                                 |
-| widget       | "inputText"  | Widget name.                                                                                                                                         |
-| input_type   | "text"       | The value is determined automatically.                                                                                                               |
-| name         | empty string | The value is determined automatically.                                                                                                               |
-| value        | empty string | Default value.                                                                                                                                       |
-| accept       | empty string | Example: "image/jpeg,image/png,image/gif".                                                                                                           |
-| placeholder  | empty string | Displays prompt text.                                                                                                                                |
-| pattern      | empty string | Validating a field using a client-side regex.                                                                                                        |
-| minlength    | 0            | The minimum number of characters allowed in the text.                                                                                                |
-| maxlength    | 256          | The maximum number of characters allowed in the text.                                                                                                |
-| required     | false        | Mandatory field.                                                                                                                                     |
-| checked      | false        | A pre-activated radio button or checkbox.                                                                                                            |
-| unique       | false        | The unique value of a field in a collection.                                                                                                         |
-| disabled     | false        | Blocks access and modification of the element.                                                                                                       |
-| readonly     | false        | Specifies that the field cannot be modified by the user.                                                                                             |
-| step         | "1"          | Increment step for numeric fields.                                                                                                                   |
-| min          | empty string | The lower value for entering a number or date.                                                                                                       |
-| max          | empty string | The top value for entering a number or date.                                                                                                         |
-| options      | empty array  | Example: r#"[[1,"Volvo"], [2,"Saab"]]"#.                                                                                                             |
-| thumbnails   | empty array  | From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#. Hint: An Intel i7-4770 processor or better is recommended. |
-| slug_sources | empty array  | Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#.                                                   |
-| is_hide      | false        | Hide field from user.                                                                                                                                |
-| other_attrs  | empty string | Example: r# "autofocus tabindex="some number" size="some number""#.                                                                                  |
-| css_classes  | empty string | Example: "class-name-1 class-name-2".                                                                                                                |
-| hint         | empty string | Additional explanation for the user.                                                                                                                 |
-| warning      | empty string | The value is determined automatically.                                                                                                               |
-| error        | empty string | The value is determined automatically.                                                                                                               |
-| alert        | empty string | Alert message for the entire web form. The value is determined automatically.                                                                        |
+See documentation -**fields**.
 
 ## Install mongodb (if not installed)
 
@@ -203,10 +102,10 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green_barrel = "0.12"
-metamorphose = "0.7"
-regex = "1.5.6"
-serde_json = "1.0.81"
+green_barrel = "1.0.0-beta"
+metamorphose = "1.0.0-beta"
+regex = "1.6.0"
+serde_json = "1.0.85"
 
 [dependencies.mongodb]
 default-features = false
@@ -215,7 +114,7 @@ version = "1.2.5"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.137"
+version = "1.0.145"
 ```
 
 #### src/settings.rs
@@ -235,7 +134,7 @@ pub const PROJECT_NAME: &str = "store";
 // Size: 8-16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key: https://randompasswordgen.com/
-pub const UNIQUE_PROJECT_KEY: &str = "Ugav2731BO7lJz8k";
+pub const UNIQUE_PROJECT_KEY: &str = "A3iBcq9K19287PN3";
 
 // Settings for user accounts.
 pub mod users {
@@ -257,9 +156,10 @@ pub mod users {
 ```rust
 use green_barrel::{Main, Monitor, MONGODB_CLIENT_STORE};
 use crate::{models, settings};
+use std::error::Error;
 
-// Migration Service `Mango`.
-pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
+// Migration
+pub fn run_migration() -> Result<(), Box<dyn Error>> {
     // Caching MongoDB clients.
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
@@ -273,11 +173,11 @@ pub fn mango_migration() -> Result<(), Box<dyn std::error::Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
-        models: vec![models::UserProfile::meta()?],
+        models: vec![models::User::meta()?],
     };
     // Run migration
     monitor.migrat()?;
-    //
+
     Ok(())
 }
 ```
@@ -289,142 +189,124 @@ use green_barrel::*;
 use metamorphose::Model;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, error::Error};
 
 use crate::settings::{
     users::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
     PROJECT_NAME, UNIQUE_PROJECT_KEY,
 };
 
-// User profiles
 #[Model(
-    is_del_docs = false,
     is_use_add_valid = true,
     is_use_hooks = true,
-    //is_use_custom_html = true,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
-pub struct UserProfile {
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Username",
-        placeholder = "Enter your username",
-        unique = true,
-        required = true,
-        maxlength = 150,
-        hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
-    )]
-    pub username: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputSlug",
-        label = "Slug",
-        unique = true,
-        readonly = true,
-        is_hide = true,
-        hint = "To create a human readable url",
-        slug_sources = r#"["hash", "username"]"#
-    )]
-    pub slug: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "First name",
-        placeholder = "Enter your First name",
-        maxlength = 150
-    )]
-    pub first_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Last name",
-        placeholder = "Enter your Last name",
-        maxlength = 150
-    )]
-    pub last_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputEmail",
-        label = "E-mail",
-        placeholder = "Please enter your email",
-        required = true,
-        unique = true,
-        maxlength = 320,
-        hint = "Your actual E-mail"
-    )]
-    pub email: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPhone",
-        label = "Phone number",
-        placeholder = "Please enter your phone number",
-        unique = true,
-        maxlength = 30,
-        hint = "Your actual phone number"
-    )]
-    pub phone: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Password",
-        placeholder = "Enter your password",
-        required = true,
-        minlength = 8,
-        hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
-    )]
-    pub password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Confirm password",
-        placeholder = "Repeat your password",
-        required = true,
-        minlength = 8,
-        hint = "Repeat your password"
-    )]
-    pub confirm_password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is staff?",
-        checked = true,
-        hint = "User can access the admin site?"
-    )]
-    pub is_staff: Option<bool>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is active?",
-        checked = true,
-        hint = "Is this an active account?"
-    )]
-    pub is_active: Option<bool>,
+pub struct User {
+    pub username: InputText,
+    pub slug: AutoSlug,
+    pub first_name: InputText,
+    pub last_name: InputText,
+    pub email: InputEmail,
+    pub phone: InputPhone,
+    pub password: InputPassword,
+    pub confirm_password: InputPassword,
+    pub is_staff: CheckBox,
+    pub is_active: CheckBox,
 }
 
-// Model parameter: is_use_add_valid = true
-impl AdditionalValidation for UserProfile {
-    fn add_validation<'a>(
-        &self,
-    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+impl Control for User {
+    fn custom_default() -> Self {
+        Self {
+            username: InputText {
+                label: "Username".into(),
+                placeholder: "Enter your username".into(),
+                maxlength: 150,
+                required: true,
+                unique: true,
+                hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
+                ..Default::default()
+            },
+            slug: AutoSlug {
+                label: "Slug".into(),
+                unique: true,
+                readonly: true,
+                hint: "To create a human readable url".into(),
+                slug_sources: vec!["hash".into(), "username".into()],
+                ..Default::default()
+            },
+            first_name: InputText {
+                label: "First name".into(),
+                placeholder: "Enter your First name".into(),
+                maxlength: 150,
+                ..Default::default()
+            },
+            last_name: InputText {
+                label: "Last name".into(),
+                placeholder: "Enter your Last name".into(),
+                maxlength: 150,
+                ..Default::default()
+            },
+            email: InputEmail {
+                label: "E-mail".into(),
+                placeholder: "Please enter your email".into(),
+                required: true,
+                unique: true,
+                maxlength: 320,
+                hint: "Your actual E-mail".into(),
+                ..Default::default()
+            },
+            phone: InputPhone {
+                label: "Phone number".into(),
+                placeholder: "Please enter your phone number".into(),
+                unique: true,
+                maxlength: 30,
+                hint: "Your actual phone number".into(),
+                ..Default::default()
+            },
+            password: InputPassword {
+                label: "Password".into(),
+                placeholder: "Enter your password".into(),
+                required: true,
+                minlength: 8,
+                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
+                    .into(),
+                ..Default::default()
+            },
+            confirm_password: InputPassword {
+                label: "Confirm password".into(),
+                placeholder: "Repeat your password".into(),
+                required: true,
+                minlength: 8,
+                ..Default::default()
+            },
+            is_staff: CheckBox {
+                label: "is staff?".into(),
+                checked: Some(true),
+                hint: "User can access the admin site?".into(),
+                ..Default::default()
+            },
+            is_active: CheckBox {
+                label: "is active?".into(),
+                checked: Some(true),
+                hint: "Is this an active account?".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }
+}
+
+impl AdditionalValidation for User {
+    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
-        let mut error_map: std::collections::HashMap<&'a str, &'a str> =
-            std::collections::HashMap::new();
+        let mut error_map = HashMap::<&'a str, &'a str>::new();
 
         // Get clean data
-        let hash = self.hash.clone().unwrap_or_default();
-        let password = self.password.clone().unwrap_or_default();
-        let confirm_password = self.confirm_password.clone().unwrap_or_default();
-        let username = self.username.clone().unwrap_or_default();
+        let hash = self.hash.value.clone().unwrap_or_default();
+        let password = self.password.value.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.value.clone().unwrap_or_default();
+        let username = self.username.value.clone().unwrap_or_default();
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
@@ -439,16 +321,15 @@ impl AdditionalValidation for UserProfile {
             error_map.insert(
                 "username",
                 "Invalid characters present.<br>\
-                    Valid characters: a-z A-Z 0-9 _ @ + .",
+                 Valid characters: a-z A-Z 0-9 _ @ + .",
             );
         }
-        //
+
         Ok(error_map)
     }
 }
 
-// Model parameter: is_use_hooks = true
-impl Hooks for UserProfile {
+impl Hooks for User {
     fn pre_create(&self) {
         println!("!!!Pre Create!!!");
     }
@@ -473,16 +354,6 @@ impl Hooks for UserProfile {
         println!("!!!Post Delet!!!");
     }
 }
-
-// Model parameter: is_use_custom_html = true
-// See documentation: green-barrel > widgets > generate_html_code > GenerateHtmlCode > generate_html() > source
-/*
-impl GenerateHtml for UserProfile {
-        fn generate_html(&self) {
-            Add your custom code...
-    }
-}
-*/
 ```
 
 #### src/main.rs
@@ -493,105 +364,105 @@ mod models;
 mod settings;
 
 use green_barrel::*;
+use std::error::Error;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     // Run migration.
-    migration::mango_migration()?;
-
-    // Convert Model.
-    // -----------------------------------------------------------------------------------------
-    //println!("{:?}", models::UserProfile::to_wig()?);
-    //println!("{}", models::UserProfile::to_json()?);
-    /*
-    println!(
-        "Html code:\n{}",
-        models::UserProfile::to_html(
-            Some("/login"),
-            Some(HttpMethod::POST),
-            Some(Enctype::Multipart)
-        )?
-    );
-    */
+    migration::run_migration()?;
 
     // Create model instance.
-    // -----------------------------------------------------------------------------------------
-    let mut user = models::UserProfile {
-        username: Some("user_1".to_string()),
-        email: Some("user_1@noreply.net".to_string()),
-        password: Some("12345678".to_string()),
-        confirm_password: Some("12345678".to_string()),
-        is_staff: Some(false),
-        ..Default::default()
-    };
+    // *********************************************************************************************
+    let mut user = models::User::new()?;
+    user.username.set("user_1");
+    user.email.set("user_1_@noreply.net");
+    user.password.set("12345678");
+    user.confirm_password.set("12345678");
+    user.is_staff.set(true);
+    user.is_active.set(true);
 
-    // Check model.
-    // -----------------------------------------------------------------------------------------
-    /*
+    // Check Model.
+    // ---------------------------------------------------------------------------------------------
+    println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
-    println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.hash());
-    println!("Object Id: {:?}", output_data.object_id());
-    println!("Created at: {}", user.get_created_at());
-    println!("Updated at: {}", user.get_updated_at());
-    // Printing errors to the console ( for development ).
-    if !output_data.is_valid() {
+    if output_data.is_valid() {
+        println!("Hash: {:?}", user.hash.get());
+        println!("Hash: {}", output_data.hash());
+
+        println!("Created at: {:?}", user.created_at.get());
+        println!("Updated at: {:?}", user.updated_at.get());
+        println!("Created at: {:?}", output_data.created_at());
+        println!("Updated at: {:?}", output_data.updated_at());
+
+        println!("Object Id: {:?}", user.hash.obj_id()?);
+        println!("Object Id: {:?}", output_data.obj_id()?);
+    } else {
+        // Printing errors to the console ( for development ).
         output_data.print_err();
     }
-    //
-    //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
-    //
-    //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
-    //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
-    //println!("Json:\n{}\n\n", output_data.to_json()?);
-    /*
-    println!(
-        "Html:\n{}\n\n",
-        output_data.to_html(
-            Some("/login"),
-            Some(HttpMethod::POST),
-            Some(Enctype::Multipart)
-        )?
-    );
-    */
-    */
 
-    // Create or update a document in the database ( check() + save() ).
-    // -----------------------------------------------------------------------------------------
+    //println!("Json:\n{}", output_data.json()?);
+    //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+
+    // Create document in database.
+    // ---------------------------------------------------------------------------------------------
+    println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
-    println!("Boolean: {}", output_data.is_valid());
-    println!("Hash: {}", output_data.hash());
-    println!("Object Id: {:?}", output_data.object_id());
-    println!("Created at: {}", user.get_created_at());
-    println!("Updated at: {}", user.get_updated_at());
-    // Printing errors to the console ( for development ).
+    if output_data.is_valid() {
+        println!("Hash: {}", user.hash.get().unwrap());
+        println!("Hash: {}", output_data.hash());
+
+        println!("Created at: {}", user.created_at.get().unwrap());
+        println!("Updated at: {}", user.updated_at.get().unwrap());
+        println!("Created at: {}", output_data.created_at().unwrap());
+        println!("Updated at: {}", output_data.updated_at().unwrap());
+
+        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
+
+        // If there are AutoSlug fields, do an update.
+        user = output_data.update()?;
+        println!("Slug: {}", user.slug.get().unwrap())
+
+        //println!("Json:\n{}", output_data.json()?);
+        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+    } else {
+        output_data.print_err();
+    }
+
+    // Update document in database.
+    // ---------------------------------------------------------------------------------------------
+    println!("\n\nUpdate document in database:\n");
+    if output_data.is_valid() {
+        user.username.set("user_1_update");
+        let output_data = user.save(None, None)?;
+        println!("Hash: {}", user.hash.get().unwrap());
+        println!("Hash: {}", output_data.hash());
+
+        println!("Created at: {}", user.created_at.get().unwrap());
+        println!("Updated at: {}", user.updated_at.get().unwrap());
+        println!("Created at: {}", output_data.created_at().unwrap());
+        println!("Updated at: {}", output_data.updated_at().unwrap());
+
+        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
+
+        // If there are AutoSlug fields, do an update.
+        user = output_data.update()?;
+        println!("Slug: {}", user.slug.get().unwrap())
+
+        //println!("Json:\n{}", output_data.json()?);
+        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+    } else {
+        // Printing errors to the console ( for development ).
+        output_data.print_err();
+    }
+
+    // Delete document in database.
+    println!("\n\nDelete document in database:\n");
+    let output_data = user.delete(None)?;
     if !output_data.is_valid() {
         output_data.print_err();
     }
-    //
-    //println!("Slug: {}\n\n", output_data.to_wig().get("slug").unwrap().value);
-    //
-    //println!("bson::Document:\n{:?}\n\n", output_data.get_doc());
-    //println!("Widget map:\n{:?}\n\n", output_data.to_wig());
-    //println!("Json:\n{}\n\n", output_data.to_json()?);
-    /*
-    println!(
-        "Html:\n{}\n\n",
-        output_data.to_html(
-            Some("/login"),
-            Some(HttpMethod::POST),
-            Some(Enctype::Multipart)
-        )?
-    );
-    */
-
-    // Remove document from collection in database.
-    // -----------------------------------------------------------------------------------------
-    /*
-    let output_data  = user.delete(None)?;
-    if !output_data.is_valid() {
-        println!("{}", output_data.err_msg());
-    }
-    */
 
     Ok(())
 }
@@ -599,6 +470,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Changelog
 
+- **v1.0.0-beta** _Not compatible with version 0.x.x_
 - **v0.12.14** _Fixed **README.md**._
 - **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
 - **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._

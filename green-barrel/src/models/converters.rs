@@ -1,168 +1,36 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
-use mongodb::bson::document::Document;
 use mongodb::{
-    bson::{de::from_document, spec::ElementType, Bson},
+    bson::{document::Document, spec::ElementType, Bson},
     options::FindOptions,
     sync::Collection,
 };
-use std::{collections::HashMap, error::Error};
 
-use crate::widgets::Widget;
+use serde_json::Value;
+use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
 pub trait Converters {
-    /// Get widgets map from document ( presence of widgets ).
-    // ---------------------------------------------------------------------------------------------
-    fn one_to_wig(
-        doc: Option<Document>,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
-        model_name: &str,
-        fields_name: &Vec<String>,
-        mut map_widgets: HashMap<String, Widget>,
-    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
-        //
-        if doc.is_none() {
-            return Ok(None);
-        }
-        let prepared_doc =
-            Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)?;
-        for field in fields_name {
-            if !ignore_fields.contains(field) {
-                let mut widget = map_widgets.get_mut(field).unwrap();
-                let doc = prepared_doc.get(field).unwrap();
-                if doc.element_type() != ElementType::Null {
-                    match doc.element_type() {
-                        ElementType::String => {
-                            widget.value = doc.as_str().unwrap().to_string();
-                        }
-                        ElementType::Int32 => {
-                            widget.value = doc.as_i32().unwrap().to_string();
-                        }
-                        ElementType::Int64 => {
-                            widget.value = doc.as_i64().unwrap().to_string();
-                        }
-                        ElementType::Double => {
-                            widget.value = doc.as_f64().unwrap().to_string();
-                        }
-                        ElementType::Boolean => {
-                            widget.checked = doc.as_bool().unwrap();
-                        }
-                        ElementType::Array => {
-                            widget.value =
-                                serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
-                        }
-                        _ => match widget.widget.as_str() {
-                            "inputFile" | "inputImage" => {
-                                widget.value =
-                                    serde_json::to_string(&doc.clone().into_relaxed_extjson())?;
-                            }
-                            _ => Err(format!(
-                                "Model: `{}` ; Method: `one_doc_to_wig()` => \
-                                Invalid Widget type.",
-                                model_name
-                            ))?,
-                        },
-                    }
-                }
-            }
-        }
-        Ok(Some(map_widgets))
-    }
-
-    /// Get json-line from widget map.
-    // ---------------------------------------------------------------------------------------------
-    fn widget_map_to_json(widget_map: HashMap<String, Widget>) -> Result<String, Box<dyn Error>> {
-        let mut obj_val = serde_json::to_value(widget_map.clone())?;
-        for (field, widget) in widget_map.iter() {
-            let wig_val = widget.value.clone();
-            let json_val = if wig_val.is_empty() {
-                serde_json::Value::Null
-            } else {
-                if widget.widget == "inputFile"
-                    || widget.widget == "inputImage"
-                    || widget.widget.contains("Mult")
-                {
-                    serde_json::from_str(wig_val.as_str())?
-                } else if widget.widget.contains("32") || widget.widget.contains("I64") {
-                    let num = wig_val.parse::<i64>()?;
-                    serde_json::value::to_value(num)?
-                } else if widget.widget.contains("F64") {
-                    let num = wig_val.parse::<f64>()?;
-                    serde_json::value::to_value(num)?
-                } else {
-                    serde_json::value::to_value(wig_val)?
-                }
-            };
-            *obj_val.get_mut(field).unwrap().get_mut("value").unwrap() = json_val;
-        }
-        Ok(serde_json::to_string(&obj_val)?)
-    }
-
-    /// Get model instance from document.
-    /// Hint: For the `save`, `update`, `delete` operations.
-    // ---------------------------------------------------------------------------------------------
-    fn to_model_instance(
-        doc: Option<Document>,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
-        model_name: &str,
-    ) -> Result<Option<Self>, Box<dyn Error>>
-    where
-        Self: serde::de::DeserializeOwned + Sized,
-    {
-        if doc.is_none() {
-            return Ok(None);
-        }
-        let doc = Self::to_prepared_doc(doc.unwrap(), ignore_fields, widget_type_map, model_name)
-            .unwrap();
-        let mut prepared_doc = mongodb::bson::document::Document::new();
-        for (field_name, widget_type) in widget_type_map {
-            if ignore_fields.contains(&field_name) {
-                continue;
-            }
-            let bson_val = doc.get(field_name).unwrap();
-            if widget_type == "inputFile" || widget_type == "inputImage" {
-                prepared_doc.insert(
-                    field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        let result =
-                            serde_json::to_string(&bson_val.clone().into_relaxed_extjson())
-                                .unwrap();
-                        Bson::String(result)
-                    } else {
-                        Bson::Null
-                    },
-                );
-            } else {
-                prepared_doc.insert(field_name, bson_val);
-            }
-        }
-        Ok(Some(from_document::<Self>(prepared_doc)?))
-    }
-
-    /// Get prepared document.
-    /// Hint: Converting data types to model-friendly formats.
+    /// Get prepared document ( converting data types to model-friendly formats ).
     // ---------------------------------------------------------------------------------------------
     fn to_prepared_doc(
         doc: Document,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
+        ignore_fields: &[String],
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<Document, Box<dyn Error>> {
         //
-        let mut prepared_doc = Document::new();
-        for (field_name, widget_type) in widget_type_map {
-            if ignore_fields.contains(&field_name) {
+        let mut accumula_doc = Document::new();
+        for (field_name, field_type) in field_type_map {
+            if ignore_fields.contains(field_name) {
                 continue;
             }
             if field_name == "hash" {
-                let bson_val = doc.get("_id").unwrap();
-                prepared_doc.insert(
+                let val_bson = doc.get("_id").unwrap();
+                accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_object_id().unwrap().to_hex())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
                             "Model: `{}` > Field: `hash` ; Method: `find_one()` => \
@@ -171,85 +39,118 @@ pub trait Converters {
                         ))?
                     },
                 );
-            } else if widget_type == "inputPassword" {
-                let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+            } else if field_type == "InputPassword" {
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
+                    if val_bson.element_type() != ElementType::Null {
                         Bson::String(String::new())
                     } else {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "inputDate" {
-                let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+            } else if field_type == "InputDate" {
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..10].into())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_datetime().unwrap().to_rfc3339()[..10].into())
                     } else {
                         Bson::Null
                     },
                 );
-            } else if widget_type == "inputDateTime" {
-                let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(
+            } else if field_type.contains("DateTime") {
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(
                     field_name,
-                    if bson_val.element_type() != ElementType::Null {
-                        Bson::String(bson_val.as_datetime().unwrap().to_rfc3339()[..19].into())
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(val_bson.as_datetime().unwrap().to_rfc3339()[..19].into())
                     } else {
                         Bson::Null
                     },
                 );
             } else {
-                let bson_val = doc.get(field_name).unwrap();
-                prepared_doc.insert(field_name, bson_val);
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(field_name, val_bson);
             }
         }
 
-        Ok(prepared_doc)
+        Ok(accumula_doc)
     }
 
-    /// Get prepared documents ( missing widgets ).
+    /// In the model instance, in the format serde_json::Value,
+    /// Update the field type values from the corresponding document from the database.
     // ---------------------------------------------------------------------------------------------
-    fn many_to_doc(
+    fn one_to_json_val(
+        db_doc: Document,
+        ignore_fields: &[String],
+        field_type_map: &HashMap<String, String>,
+        model_name: &str,
+        fields_name: &Vec<String>,
+        model_json: &mut Value,
+    ) -> Result<(), Box<dyn Error>> {
+        //
+        let doc_json = Bson::Document(Self::to_prepared_doc(
+            db_doc,
+            ignore_fields,
+            field_type_map,
+            model_name,
+        )?)
+        .into_relaxed_extjson();
+        //
+        for field_name in fields_name {
+            if !ignore_fields.contains(field_name) {
+                let val_json = doc_json.get(field_name).unwrap().clone();
+                if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("value") {
+                    *val = val_json;
+                } else if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("checked")
+                {
+                    *val = val_json;
+                }
+            }
+        }
+        //
+        Ok(())
+    }
+
+    /// Get prepared documents ( missing fields type ).
+    // ---------------------------------------------------------------------------------------------
+    fn many_to_doc_list(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
+        let mut doc_list: Vec<Document> = Vec::new();
         let mut cursor = collection.find(filter, find_options)?;
-        let mut docs: Vec<Document> = Vec::new();
-        while let Some(doc) = cursor.next() {
-            docs.push(doc?);
+        while let Some(Ok(db_doc)) = cursor.next() {
+            doc_list.push(db_doc);
         }
 
-        Ok(docs)
+        Ok(doc_list)
     }
 
-    /// Get json-line from document list ( missing widgets ).
+    /// Get json-line from document list ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
     fn many_to_json(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection,
-        ignore_fields: &Vec<String>,
-        widget_type_map: &HashMap<String, String>,
+        ignore_fields: &[String],
+        field_type_map: &HashMap<String, String>,
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
-        let mut cursor = collection.find(filter, find_options)?;
         let mut json_line = String::new();
-        while let Some(doc) = cursor.next() {
+        let mut cursor = collection.find(filter, find_options)?;
+        while let Some(Ok(db_doc)) = cursor.next() {
             let prepared_doc =
-                Self::to_prepared_doc(doc?, ignore_fields, widget_type_map, model_name);
+                Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
             //
             json_line = format!(
-                "{},{}",
+                "{},{:?}",
                 json_line,
-                Bson::Document(prepared_doc?)
-                    .into_relaxed_extjson()
-                    .to_string(),
+                Bson::Document(prepared_doc).into_relaxed_extjson()
             );
         }
 

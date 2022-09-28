@@ -5,13 +5,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use serde::Serialize;
 use syn::{
-    parse2, parse_macro_input, Attribute, AttributeArgs,
-    Data::Struct,
-    DeriveInput,
-    Fields::Named,
-    Lit::{Bool, Float, Int, Str},
-    Meta::{List, NameValue},
-    MetaNameValue, NestedMeta,
+    parse2, parse_macro_input, AttributeArgs, Data::Struct, DeriveInput, Fields::Named, NestedMeta,
     Type::Path,
 };
 
@@ -39,109 +33,16 @@ use syn::{
 ///     ignore_fields = "confirm_password"
 /// )]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
-/// pub struct AdminProfile {
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputText",
-///        label = "Username",
-///        placeholder = "Enter your username",
-///        unique = true,
-///        required = true,
-///        maxlength = 150,
-///        hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
-///    )]
-///    pub username: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputSlug",
-///        label = "Slug",
-///        unique = true,
-///        readonly = true,
-///        is_hide = true,
-///        hint = "To create a human readable url",
-///        slug_sources = r#"["hash", "username"]"#
-///    )]
-///    pub slug: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputText",
-///        label = "First name",
-///        placeholder = "Enter your First name",
-///        maxlength = 150
-///    )]
-///    pub first_name: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputText",
-///        label = "Last name",
-///        placeholder = "Enter your Last name",
-///        maxlength = 150
-///    )]
-///    pub last_name: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputEmail",
-///        label = "E-mail",
-///        placeholder = "Please enter your email",
-///        required = true,
-///        unique = true,
-///        maxlength = 320,
-///        hint = "Your actual E-mail"
-///    )]
-///    pub email: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPhone",
-///        label = "Phone number",
-///        placeholder = "Please enter your phone number",
-///        unique = true,
-///        maxlength = 30,
-///        hint = "Your actual phone number"
-///    )]
-///    pub phone: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPassword",
-///        label = "Password",
-///        placeholder = "Enter your password",
-///        required = true,
-///        minlength = 8,
-///        hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
-///    )]
-///    pub password: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "inputPassword",
-///        label = "Confirm password",
-///        placeholder = "Repeat your password",
-///        required = true,
-///        minlength = 8,
-///        hint = "Repeat your password"
-///    )]
-///    pub confirm_password: Option<String>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "checkBox",
-///        label = "is staff?",
-///        hint = "User can access the admin site?"
-///    )]
-///    pub is_staff: Option<bool>,
-///    //
-///    #[serde(default)]
-///    #[field_attrs(
-///        widget = "checkBox",
-///        label = "is active?",
-///        hint = "Is this an active account?"
-///    )]
-///    pub is_active: Option<bool>,
+/// pub struct User {
+///    pub username: InputText,
+///    pub slug: InputSlug,
+///    pub first_name: InputText,
+///    pub last_name: InputText,
+///    pub email: InputEmail,
+///    pub phone: InputPhone,
+///    pub password: InputPassword,
+///    pub confirm_password: InputPassword,
+///    pub is_active: CheckBox,
 /// }
 /// ```
 ///
@@ -156,26 +57,25 @@ pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {
 // Parsing fields and attributes of a structure, creating implementation of methods.
 // *************************************************************************************************
 fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStream {
-    // Clear the field type from `Option <>`
-    let re_clear_field_type = regex::RegexBuilder::new(r"^Option < ([a-z\d\s<>]+) >$")
-        .case_insensitive(true)
-        .build()
-        .unwrap();
-    let model_name = &ast.ident;
-    if model_name.to_string().len() > 31 {
+    let model_name_ident = &ast.ident;
+    let model_name_str = model_name_ident.to_string();
+    //
+    if model_name_str.len() > 31 {
         panic!(
-            "Model: `{:?}` => Model name - Max size: 31 characters.",
-            model_name
+            "Model: `{}` => Model name: Max size 31 characters.",
+            model_name_str
         )
     }
+    //
     let mut trans_meta = Meta {
-        model_name: ast.ident.to_string(),
+        model_name: model_name_str.clone(),
         ..Default::default()
     };
-    let mut trans_map_widgets: TransMapWidgets = Default::default();
-    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name {}};
-    let mut add_trait_hooks = quote! {impl Hooks for #model_name {}};
-    let mut add_trait_generate_html = quote! {impl GenerateHtml for #model_name {}};
+    //
+    let mut html_id_map = std::collections::HashMap::<String, String>::new();
+    //
+    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name_ident {}};
+    let mut add_trait_hooks = quote! {impl Hooks for #model_name_ident {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -187,9 +87,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.database_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `database`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("db_client_name") {
@@ -197,9 +97,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_client_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_client_name`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
@@ -207,9 +107,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `db_query_docs_limit`. Use the `&str` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_add_docs") {
@@ -217,9 +117,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_add_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_add_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_up_docs") {
@@ -227,9 +127,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_up_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_up_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_del_docs") {
@@ -237,9 +137,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_del_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_del_docs`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("ignore_fields") {
@@ -253,53 +153,43 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .collect();
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `ignore_fields`. Use the type `&str` in \
                             the format - <field_name, field_name>.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_use_add_valid") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        trans_meta.is_use_add_valid = lit_bool.value;
                         if lit_bool.value {
                             add_trait_custom_valid = quote! {};
                         }
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_add_valid`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 } else if mnv.path.is_ident("is_use_hooks") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
+                        trans_meta.is_use_hooks = lit_bool.value;
                         if lit_bool.value {
                             add_trait_hooks = quote! {};
                         }
                     } else {
                         panic!(
-                            "Model: `{:?}` => Could not determine value for \
+                            "Model: `{}` => Could not determine value for \
                             parameter `is_use_hooks`. Use the `bool` type.",
-                            model_name
-                        )
-                    }
-                } else if mnv.path.is_ident("is_use_custom_html") {
-                    if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        if lit_bool.value {
-                            add_trait_generate_html = quote! {};
-                        }
-                    } else {
-                        panic!(
-                            "Model: `{:?}` => Could not determine value for \
-                            parameter `is_use_custom_html`. Use the `bool` type.",
-                            model_name
+                            model_name_str
                         )
                     }
                 }
             } else {
                 panic!(
-                    "Model: `{:?}` => syn::Meta::NameValue is missing.",
-                    model_name
+                    "Model: `{}` => syn::Meta::NameValue is missing.",
+                    model_name_str
                 )
             }
         }
@@ -320,18 +210,18 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
                     if field_name == "hash" {
                         panic!(
-                            "Model: `{:?}` => The field named `hash` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `hash` is reserved.",
+                            model_name_str
                         )
                     } else if field_name == "created_at" {
                         panic!(
-                            "Model: `{:?}` => The field named `created_at` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `created_at` is reserved.",
+                            model_name_str
                         )
                     } else if field_name == "updated_at" {
                         panic!(
-                            "Model: `{:?}` => The field named `updated_at` is reserved.",
-                            model_name
+                            "Model: `{}` => The field named `updated_at` is reserved.",
+                            model_name_str
                         )
                     }
                 }
@@ -339,21 +229,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "hiddenText", disabled = true)] pub hash: Option<String>}
+                {pub hash: HiddenHash}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
             fields.push(new_hash_field);
             // Add new field `created_at`.
             let new_created_at_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true, label = "Created at")] pub created_at: Option<String>}
+                {pub created_at: HiddenDateTime}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_created_at_field = new_created_at_field.named.first().unwrap().to_owned();
             fields.push(new_created_at_field);
             // Add new field `updated_at`.
             let new_updated_at_field: syn::FieldsNamed = parse2(quote! {
-                {#[serde(default)] #[field_attrs(widget = "inputDateTime", disabled = true, is_hide = true, label = "Updated at")] pub updated_at: Option<String>}
+                {pub updated_at: HiddenDateTime}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_updated_at_field = new_updated_at_field.named.first().unwrap().to_owned();
@@ -367,178 +257,48 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             for field in fields {
                 let mut field_name = String::new();
                 let mut field_type = String::new();
-
+                //
                 // Get field name.
                 if let Some(ident) = &field.ident {
                     field_name = ident.to_string();
                     trans_meta.fields_name.push(field_name.clone());
                 }
-                // Get field type.
+                // Add field name and field value type to map.
                 if let Path(ty) = &field.ty {
-                    field_type = quote! {#ty}.to_string();
-                    let cap = &re_clear_field_type
-                        .captures_iter(field_type.as_str())
-                        .next();
-                    if cap.is_some() {
-                        field_type = cap.as_ref().unwrap()[1].to_string();
-                    } else {
-                        panic!(
-                            "Model: `{:?}` > Field: `{}` => Change field type to `Option < {} >`.",
-                            model_name, field_name, field_type
-                        )
-                    }
+                    field_type = {
+                        let tmp_str = quote! {#ty}.to_string();
+                        let tmp_vec = tmp_str.split("::").collect::<Vec<&str>>();
+                        tmp_vec[tmp_vec.len() - 1].trim().to_string()
+                    };
+                    let field_info = get_field_info(
+                        model_name_str.as_str(),
+                        field_name.as_str(),
+                        field_type.as_str(),
+                    )
+                    .unwrap();
                     trans_meta
-                        .field_type_map
-                        .insert(field_name.clone(), field_type.clone());
+                        .field_value_type_map
+                        .insert(field_name.clone(), field_info.0.to_string());
                 }
-
-                // Get the attribute of the field `field_attrs`.
-                let attrs: Option<&Attribute> = get_field_attr(&field, "field_attrs");
-                let mut widget = Widget {
-                    id: get_id(model_name.to_string(), field_name.clone()),
-                    name: field_name.clone(),
-                    ..Default::default()
-                };
-                // Allow Validation - Whether the Widget supports the current field type.
-                let mut check_field_type = true;
-
-                // Get field attributes.
-                if let Some(attrs) = attrs {
-                    match attrs.parse_meta() {
-                        Ok(meta) => {
-                            if let List(meta_list) = meta {
-                                for nested_meta in meta_list.nested {
-                                    if let NestedMeta::Meta(meta) = nested_meta {
-                                        if let NameValue(mnv) = meta {
-                                            let attr_name =
-                                                &mnv.path.get_ident().unwrap().to_string()[..];
-                                            get_param_value(
-                                                attr_name,
-                                                &mnv,
-                                                &mut widget,
-                                                model_name.to_string().as_ref(),
-                                                field_name.as_ref(),
-                                                field_type.as_ref(),
-                                                &mut check_field_type,
-                                            );
-                                        } else {
-                                            panic!(
-                                                "Model: `{:?}` => MetaList is missing.",
-                                                model_name
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Err(err) => panic!("{}", err.to_string()),
-                    }
-                }
-
-                // Match widget type and field type.
-                if check_field_type {
-                    let widget_name = widget.widget.clone();
-                    let widget_info = get_widget_info(&widget_name).unwrap_or_else(|err| {
-                        panic!(
-                            "Model: `{:?}` > Field: `{}` => {}",
-                            model_name, field_name, err
-                        )
-                    });
-                    if widget_info.0 != field_type {
-                        panic!(
-                            "Model: `{:?}` > Field: `{}` > Type: {}: \
-                            The widget type `{}` is not the same \
-                            as the field type.",
-                            model_name, field_name, field_type, widget_info.0
-                        )
-                    }
-                }
-                // Validation the `min` and` max` field attributes for date and time.
-                if widget.widget == "inputDate".to_string() {
-                    let re_valid_date = regex::RegexBuilder::new(
-                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$"
-                        )
-                        .build()
-                        .unwrap();
-                    if !widget.value.is_empty() {
-                        if !re_valid_date.is_match(widget.value.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `default` => \
-                                Incorrect date format. Example: \"1970-02-28\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else if !widget.min.is_empty() {
-                        if !re_valid_date.is_match(widget.min.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `min` => \
-                                Incorrect date format. Example: \"1970-02-28\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else if !widget.max.is_empty() {
-                        if !re_valid_date.is_match(widget.max.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `max` => \
-                                Incorrect date format. Example: \"1970-02-28\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else {
-                        //
-                    }
-                }
-                if widget.widget == "inputDateTime".to_string() {
-                    let re_valid_datetime = regex::RegexBuilder::new(
-                    r"^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d$"
-                        )
-                        .build()
-                        .unwrap();
-                    if !widget.value.is_empty() {
-                        if !re_valid_datetime.is_match(widget.value.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `default` => \
-                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else if !widget.min.is_empty() {
-                        if !re_valid_datetime.is_match(widget.min.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `min` => \
-                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else if !widget.max.is_empty() {
-                        if !re_valid_datetime.is_match(widget.max.as_str()) {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Attribute: `max` => \
-                                Incorrect date and time format. Example: \"1970-02-28T00:00\"",
-                                model_name, field_name
-                            )
-                        }
-                    } else {
-                        //
-                    }
-                }
-                // Add field name and widget name to the map.
+                // Add field name and Widget name to map.
                 trans_meta
-                    .widget_type_map
-                    .insert(field_name.clone(), widget.widget.clone());
-                // Add widget to map.
-                trans_map_widgets
-                    .map_widgets
-                    .insert(field_name.clone(), widget);
-
+                    .field_type_map
+                    .insert(field_name.clone(), field_type);
+                //
+                // Add field name and Widget html id to map.
+                html_id_map.insert(
+                    field_name.clone(),
+                    get_html_id(model_name_str.as_str(), field_name.as_str()),
+                );
+                //
                 // Delete field attributes.
                 // ( To avoid conflicts with the compiler )
                 field.attrs = Vec::new();
             }
         } else {
             panic!(
-                "Model: `{:?}` => Expected a struct with named fields.",
-                model_name
+                "Model: `{}` => Expected a struct with named fields.",
+                model_name_str
             )
         }
     }
@@ -549,172 +309,20 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
-                "Model: `{:?}` => Model does not have an ignored field named `{}`.",
-                model_name, field_name,
+                "Model: `{}` => Model does not have an ignored field named `{}`.",
+                model_name_str, field_name,
             )
         }
     }
-    // Collect `map_default_values` and add to `trans_meta`.
-    for field_name in trans_meta.fields_name.iter() {
-        let widget = trans_map_widgets
-            .map_widgets
-            .get_mut(field_name.as_str())
-            .unwrap();
-        // For dynamic widgets, the default is invalid.
-        if widget.widget.contains("Dyn") {
-            if !widget.value.is_empty() {
-                panic!(
-                    "Model: `{:?}` > Field: `{}` => \
-                    For dynamic widgets, it is unacceptable to use default values.",
-                    model_name, field_name,
-                )
-            } else if !widget.options.is_empty() {
-                panic!(
-                    "Model: `{:?}` > Field: `{}` => \
-                    For dynamic widgets, it is unacceptable to use `select` field attribute.",
-                    model_name, field_name,
-                )
-            } else if trans_meta.ignore_fields.contains(&widget.name) {
-                panic!(
-                    "Model: `{:?}` > Field: `{}` => \
-                    Dynamic widgets for ignored fields are not allowed.",
-                    model_name, field_name,
-                )
-            }
-        // Validation the `slug_sources` field attribute for widgets of the `Slug` type.
-        } else if widget.widget.contains("Slug") {
-            if !widget.value.is_empty() {
-                panic!(
-                    "Model: `{}` > Field: `{}` > Attribute: `value` => \
-                    No default value is allowed for fields of type Slug.",
-                    model_name, field_name
-                )
-            }
-            if widget.slug_sources.is_empty() {
-                panic!(
-                    "Model: `{}` > Field: `{}` > Attribute: `slug_sources` => \
-                    An empty array is not valid. \
-                    Example: r#\"[\"title\"]\"# or r#\"[\"username\",]\"# or r#\"[\"email\", \"first_name\", \"last_name\"]\"#",
-                    model_name, field_name
-                )
-            } else {
-                for source_field in widget.slug_sources.iter() {
-                    if !trans_meta.fields_name.contains(source_field) {
-                        panic!(
-                            "Model: `{:?}` > Field: `{}` > Attribute: `slug_sources` => \
-                            The field `{}` is missing.",
-                            model_name, field_name, source_field
-                        )
-                    }
-                }
-            }
-        // File fields must not be ignored.
-        } else if (widget.widget == "inputFile" || widget.widget == "inputImage")
-            && trans_meta.ignore_fields.contains(field_name)
-        {
-            panic!(
-                "Model: `{:?}` > Field: `{}` => \
-                     Ignored fields are incompatible with fields of type `file`.",
-                model_name, field_name,
-            )
-        // For widgets of the `select` type,
-        // the default value must correspond to one of the proposed options.
-        } else if widget.widget.contains("select") {
-            if !widget.value.is_empty() && widget.options.is_empty() {
-                panic!(
-                    "Model: `{:?}` > Field: `{}` => \
-                    For select fields, do not set the `value` attribute unless \
-                    the `options` attribute is set.",
-                    model_name, field_name,
-                )
-            }
-            if !widget.value.is_empty() && !widget.options.is_empty() {
-                if widget.widget.contains("Mult") {
-                    let result = if widget.widget.contains("U32")
-                        || widget.widget.contains("I32")
-                        || widget.widget.contains("I64")
-                    {
-                        let arr = serde_json::from_str::<Vec<i64>>(widget.value.as_str()).unwrap();
-                        widget
-                            .options
-                            .iter()
-                            .map(|item| (item.0.parse::<i64>().unwrap(), item.1.clone()))
-                            .collect::<Vec<(i64, String)>>()
-                            .iter()
-                            .filter(|item| arr.contains(&item.0))
-                            .count()
-                            != arr.len()
-                    } else if widget.widget.contains("F64") {
-                        let arr = serde_json::from_str::<Vec<f64>>(widget.value.as_str()).unwrap();
-                        widget
-                            .options
-                            .iter()
-                            .map(|item| (item.0.parse::<f64>().unwrap(), item.1.clone()))
-                            .collect::<Vec<(f64, String)>>()
-                            .iter()
-                            .filter(|item| arr.contains(&item.0))
-                            .count()
-                            != arr.len()
-                    } else {
-                        let arr =
-                            serde_json::from_str::<Vec<String>>(widget.value.as_str()).unwrap();
-                        widget
-                            .options
-                            .iter()
-                            .filter(|item| arr.contains(&item.0))
-                            .count()
-                            != arr.len()
-                    };
-                    if result {
-                        panic!(
-                            "Model: `{}` > Field: `{}` => \
-                            There is no default value in the `options` field attribute.",
-                            model_name.to_string(),
-                            field_name,
-                        )
-                    }
-                } else if widget
-                    .options
-                    .iter()
-                    .filter(|item| item.0 == widget.value)
-                    .count()
-                    == 0_usize
-                {
-                    panic!(
-                        "Model: `{:?}` > Field: `{}` => \
-                        There is no default value in the `options` field attribute.",
-                        model_name, field_name,
-                    )
-                }
-            }
-        // For widgets with support for u32 numbers, field attribute min = 0
-        } else if widget.widget.contains("U32") {
-            widget.min = 0_usize.to_string();
-        }
-        // Add default values in the map.
-        trans_meta.default_value_map.insert(
-            field_name.clone(),
-            (
-                widget.widget.clone(),
-                if widget.widget != "checkBox" {
-                    widget.value.clone()
-                } else {
-                    widget.checked.to_string()
-                },
-            ),
-        );
-    }
-
     // trans_meta to Json-line.
-    // ---------------------------------------------------------------------------------------------
-    let trans_meta: String = match serde_json::to_string(&trans_meta) {
-        Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{:?}` => {}", model_name, err),
+    let trans_meta_json = match serde_json::to_string(&trans_meta) {
+        Ok(json_line) => json_line,
+        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
     };
-    // TransMapWidgets to Json-line.
-    let trans_map_widgets: String = match serde_json::to_string(&trans_map_widgets) {
-        Ok(json_string) => json_string,
-        Err(err) => panic!("Model: `{:?}` => {:?}", model_name, err),
+    // html_id_map to Json-line.
+    let html_id_map_json = match serde_json::to_string(&html_id_map) {
+        Ok(json_line) => json_line,
+        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
     };
 
     // Implementation of methods.
@@ -724,7 +332,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// All methods that directly depend on the macro.
         // *****************************************************************************************
-        impl Main for #model_name {
+        impl Main for #model_name_ident {
             /// Get model key.
             /// Hint: To access data in the cache.
             // -------------------------------------------------------------------------------------
@@ -733,17 +341,88 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 Ok(format!(
                     "{}__{}__{}",
                     SERVICE_NAME.trim(),
-                    re.replace_all(stringify!(#model_name), "_$upper_chr"),
+                    re.replace_all(stringify!(#model_name_ident), "_$upper_chr"),
                     UNIQUE_PROJECT_KEY.trim().to_string()
                 )
                 .to_lowercase())
             }
 
-            /// Get metadata of Model.
+            /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn meta() -> Result<Meta, Box<dyn std::error::Error>> {
+            fn custom_default_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
+            where
+                Self: serde::de::DeserializeOwned + Sized,
+            {
+                let mut instance_json_val = serde_json::to_value(Self::custom_default())?;
+                let html_id_map =
+                    serde_json::from_str::<std::collections::HashMap<&str, &str>>(&#html_id_map_json)?;
+                for (field_name, id_name) in html_id_map {
+                    // Check field attributes.
+                    if instance_json_val.get(field_name).unwrap().get("required").unwrap().as_bool().unwrap()
+                        && (instance_json_val.get(field_name).unwrap().get("disabled").unwrap().as_bool().unwrap()
+                        || instance_json_val.get(field_name).unwrap().get("readonly").unwrap().as_bool().unwrap()
+                        || instance_json_val.get(field_name).unwrap().get("is_hide").unwrap().as_bool().unwrap()) {
+                        //
+                        Err(format!(
+                            "Field: `{}` => Attribute required=true incompatible with \
+                                disabled=true or readonly=true or is_hide=true.",
+                            field_name
+                        ))?
+                    }
+                    // Thumbnails sorting and validation.
+                    if let Some(arr) = instance_json_val.get(field_name).unwrap().get("thumbnails") {
+                        let mut arr = serde_json::from_value::<Vec<(String, u32)>>(arr.clone())?;
+                        arr.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+                        let valid_size_names: [&str; 4] = ["xs", "sm", "md", "lg"];
+                        for size in arr.iter() {
+                            if !valid_size_names.contains(&size.0.as_str()) {
+                                Err(format!(
+                                    "Field: `{}` => \
+                                        Valid size names - `xs`, `sm`, `md`, `lg`.",
+                                    field_name
+                                ))?
+                            }
+                        }
+                        *instance_json_val
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("thumbnails")
+                            .unwrap() = serde_json::json!(arr);
+                    }
+                    // Forbid the use of the `value` field attribute.
+                    if let Some(val) = instance_json_val.get(field_name).unwrap().get("value") {
+                        if !val.is_null() {
+                            Err(format!(
+                                "Field: `{}` => \
+                                    For default values, use the `default` field attribute.",
+                                field_name
+                            ))?
+                        }
+                    }
+                    // Add `id` and `name`
+                    *instance_json_val
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("id")
+                        .unwrap() = serde_json::json!(id_name);
+                    *instance_json_val
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("name")
+                        .unwrap() = serde_json::json!(field_name);
+                }
+                //
+                Ok(instance_json_val)
+            }
+
+            /// Generate metadata of Model.
+            // -------------------------------------------------------------------------------------
+            fn generate_metadata() -> Result<(Meta, serde_json::Value), Box<dyn std::error::Error>>
+            where
+                Self: serde::de::DeserializeOwned + Sized,
+            {
                 let re = regex::Regex::new(r"(?P<upper_chr>[A-Z])").unwrap();
-                let mut meta = serde_json::from_str::<Meta>(&#trans_meta)?;
+                let mut meta = serde_json::from_str::<Meta>(&#trans_meta_json)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
                 // Add project name.
                 meta.project_name = PROJECT_NAME.trim().to_string();
@@ -764,7 +443,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
                 }
                 // Add a limit on the number of documents when querying the database.
-                if meta.db_query_docs_limit == 0 {
+                if meta.db_query_docs_limit == 0_u32 {
                     meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
                 }
                 // Add collection name.
@@ -774,56 +453,90 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     re.replace_all(&meta.model_name[..], "_$upper_chr")
                 )
                 .to_lowercase();
-
-                Ok(meta)
-            }
-
-            /// Get map of widgets for model fields.
-            /// Hint: <field name, Widget>
-            // -------------------------------------------------------------------------------------
-            fn widgets() -> Result<std::collections::HashMap<String, Widget>,
-                Box<dyn std::error::Error>> {
-                Ok(serde_json::from_str::<TransMapWidgets>(&#trans_map_widgets)?.map_widgets)
+                // Add default_value_map
+                let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
+                let model_json = Self::custom_default_to_json_val()?;
+                for (field_name, field_type) in meta.field_type_map.iter() {
+                    let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
+                            val.clone()
+                    } else if let Some(val) = model_json.get(field_name).unwrap().get("checked") {
+                            val.clone()
+                    } else {
+                        serde_json::json!(null)
+                    };
+                    default_value_map.insert(field_name.to_string(), default);
+                    // Determine if there are fields of type AutoSlug and if they use a hash field as a source.
+                    if !meta.is_use_hash_slug && field_type == "AutoSlug" {
+                        let flag = model_json
+                            .get(field_name)
+                            .unwrap()
+                            .get("slug_sources")
+                            .unwrap()
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|item| item.as_str().unwrap())
+                            .any(|item| item == "hash");
+                            if flag {
+                                meta.is_use_hash_slug = flag;
+                            }
+                    }
+                }
+                meta.default_value_map = default_value_map;
+                //
+                Ok((meta, model_json))
             }
 
             /// Getter and Setter for field `hash`.
             // -------------------------------------------------------------------------------------
-            fn get_hash(&self) -> String {
-                self.hash.clone().unwrap_or_default()
+            fn hash(&self) -> String {
+                self.hash.value.clone().unwrap_or_default()
             }
             fn set_hash(&mut self, value: String) {
-                self.hash = Some(value);
+                self.hash.value = Some(value);
+            }
+
+            /// ObjectId from hash field.
+            // -------------------------------------------------------------------------------------
+            fn obj_id(&self) -> Result<Option<mongodb::bson::oid::ObjectId>, Box<dyn std::error::Error>> {
+                let hash = self.hash.value.clone().unwrap_or_default();
+                if let Ok(obj_id) = mongodb::bson::oid::ObjectId::with_string(hash.as_str()) {
+                    return Ok(Some(obj_id));
+                }
+                Ok(None)
+            }
+
+            /// ObjectId to hash field.
+            // -------------------------------------------------------------------------------------
+            fn set_obj_id(&mut self, obj_id: mongodb::bson::oid::ObjectId) {
+                self.hash.value = Some(obj_id.to_hex());
             }
 
             /// Getter and Setter for field `created_at`.
             // -------------------------------------------------------------------------------------
-            fn get_created_at(&self) -> String {
-                self.created_at.clone().unwrap_or_default()
+            fn created_at(&self) -> String {
+                self.created_at.value.clone().unwrap_or_default()
             }
             fn set_created_at(&mut self, value: String) {
-                self.created_at = Some(value);
+                self.created_at.value = Some(value);
             }
 
             /// Getter and Setter for field `updated_at`.
             /// ------------------------------------------------------------------------------------
-            fn get_updated_at(&self) -> String {
-                self.updated_at.clone().unwrap_or_default()
+            fn updated_at(&self) -> String {
+                self.updated_at.value.clone().unwrap_or_default()
             }
             fn set_updated_at(&mut self, value: String) {
-                self.updated_at = Some(value);
+                self.updated_at.value = Some(value);
             }
 
-            /// Serialize model to json-line.
+            /// Serializing the model instance to serde_json::Value format.
             // -------------------------------------------------------------------------------------
-            fn self_to_json(&self)
-                -> Result<serde_json::value::Value, Box<dyn std::error::Error>> {
+            fn self_to_json_val(&self)
+                -> Result<serde_json::Value, Box<dyn std::error::Error>> {
                 Ok(serde_json::to_value(self)?)
             }
         }
-
-        /// Rendering HTML-controls code for Form.
-        // *****************************************************************************************
-        #add_trait_generate_html
 
         /// A set of methods for custom validation.
         // *****************************************************************************************
@@ -834,24 +547,24 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
-        impl Caching for #model_name {}
+        impl Caching for #model_name_ident {}
 
         /// Validating Model fields for save and update.
         // *****************************************************************************************
-        impl Validation for #model_name {}
+        impl Validation for #model_name_ident {}
 
         /// Database Query API
         // *****************************************************************************************
         /// Output data converters for database queries.
-        impl Converters for #model_name {}
+        impl Converters for #model_name_ident {}
         /// Common database query methods.
-        impl QCommons for #model_name {}
+        impl QCommons for #model_name_ident {}
         /// Query methods for a Model instance.
-        impl QPaladins for #model_name {}
+        impl QPaladins for #model_name_ident {}
 
         /// Helper methods for the admin panel.
         // *****************************************************************************************
-        impl Administrator for #model_name {}
+        impl Administrator for #model_name_ident {}
 
     };
 
@@ -861,31 +574,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
 // AUXILIARY STRUCTURES AND FUNCTIONS
 // #################################################################################################
-/// Get field attribute.
-// *************************************************************************************************
-fn get_field_attr<'a>(field: &'a syn::Field, attr_name: &'a str) -> Option<&'a Attribute> {
-    let attr: Option<&Attribute> = field
-        .attrs
-        .iter()
-        .find(|attr| attr.path.is_ident(attr_name));
-    attr
-}
-
-/// Get ID for Widget.
-// *************************************************************************************************
-fn get_id(model_name: String, field_name: String) -> String {
-    let field_name_upper = field_name
-        .split('_')
-        .map(|word| {
-            let mut chr: Vec<char> = word.chars().collect();
-            chr[0] = chr[0].to_uppercase().nth(0).unwrap();
-            chr.into_iter().collect::<String>()
-        })
-        .collect::<Vec<String>>()
-        .join("");
-    format!("{}-{}", model_name, field_name_upper)
-}
-
 /// Transporting of metadate to implementation of methods.
 // *************************************************************************************************
 #[derive(Serialize)]
@@ -897,17 +585,22 @@ struct Meta {
     pub database_name: String,
     pub db_client_name: String,
     pub db_query_docs_limit: u32,
-    pub collection_name: String,
+    pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
     pub is_add_docs: bool,
     pub is_up_docs: bool,
     pub is_del_docs: bool,
+    pub is_use_add_valid: bool,
+    pub is_use_hooks: bool,
+    pub is_use_hash_slug: bool,
+    // <field_name, field_value_type>
+    pub field_value_type_map: std::collections::HashMap<String, String>,
+    // <field_name, field_type>
     pub field_type_map: std::collections::HashMap<String, String>,
-    pub widget_type_map: std::collections::HashMap<String, String>,
-    // <field_name, (widget_type, value)>
-    pub default_value_map: std::collections::HashMap<String, (String, String)>,
-    // List of field names that will not be saved to the database.
+    // <field_name, default_value>
+    pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
+    // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
 }
 
@@ -927,1193 +620,92 @@ impl Default for Meta {
             is_add_docs: true,
             is_up_docs: true,
             is_del_docs: true,
+            is_use_add_valid: false,
+            is_use_hooks: false,
+            is_use_hash_slug: false,
+            field_value_type_map: std::collections::HashMap::new(),
             field_type_map: std::collections::HashMap::new(),
-            widget_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
-            // List of field names that will not be saved to the database.
             ignore_fields: Vec::new(),
         }
     }
 }
 
-/// Widget attributes.
+/// Get field info.
 // *************************************************************************************************
-#[derive(Serialize)]
-struct Widget {
-    pub id: String, // The value is determined automatically. Format: "model-name--field-name".
-    pub label: String, // Web form field name.
-    pub widget: String, // Widget name.
-    pub input_type: String, // The value is determined automatically.
-    pub name: String, // The value is determined automatically.
-    pub value: String, // Default value.
-    pub accept: String, // Example: "image/jpeg,image/png,image/gif"
-    pub placeholder: String, // Displays prompt text.
-    pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
-    pub minlength: usize, // The minimum number of characters allowed in the text.
-    pub maxlength: usize, // The maximum number of characters allowed in the text.
-    pub required: bool,  // Mandatory field.
-    pub checked: bool,   // A pre-activated radio button or checkbox.
-    pub unique: bool,    // The unique value of a field in a collection.
-    pub disabled: bool,  // Blocks access and modification of the element.
-    pub readonly: bool,  // Specifies that the field cannot be modified by the user.
-    pub step: String,    // Increment step for numeric fields.
-    pub min: String,     // The lower value for entering a number or date.
-    pub max: String,     // The top value for entering a number or date.
-    pub options: Vec<(String, String)>, // <option value="value1">Title 1</option> - Example: r#"[[1,"Volvo"], [2,"Saab"]]"#.
-    pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: r#"[["xs",150],["sm",300],["md",600],["lg",1200]]"#. Hint: An Intel i7-4770 processor or better is recommended.
-    pub slug_sources: Vec<String>, // Example: r#"["title"]"# or r#"["hash", "username"]"# or r#"["email", "first_name", "last_name"]"#.
-    pub is_hide: bool,             // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some number""#.
-    pub css_classes: String, // Example: "class-name-1 class-name-2".
-    pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // The value is determined automatically.
-    pub error: String,       // The value is determined automatically.
-    pub alert: String, // Alert message for the entire web form. The value is determined automatically.
-}
-
-impl Default for Widget {
-    fn default() -> Self {
-        Widget {
-            id: String::new(),
-            label: String::new(),
-            widget: String::from("inputText"),
-            input_type: String::from("text"),
-            name: String::new(),
-            value: String::new(),
-            accept: String::new(),
-            placeholder: String::new(),
-            pattern: String::new(),
-            minlength: 0_usize,
-            maxlength: 256_usize,
-            required: false,
-            checked: false,
-            unique: false,
-            disabled: false,
-            readonly: false,
-            step: String::from("1"),
-            min: String::new(),
-            max: String::new(),
-            options: Vec::new(),
-            thumbnails: Vec::new(),
-            slug_sources: Vec::new(),
-            is_hide: false,
-            other_attrs: String::new(),
-            css_classes: String::new(),
-            hint: String::new(),
-            warning: String::new(),
-            error: String::new(),
-            alert: String::new(),
-        }
-    }
-}
-
-/// For transporting of Widgets map to implementation of methods.
-/// Hint: <field name, Widget>
-// *************************************************************************************************
-#[derive(Default, Serialize)]
-struct TransMapWidgets {
-    pub map_widgets: std::collections::HashMap<String, Widget>,
-}
-
-/// Get widget info.
-// *************************************************************************************************
-fn get_widget_info<'a>(
-    widget_name: &'a str,
-) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
-    let info: (&'a str, &'a str) = match widget_name {
-        "checkBox" => ("bool", "checkbox"),
-        "inputColor" => ("String", "color"),
-        "inputDate" => ("String", "date"),
-        "inputDateTime" => ("String", "datetime"),
-        "inputEmail" => ("String", "email"),
-        "inputFile" => ("String", "file"),
-        "inputImage" => ("String", "file"),
-        "numberI32" => ("i32", "number"),
-        "numberU32" => ("u32", "number"),
-        "numberI64" => ("i64", "number"),
-        "numberF64" => ("f64", "number"),
-        "inputPassword" => ("String", "password"),
-        "radioText" => ("String", "radio"),
-        "radioI32" => ("i32", "radio"),
-        "radioU32" => ("u32", "radio"),
-        "radioI64" => ("i64", "radio"),
-        "radioF64" => ("f64", "radio"),
-        "rangeI32" => ("i32", "range"),
-        "rangeU32" => ("u32", "range"),
-        "rangeI64" => ("i64", "range"),
-        "rangeF64" => ("f64", "range"),
-        "inputPhone" => ("String", "tel"),
-        "inputText" => ("String", "text"),
-        "inputSlug" => ("String", "text"),
-        "inputUrl" => ("String", "url"),
-        "inputIP" => ("String", "text"),
-        "inputIPv4" => ("String", "text"),
-        "inputIPv6" => ("String", "text"),
-        "textArea" => ("String", "textarea"),
-        "selectText" => ("String", "select"),
-        "selectTextDyn" => ("String", "select"),
-        "selectTextMult" => ("Vec < String >", "select"),
-        "selectTextMultDyn" => ("Vec < String >", "select"),
-        "selectI32" => ("i32", "select"),
-        "selectI32Dyn" => ("i32", "select"),
-        "selectI32Mult" => ("Vec < i32 >", "select"),
-        "selectI32MultDyn" => ("Vec < i32 >", "select"),
-        "selectU32" => ("u32", "select"),
-        "selectU32Dyn" => ("u32", "select"),
-        "selectU32Mult" => ("Vec < u32 >", "select"),
-        "selectU32MultDyn" => ("Vec < u32 >", "select"),
-        "selectI64" => ("i64", "select"),
-        "selectI64Dyn" => ("i64", "select"),
-        "selectI64Mult" => ("Vec < i64 >", "select"),
-        "selectI64MultDyn" => ("Vec < i64 >", "select"),
-        "selectF64" => ("f64", "select"),
-        "selectF64Dyn" => ("f64", "select"),
-        "selectF64Mult" => ("Vec < f64 >", "select"),
-        "selectF64MultDyn" => ("Vec < f64 >", "select"),
-        "hiddenText" => ("String", "hidden"),
-        "hiddenI32" => ("i32", "hidden"),
-        "hiddenU32" => ("u32", "hidden"),
-        "hiddenI64" => ("i64", "hidden"),
-        "hiddenF64" => ("f64", "hidden"),
-        _ => Err("Invalid widget type.")?,
-    };
-    Ok(info)
-}
-
-/// Get value from field attribute of Model.
-// *************************************************************************************************
-fn get_param_value<'a>(
-    attr_name: &'a str,
-    mnv: &MetaNameValue,
-    widget: &mut Widget,
+fn get_field_info<'a>(
     model_name: &'a str,
     field_name: &'a str,
     field_type: &'a str,
-    check_field_type: &mut bool,
-) {
-    match attr_name {
-        "label" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.label = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `label`. \
-                    Example: \"Some text\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "accept" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.accept = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `accept`. \
-                    Example: \"image/jpeg,image/png\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "widget" => {
-            if let Str(lit_str) = &mnv.lit {
-                let widget_name = lit_str.value();
-                let widget_info = get_widget_info(widget_name.as_ref()).unwrap_or_else(|err| {
-                    panic!(
-                        "Model: `{}` > Field: `{}` => {:?}",
-                        model_name,
-                        field_name,
-                        err
-                    )
-                });
-                if widget_info.0 != field_type {
-                    panic!(
-                        "Model: `{}` > Field: `{}` => \
-                        The widget type is not the same as the field type.",
-                        model_name, field_name,
-                    )
-                }
-                widget.widget = widget_name.clone();
-                widget.input_type = widget_info.1.to_string();
-                *check_field_type = false;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `widget`. \
-                    Example: \"inputEmail\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "value" => match field_type {
-            "i32" => {
-                if let Int(lit_int) = &mnv.lit {
-                    widget.value = lit_int.base10_parse::<i32>().unwrap().to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: 5",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "Vec < i32 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let arr = serde_json::from_str::<Vec<i32>>(json.as_str());
-                    if let Ok(arr) = arr {
-                        if arr.is_empty() {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` field attribute. \
-                                Example: \"[10, 20]\"",
-                                model_name, field_name, field_type
-                            )
-                        }
-                        widget.value = json;
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for field attribute `value`. \
-                            Example: \"[10, 20]\"",
-                            model_name, field_name, field_type
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10, 20]\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" => {
-                if let Int(lit_int) = &mnv.lit {
-                    widget.value = lit_int.base10_parse::<u32>().unwrap().to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: 5",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "Vec < u32 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let arr = serde_json::from_str::<Vec<u32>>(json.as_str());
-                    if let Ok(arr) = arr {
-                        if arr.is_empty() {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` field attribute. \
-                                Example: \"[10, 20]\"",
-                                model_name, field_name, field_type
-                            )
-                        }
-                        widget.value = json;
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10, 20]\"",
-                            model_name, field_name, field_type
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10, 20]\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" => {
-                if let Int(lit_int) = &mnv.lit {
-                    widget.value = lit_int.base10_parse::<i64>().unwrap().to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: 5",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "Vec < i64 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let arr = serde_json::from_str::<Vec<i64>>(json.as_str());
-                    if let Ok(arr) = arr {
-                        if arr.is_empty() {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` field attribute. \
-                                Example: \"[10, 20]\"",
-                                model_name, field_name, field_type
-                            )
-                        }
-                        widget.value = json;
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for field attribute `value`. \
-                            Example: \"[10, 20]\"",
-                            model_name, field_name, field_type
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10, 20]\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" => {
-                if let Float(lit_float) = &mnv.lit {
-                    widget.value = lit_float.base10_parse::<f64>().unwrap().to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: 5.2",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "Vec < f64 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let arr = serde_json::from_str::<Vec<f64>>(json.as_str());
-                    if let Ok(arr) = arr {
-                        if arr.is_empty() {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` field attribute. \
-                                Example: \"[10, 20]\"",
-                                model_name, field_name, field_type
-                            )
-                        }
-                        widget.value = json;
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10.1, 20.2]\"",
-                            model_name, field_name, field_type
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"[10.1, 20.2]\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "String" => {
-                if let Str(lit_str) = &mnv.lit {
-                    if widget.widget != "inputPassword" {
-                        widget.value = lit_str.value().trim().to_string()
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Widget: `{}` => \
-                            The password field must not have a \
-                            default value in the `value` field attribute.",
-                            model_name, field_name, "inputPassword"
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: \"Some text\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "Vec < String >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let arr = serde_json::from_str::<Vec<String>>(json.as_str());
-                    if let Ok(arr) = arr {
-                        if arr.is_empty() {
-                            panic!(
-                                "Model: `{}` > Field: `{}` > Type: {} => \
-                                An empty array is not allowed for the `value` field attribute. \
-                                Example: \"[10, 20]\"",
-                                model_name, field_name, field_type
-                            )
-                        }
-                        widget.value = json;
-                    } else {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Could not determine value for field attribute `value`. \
-                            Example: r#\"[\"Some text\", \"Some text\"]\"#",
-                            model_name, field_name, field_type
-                        )
-                    }
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `value`. \
-                        Example: r#\"[\"Some text\", \"Some text\"]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "Model: `{:?}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `value` field attribute.",
-                model_name,
-                field_name,
-                field_type
-            ),
-        },
-        "placeholder" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.placeholder = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `placeholder`. \
-                    Example: \"Some text\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "pattern" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.pattern = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `pattern`. \
-                    Example: \"some regular expression\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "minlength" => {
-            if let Int(lit_int) = &mnv.lit {
-                widget.minlength = lit_int.base10_parse::<usize>().unwrap();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `minlength`. \
-                    Example: 10",
-                    model_name, field_name
-                )
-            }
-        }
-        "maxlength" => {
-            if let Int(lit_int) = &mnv.lit {
-                widget.maxlength = lit_int.base10_parse::<usize>().unwrap();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `maxlength`. \
-                    Example: 10",
-                    model_name, field_name
-                )
-            }
-        }
-        "required" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.required = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `required`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "checked" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.checked = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `checked`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "unique" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.unique = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `unique`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "disabled" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.disabled = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `disabled`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "readonly" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.readonly = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `readonly`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "step" => match field_type {
-            "i32" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i32>().unwrap();
-                    if num < i32::MIN || num > i32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `step` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i32::MIN,
-                            i32::MAX
-                        )
-                    }
-                    widget.step = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `step`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<u32>().unwrap();
-                    if num < u32::MIN || num > u32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `step` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            u32::MIN,
-                            u32::MAX
-                        )
-                    }
-                    widget.step = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `step`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i64>().unwrap();
-                    if num < i64::MIN || num > i64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `step` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i64::MIN,
-                            i64::MAX
-                        )
-                    }
-                    widget.step = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `step`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" => {
-                if let Float(lit_float) = &mnv.lit {
-                    let num = lit_float.base10_parse::<f64>().unwrap();
-                    if num < f64::MIN || num > f64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `step` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            f64::MIN,
-                            f64::MAX
-                        )
-                    }
-                    widget.step = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `step`. \
-                        Example: 10.2",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "String" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let text = lit_str.value().trim().to_string();
-                    let text_len = text.len();
-                    if text_len < widget.minlength || text_len > widget.maxlength {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `step` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            widget.minlength,
-                            widget.maxlength
-                        )
-                    }
-                    widget.step = text;
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `step`.
-                        Example: not supported.",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `step` field attribute.",
-                model_name, field_name, field_type
-            ),
-        },
-        "min" => match field_type {
-            "i32" | "Vec < i32 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i32>().unwrap();
-                    if num < i32::MIN || num > i32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `min` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i32::MIN,
-                            i32::MAX
-                        )
-                    }
-                    widget.min = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `min`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" | "Vec < u32 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<u32>().unwrap();
-                    if num < u32::MIN || num > u32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `min` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            u32::MIN,
-                            u32::MAX
-                        )
-                    }
-                    widget.min = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `min`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" | "Vec < i64 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i64>().unwrap();
-                    if num < i64::MIN || num > i64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `min` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i64::MIN,
-                            i64::MAX
-                        )
-                    }
-                    widget.min = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `min`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" | "Vec < f64 >" => {
-                if let Float(lit_float) = &mnv.lit {
-                    let num = lit_float.base10_parse::<f64>().unwrap();
-                    if num < f64::MIN || num > f64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `min` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            f64::MIN,
-                            f64::MAX
-                        )
-                    }
-                    widget.min = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `min`. \
-                        Example: 10.2",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "String" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let text = lit_str.value().trim().to_string();
-                    let text_len = text.len();
-                    if text_len < widget.minlength || text_len > widget.maxlength {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `min` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            widget.minlength,
-                            widget.maxlength
-                        )
-                    }
-                    widget.min = text;
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `min`. \
-                        Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `min` field attribute.",
-                model_name, field_name, field_type
-            ),
-        },
-        "max" => match field_type {
-            "i32" | "Vec < i32 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i32>().unwrap();
-                    if num < i32::MIN || num > i32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `max` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i32::MIN,
-                            i32::MAX
-                        )
-                    }
-                    widget.max = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `max`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" | "Vec < u32 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<u32>().unwrap();
-                    if num < u32::MIN || num > u32::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `max` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            u32::MIN,
-                            u32::MAX
-                        )
-                    }
-                    widget.max = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `max`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" | "Vec < i64 >" => {
-                if let Int(lit_int) = &mnv.lit {
-                    let num = lit_int.base10_parse::<i64>().unwrap();
-                    if num < i64::MIN || num > i64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `max` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            i64::MIN,
-                            i64::MAX
-                        )
-                    }
-                    widget.max = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `max`. \
-                        Example: 10",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" | "Vec < f64 >" => {
-                if let Float(lit_float) = &mnv.lit {
-                    let num = lit_float.base10_parse::<f64>().unwrap();
-                    if num < f64::MIN || num > f64::MAX {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `max` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            f64::MIN,
-                            f64::MAX
-                        )
-                    }
-                    widget.max = num.to_string();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `max`. \
-                        Example: 10.2",
-                        model_name, field_name, field_type,
-                    )
-                }
-            }
-            "String" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let text = lit_str.value().trim().to_string();
-                    let text_len = text.len();
-                    if text_len < widget.minlength || text_len > widget.maxlength {
-                        panic!(
-                            "Model: `{}` > Field: `{}` > Type: {} => \
-                            Field attribute `max` does not fall within the interval {} <-> {}",
-                            model_name,
-                            field_name,
-                            field_type,
-                            widget.minlength,
-                            widget.maxlength
-                        )
-                    }
-                    widget.max = text;
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `max`. \
-                        Example: \"1970-02-28\" or \"1970-02-28T00:00\"",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `max` field attribute.",
-                model_name, field_name, field_type
-            ),
-        },
-        "options" => match field_type {
-            "i32" | "Vec < i32 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let raw_options: Vec<(i32, String)> = if json.matches("[").count() > 1 {
-                        serde_json::from_str(json.as_str()).unwrap()
-                    } else {
-                        let arr: Vec<i32> = serde_json::from_str(json.as_str()).unwrap();
-                        arr.iter().map(|item| (*item, item.to_string())).collect()
-                    };
-                    widget.options = raw_options
-                        .iter()
-                        .map(|item| (item.0.to_string(), item.1.to_string()))
-                        .collect();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `options`. \
-                        Example: 5 or \
-                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
-                        Example: r#\"[10, 20]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "u32" | "Vec < u32 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let raw_options: Vec<(u32, String)> = if json.matches("[").count() > 1 {
-                        serde_json::from_str(json.as_str()).unwrap()
-                    } else {
-                        let arr: Vec<u32> = serde_json::from_str(json.as_str()).unwrap();
-                        arr.iter().map(|item| (*item, item.to_string())).collect()
-                    };
-                    widget.options = raw_options
-                        .iter()
-                        .map(|item| (item.0.to_string(), item.1.to_string()))
-                        .collect();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `options`. \
-                        Example: 5 or \
-                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
-                        Example: r#\"[10, 20]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "i64" | "Vec < i64 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let raw_options: Vec<(i64, String)> = if json.matches("[").count() > 1 {
-                        serde_json::from_str(json.as_str()).unwrap()
-                    } else {
-                        let arr: Vec<i64> = serde_json::from_str(json.as_str()).unwrap();
-                        arr.iter().map(|item| (*item, item.to_string())).collect()
-                    };
-                    widget.options = raw_options
-                        .iter()
-                        .map(|item| (item.0.to_string(), item.1.to_string()))
-                        .collect();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `options`. \
-                        Example: 5 or \
-                        Example: r#\"[[10, \"Title 1\"], [20, \"Title 2\"]]\"# or \
-                        Example: r#\"[10, 20]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "f64" | "Vec < f64 >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value().replace('_', "");
-                    let raw_options: Vec<(f64, String)> = if json.matches("[").count() > 1 {
-                        serde_json::from_str(json.as_str()).unwrap()
-                    } else {
-                        let arr: Vec<f64> = serde_json::from_str(json.as_str()).unwrap();
-                        arr.iter().map(|item| (*item, item.to_string())).collect()
-                    };
-                    widget.options = raw_options
-                        .iter()
-                        .map(|item| (item.0.to_string(), item.1.to_string()))
-                        .collect();
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `options`. \
-                        Example: 5.5 or \
-                        Example: r#\"[[10.1, \"Title 1\"], [20.2, \"Title 2\"]]\"# or \
-                        Example: r#\"[10.1, 20.2]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            "String" | "Vec < String >" => {
-                if let Str(lit_str) = &mnv.lit {
-                    let json = lit_str.value();
-                    widget.options = if json.matches("[").count() > 1 {
-                        serde_json::from_str(json.as_str()).unwrap()
-                    } else {
-                        let arr: Vec<String> = serde_json::from_str(json.as_str()).unwrap();
-                        arr.iter()
-                            .map(|item| {
-                                let item = item.to_string();
-                                (item.clone(), item)
-                            })
-                            .collect()
-                    };
-                } else {
-                    panic!(
-                        "Model: `{}` > Field: `{}` > Type: {} => \
-                        Could not determine value for field attribute `options`. \
-                        Example: \"Some text\" or \
-                        Example: r#\"[[\"value 1\", \"Title 1\"], [\"value 2\", \"Title 2\"]]\"# or \
-                        Example: r#\"[\"Item 1\", \"Item 2\"]\"#",
-                        model_name, field_name, field_type
-                    )
-                }
-            }
-            _ => panic!(
-                "Model: `{}` > Field: `{}` > Type: {} => \
-                Unsupported field type for `options` field attribute.",
-                model_name, field_name, field_type
-            ),
-        },
-        "thumbnails" => {
-            if let Str(lit_str) = &mnv.lit {
-                let json = lit_str.value().replace('_', "");
-                let mut sizes = serde_json::from_str::<Vec<(String, u32)>>(json.as_str()).unwrap();
-                sizes.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-                let valid_size_names: [&str; 4] = ["xs", "sm", "md", "lg"];
-                for size in sizes.iter() {
-                    if !valid_size_names.contains(&size.0.as_str()) {
-                        panic!(
-                            "Model: `{}` > Field: `{}` => Valid size names - `xs`, `sm`, `md`, `lg`.",
-                            model_name, field_name
-                        )
-                    }
-                }
-                widget.thumbnails = sizes;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `thumbnails`. \
-                    Example: r#\"[[\"xs\",150], [\"sm\",300], [\"md\",600], [\"lg\",1200]]\"# \
-                    from one to four inclusive",
-                    model_name, field_name
-                )
-            }
-        }
-        "slug_sources" => {
-            if let Str(lit_str) = &mnv.lit {
-                let json = lit_str.value().replace('_', "");
-                widget.slug_sources = serde_json::from_str::<Vec<String>>(json.as_str()).unwrap();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `slug_sources`. \
-                    Example: r#\"[\"title\"]\"# or r#\"[\"title\", \"hash\"]\"#",
-                    model_name, field_name
-                )
-            }
-        }
-        "is_hide" => {
-            if let Bool(lit_bool) = &mnv.lit {
-                widget.is_hide = lit_bool.value;
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `is_hide`. \
-                    Example: true. Default = false.",
-                    model_name, field_name
-                )
-            }
-        }
-        "other_attrs" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.other_attrs = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `other_attrs`. \
-                    Example: \"autofocus multiple size=\\\"some number\\\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "css_classes" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.css_classes = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `css_classes`. \
-                    Example: \"class_name, class_name\"",
-                    model_name, field_name
-                )
-            }
-        }
-        "hint" => {
-            if let Str(lit_str) = &mnv.lit {
-                widget.hint = lit_str.value().trim().to_string();
-            } else {
-                panic!(
-                    "Model: `{}` > Field: `{}` => \
-                    Could not determine value for field attribute `hint`. \
-                    Example: \"Some text\".",
-                    model_name, field_name
-                )
-            }
-        }
-        "id" => panic!(
-            "Model: `{}` > Field: `{}` => The `id` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        "name" => panic!(
-            "Model: `{}` > Field: `{}` => The `name` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        "input_type" => panic!(
-            "Model: `{}` > Field: `{}` => The `input_type` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        "warning" => panic!(
-            "Model: `{}` > Field: `{}` => The `warning` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        "error" => panic!(
-            "Model: `{}` > Field: `{}` => The `error` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        "alert" => panic!(
-            "Model: `{}` > Field: `{}` => The `alert` field attribute is determined automatically.",
-            model_name, field_name
-        ),
-        _ => panic!(
-            "Model: `{:?}` > Field: `{}` => Undefined field attribute `{}`.",
-            model_name,
-            field_name,
-            attr_name
-        ),
+) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
+    let info: (&'a str, &'a str) = match field_type {
+        "CheckBox" => ("bool", "checkbox"),
+        "InputColor" => ("String", "color"),
+        "InputDate" => ("String", "date"),
+        "InputDateTime" => ("String", "datetime"),
+        "InputEmail" => ("String", "email"),
+        "InputFile" => ("String", "file"),
+        "InputImage" => ("String", "file"),
+        "NumberI32" => ("i32", "number"),
+        "NumberU32" => ("u32", "number"),
+        "NumberI64" => ("i64", "number"),
+        "NumberF64" => ("f64", "number"),
+        "InputPassword" => ("String", "password"),
+        "RadioText" => ("String", "radio"),
+        "RadioI32" => ("i32", "radio"),
+        "RadioU32" => ("u32", "radio"),
+        "RadioI64" => ("i64", "radio"),
+        "RadioF64" => ("f64", "radio"),
+        "RangeI32" => ("i32", "range"),
+        "RangeU32" => ("u32", "range"),
+        "RangeI64" => ("i64", "range"),
+        "RangeF64" => ("f64", "range"),
+        "InputPhone" => ("String", "tel"),
+        "InputText" => ("String", "text"),
+        "AutoSlug" => ("String", "text"),
+        "InputUrl" => ("String", "url"),
+        "InputIP" => ("String", "text"),
+        "InputIPv4" => ("String", "text"),
+        "InputIPv6" => ("String", "text"),
+        "TextArea" => ("String", "textarea"),
+        "SelectText" => ("String", "select"),
+        "SelectTextDyn" => ("String", "select"),
+        "SelectTextMult" => ("Vec<String>", "select"),
+        "SelectTextMultDyn" => ("Vec<String>", "select"),
+        "SelectI32" => ("i32", "select"),
+        "SelectI32Dyn" => ("i32", "select"),
+        "SelectI32Mult" => ("Vec<i32>", "select"),
+        "SelectI32MultDyn" => ("Vec<i32>", "select"),
+        "SelectU32" => ("u32", "select"),
+        "SelectU32Dyn" => ("u32", "select"),
+        "SelectU32Mult" => ("Vec<u32>", "select"),
+        "SelectU32MultDyn" => ("Vec<u32>", "select"),
+        "SelectI64" => ("i64", "select"),
+        "SelectI64Dyn" => ("i64", "select"),
+        "SelectI64Mult" => ("Vec<i64>", "select"),
+        "SelectI64MultDyn" => ("Vec<i64>", "select"),
+        "SelectF64" => ("f64", "select"),
+        "SelectF64Dyn" => ("f64", "select"),
+        "SelectF64Mult" => ("Vec<f64>", "select"),
+        "SelectF64MultDyn" => ("Vec<f64>", "select"),
+        "HiddenHash" => ("String", "text"),
+        "HiddenDateTime" => ("String", "datetime"),
+        _ => Err(format!(
+            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid field type.",
+            model_name, field_name, field_type,
+        ))?,
     };
+    //
+    Ok(info)
+}
+
+/// Get Html-ID for Field.
+// *************************************************************************************************
+fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
+    let field_name_upper = field_name
+        .split('_')
+        .map(|word| word[0..1].to_uppercase() + &word[1..])
+        .collect::<Vec<String>>()
+        .join("");
+    format!("{}-{}", model_name, field_name_upper)
 }

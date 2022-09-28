@@ -1,5 +1,4 @@
 //! Query methods for a Model instance.
-
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, spec::ElementType, Bson},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
@@ -7,21 +6,22 @@ use mongodb::{
     sync::Collection,
 };
 use rand::Rng;
-use serde_json::value::Value;
+use serde::{de::DeserializeOwned, ser::Serialize};
+use serde_json::{json, Value};
 use slug::slugify;
-use std::{collections::HashMap, convert::TryFrom, error::Error, fs, path::Path};
+use std::{convert::TryFrom, error::Error, fs, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    helpers::{FileData, ImageData},
     models::{
         caching::Caching,
+        helpers::{FileData, ImageData, Meta},
         hooks::Hooks,
-        output_data::{OutputData, OutputDataCheck},
+        output_data::{OutputData, OutputData2},
         validation::{AdditionalValidation, Validation},
-        Main, Meta,
+        Main,
     },
-    widgets::Widget,
+    store::MONGODB_CLIENT_STORE,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -32,11 +32,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         coll: &Collection,
         model_name: &str,
         field_name: &str,
-        widget_default_value: &str,
-        is_image: bool,
+        file_default: Option<FileData>,
+        image_default: Option<ImageData>,
     ) -> Result<(), Box<dyn Error>> {
         //
-        let hash = self.get_hash();
+        let hash = self.hash();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
@@ -51,21 +51,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 coll.update_one(filter, update, None)?;
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
-                    if is_image {
-                        let default_path = if !widget_default_value.is_empty() {
-                            serde_json::from_str::<ImageData>(widget_default_value)?.path
-                        } else {
-                            String::new()
-                        };
+                    if let Some(file_default) = file_default {
+                        let path_default = file_default.path;
                         let path = info_file.get_str("path")?;
-                        if path != default_path {
+                        if path != path_default {
+                            let path = Path::new(path);
+                            if path.exists() {
+                                fs::remove_file(path)?;
+                            }
+                        }
+                    } else if let Some(image_default) = image_default {
+                        let path_default = image_default.path;
+                        let path = info_file.get_str("path")?;
+                        if path != path_default {
                             let path = Path::new(path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
                             // Remove thumbnails.
                             let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names.iter() {
+                            for size_name in size_names {
                                 let key_name = format!("path_{}", size_name);
                                 let path = info_file.get_str(key_name.as_str())?;
                                 if !path.is_empty() {
@@ -76,31 +81,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             }
                         }
-                    } else {
-                        let default_path = if !widget_default_value.is_empty() {
-                            serde_json::from_str::<FileData>(widget_default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let path = info_file.get_str("path")?;
-                        if path != default_path {
-                            let path = Path::new(path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
-                            }
-                        }
                     }
                 } else {
                     Err(format!(
                         "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                        Document (info file) not found.",
+                            Document (info file) not found.",
                         model_name, field_name
                     ))?
                 }
             } else {
                 Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                    Document not found.",
+                        Document not found.",
                     model_name, field_name
                 ))?
             }
@@ -115,42 +107,34 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         coll: &Collection,
         field_name: &str,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<Value, Box<dyn Error>> {
         //
-        let hash = self.get_hash();
-        let mut result = String::new();
+        let hash = self.hash();
         if !hash.is_empty() {
             let object_id = ObjectId::with_string(hash.as_str())?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
-                    result = serde_json::to_string(doc)?;
+                    let result = serde_json::to_value(doc)?;
+                    return Ok(result);
                 }
             }
         }
         //
-        Ok(result)
+        Ok(json!(null))
     }
 
     /// Calculate the maximum size for a thumbnail.
     // *********************************************************************************************
-    fn calculate_thumbnail_size(width: u32, height: u32, max_size: u32) -> (u32, u32) {
+    fn calculate_thumbnail_size(width: f64, height: f64, max_size: f64) -> (f64, f64) {
         if width > height {
             if width > max_size {
-                return (
-                    max_size,
-                    (height as f32 * (max_size as f32 / width as f32)).floor() as u32,
-                );
+                return (max_size, (height * (max_size / width)).floor());
             }
-        } else {
-            if height > max_size {
-                return (
-                    (width as f32 * (max_size as f32 / height as f32)).floor() as u32,
-                    max_size,
-                );
-            }
+        } else if height > max_size {
+            return ((width * (max_size / height)).floor(), max_size);
         }
-        (0, 0)
+        (0.0, 0.0)
     }
 
     /// Checking the Model before queries the database.
@@ -159,294 +143,263 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name  = ModelName {...}
+    /// let mut model_name = ModelName::new()?;
     /// let output_data = model_name.check(None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
     /// ```
     ///
-    fn check(&mut self, is_save: Option<bool>) -> Result<OutputDataCheck, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = model_cache.meta;
+    fn check(&mut self, is_save: Option<bool>) -> Result<OutputData2, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        //
+        let is_save = is_save.unwrap_or(false);
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
-        // User input error detection symptom.
-        let mut is_err_symptom = if !meta.is_add_docs || !meta.is_up_docs {
-            true
-        } else {
-            false
-        };
         // Determines the mode of accessing the database (insert or update).
-        let hash = self.get_hash();
-        let hash = hash.as_str();
+        let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
+        // User input error detection symptom.
+        let mut is_err_symptom = false;
         // Get a list of fields that should not be included in the document.
-        let ignore_fields: Vec<&str> = meta
-            .ignore_fields
-            .iter()
-            .map(|item| item.as_str())
-            .collect();
+        let ignore_fields = &meta.ignore_fields;
         // Access the collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(&meta.database_name)
             .collection(&meta.collection_name);
-        // Get preliminary data from the model.
-        let pre_json: Value = self.self_to_json()?;
+        // Get preliminary data from model instance and use for final result.
+        let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.
         let mut final_doc = Document::new();
 
         // Validation of field by attributes (maxlength, unique, min, max, etc...).
         // -----------------------------------------------------------------------------------------
-        let fields_name: Vec<&str> = meta.fields_name.iter().map(|item| item.as_str()).collect();
-        let mut final_widget_map: HashMap<String, Widget> = model_cache.widget_map.clone();
-
-        // Add hash-line (for document identification, if the document was created).
-        final_widget_map.get_mut(&"hash".to_owned()).unwrap().value = self.get_hash();
+        let field_type_map = &meta.field_type_map;
 
         // Apply additional validation.
-        {
+        if meta.is_use_add_valid {
             let error_map = self.add_validation()?;
             if !error_map.is_empty() {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
-                    if !fields_name.contains(&field_name) {
+                    if let Some(final_field) = final_model_json.get_mut(field_name) {
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(final_field, err_msg));
+                    } else {
                         Err(format!(
-                            "\n\nModel: `{}` ;  Method: `add_validation()` => \
-                            The `{}` field is missing from the model.\n\n",
+                            "Model: `{}` ;  Method: `add_validation()` => \
+                                The model has no field `{}`.",
                             model_name, field_name
                         ))?
-                    }
-                    if let Some(widget) = final_widget_map.get_mut(&field_name.to_owned()) {
-                        widget.error = Self::accumula_err(&widget, &err_msg.to_string())?;
                     }
                 }
             }
         }
 
         // Loop over fields for validation.
-        for field_name in fields_name {
+        for (field_name, field_type) in field_type_map {
             // Don't check the `hash` field.
             if field_name == "hash" {
                 //
-                if is_err_symptom {
-                    let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
-                    if !meta.is_add_docs {
-                        final_widget.alert = "It is forbidden to perform saves.".to_string();
-                    } else if !meta.is_up_docs {
-                        final_widget.alert = "It is forbidden to perform updates.".to_string();
+                if !is_update && !meta.is_add_docs {
+                    if is_save {
+                        is_err_symptom = true;
                     }
+                    *final_model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!("It is forbidden to perform saves.");
+                }
+                if is_update && !meta.is_up_docs {
+                    if is_save {
+                        is_err_symptom = true;
+                    }
+                    *final_model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!("It is forbidden to perform updates.");
                 }
                 continue;
             }
-            // Get field value for validation.
-            let pre_json_value: Option<&Value> = pre_json.get(field_name);
-            // Check field value.
-            if pre_json_value.is_none() {
-                Err(format!(
-                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                    This field is missing.\n\n",
-                    model_name, field_name
-                ))?
-            }
+            // Get values for validation.
+            let final_field = final_model_json.get_mut(field_name).unwrap();
+            // Define conditional constants.
+            let mut is_use_default = false;
+            let const_value = {
+                let mut tmp = json!(null);
+                if let Some(val) = final_field.get("value") {
+                    if (val.is_string() && val.as_str().unwrap().is_empty())
+                        || (val.is_array() && val.as_array().unwrap().is_empty())
+                    {
+                        tmp = json!(null);
+                    } else {
+                        tmp = val.clone();
+                    }
+                };
+                if tmp.is_null() {
+                    if let Some(val) = final_field.get("default") {
+                        let val = val.clone();
+                        *final_field.get_mut("value").unwrap() = val.clone();
+                        tmp = val;
+                        is_use_default = true;
+                    }
+                }
+                if tmp.is_null() && !is_use_default {
+                    if let Some(val) = final_field.get("checked") {
+                        tmp = val.clone();
+                    }
+                }
+                tmp
+            };
+            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
             //
-            let mut pre_json_value: &Value = pre_json_value.unwrap();
-            let final_widget: &mut Widget = final_widget_map.get_mut(field_name).unwrap();
-            let widget_type: &str = &final_widget.widget.clone()[..];
+            let is_required = final_field.get("required").unwrap().as_bool().unwrap();
+            let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
+            let field_type = field_type.as_str();
 
             // Field validation.
-            match widget_type {
+            match const_group {
                 // Validation of Text type fields.
                 // *********************************************************************************
-                "radioText" | "inputColor" | "inputEmail" | "inputPassword" | "inputPhone"
-                | "inputText" | "inputUrl" | "inputIP" | "inputIPv4" | "inputIPv6" | "textArea"
-                | "hiddenText" => {
+                /*
+                "RadioText" | "InputColor" | "InputEmail" | "InputPassword" | "InputPhone"
+                | "InputText" | "HiddenHash" | "InputUrl" | "InputIP" | "InputIPv4"
+                | "InputIPv6" | "TextArea"
+                */
+                1 => {
                     // When updating, we skip field password type.
-                    if is_update && widget_type == "inputPassword" {
-                        final_widget.value = String::new();
+                    if is_update && field_type == "InputPassword" {
+                        *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
-                    // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
-                        let clean_data: String =
-                            pre_json_value.as_str().unwrap().trim().to_string();
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        if !clean_data.is_empty() {
-                            if widget_type != "inputPassword" {
-                                final_widget.value = clean_data.clone();
-                            } else {
-                                final_widget.value = String::new();
-                            }
-                        }
-                        clean_data
-                    } else {
-                        String::new()
-                    };
 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if field_value.is_empty() {
-                        if widget_type != "inputPassword" && !final_widget.value.is_empty() {
-                            field_value = final_widget.value.clone();
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
+                    //
+                    let curr_val = const_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value;
-                    if widget_type != "inputPassword" {
-                        bson_field_value = Bson::String(field_value.clone());
-                        final_widget.value = field_value.clone();
+                    let field_value_bson = if field_type != "InputPassword" {
+                        Bson::String(curr_val.to_string())
                     } else {
-                        bson_field_value = Bson::Null;
-                        final_widget.value = String::new();
+                        Bson::Null
                     };
-                    // Convert to &str
-                    let field_value: &str = field_value.as_str();
 
-                    // Field attribute check - `pattern`.
+                    // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(field_value, final_widget.pattern.as_str())
+                    let pattern = final_field.get("pattern");
+                    if let Some(pattern) = pattern {
+                        Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error =
-                                        Self::accumula_err(&final_widget, &err.to_string())
-                                            .unwrap();
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                    .unwrap()
-                                }
-                            });
-                    }
-
-                    // Validation in regular expression.
-                    // Checking `minlength`, `maxlength`, `min length`, `max length`.
-                    // -----------------------------------------------------------------------------
-                    Self::check_minlength(final_widget.minlength, field_value).unwrap_or_else(
-                        |err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        },
-                    );
-                    Self::check_maxlength(final_widget.maxlength, field_value).unwrap_or_else(
-                        |err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        },
-                    );
-
-                    // Validation of range (`min` <> `max`).
-                    // Hint: The `validate_length()` method did not
-                    // provide the desired result.
-                    // -----------------------------------------------------------------------------
-                    let min = final_widget.minlength.clone();
-                    let max = final_widget.maxlength.clone();
-                    let len = field_value.encode_utf16().count();
-                    if max > 0_usize && (len < min || len > max) {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "Length {} is out of range (min={} <-> max={}).",
-                            len, min, max
-                        );
-                        if !widget_type.contains("hidden") && !final_widget.is_hide {
-                            final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
-                        } else {
-                            Err(format!(
-                                "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                model_name, field_name, msg
-                            ))?
-                        }
-                    }
-
-                    // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
-                    if widget_type != "inputPassword" && final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error =
-                                        Self::accumula_err(&final_widget, &err.to_string())
-                                            .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; \
-                                        Method: `check()` => {}\n\n",
-                                        model_name,
-                                        field_name,
-                                        err.to_string()
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
                                     ))
                                     .unwrap()
                                 }
                             });
                     }
 
+                    // Validation in regular expression.
+                    // Checking `minlength`.
+                    // -----------------------------------------------------------------------------
+                    let minlength = final_field.get("minlength");
+                    if let Some(minlength) = minlength {
+                        Self::check_minlength(minlength.as_i64().unwrap() as usize, curr_val)
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
+                                    ))
+                                    .unwrap()
+                                }
+                            });
+                    }
+                    // Checking `maxlength`.
+                    let maxlength = final_field.get("maxlength");
+                    if let Some(maxlength) = maxlength {
+                        Self::check_maxlength(maxlength.as_i64().unwrap() as usize, curr_val)
+                            .unwrap_or_else(|err| {
+                                is_err_symptom = true;
+                                if !is_hide {
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, &err.to_string()));
+                                } else {
+                                    Err(format!(
+                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                        model_name, field_name, err
+                                    ))
+                                    .unwrap()
+                                }
+                            });
+                    }
+
+                    // Validation of `unique`.
+                    // -----------------------------------------------------------------------------
+                    let unique = final_field.get("unique");
+                    if let Some(unique) = unique {
+                        let is_unique = unique.as_bool().unwrap();
+                        if field_type != "InputPassword" && is_unique {
+                            Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .unwrap_or_else(|err| {
+                                    is_err_symptom = true;
+                                    if !is_hide {
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(final_field, &err.to_string())
+                                        );
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {:?}",
+                                            model_name, field_name, err
+                                        ))
+                                        .unwrap()
+                                    }
+                                });
+                        }
+                    }
+
                     // Validation in regular expression (email, password, etc...).
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
-                        if !widget_type.contains("hidden") && !final_widget.is_hide {
-                            final_widget.error =
-                                Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                        if !is_hide {
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &err.to_string()));
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` => {}",
-                                model_name,
-                                field_name,
-                                err.to_string()
+                                "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
+                                model_name, field_name, err
                             ))
                             .unwrap()
                         }
@@ -454,612 +407,336 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        match widget_type {
-                            "inputPassword" => {
-                                if !field_value.is_empty() {
-                                    if !is_update {
-                                        // Generate password hash and add to result document.
-                                        let password_hash: String =
-                                            Self::create_password_hash(field_value)?;
-                                        final_doc.insert(field_name, Bson::String(password_hash));
-                                    }
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        match field_type {
+                            "InputPassword" => {
+                                if !curr_val.is_empty() && !is_update {
+                                    // Generate password hash and add to result document.
+                                    let password_hash: String =
+                                        Self::create_password_hash(curr_val)?;
+                                    final_doc.insert(field_name, Bson::String(password_hash));
                                 }
                             }
                             _ => {
                                 // Insert result from other fields.
-                                final_doc.insert(field_name, bson_field_value);
+                                final_doc.insert(field_name, field_value_bson);
                             }
                         }
                     }
                 }
                 // Validation of Slug type fields.
                 // *********************************************************************************
-                "inputSlug" => {
-                    let mut slug_str = String::new();
-                    for field in final_widget.slug_sources.iter() {
-                        let value = pre_json.get(field).unwrap();
-                        if value.is_string() {
-                            let text = value.as_str().unwrap().trim().to_string();
-                            slug_str = format!("{}-{}", slug_str, text);
-                        } else if value.is_i64() {
-                            let num = value.as_i64().unwrap();
-                            slug_str = format!("{}-{}", slug_str, num);
-                        } else if value.is_f64() {
-                            let num = value.as_f64().unwrap();
-                            slug_str = format!("{}-{}", slug_str, num);
+                // "AutoSlug"
+                2 => {
+                    let mut slug = String::new();
+                    let slug_sources = final_field
+                        .get("slug_sources")
+                        .unwrap()
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| item.as_str().unwrap())
+                        .collect::<Vec<&str>>();
+                    //
+                    let tmp_model_json = self.self_to_json_val()?;
+                    for field_name in slug_sources {
+                        if let Some(value) = tmp_model_json.get(field_name).unwrap().get("value") {
+                            if value.is_string() {
+                                let text = value.as_str().unwrap().trim();
+                                slug = format!("{}-{}", slug, text);
+                            } else if const_value.is_i64() {
+                                let num = value.as_i64().unwrap();
+                                slug = format!("{}-{}", slug, num);
+                            } else if const_value.is_f64() {
+                                let num = value.as_f64().unwrap();
+                                slug = format!("{}-{}", slug, num);
+                            }
                         }
                     }
                     //
-                    if slug_str.is_empty() {
-                        slug_str = if !pre_json_value.is_null() {
-                            pre_json_value.as_str().unwrap().trim().to_string()
-                        } else {
-                            String::new()
-                        };
+                    if slug.is_empty() && !const_value.is_null() {
+                        slug = const_value.as_str().unwrap().trim().to_string();
                     }
                     // Validation, if the field is required and empty, accumulate the error.
-                    if slug_str.is_empty() {
-                        if !final_widget.value.is_empty() {
-                            slug_str = final_widget.value.clone();
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
+                    if slug.is_empty() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     //
-                    slug_str = slugify(slug_str);
-                    final_widget.value = slug_str.clone();
-                    let bson_field_value = Bson::String(slug_str.clone());
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            slug_str.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
+                    slug = slugify(slug);
+                    *final_field.get_mut("value").unwrap() = json!(slug);
+                    let field_value_bson = Bson::String(slug.clone());
                     // Validation of `unique`.
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
+                    // Validation of `unique`.
+                    // -----------------------------------------------------------------------------
+                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
+                    if is_unique {
+                        Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, &err.to_string()));
                             });
                     }
                     // Insert result.
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
                 // Validation of date type fields.
                 // *********************************************************************************
-                "inputDate" | "inputDateTime" => {
+                // "InputDate" | "InputDateTime" | "HiddenDateTime"
+                3 => {
                     // Don't check the `created_at`and updated_at fields.
                     if field_name == "created_at" || field_name == "updated_at" {
                         continue;
                     }
-                    // Get field value for validation.
-                    let mut field_value: String = if !pre_json_value.is_null() {
-                        let clean_data: String =
-                            pre_json_value.as_str().unwrap().trim().to_string();
-                        // In case of an error, return the current
-                        // state of the field to the user (client).
-                        final_widget.value = clean_data.clone();
-                        clean_data
-                    } else {
-                        String::new()
-                    };
-
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if field_value.is_empty() {
-                        if !final_widget.value.is_empty() {
-                            field_value = final_widget.value.clone();
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
-                    // Convert to &str
-                    let field_value: &str = field_value.as_str();
+                    //
+                    let curr_val = const_value.as_str().unwrap();
 
                     // Validation in regular expression.
                     // -----------------------------------------------------------------------------
-                    Self::regex_validation(widget_type, field_value).unwrap_or_else(|err| {
+                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
                         is_err_symptom = true;
-                        final_widget.error =
-                            Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                    });
-                    if is_err_symptom {
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(final_field, &err.to_string()));
                         continue;
                     }
 
                     // Create Date and Time Object.
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
-                    let dt_value: chrono::DateTime<chrono::Utc> = {
-                        let field_value: String = if widget_type == "inputDate" {
-                            format!("{}T00:00", field_value.to_string())
+                    let dt_val: chrono::DateTime<chrono::Utc> = {
+                        let val = if field_type == "InputDate" {
+                            format!("{}T00:00", curr_val)
                         } else {
-                            field_value.to_string()
+                            curr_val.to_string()
                         };
                         chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(&field_value, "%Y-%m-%dT%H:%M")?,
+                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")?,
                             chrono::Utc,
                         )
                     };
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    if !final_widget.min.is_empty() && !final_widget.max.is_empty() {
+                    let min = final_field.get("min").unwrap().as_str().unwrap();
+                    let max = final_field.get("max").unwrap().as_str().unwrap();
+                    if !min.is_empty() && !max.is_empty() {
                         // Validation in regular expression (min).
-                        Self::regex_validation(widget_type, final_widget.min.as_str())
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                        if let Err(err) = Self::regex_validation(field_type, min) {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &err.to_string()));
+                            continue;
+                        }
                         // Validation in regular expression (max).
-                        Self::regex_validation(widget_type, final_widget.max.as_str())
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
-                        if is_err_symptom {
+                        if let Err(err) = Self::regex_validation(field_type, max) {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &err.to_string()));
                             continue;
                         }
                         // Date to DateTime (min).
                         let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_value: String = if widget_type == "inputDate" {
-                                format!("{}T00:00", final_widget.min.clone())
+                            let min_val: String = if field_type == "InputDate" {
+                                format!("{}T00:00", min)
                             } else {
-                                final_widget.min.clone()
+                                min.to_string()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(
-                                    &min_value,
-                                    "%Y-%m-%dT%H:%M",
-                                )?,
+                                chrono::NaiveDateTime::parse_from_str(&min_val, "%Y-%m-%dT%H:%M")?,
                                 chrono::Utc,
                             )
                         };
                         // Date to DateTime (max).
                         let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_value: String = if widget_type == "inputDate" {
-                                format!("{}T00:00", final_widget.max.clone())
+                            let max_val: String = if field_type == "InputDate" {
+                                format!("{}T00:00", max)
                             } else {
-                                final_widget.max.clone()
+                                max.to_string()
                             };
                             chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(
-                                    &max_value,
-                                    "%Y-%m-%dT%H:%M",
-                                )?,
+                                chrono::NaiveDateTime::parse_from_str(&max_val, "%Y-%m-%dT%H:%M")?,
                                 chrono::Utc,
                             )
                         };
                         // Check hit in range (min <> max).
-                        if dt_value < dt_min || dt_value > dt_max {
+                        if dt_val < dt_min || dt_val > dt_max {
                             is_err_symptom = true;
-                            final_widget.error = Self::accumula_err(
-                                &final_widget,
-                                &"Date out of range between `min` and` max`.".to_owned(),
-                            )
-                            .unwrap();
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "Date out of range between `min` and` max`."
+                            ));
                             continue;
                         }
                     }
 
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
-                    let dt_value_bson = Bson::DateTime(dt_value);
+                    let dt_val_bson = Bson::DateTime(dt_val);
+
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &dt_value_bson, &coll).unwrap_or_else(
+                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
+                    if is_unique {
+                        Self::check_unique(hash, field_name, &dt_val_bson, &coll).unwrap_or_else(
                             |err| {
                                 is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, &err.to_string()));
                             },
                         );
                     }
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, dt_value_bson);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        final_doc.insert(field_name, dt_val_bson);
                     }
                 }
                 // Validation of `select` type fields.
                 // *********************************************************************************
-                "selectText" | "selectI32" | "selectU32" | "selectI64" | "selectF64" => {
+                // "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64"
+                4 => {
                     //
-                    let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
-                    let mut tmp_value;
-                    // Get selected items.
-                    for _ in 0..=1 {
-                        // Get selected items.
-                        if !pre_json_value.is_null() && !tmp_json_text.is_empty() {
-                            final_doc.insert(
-                                field_name,
-                                match widget_type {
-                                    "selectText" => {
-                                        let val = pre_json_value.as_str().unwrap().to_string();
-                                        final_widget.value = val.clone();
-                                        if val.is_empty() && final_widget.required {
-                                            is_err_symptom = true;
-                                            final_widget.error = Self::accumula_err(
-                                                &final_widget,
-                                                &"Required field.".to_owned(),
-                                            )
-                                            .unwrap();
-                                        }
-                                        Bson::String(val)
-                                    }
-                                    "selectI32" => {
-                                        let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
-                                        final_widget.value = val.to_string();
-                                        Bson::Int32(val)
-                                    }
-                                    "selectU32" | "selectI64" => {
-                                        let val = pre_json_value.as_i64().unwrap();
-                                        final_widget.value = val.to_string();
-                                        Bson::Int64(val)
-                                    }
-                                    "selectF64" => {
-                                        let val = pre_json_value.as_f64().unwrap();
-                                        final_widget.value = val.to_string();
-                                        Bson::Double(val)
-                                    }
-                                    _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported widget type - `{}`.\n\n",
-                                        model_name, field_name, widget_type
-                                    ))?,
-                                },
-                            );
-                            break;
-                        } else {
-                            if !final_widget.value.is_empty() {
-                                if widget_type == "selectText" {
-                                    tmp_value = serde_json::to_value(final_widget.value.clone())?;
-                                } else {
-                                    tmp_value = serde_json::from_str(final_widget.value.as_str())?;
-                                }
-                                tmp_json_text = serde_json::to_string(&tmp_value)?;
-                                pre_json_value = &tmp_value;
-                            } else {
-                                if final_widget.required {
-                                    is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name
-                                        ))?
-                                    }
-                                }
-                                if !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, Bson::Null);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
+                    if const_value.is_null() {
+                        if is_required {
                             is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
+                        }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
-                }
-                //
-                "selectTextDyn" | "selectI32Dyn" | "selectU32Dyn" | "selectI64Dyn"
-                | "selectF64Dyn" => {
-                    //
-                    let tmp_json_text = serde_json::to_string(&pre_json_value)?;
                     // Get selected items.
-                    if !pre_json_value.is_null() && !tmp_json_text.is_empty() {
+                    if is_save {
                         final_doc.insert(
                             field_name,
-                            match widget_type {
-                                "selectTextDyn" => {
-                                    let val = pre_json_value.as_str().unwrap().to_string();
-                                    final_widget.value = val.clone();
-                                    if val.is_empty() && final_widget.required {
-                                        is_err_symptom = true;
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    }
-                                    Bson::String(val)
+                            match field_type {
+                                "SelectText" => {
+                                    let val = const_value.as_str().unwrap();
+                                    Bson::String(val.to_string())
                                 }
-                                "selectI32Dyn" => {
-                                    let val = i32::try_from(pre_json_value.as_i64().unwrap())?;
-                                    final_widget.value = val.to_string();
+                                "SelectI32" => {
+                                    let val = i32::try_from(const_value.as_i64().unwrap())?;
                                     Bson::Int32(val)
                                 }
-                                "selectU32Dyn" | "selectI64Dyn" => {
-                                    let val = pre_json_value.as_i64().unwrap();
-                                    final_widget.value = val.to_string();
+                                "SelectU32" | "SelectI64" => {
+                                    let val = const_value.as_i64().unwrap();
                                     Bson::Int64(val)
                                 }
-                                "selectF64Dyn" => {
-                                    let val = pre_json_value.as_f64().unwrap();
-                                    final_widget.value = val.to_string();
+                                "SelectF64" => {
+                                    let val = const_value.as_f64().unwrap();
                                     Bson::Double(val)
                                 }
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                    Unsupported widget type - `{}`.\n\n",
-                                    model_name, field_name, widget_type
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
-                    } else {
-                        if final_widget.required {
+                    }
+                }
+                //
+                // "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn" | "SelectF64Dyn"
+                5 => {
+                    //
+                    if const_value.is_null() {
+                        if is_required {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Required field.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name
-                                ))?
-                            }
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
-                        if !ignore_fields.contains(&field_name) {
+                        if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
-                        final_widget.value = String::new();
+                        continue;
                     }
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
-                }
-                //
-                "selectTextMult" | "selectI32Mult" | "selectU32Mult" | "selectI64Mult"
-                | "selectF64Mult" => {
-                    //
-                    let mut tmp_json_text = serde_json::to_string(&pre_json_value)?;
-                    let mut tmp_value;
                     // Get selected items.
-                    for _ in 0..=1 {
-                        if !pre_json_value.is_null() && tmp_json_text != "[]" {
-                            final_doc.insert(
-                                field_name,
-                                match widget_type {
-                                    "selectTextMult" => {
-                                        let val = pre_json_value
-                                            .as_array()
-                                            .unwrap()
-                                            .iter()
-                                            .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                            .collect::<Vec<Bson>>();
-                                        Bson::Array(val)
-                                    }
-                                    "selectI32Mult" => Bson::Array(
-                                        pre_json_value
-                                            .as_array()
-                                            .unwrap()
-                                            .iter()
-                                            .map(|item| {
-                                                Bson::Int32(
-                                                    i32::try_from(item.as_i64().unwrap()).unwrap(),
-                                                )
-                                            })
-                                            .collect::<Vec<Bson>>(),
-                                    ),
-                                    "selectU32Mult" | "selectI64Mult" => Bson::Array(
-                                        pre_json_value
-                                            .as_array()
-                                            .unwrap()
-                                            .iter()
-                                            .map(|item| Bson::Int64(item.as_i64().unwrap()))
-                                            .collect::<Vec<Bson>>(),
-                                    ),
-                                    "selectF64Mult" => Bson::Array(
-                                        pre_json_value
-                                            .as_array()
-                                            .unwrap()
-                                            .iter()
-                                            .map(|item| Bson::Double(item.as_f64().unwrap()))
-                                            .collect::<Vec<Bson>>(),
-                                    ),
-                                    _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                            Unsupported widget type - `{}`.\n\n",
-                                        model_name, field_name, widget_type
-                                    ))?,
-                                },
-                            );
-                            final_widget.value = tmp_json_text;
-                            break;
-                        } else {
-                            if !final_widget.value.is_empty() {
-                                tmp_value = serde_json::from_str(final_widget.value.as_str())?;
-                                tmp_json_text = serde_json::to_string(&tmp_value)?;
-                                pre_json_value = &tmp_value;
-                            } else {
-                                if final_widget.required {
-                                    is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` => \
-                                            Hiding required fields is not allowed.\n\n",
-                                            model_name, field_name
-                                        ))?
-                                    }
-                                }
-                                if !ignore_fields.contains(&field_name) {
-                                    final_doc.insert(field_name, Bson::Null);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
-                }
-                //
-                "selectTextMultDyn" | "selectI32MultDyn" | "selectU32MultDyn"
-                | "selectI64MultDyn" | "selectF64MultDyn" => {
-                    //
-                    let tmp_json_text = serde_json::to_string(&pre_json_value)?;
-                    // Get selected items.
-                    if !pre_json_value.is_null() && tmp_json_text != "[]" {
+                    if is_save {
                         final_doc.insert(
                             field_name,
-                            match widget_type {
-                                "selectTextMultDyn" => {
-                                    let val = pre_json_value
+                            match field_type {
+                                "SelectTextDyn" => {
+                                    let val = const_value.as_str().unwrap().to_string();
+                                    Bson::String(val)
+                                }
+                                "SelectI32Dyn" => {
+                                    let val = i32::try_from(const_value.as_i64().unwrap())?;
+                                    Bson::Int32(val)
+                                }
+                                "SelectU32Dyn" | "SelectI64Dyn" => {
+                                    let val = const_value.as_i64().unwrap();
+                                    Bson::Int64(val)
+                                }
+                                "SelectF64Dyn" => {
+                                    let val = const_value.as_f64().unwrap();
+                                    Bson::Double(val)
+                                }
+                                _ => Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
+                                    model_name, field_name, field_type
+                                ))?,
+                            },
+                        );
+                    }
+                }
+                //
+                // "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult" | "SelectF64Mult"
+                6 => {
+                    //
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
+                        }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
+                    }
+                    // Get selected items.
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match field_type {
+                                "SelectTextMult" => Bson::Array(
+                                    const_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
                                         .map(|item| Bson::String(item.as_str().unwrap().into()))
-                                        .collect::<Vec<Bson>>();
-                                    Bson::Array(val)
-                                }
-                                "selectI32MultDyn" => Bson::Array(
-                                    pre_json_value
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectI32Mult" => Bson::Array(
+                                    const_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
@@ -1070,16 +747,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         })
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                "selectU32MultDyn" | "selectI64MultDyn" => Bson::Array(
-                                    pre_json_value
+                                "SelectU32Mult" | "SelectI64Mult" => Bson::Array(
+                                    const_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
                                         .map(|item| Bson::Int64(item.as_i64().unwrap()))
                                         .collect::<Vec<Bson>>(),
                                 ),
-                                "selectF64MultDyn" => Bson::Array(
-                                    pre_json_value
+                                "SelectF64Mult" => Bson::Array(
+                                    const_value
                                         .as_array()
                                         .unwrap()
                                         .iter()
@@ -1087,261 +764,269 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         .collect::<Vec<Bson>>(),
                                 ),
                                 _ => Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported widget type - `{}`.\n\n",
-                                    model_name, field_name, widget_type
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
+                                    model_name, field_name, field_type
                                 ))?,
                             },
                         );
-                        final_widget.value = tmp_json_text;
-                    } else {
-                        if final_widget.required {
+                    }
+                }
+                //
+                /*
+                "SelectTextMultDyn" | "SelectI32MultDyn" | "SelectU32MultDyn"
+                | "SelectI64MultDyn" | "SelectF64MultDyn"
+                */
+                7 => {
+                    //
+                    if const_value.is_null() {
+                        if is_required {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Required field.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name
-                                ))?
-                            }
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
-                        if !ignore_fields.contains(&field_name) {
+                        if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
                         }
-                        final_widget.value = String::new();
+                        continue;
                     }
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.value.is_empty() && !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
+                    // Get selected items.
+                    if is_save {
+                        final_doc.insert(
+                            field_name,
+                            match field_type {
+                                "SelectTextMultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::String(item.as_str().unwrap().into()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectI32MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| {
+                                            Bson::Int32(
+                                                i32::try_from(item.as_i64().unwrap()).unwrap(),
+                                            )
+                                        })
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectU32MultDyn" | "SelectI64MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Int64(item.as_i64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                "SelectF64MultDyn" => Bson::Array(
+                                    const_value
+                                        .as_array()
+                                        .unwrap()
+                                        .iter()
+                                        .map(|item| Bson::Double(item.as_f64().unwrap()))
+                                        .collect::<Vec<Bson>>(),
+                                ),
+                                _ => Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
+                                        Unsupported field type - `{}`.",
+                                    model_name, field_name, field_type
+                                ))?,
+                            },
+                        );
                     }
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
-                "inputFile" => {
-                    //
-                    let mut is_delete = false;
-                    // Get field value for validation.
-                    let mut _field_value: FileData = if !pre_json_value.is_null() {
-                        let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_del) = serde_json::from_str::<
-                            serde_json::map::Map<String, serde_json::Value>,
-                        >(obj_str)
-                        .unwrap()
-                        .get("is_delete")
-                        {
-                            is_delete = is_del.as_bool().unwrap();
-                        }
-                        serde_json::from_str::<FileData>(obj_str)?
+                // "InputFile"
+                8 => {
+                    // Get data for validation.
+                    let mut file_data = if !const_value.is_null() {
+                        serde_json::from_value::<FileData>(const_value.clone())?
                     } else {
                         FileData::default()
                     };
+                    //
+                    if !is_save {
+                        if !file_data.path.is_empty() {
+                            // Create path for validation of file.
+                            let f_path = std::path::Path::new(file_data.path.as_str());
+                            if !f_path.exists() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => File is missing - {}",
+                                    model_name, field_name, file_data.path
+                                ))?
+                            }
+                            if !f_path.is_file() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => The path does not lead to a file - {}",
+                                    model_name, field_name, file_data.path
+                                ))?
+                            }
+                        }
+                        continue;
+                    }
                     // Delete file.
-                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
-                        if !final_widget.required
-                            || ((!_field_value.path.is_empty() && !_field_value.url.is_empty())
-                                || !final_widget.value.is_empty())
+                    if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
+                        if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                final_widget.value.as_str(),
-                                false,
+                                Some(serde_json::from_value(const_value.clone())?),
+                                None,
                             )?;
                         } else {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Upload a new file to delete the previous one.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name
-                                ))?
-                            }
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "Upload a new file to delete the previous one."
+                            ));
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if _field_value.path.is_empty() && _field_value.url.is_empty() {
-                        if curr_info_file.is_empty() {
-                            if !final_widget.value.is_empty() {
-                                // Get default value.
-                                _field_value = serde_json::from_str(final_widget.value.trim())?;
-                            } else {
-                                if final_widget.required {
+                    if is_use_default {
+                        if curr_file_info.is_null() {
+                            if const_value.is_null() {
+                                if is_required {
                                     is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => Required field.\n\n",
-                                            model_name, field_name
-                                        ))?
-                                    }
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 }
-                                if !is_update && !ignore_fields.contains(&field_name) {
+                                if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
                                 }
                                 continue;
                             }
                         } else {
-                            final_widget.value = curr_info_file;
+                            *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
                         }
                     }
                     //
                     // Flags to check.
-                    let is_emty_path = _field_value.path.is_empty();
-                    let is_emty_url = _field_value.url.is_empty();
+                    let is_emty_path = file_data.path.is_empty();
+                    let is_emty_url = file_data.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` => Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/resume.docx\",\"url\":\"/media/resume.docx\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
+                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                                `check()` => Required `path` and `url` fields.",
                             model_name, field_name
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(_field_value.path.as_str());
+                    let f_path = std::path::Path::new(file_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}\n\n",
-                            model_name, field_name, _field_value.path
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => File is missing - {}",
+                            model_name, field_name, file_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}\n\n",
-                            model_name, field_name, _field_value.path
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => The path does not lead to a file - {}",
+                            model_name, field_name, file_data.path
                         ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    _field_value.size = metadata.len() as u32;
+                    file_data.size = metadata.len() as f64;
                     // Get file name.
-                    _field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
-                    if !ignore_fields.contains(&field_name) {
-                        // Add file data to widget.
-                        final_widget.value = serde_json::to_string(&_field_value)?;
+                    if !ignore_fields.contains(field_name) {
+                        // Add file data to controller.
+                        *final_field.get_mut("value").unwrap() = serde_json::to_value(file_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value =
-                                mongodb::bson::ser::to_bson(&_field_value.clone())?;
+                            let value = final_field.get("value").unwrap();
+                            let bson_field_value = mongodb::bson::ser::to_bson(value)?;
                             final_doc.insert(field_name, bson_field_value);
                         }
                     } else {
-                        final_widget.value = String::new();
+                        *final_field.get_mut("value").unwrap() = json!(null);
                     }
                 }
                 //
-                "inputImage" => {
-                    //
-                    let mut is_delete = false;
-                    let is_create_thumbnails: bool = !final_widget.thumbnails.is_empty();
-                    // Get field value for validation.
-                    let mut field_value: ImageData = if !pre_json_value.is_null() {
-                        let obj_str = pre_json_value.as_str().unwrap();
-                        if let Some(is_del) = serde_json::from_str::<
-                            serde_json::map::Map<String, serde_json::Value>,
-                        >(obj_str)
-                        .unwrap()
-                        .get("is_delete")
-                        {
-                            is_delete = is_del.as_bool().unwrap();
-                        }
-                        serde_json::from_str::<ImageData>(obj_str)?
+                // "InputImage"
+                9 => {
+                    // Get data for validation.
+                    let mut image_data = if !const_value.is_null() {
+                        serde_json::from_value::<ImageData>(const_value.clone())?
                     } else {
                         ImageData::default()
                     };
+                    //
+                    if !is_save {
+                        if !image_data.path.is_empty() {
+                            // Create path for validation of file.
+                            let f_path = std::path::Path::new(image_data.path.as_str());
+                            if !f_path.exists() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => Image is missing - {}",
+                                    model_name, field_name, image_data.path
+                                ))?
+                            }
+                            if !f_path.is_file() {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` ; Method: \
+                                        `check()` => The path does not lead to a file - {}",
+                                    model_name, field_name, image_data.path
+                                ))?
+                            }
+                        }
+                        continue;
+                    }
                     // Delete file.
-                    if is_delete && is_update && !ignore_fields.contains(&field_name) {
-                        if !final_widget.required
-                            || ((!field_value.path.is_empty() && !field_value.url.is_empty())
-                                || !final_widget.value.is_empty())
+                    if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
+                        if !is_required
+                            || (!image_data.path.is_empty() && !image_data.url.is_empty())
                         {
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                final_widget.value.as_str(),
-                                true,
+                                Some(serde_json::from_value(const_value.clone())?),
+                                None,
                             )?;
                         } else {
                             is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"Upload a new file to delete the previous one.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Upload a new file to delete the previous one.\n\n",
-                                    model_name, field_name
-                                ))?
-                            }
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "Upload a new file to delete the previous one."
+                            ));
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_info_file: String = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if field_value.path.is_empty() && field_value.url.is_empty() {
-                        if curr_info_file.is_empty() {
-                            if !final_widget.value.is_empty() {
-                                // Get default value.
-                                field_value = serde_json::from_str(final_widget.value.trim())?;
+                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
+                        final_field.get("thumbnails").unwrap().clone(),
+                    )?;
+                    //
+                    if is_use_default {
+                        if curr_file_info.is_null() {
+                            if !const_value.is_null() {
                                 // Copy the default image to the default section.
-                                if is_create_thumbnails {
+                                if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
-                                    let path = Path::new(field_value.path.as_str());
+                                    let path = Path::new(image_data.path.as_str());
                                     let parent = path.parent().unwrap().to_str().unwrap();
                                     let extension =
                                         path.extension().unwrap().to_str().unwrap().to_string();
@@ -1351,135 +1036,122 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         parent, new_file_name, extension
                                     );
                                     fs::copy(
-                                        Path::new(field_value.path.as_str()),
+                                        Path::new(image_data.path.as_str()),
                                         Path::new(new_default_path.as_str()),
                                     )?;
-                                    field_value.path = new_default_path;
+                                    image_data.path = new_default_path;
                                     //
-                                    let url = Path::new(field_value.url.as_str());
+                                    let url = Path::new(image_data.url.as_str());
                                     let parent = url.parent().unwrap().to_str().unwrap();
-                                    field_value.url = format!(
+                                    image_data.url = format!(
                                         "{}/default/{}.{}",
                                         parent, new_file_name, extension
                                     );
                                 }
                             } else {
-                                if final_widget.required {
+                                if is_required {
                                     is_err_symptom = true;
-                                    if !final_widget.is_hide {
-                                        final_widget.error = Self::accumula_err(
-                                            &final_widget,
-                                            &"Required field.".to_owned(),
-                                        )
-                                        .unwrap();
-                                    } else {
-                                        Err(format!(
-                                            "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                            Method: `check()` => Required field.\n\n",
-                                            model_name, field_name
-                                        ))?
-                                    }
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, "Required field."));
                                 }
-                                if !is_update && !ignore_fields.contains(&field_name) {
+                                if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
                                 }
                                 continue;
                             }
                         } else {
-                            final_widget.value = curr_info_file;
+                            *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
                         }
                     }
                     // Flags to check.
-                    let is_emty_path = field_value.path.is_empty();
-                    let is_emty_url = field_value.url.is_empty();
+                    let is_emty_path = image_data.path.is_empty();
+                    let is_emty_url = image_data.url.is_empty();
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                            `check()` => Incorrectly filled field. \
-                            Example: (for default): {{\"path\":\"./media/no_photo.jpg\",\"url\":\"/media/no_photo.jpg\"}} ;\
-                            Example: (from client side): {{\"path\":\"\",\"url\":\"\",\"is_delete\":true}}\n\n",
+                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
+                                `check()` => Required `path` and `url` fields.",
                             model_name, field_name
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(field_value.path.as_str());
+                    let f_path = std::path::Path::new(image_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}\n\n",
-                            model_name, field_name, field_value.path
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => Image is missing - {}",
+                            model_name, field_name, image_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}\n\n",
-                            model_name, field_name, field_value.path
+                            "Model: `{}` > Field: `{}` ; Method: \
+                                `check()` => The path does not lead to a file - {}",
+                            model_name, field_name, image_data.path
                         ))?
                     }
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
-                    field_value.size = metadata.len() as u32;
+                    image_data.size = metadata.len() as f64;
                     // Get file name
-                    field_value.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
+                    image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
-                    let dimensions: (u32, u32) = image::image_dimensions(f_path)?;
-                    field_value.width = dimensions.0;
-                    field_value.height = dimensions.1;
+                    let dimensions = image::image_dimensions(f_path)?;
+                    image_data.width = dimensions.0 as f64;
+                    image_data.height = dimensions.1 as f64;
                     // Generate sub-size images.
-                    if is_create_thumbnails {
+                    if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
-                        for max_size in final_widget.thumbnails.iter() {
-                            let thumbnail_size: (u32, u32) = Self::calculate_thumbnail_size(
-                                dimensions.0,
-                                dimensions.1,
-                                max_size.1,
+                        for max_size in thumbnails.iter() {
+                            let thumbnail_size: (f64, f64) = Self::calculate_thumbnail_size(
+                                image_data.width,
+                                image_data.height,
+                                max_size.1 as f64,
                             );
-                            if thumbnail_size.0 > 0 && thumbnail_size.1 > 0 {
+                            if thumbnail_size.0 > 0.0 && thumbnail_size.1 > 0.0 {
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
-                                let thumb_name = format!("{}_{}", max_size.0, field_value.name);
-                                let thumb_path = field_value
+                                let thumb_name = format!("{}_{}", max_size.0, image_data.name);
+                                let thumb_path = image_data
                                     .path
                                     .clone()
-                                    .replace(field_value.name.as_str(), thumb_name.as_str());
-                                let thumb_url = field_value
+                                    .replace(image_data.name.as_str(), thumb_name.as_str());
+                                let thumb_url = image_data
                                     .url
                                     .clone()
-                                    .replace(field_value.name.as_str(), thumb_name.as_str());
+                                    .replace(image_data.name.as_str(), thumb_name.as_str());
                                 img = img.resize_exact(
-                                    width,
-                                    height,
+                                    width as u32,
+                                    height as u32,
                                     image::imageops::FilterType::Triangle,
                                 );
                                 match max_size.0.as_str() {
                                     "lg" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_lg = thumb_path;
-                                        field_value.url_lg = thumb_url;
+                                        image_data.path_lg = thumb_path;
+                                        image_data.url_lg = thumb_url;
                                     }
                                     "md" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_md = thumb_path;
-                                        field_value.url_md = thumb_url;
+                                        image_data.path_md = thumb_path;
+                                        image_data.url_md = thumb_url;
                                     }
                                     "sm" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_sm = thumb_path;
-                                        field_value.url_sm = thumb_url;
+                                        image_data.path_sm = thumb_path;
+                                        image_data.url_sm = thumb_url;
                                     }
                                     "xs" => {
                                         img.save(thumb_path.clone())?;
-                                        field_value.path_xs = thumb_path;
-                                        field_value.url_xs = thumb_url;
+                                        image_data.path_xs = thumb_path;
+                                        image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
-                                        "\n\nModel: `{}` > Field: `{}` ; Method: \
-                                            `check()` => Valid size names -\
-                                             `xs`, `sm`, `md`, `lg`.\n\n",
+                                        "Model: `{}` > Field: `{}` > Type: `ImageData` ; \
+                                            Method: `check()` => Valid size names -\
+                                            `xs`, `sm`, `md`, `lg`.",
                                         model_name, field_name
                                     ))?,
                                 }
@@ -1487,420 +1159,383 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Insert result.
-                    if !ignore_fields.contains(&field_name) {
-                        // Add image data to widget.
-                        final_widget.value = serde_json::to_string(&field_value)?;
+                    if !ignore_fields.contains(field_name) {
+                        // Add file data to controller.
+                        *final_field.get_mut("value").unwrap() = serde_json::to_value(image_data)?;
                         //
                         if !is_err_symptom {
-                            let bson_field_value =
-                                mongodb::bson::ser::to_bson(&field_value.clone())?;
-                            final_doc.insert(field_name, bson_field_value);
+                            let value = final_field.get("value").unwrap();
+                            let field_value_bson = mongodb::bson::ser::to_bson(value)?;
+                            final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
-                        final_widget.value = String::new();
+                        *final_field.get_mut("value").unwrap() = json!(null);
                     }
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                "radioI32" | "numberI32" | "rangeI32" | "hiddenI32" => {
-                    // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-
+                // "RadioI32" | "NumberI32" | "RangeI32"
+                10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            field_value = Some(final_widget.value.clone().parse::<i64>()?);
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
-                    let field_value = i32::try_from(field_value.unwrap())?;
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.value = field_value.to_string();
+                    let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = Bson::Int32(field_value);
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` -> {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
+                    let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                    let unique = final_field.get("unique");
+                    if let Some(unique) = unique {
+                        let is_unique = unique.as_bool().unwrap();
+                        if is_unique {
+                            Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .unwrap_or_else(|err| {
+                                    is_err_symptom = true;
+                                    if !is_hide {
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(final_field, &err.to_string())
+                                        );
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
+                                            model_name, field_name, err
+                                        ))
+                                        .unwrap()
+                                    }
+                                });
+                        }
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: i32 = final_widget.min.parse().unwrap_or_default();
-                    let max: i32 = final_widget.max.parse().unwrap_or_default();
-                    if (min != 0_i32 || max != 0_i32) && (field_value < min || field_value > max) {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "Number {} is out of range (min={} <-> max={}).",
-                            field_value, min, max
-                        );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
+                    }
+                    //
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                "radioU32" | "numberU32" | "rangeU32" | "radioI64" | "numberI64" | "rangeI64"
-                | "hiddenU32" | "hiddenI64" => {
-                    // Get field value for validation.
-                    let mut field_value: Option<i64> = pre_json_value.as_i64();
-
+                // "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64"
+                11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            field_value = Some(final_widget.value.clone().parse::<i64>()?);
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
-                            }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, "Required field."));
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
-                    let field_value: i64 = field_value.unwrap();
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.value = field_value.to_string();
+                    let curr_val = const_value.as_i64().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = Bson::Int64(field_value);
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
+                    let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                    let unique = final_field.get("unique");
+                    if let Some(unique) = unique {
+                        let is_unique = unique.as_bool().unwrap();
+                        if is_unique {
+                            Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .unwrap_or_else(|err| {
+                                    is_err_symptom = true;
+                                    if !is_hide {
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(final_field, &err.to_string())
+                                        );
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
+                                            model_name, field_name, err
+                                        ))
+                                        .unwrap()
+                                    }
+                                });
+                        }
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: i64 = final_widget.min.parse().unwrap_or_default();
-                    let max: i64 = final_widget.max.parse().unwrap_or_default();
-                    if (min != 0_i64 || max != 0_i64) && (field_value < min || field_value > max) {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "Number {} is out of range (min={} <-> max={}).",
-                            field_value, min, max
-                        );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < min.as_i64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
+                    }
+                    //
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > max.as_i64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                "radioF64" | "numberF64" | "rangeF64" | "hiddenF64" => {
-                    // Get field value for validation.
-                    let mut field_value: Option<f64> = pre_json_value.as_f64();
-
-                    // Validation, if the field is required and empty, accumulate the error
-                    // ( The default value is used whenever possible ).
+                // "RadioF64" | "NumberF64" | "RangeF64"
+                12 => {
+                    // Validation, if the field is required and empty, accumulate the error.
+                    // ( The default value is used whenever possible )
                     // -----------------------------------------------------------------------------
-                    if pre_json_value.is_null() {
-                        if !final_widget.value.is_empty() {
-                            field_value = Some(final_widget.value.clone().parse::<f64>()?);
-                        } else {
-                            if final_widget.required {
-                                is_err_symptom = true;
-                                if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                    final_widget.error = Self::accumula_err(
-                                        &final_widget,
-                                        &"Required field.".to_owned(),
-                                    )
-                                    .unwrap();
-                                } else {
-                                    Err(format!(
-                                        "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                        model_name, field_name
-                                    ))?
-                                }
+                    if const_value.is_null() {
+                        if is_required {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, "Required field."));
                             }
-                            if !ignore_fields.contains(&field_name) {
-                                final_doc.insert(field_name, Bson::Null);
-                            }
-                            continue;
                         }
+                        if is_save && !ignore_fields.contains(field_name) {
+                            final_doc.insert(field_name, Bson::Null);
+                        }
+                        continue;
                     }
                     // Get clean data.
-                    let field_value: f64 = field_value.unwrap();
-
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.value = field_value.to_string();
+                    let curr_val = const_value.as_f64().unwrap();
                     // Used to validation uniqueness and in the final result.
-                    let bson_field_value = Bson::Double(field_value);
-                    // Field attribute check - `pattern`.
-                    // -----------------------------------------------------------------------------
-                    if !final_widget.pattern.is_empty() {
-                        Self::regex_pattern_validation(
-                            final_widget.value.as_str(),
-                            final_widget.pattern.as_str(),
-                        )
-                        .unwrap_or_else(|err| {
-                            is_err_symptom = true;
-                            if !widget_type.contains("hidden") && !final_widget.is_hide {
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field: `{}` ; Method: `check()` => {}\n\n",
-                                    model_name,
-                                    field_name,
-                                    err.to_string()
-                                ))
-                                .unwrap()
-                            }
-                        });
-                    }
+                    let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    if final_widget.unique {
-                        Self::check_unique(hash, field_name, &bson_field_value, &coll)
-                            .unwrap_or_else(|err| {
-                                is_err_symptom = true;
-                                final_widget.error =
-                                    Self::accumula_err(&final_widget, &err.to_string()).unwrap();
-                            });
+                    let unique = final_field.get("unique");
+                    if let Some(unique) = unique {
+                        let is_unique = unique.as_bool().unwrap();
+                        if is_unique {
+                            Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .unwrap_or_else(|err| {
+                                    is_err_symptom = true;
+                                    if !is_hide {
+                                        *final_field.get_mut("error").unwrap() = json!(
+                                            Self::accumula_err(final_field, &err.to_string())
+                                        );
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{}` > Field: `{}` ; \
+                                                Method: `check()` => {}",
+                                            model_name, field_name, err
+                                        ))
+                                        .unwrap()
+                                    }
+                                });
+                        }
                     }
                     // Validation of range (`min` <> `max`).
                     // -----------------------------------------------------------------------------
-                    let min: f64 = final_widget.min.parse().unwrap_or_default();
-                    let max: f64 = final_widget.max.parse().unwrap_or_default();
-                    if (min != 0_f64 || max != 0_f64) && (field_value < min || field_value > max) {
-                        is_err_symptom = true;
-                        let msg = format!(
-                            "Number {} is out of range (min={} <-> max={}).",
-                            field_value, min, max
-                        );
-                        final_widget.error = Self::accumula_err(&final_widget, &msg).unwrap();
+                    if let Some(min) = final_field.get("min") {
+                        if !min.is_null() && curr_val < min.as_f64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be less than min=`{}`.",
+                                curr_val, min
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
+                    }
+                    //
+                    if let Some(max) = final_field.get("max") {
+                        if !max.is_null() && curr_val > max.as_f64().unwrap() {
+                            is_err_symptom = true;
+                            let msg = format!(
+                                "The number `{}` must not be greater than max=`{}`.",
+                                curr_val, max
+                            );
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &msg));
+                        }
                     }
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        final_doc.insert(field_name, bson_field_value);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
 
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                "checkBox" => {
-                    // Get field value for validation.
-                    let field_value: bool = if !pre_json_value.is_null() {
-                        pre_json_value.as_bool().unwrap()
-                    } else {
-                        // Validation, if the field is required and empty, accumulate the error.
-                        // ( The default value is used whenever possible )
-                        if final_widget.required {
-                            is_err_symptom = true;
-                            if !final_widget.is_hide {
-                                final_widget.error = Self::accumula_err(
-                                    &final_widget,
-                                    &"You must definitely choose.".to_owned(),
-                                )
-                                .unwrap();
-                            } else {
-                                Err(format!(
-                                    "\n\nModel: `{}` > Field (hidden): `{}` ; \
-                                        Method: `check()` => \
-                                        Hiding required fields is not allowed.\n\n",
-                                    model_name, field_name
-                                ))?
-                            }
-                            false
-                        } else {
-                            // Apply the value default.
-                            final_widget.checked
-                        }
-                    };
-                    // In case of an error, return the current
-                    // state of the field to the user (client).
-                    final_widget.checked = field_value.clone();
+                // "CheckBox"
+                13 => {
+                    // Validation, if the field is required and empty, accumulate the error.
+                    // ( The default value is used whenever possible )
+                    if const_value.is_null() && is_required {
+                        is_err_symptom = true;
+                        *final_field.get_mut("error").unwrap() =
+                            json!(Self::accumula_err(final_field, "Required field."));
+                        continue;
+                    }
 
                     // Insert result.
                     // -----------------------------------------------------------------------------
-                    if !is_err_symptom && !ignore_fields.contains(&field_name) {
-                        let bson_field_value = Bson::Boolean(field_value);
-                        final_doc.insert(field_name, bson_field_value);
+                    if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
+                        let is_checked = if !const_value.is_null() {
+                            const_value.as_bool().unwrap()
+                        } else {
+                            false
+                        };
+                        let field_value_bson = Bson::Boolean(is_checked);
+                        final_doc.insert(field_name, field_value_bson);
                     }
                 }
                 _ => Err(format!(
                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                     Unsupported widget type - `{}`.",
-                    model_name, field_name, widget_type
+                        Unsupported field type - `{}`.",
+                    model_name, field_name, field_type
                 ))?,
             }
+        }
 
-            // Insert or update fields for timestamps `created_at` and `updated_at`.
-            // -------------------------------------------------------------------------------------
-            if !is_err_symptom {
-                let is_save = is_save.unwrap_or(false);
-                let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
-                let dt_text: String = dt.to_rfc3339()[..19].into();
-                if is_update {
-                    // For update.
-                    if is_save {
-                        final_doc.insert("updated_at", Bson::DateTime(dt));
-                        final_widget_map.get_mut("updated_at").unwrap().value = dt_text.clone();
-                        self.set_updated_at(dt_text);
-                    }
-                    // Get the `created_at` value from the database.
-                    let doc = {
-                        let object_id = ObjectId::with_string(hash)?;
-                        let filter = doc! {"_id": object_id};
-                        coll.find_one(filter, None)?.unwrap()
-                    };
-                    let dt = doc.get("created_at").unwrap();
-                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
-                    //
-                    final_doc.insert("created_at", dt);
-                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
-                    self.set_created_at(dt_text);
-                } else if is_save {
-                    // For create.
-                    final_doc.insert("created_at", Bson::DateTime(dt));
+        // Insert or update fields for timestamps `created_at` and `updated_at`.
+        // -------------------------------------------------------------------------------------
+        if !is_err_symptom {
+            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
+            let dt_text: String = dt.to_rfc3339()[..19].into();
+            if is_update {
+                // Get the `created_at` value from the database.
+                let doc = {
+                    let object_id = ObjectId::with_string(hash)?;
+                    let filter = doc! {"_id": object_id};
+                    coll.find_one(filter, None)?.unwrap()
+                };
+                let dt2 = doc.get("created_at").unwrap();
+                let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                //
+                *final_model_json
+                    .get_mut("created_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text2);
+                self.set_created_at(dt_text2);
+                // For update.
+                if is_save {
+                    final_doc.insert("created_at", dt2);
                     final_doc.insert("updated_at", Bson::DateTime(dt));
-                    self.set_created_at(dt_text.clone());
-                    self.set_updated_at(dt_text.clone());
-                    final_widget_map.get_mut("created_at").unwrap().value = dt_text.clone();
-                    final_widget_map.get_mut("updated_at").unwrap().value = dt_text;
+                    *final_model_json
+                        .get_mut("updated_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
+                    self.set_updated_at(dt_text);
+                } else {
+                    let dt = doc.get("updated_at").unwrap();
+                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    if is_save {
+                        final_doc.insert("updated_at", dt);
+                    }
+                    *final_model_json
+                        .get_mut("updated_at")
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = json!(dt_text);
+                    self.set_updated_at(dt_text);
                 }
+            } else if is_save {
+                // For create.
+                final_doc.insert("created_at", Bson::DateTime(dt));
+                final_doc.insert("updated_at", Bson::DateTime(dt));
+                self.set_created_at(dt_text.clone());
+                self.set_updated_at(dt_text.clone());
+                *final_model_json
+                    .get_mut("created_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text);
+                *final_model_json
+                    .get_mut("updated_at")
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = json!(dt_text);
             }
         }
 
         // If the validation is negative, delete the orphaned files.
-        if is_err_symptom && !is_update {
-            let default_value_map = meta.default_value_map;
-            for (field, widget) in final_widget_map.iter_mut() {
-                match widget.widget.as_str() {
-                    "inputFile" if !widget.value.is_empty() => {
-                        let default_value = default_value_map.get(field).unwrap().1.as_str();
-                        let default_path = if !default_value.is_empty() {
-                            serde_json::from_str::<FileData>(default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let current = serde_json::from_str::<FileData>(widget.value.as_str())?;
+        if is_save && is_err_symptom && !is_update {
+            for field_name in meta.fields_name.iter() {
+                let field = final_model_json.get(field_name).unwrap();
+                let field_type = field.get("field_type").unwrap().as_str().unwrap();
+                //
+                if field_type == "InputFile" {
+                    let value = field.get("value").unwrap();
+                    let default_value = field.get("default").unwrap();
+                    if !value.is_null() && !default_value.is_null() {
+                        let file_data = serde_json::from_value::<FileData>(value.clone())?;
+                        let file_data_default =
+                            serde_json::from_value::<FileData>(default_value.clone())?;
                         // Exclude files by default.
-                        if current.path != default_path {
-                            let path = Path::new(&current.path);
+                        if file_data.path != file_data_default.path {
+                            let path = Path::new(&file_data.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
-                            widget.value = String::new();
+                            //
+                            *final_model_json
+                                .get_mut(field_name)
+                                .unwrap()
+                                .get_mut("value")
+                                .unwrap() = json!(null);
                         }
                     }
-                    "inputImage" if !widget.value.is_empty() => {
-                        let default_value = default_value_map.get(field).unwrap().1.as_str();
-                        let default_path = if !default_value.is_empty() {
-                            serde_json::from_str::<ImageData>(default_value)?.path
-                        } else {
-                            String::new()
-                        };
-                        let current = serde_json::from_str::<ImageData>(widget.value.as_str())?;
+                } else if field_type == "InputImage" {
+                    let value = field.get("value").unwrap();
+                    let default_value = field.get("default").unwrap();
+                    if !value.is_null() && !default_value.is_null() {
+                        let img_data = serde_json::from_value::<ImageData>(value.clone())?;
+                        let img_data_default =
+                            serde_json::from_value::<ImageData>(default_value.clone())?;
                         // Exclude files by default.
-                        if current.path != default_path {
-                            let path = Path::new(&current.path);
+                        if img_data.path != img_data_default.path {
+                            let path = Path::new(&img_data.path);
                             if path.exists() {
                                 fs::remove_file(path)?;
                             }
@@ -1908,46 +1543,51 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
                             for size_name in size_names {
                                 let path = match size_name {
-                                    "lg" => current.path_lg.clone(),
-                                    "md" => current.path_md.clone(),
-                                    "sm" => current.path_sm.clone(),
-                                    "xs" => current.path_xs.clone(),
-                                    _ => String::new(),
+                                    "lg" => img_data.path_lg.clone(),
+                                    "md" => img_data.path_md.clone(),
+                                    "sm" => img_data.path_sm.clone(),
+                                    "xs" => img_data.path_xs.clone(),
+                                    _ => Err("")?,
                                 };
                                 if !path.is_empty() {
-                                    let path = Path::new(path.as_str());
+                                    let path = Path::new(&path);
                                     if path.exists() {
                                         fs::remove_file(path)?;
                                     }
                                 }
                             }
-                            widget.value = String::new();
+                            //
+                            *final_model_json
+                                .get_mut(field_name)
+                                .unwrap()
+                                .get_mut("value")
+                                .unwrap() = json!(null);
                         }
                     }
-                    _ => {}
                 }
             }
         }
 
-        // Enrich the widget map with values for dynamic widgets.
-        Self::vitaminize(
-            meta.project_name.as_str(),
-            meta.unique_project_key.as_str(),
-            meta.collection_name.as_str(),
-            &client_cache,
-            &mut final_widget_map,
-        )?;
+        // Enrich the controller map with values for dynamic controllers.
+        if is_save {
+            Self::injection(
+                meta.project_name.as_str(),
+                meta.unique_project_key.as_str(),
+                meta.collection_name.as_str(),
+                client,
+                &mut final_model_json,
+                &meta.fields_name,
+            )?;
+        }
 
         // Return result.
         // -----------------------------------------------------------------------------------------
-        Ok(OutputDataCheck::from(
-            !is_err_symptom,
-            Some(final_doc),
-            final_widget_map,
-            meta.service_name,
-            meta.model_name,
-            meta.fields_name,
-        ))
+        Ok(OutputData2 {
+            is_valid: !is_err_symptom,
+            final_doc: Some(final_doc),
+            final_model_json,
+            fields_name: meta.fields_name.clone(),
+        })
     }
 
     /// Save to database as a new document or update an existing document.
@@ -1956,7 +1596,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name  = ModelName {...}
+    /// let mut model_name = ModelName::new()?;
     /// let output_data = model_name.save(None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
@@ -1964,45 +1604,44 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     ///
     // *********************************************************************************************
-    fn save<'a>(
+    fn save(
         &mut self,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputDataCheck, Box<dyn Error>> {
-        // Run hooks.
-        if self.get_hash().is_empty() {
-            self.pre_create();
-        } else {
-            self.pre_update();
-        }
+    ) -> Result<OutputData2, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         //
-        let mut stop_step: u8 = 0;
+        let mut stop_step: u8 = 1;
         //
-        for num in 0_u8..=1_u8 {
+        for step in 1_u8..=2_u8 {
+            // Get metadata of Model.
+            let meta = Self::meta()?;
+            //
+            if !meta.is_add_docs {
+                Err(format!(
+                    "Model: `{}` > Method: `save()` => \
+                        The ability to add documents is blocked - is_add_docs = false.",
+                    meta.model_name
+                ))?
+            }
             // Get checked data from the `check()` method.
             let mut verified_data = self.check(Some(true))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            // Get cached Model data.
-            let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-            // Get Model metadata.
-            let meta: Meta = model_cache.meta;
+            // Get client of MongoDB.
+            let client_store = MONGODB_CLIENT_STORE.read()?;
+            let client = client_store.get(&meta.db_client_name).unwrap();
             //
-            let is_update: bool = !self.get_hash().is_empty();
+            let is_update: bool = !self.hash().is_empty();
             //
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
-            // Having fields with a widget of inputSlug type.
-            if is_no_error && !is_update {
-                let wig_name = String::from("inputSlug");
-                let hash = String::from("hash");
-                for val in model_cache.widget_map.values() {
-                    if val.widget == wig_name && val.slug_sources.contains(&hash) {
-                        stop_step = 1;
-                        break;
-                    }
-                }
+            // Having fields with a controller of inputSlug type.
+            if !is_update && is_no_error && meta.is_use_hash_slug {
+                stop_step = 2;
             }
 
             // Save to database.
@@ -2011,19 +1650,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let hash_line;
                 if is_update {
                     // Update document.
-                    hash_line = self.get_hash();
+                    hash_line = self.hash();
                     let object_id = ObjectId::with_string(hash_line.as_str())?;
                     let query = doc! {"_id": object_id.clone()};
                     let update = doc! {
                         "$set": final_doc.clone(),
                     };
+                    // Run hook.
+                    self.pre_update();
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())?;
                     // Run hook.
-                    if stop_step == 0 {
-                        self.post_update();
-                    }
+                    self.post_update();
                 } else {
+                    // Run hook.
+                    self.pre_create();
                     // Create document.
                     let result: InsertOneResult =
                         coll.insert_one(final_doc.clone(), options_insert.clone())?;
@@ -2036,23 +1677,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Mute document.
                 verified_data.set_doc(None);
-                // Add hash-line to final widget map.
-                let mut final_widget_map = verified_data.to_wig();
-                final_widget_map.get_mut("hash").unwrap().value = hash_line;
-                verified_data.set_wig(final_widget_map);
+                // Add hash-line to final_model_json.
+                verified_data.set_hash(hash_line);
             }
 
             // Return result.
             // -------------------------------------------------------------------------------------
-            if num == stop_step {
+            if step == stop_step {
                 return Ok(verified_data);
             }
         }
         //
         let meta = Self::meta()?;
         Err(format!(
-            "Model: `{}` > Method: `save` => \
-            !!!-Stub-!!!",
+            "Model: `{}` > Method: `save()` => \
+                !!!-Stub-!!!",
             meta.model_name
         ))?
     }
@@ -2063,16 +1702,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...}
-    /// let output_data = model_name.delete(None)?;
-    /// if !output_data.is_valid()? {
-    ///     println!("{}", output_data.err_msg()?);
+    /// let mut user = User{...};
+    /// let output_data = user.delete(None)?;
+    /// if !output_data.is_valid() {
+    ///     println!("{}", output_data.err_msg());
     /// }
-    /// ```
     ///
-    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>> {
-        // Run hook.
-        self.pre_delete();
+    ///
+    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -2093,7 +1733,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get Model hash  for ObjectId.
-            let hash = self.get_hash();
+            let hash = self.hash();
             if hash.is_empty() {
                 Err(format!(
                     "Model: `{}` > Field: `hash` => \
@@ -2106,48 +1746,48 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let query = doc! {"_id": object_id};
             // Removeve files
             if let Some(document) = coll.find_one(query.clone(), None)? {
-                for (field_name, widget_name) in meta.widget_type_map.iter() {
+                let model_json = self.self_to_json_val()?;
+                //
+                for field_name in meta.fields_name.iter() {
                     if !document.is_null(field_name) {
-                        match widget_name.as_str() {
-                            "inputFile" => {
-                                if let Some(info_file) =
-                                    document.get(field_name).unwrap().as_document()
-                                {
-                                    let path = info_file.get_str("path")?;
-                                    let default_value =
-                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
-                                    let default_path = if !default_value.is_empty() {
-                                        serde_json::from_str::<FileData>(default_value)?.path
-                                    } else {
-                                        String::new()
-                                    };
-                                    if path != default_path {
+                        let field = model_json.get(field_name).unwrap();
+                        let field_type = field.get("field_type").unwrap().as_str().unwrap();
+                        //
+                        if field_type == "InputFile" {
+                            if let Some(info_file) = document.get(field_name).unwrap().as_document()
+                            {
+                                let path = info_file.get_str("path")?;
+                                let default_value = field.get("default").unwrap();
+                                //
+                                if !default_value.is_null() {
+                                    let file_data_default =
+                                        serde_json::from_value::<FileData>(default_value.clone())?;
+                                    // Exclude files by default.
+                                    if path != file_data_default.path {
                                         let path = Path::new(path);
                                         if path.exists() {
                                             fs::remove_file(path)?;
                                         }
                                     }
-                                } else {
-                                    Err(format!(
-                                        "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` => Document (info file) not found.",
-                                        meta.model_name, field_name
-                                    ))?
                                 }
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > \
+                                        Method: `delete()` => Document (info file) not found.",
+                                    meta.model_name, field_name
+                                ))?
                             }
-                            "inputImage" => {
-                                if let Some(info_file) =
-                                    document.get(field_name).unwrap().as_document()
-                                {
-                                    let path = info_file.get_str("path")?;
-                                    let default_value =
-                                        meta.default_value_map.get(field_name).unwrap().1.as_str();
-                                    let default_path = if !default_value.is_empty() {
-                                        serde_json::from_str::<ImageData>(default_value)?.path
-                                    } else {
-                                        String::new()
-                                    };
-                                    if path != default_path {
+                        } else if field_type == "InputImage" {
+                            if let Some(info_file) = document.get(field_name).unwrap().as_document()
+                            {
+                                let path = info_file.get_str("path")?;
+                                let default_value = field.get("default").unwrap();
+                                //
+                                if !default_value.is_null() {
+                                    let img_data_default =
+                                        serde_json::from_value::<ImageData>(default_value.clone())?;
+                                    // Exclude files by default.
+                                    if path != img_data_default.path {
                                         let path = Path::new(path);
                                         if path.exists() {
                                             fs::remove_file(path)?;
@@ -2165,15 +1805,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             }
                                         }
                                     }
-                                } else {
-                                    Err(format!(
-                                        "Model: `{}` > Field: `{}` > \
-                                         Method: `delete()` => Document (info file) not found.",
-                                        meta.model_name, field_name
-                                    ))?
                                 }
+                            } else {
+                                Err(format!(
+                                    "Model: `{}` > Field: `{}` > \
+                                        Method: `delete()` => Document (info file) not found.",
+                                    meta.model_name, field_name
+                                ))?
                             }
-                            _ => {}
                         }
                     }
                 }
@@ -2183,6 +1822,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.model_name
                 ))?
             }
+            // Run hook.
+            self.pre_delete();
             // Execute query.
             coll.delete_one(query, options).is_ok()
         } else {
@@ -2205,9 +1846,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user = UserProfile {...};
+    /// let user = User {...};
     /// let field_value = user.password;
-    /// println!("{}", user_profile.create_password_hash(field_value)?);
+    /// println!("{}", user.create_password_hash(field_value)?);
     /// ```
     ///
     fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
@@ -2234,16 +1875,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user_profile = UserProfile {...};
+    /// let user = User {...};
     /// let password = "12345678";
-    /// assert!(user_profile.create_password_hash(password, None)?);
+    /// assert!(user.create_password_hash(password, None)?);
     /// ```
     ///
     fn verify_password(
         &self,
         password: &str,
         options: Option<FindOneOptions>,
-    ) -> Result<bool, Box<dyn Error>> {
+    ) -> Result<bool, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
@@ -2253,11 +1897,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get hash-line of Model.
-        let hash = self.get_hash();
+        let hash = self.hash();
         if hash.is_empty() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                An empty `hash` field is not allowed when updating.",
+                    An empty `hash` field is not allowed when updating.",
                 meta.model_name
             ))?
         }
@@ -2271,7 +1915,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if doc.is_none() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                There is no document in the database for the current `hash` value.",
+                    There is no document in the database for the current `hash` value.",
                 meta.model_name
             ))?
         }
@@ -2282,7 +1926,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if password_hash.is_none() {
             Err(format!(
                 "Model: `{}` ; Method: `verify_password` => \
-                The `password` field is missing.",
+                    The `password` field is missing.",
                 meta.model_name
             ))?
         }
@@ -2304,7 +1948,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user = UserProfile {...};
+    /// let user = User {...};
     /// let old_password = "12345678";
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
@@ -2321,7 +1965,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         new_password: &str,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         //
         let mut result_bool = false;
         let mut err_msg = String::new();
@@ -2338,7 +1985,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Get hash-line of Model.
-            let hash = self.get_hash();
+            let hash = self.hash();
             // Convert hash-line to ObjectId.
             let object_id = ObjectId::with_string(hash.as_str())?;
             // Create a filter to search for a document.
@@ -2354,7 +2001,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 .modified_count
                 == 1_i64;
             if !result_bool {
-                err_msg = format!("An error occurred while updating the password.")
+                err_msg = "An error occurred while updating the password.".to_string();
             }
         }
         //

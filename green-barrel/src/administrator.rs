@@ -1,13 +1,13 @@
 //! Helper methods for the admin panel.
 
 use mongodb::bson::{doc, document::Document, oid::ObjectId};
-use serde_json::Value;
+use serde::{de::DeserializeOwned, ser::Serialize};
+use serde_json::{json, Value};
 use std::error::Error;
 
-use crate::{
+use crate::models::{
+    db_query_api::{commons::QCommons, paladins::QPaladins},
     helpers::Meta,
-    models::db_query_api::{commons::QCommons, paladins::QPaladins},
-    widgets::Widget,
 };
 
 /// The output data for the admin panel.
@@ -19,7 +19,7 @@ pub enum OutputDataAdmin<T> {
 /// Helper methods for the admin panel.
 pub trait Administrator: QCommons + QPaladins {
     /// Json-line for admin panel.
-    /// ( converts a widget map to a list, in the order of the Model fields )
+    /// ( converts a field type map to a list, in the order of the Model fields )
     // *********************************************************************************************
     ///
     /// # Example:
@@ -29,49 +29,34 @@ pub trait Administrator: QCommons + QPaladins {
     /// println!("{}", model_name.instance_to_json_for_admin()?);
     /// ```
     ///
-    fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+    fn instance_to_json_for_admin(&self) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
         let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         //
-        let map_widgets = model_cache.widget_map.clone();
-        let model_json = self.self_to_json()?;
-        let mut widget_list: Vec<Widget> = Vec::new();
-        let hash = self.get_hash();
-        // Get a list of widgets in the order of the model fields.
+        let model_json = self.self_to_json_val()?;
+        let mut field_type_list = Vec::<Value>::new();
+        let hash = self.hash();
+        // Get a list of fields type in the order of the model fields.
         for field_name in meta.fields_name.iter() {
-            let mut widget = map_widgets.get(field_name).unwrap().clone();
-            if !field_name.contains("password") {
-                let field_json = model_json[field_name].clone();
-                if field_json.is_string() {
-                    widget.value = field_json.as_str().unwrap().to_string();
-                } else if field_json.is_i64() {
-                    widget.value = field_json.as_i64().unwrap().to_string();
-                } else if field_json.is_u64() {
-                    widget.value = field_json.as_u64().unwrap().to_string();
-                } else if field_json.is_f64() {
-                    widget.value = field_json.as_f64().unwrap().to_string();
-                } else if field_json.is_array() {
-                    let array = field_json.as_array().unwrap();
-                    widget.value = serde_json::to_string(array)?;
-                } else if field_json.is_boolean() {
-                    widget.checked = field_json.as_bool().unwrap();
-                } else if field_json.is_null() {
-                    widget.value = String::new();
-                }
-                if field_name == "created_at" || field_name == "updated_at" {
-                    widget.is_hide = false;
-                }
-            } else if !hash.is_empty() {
-                widget.widget = "hiddenText".to_string();
-                widget.input_type = "hidden".to_string();
-                widget.value = String::new();
+            let mut field_type = model_json.get(field_name).unwrap().clone();
+            if field_name == "created_at" || field_name == "updated_at" {
+                *field_type.get_mut("input_type").unwrap() = json!("datetime");
+                *field_type.get_mut("is_hide").unwrap() = json!(false);
             }
-            widget_list.push(widget);
+            if field_name.contains("password") && !hash.is_empty() {
+                *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("is_hide").unwrap() = json!(true);
+                *field_type.get_mut("value").unwrap() = json!("");
+            }
+            field_type_list.push(field_type);
         }
         //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(serde_json::to_string(&field_type_list)?)
     }
 
     /// Get the model instance for actix-mango-panel.
@@ -83,12 +68,11 @@ pub trait Administrator: QCommons + QPaladins {
         dyn_data: Option<Value>,
     ) -> Result<OutputDataAdmin<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        if doc_hash.is_some() {
+        if let Some(doc_hash) = doc_hash {
             // For - Get document
-            let doc_hash = doc_hash.unwrap();
             if doc_hash.is_empty() {
                 return Ok(OutputDataAdmin::EarlyResult(
                     Self::model_to_json_for_admin()?
@@ -98,38 +82,36 @@ pub trait Administrator: QCommons + QPaladins {
             if object_id.is_err() {
                 Err(format!(
                     "Model: `{}` > \
-                    Method: `instance_for_admin` => \
-                    Invalid document hash.",
+                        Method: `instance_for_admin` => \
+                        Invalid document hash.",
                     Self::key()?
                 ))?
             }
             let object_id = object_id.unwrap();
             let filter = doc! {"_id": object_id};
-            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_instance(
                 filter, None,
             )?))
-        } else if bytes.is_some() {
+        } else if let Some(bytes) = bytes {
             // For - Save document
             Ok(OutputDataAdmin::Instance(Some(serde_json::from_slice::<
                 Self,
-            >(
-                &bytes.unwrap()
-            )?)))
-        } else if filter.is_some() {
+            >(bytes)?)))
+        } else if let Some(filter) = filter {
             // For - Delete document
-            Ok(OutputDataAdmin::Instance(Self::find_one_to_model_instance(
-                filter.unwrap().clone(),
+            Ok(OutputDataAdmin::Instance(Self::find_one_to_instance(
+                filter.clone(),
                 None,
             )?))
-        } else if dyn_data.is_some() {
-            // Update dynamic widget data
-            Self::update_dyn_wig(dyn_data.unwrap())?;
-            return Ok(OutputDataAdmin::EarlyResult(String::new()));
+        } else if let Some(dyn_data) = dyn_data {
+            // Update dynamic field type data
+            Self::update_dyn_field(dyn_data)?;
+            Ok(OutputDataAdmin::EarlyResult(String::new()))
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `instance_for_admin` => \
-                No match on function arguments.",
+                    Method: `instance_for_admin` => \
+                    No match on function arguments.",
                 Self::key()?
             ))?
         }
@@ -142,7 +124,10 @@ pub trait Administrator: QCommons + QPaladins {
         doc_hash: Option<&str>,
         bytes: Option<&actix_web::web::BytesMut>,
         filter: Option<&Document>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         //
         if doc_hash.is_some() {
             // Get document
@@ -150,7 +135,7 @@ pub trait Administrator: QCommons + QPaladins {
         } else if bytes.is_some() {
             // Save document
             let output_data = self.save(None, None)?;
-            return output_data.to_json_for_admin();
+            return output_data.json_for_admin();
         } else if filter.is_some() {
             // Delete document
             let output_data = self.delete(None)?;
@@ -160,8 +145,8 @@ pub trait Administrator: QCommons + QPaladins {
         } else {
             Err(format!(
                 "Model: `{}` > \
-                Method: `result_for_admin` => \
-                No match on function arguments.",
+                    Method: `result_for_admin` => \
+                    No match on function arguments.",
                 Self::key()?
             ))?
         }

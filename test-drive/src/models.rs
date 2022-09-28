@@ -2,6 +2,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
 use crate::settings::{
@@ -10,133 +11,116 @@ use crate::settings::{
 };
 
 #[Model(
-    is_del_docs = false,
     is_use_add_valid = true,
     is_use_hooks = true,
-    is_use_custom_html = true,
     ignore_fields = "confirm_password"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
-pub struct UserProfile {
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Username",
-        placeholder = "Enter your username",
-        unique = true,
-        required = true,
-        maxlength = 150,
-        hint = "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150"
-    )]
-    pub username: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputSlug",
-        label = "Slug",
-        unique = true,
-        readonly = true,
-        is_hide = true,
-        hint = "To create a human readable url",
-        slug_sources = r#"["hash", "username"]"#
-    )]
-    pub slug: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "First name",
-        placeholder = "Enter your First name",
-        maxlength = 150
-    )]
-    pub first_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputText",
-        label = "Last name",
-        placeholder = "Enter your Last name",
-        maxlength = 150
-    )]
-    pub last_name: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputEmail",
-        label = "E-mail",
-        placeholder = "Please enter your email",
-        required = true,
-        unique = true,
-        maxlength = 320,
-        hint = "Your actual E-mail"
-    )]
-    pub email: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPhone",
-        label = "Phone number",
-        placeholder = "Please enter your phone number",
-        unique = true,
-        maxlength = 30,
-        hint = "Your actual phone number"
-    )]
-    pub phone: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Password",
-        placeholder = "Enter your password",
-        required = true,
-        minlength = 8,
-        hint = "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
-    )]
-    pub password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "inputPassword",
-        label = "Confirm password",
-        placeholder = "Repeat your password",
-        required = true,
-        minlength = 8,
-        hint = "Repeat your password"
-    )]
-    pub confirm_password: Option<String>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is staff?",
-        checked = true,
-        hint = "User can access the admin site?"
-    )]
-    pub is_staff: Option<bool>,
-    //
-    #[serde(default)]
-    #[field_attrs(
-        widget = "checkBox",
-        label = "is active?",
-        checked = true,
-        hint = "Is this an active account?"
-    )]
-    pub is_active: Option<bool>,
+pub struct User {
+    pub username: InputText,
+    pub slug: AutoSlug,
+    pub first_name: InputText,
+    pub last_name: InputText,
+    pub email: InputEmail,
+    pub phone: InputPhone,
+    pub password: InputPassword,
+    pub confirm_password: InputPassword,
+    pub is_staff: CheckBox,
+    pub is_active: CheckBox,
 }
 
-impl AdditionalValidation for UserProfile {
-    fn add_validation<'a>(
-        &self,
-    ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+impl Control for User {
+    fn custom_default() -> Self {
+        Self {
+            username: InputText {
+                label: "Username".into(),
+                placeholder: "Enter your username".into(),
+                maxlength: 150,
+                required: true,
+                unique: true,
+                hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
+                ..Default::default()
+            },
+            slug: AutoSlug {
+                label: "Slug".into(),
+                unique: true,
+                readonly: true,
+                hint: "To create a human readable url".into(),
+                slug_sources: vec!["hash".into(), "username".into()],
+                ..Default::default()
+            },
+            first_name: InputText {
+                label: "First name".into(),
+                placeholder: "Enter your First name".into(),
+                maxlength: 150,
+                ..Default::default()
+            },
+            last_name: InputText {
+                label: "Last name".into(),
+                placeholder: "Enter your Last name".into(),
+                maxlength: 150,
+                ..Default::default()
+            },
+            email: InputEmail {
+                label: "E-mail".into(),
+                placeholder: "Please enter your email".into(),
+                required: true,
+                unique: true,
+                maxlength: 320,
+                hint: "Your actual E-mail".into(),
+                ..Default::default()
+            },
+            phone: InputPhone {
+                label: "Phone number".into(),
+                placeholder: "Please enter your phone number".into(),
+                unique: true,
+                maxlength: 30,
+                hint: "Your actual phone number".into(),
+                ..Default::default()
+            },
+            password: InputPassword {
+                label: "Password".into(),
+                placeholder: "Enter your password".into(),
+                required: true,
+                minlength: 8,
+                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
+                    .into(),
+                ..Default::default()
+            },
+            confirm_password: InputPassword {
+                label: "Confirm password".into(),
+                placeholder: "Repeat your password".into(),
+                required: true,
+                minlength: 8,
+                ..Default::default()
+            },
+            is_staff: CheckBox {
+                label: "is staff?".into(),
+                checked: Some(true),
+                hint: "User can access the admin site?".into(),
+                ..Default::default()
+            },
+            is_active: CheckBox {
+                label: "is active?".into(),
+                checked: Some(true),
+                hint: "Is this an active account?".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }
+}
+
+impl AdditionalValidation for User {
+    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
-        let mut error_map: std::collections::HashMap<&'a str, &'a str> =
-            std::collections::HashMap::new();
+        let mut error_map = HashMap::<&'a str, &'a str>::new();
 
         // Get clean data
-        let hash = self.hash.clone().unwrap_or_default();
-        let password = self.password.clone().unwrap_or_default();
-        let confirm_password = self.confirm_password.clone().unwrap_or_default();
-        let username = self.username.clone().unwrap_or_default();
+        let hash = self.hash.value.clone().unwrap_or_default();
+        let password = self.password.value.clone().unwrap_or_default();
+        let confirm_password = self.confirm_password.value.clone().unwrap_or_default();
+        let username = self.username.value.clone().unwrap_or_default();
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
@@ -159,7 +143,7 @@ impl AdditionalValidation for UserProfile {
     }
 }
 
-impl Hooks for UserProfile {
+impl Hooks for User {
     fn pre_create(&self) {
         println!("!!!Pre Create!!!");
     }
@@ -183,46 +167,4 @@ impl Hooks for UserProfile {
     fn post_delete(&self) {
         println!("!!!Post Delet!!!");
     }
-}
-
-impl GenerateHtml for UserProfile {}
-
-#[Model]
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct Dynamic {
-    // text
-    #[serde(default)]
-    #[field_attrs(widget = "selectTextDyn")]
-    pub select_text_dyn: Option<String>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectTextMultDyn")]
-    pub select_text_mult_dyn: Option<Vec<String>>,
-    // i32
-    #[serde(default)]
-    #[field_attrs(widget = "selectI32Dyn")]
-    pub select_i32_dyn: Option<i32>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectI32MultDyn")]
-    pub select_i32_mult_dyn: Option<Vec<i32>>,
-    // u32
-    #[serde(default)]
-    #[field_attrs(widget = "selectU32Dyn")]
-    pub select_u32_dyn: Option<u32>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectU32MultDyn")]
-    pub select_u32_mult_dyn: Option<Vec<u32>>,
-    // i64
-    #[serde(default)]
-    #[field_attrs(widget = "selectI64Dyn")]
-    pub select_i64_dyn: Option<i64>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectI64MultDyn")]
-    pub select_i64_mult_dyn: Option<Vec<i64>>,
-    // f64
-    #[serde(default)]
-    #[field_attrs(widget = "selectF64Dyn")]
-    pub select_f64_dyn: Option<f64>,
-    #[serde(default)]
-    #[field_attrs(widget = "selectF64MultDyn")]
-    pub select_f64_mult_dyn: Option<Vec<f64>>,
 }

@@ -3,20 +3,19 @@
 use lazy_static::lazy_static;
 use mongodb::sync::Client;
 use regex::{Regex, RegexBuilder};
+use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use crate::{helpers::Meta, widgets::Widget};
+use crate::models::helpers::Meta;
 
 // GLOBAL STORAGE
 // #################################################################################################
-/// Structure for caching map of widgets, json and html, for mango models.
+/// Structure for caching map of fields type, json and html, for mango models.
 #[derive(Default, Clone, Debug)]
 pub struct ModelCache {
     pub meta: Meta,
-    pub widget_map: HashMap<String, Widget>,
-    pub form_json: String,
-    pub form_html: String,
+    pub model_json: Value,
 }
 
 // Store

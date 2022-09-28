@@ -8,17 +8,22 @@ license = "MIT OR Apache-2.0"
 name = "metamorphose"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/mango-orm/tree/master/metamorphose"
-version = "0.7.16"
+version = "1.0.0-beta"
 
 [lib]
 proc-macro = true
 
 [dependencies]
-quote = "1.0.20"
-regex = "1.5.6"
-serde_json = "1.0.81"
-syn = "1.0.98"
+quote = "1.0.21"
+regex = "1.6.0"
+serde_json = "1.0.85"
+syn = "1.0.101"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.137"
+version = "1.0.145"
+
+[dependencies.mongodb]
+default-features = false
+features = ["sync"]
+version = "1.2.5"

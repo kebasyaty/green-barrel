@@ -1,8 +1,10 @@
 //! Adapts the Structure for database queries using a programmatic or web interface.
 
 pub mod caching;
+pub mod control;
 pub mod converters;
 pub mod db_query_api;
+pub mod helpers;
 pub mod hooks;
 pub mod output_data;
 pub mod validation;
@@ -11,88 +13,98 @@ use mongodb::{
     bson::{doc, oid::ObjectId},
     sync::Client,
 };
-use serde_json::value::Value;
-use std::{collections::HashMap, error::Error};
+use serde_json::{json, value::Value};
+use std::error::Error;
 
-use crate::{helpers::Meta, widgets::Widget};
+use crate::models::helpers::Meta;
 
-/// Model options and widget map for Form.
+/// Model options and field type map for Form.
 // *************************************************************************************************
 pub trait Main {
     /// Get model key
-    /// ( to access data in the cache )
+    /// ( to access model metadata in cache ).
     // ---------------------------------------------------------------------------------------------
     fn key() -> Result<String, Box<dyn Error>>;
 
-    /// Get metadata of Model.
+    /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
+    /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn meta() -> Result<Meta, Box<dyn Error>>;
+    fn custom_default_to_json_val() -> Result<Value, Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized;
 
-    /// Get map of widgets for model fields.
-    /// Hint: <field name, Widget>
+    /// Generate metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn widgets() -> Result<HashMap<String, Widget>, Box<dyn Error>>;
+    fn generate_metadata() -> Result<(Meta, Value), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized;
 
     /// Getter and Setter for field `hash`.
     // ---------------------------------------------------------------------------------------------
-    fn get_hash(&self) -> String;
+    fn hash(&self) -> String;
     fn set_hash(&mut self, value: String);
+
+    /// ObjectId from hash field.
+    // ---------------------------------------------------------------------------------------------
+    fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>>;
+
+    /// ObjectId to hash field.
+    // ---------------------------------------------------------------------------------------------
+    fn set_obj_id(&mut self, object_id: ObjectId);
 
     /// Getter and Setter for field `created_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_created_at(&self) -> String;
+    fn created_at(&self) -> String;
     fn set_created_at(&mut self, value: String);
 
     /// Getter and Setter for field `updated_at`.
     // ---------------------------------------------------------------------------------------------
-    fn get_updated_at(&self) -> String;
+    fn updated_at(&self) -> String;
     fn set_updated_at(&mut self, value: String);
 
-    /// Serialize an instance of the Model to a hash-line.
+    /// Serializing the model instance to serde_json::Value format.
     // ---------------------------------------------------------------------------------------------
-    fn self_to_json(&self) -> Result<Value, Box<dyn Error>>;
+    fn self_to_json_val(&self) -> Result<Value, Box<dyn Error>>;
 
-    /// Convert hash-line to MongoDB ID.
+    /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
-    fn hash_to_id(hash: &str) -> Result<ObjectId, Box<dyn Error>> {
-        Ok(ObjectId::with_string(hash)?)
-    }
-
-    /// Convert MongoDB ID to hash-line.
-    // ---------------------------------------------------------------------------------------------
-    fn id_to_hash(object_id: ObjectId) -> String {
-        object_id.to_hex()
-    }
-
-    /// Enrich the widget map with values for dynamic widgets.
-    // ---------------------------------------------------------------------------------------------
-    fn vitaminize(
+    fn injection(
         project_name: &str,
         unique_project_key: &str,
         collection_name: &str,
         client: &Client,
-        widget_map: &mut HashMap<String, Widget>,
-    ) -> Result<(), Box<dyn Error>> {
+        model_json: &mut Value,
+        fields_name: &Vec<String>,
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: serde::de::DeserializeOwned + Sized,
+    {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
-        // Access to the collection with values for dynamic widgets.
-        let collection = client
-            .database(&db_green_tech)
-            .collection("dynamic_widgets");
+        // Access to the collection with values for dynamic fields type.
+        let collection = client.database(&db_green_tech).collection("dynamic_fields");
         // Filter for searching a document.
         let filter = doc! {
             "collection": collection_name
         };
-        // Get a document with values for dynamic widgets.
+        // Get a document with values for dynamic fields type.
         if let Some(doc) = collection.find_one(filter, None)? {
             let dyn_values_doc = doc.get_document("fields")?;
-            // Updating the `options` parameter for fields with a dynamic widget.
-            for (field_name, widget) in widget_map {
-                let widget_type = widget.widget.clone();
-                if widget_type.contains("Dyn") {
+            // Updating the `options` parameter for fields with a dynamic field type.
+            for field_name in fields_name {
+                let field_type = model_json
+                    .get(field_name)
+                    .unwrap()
+                    .get("field_type")
+                    .unwrap()
+                    .as_str()
+                    .unwrap();
+                //
+                if field_type.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
-                    let options = if widget_type.contains("Text") {
-                        arr.iter()
+                    if field_type.contains("Text") {
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
@@ -100,56 +112,71 @@ pub trait Main {
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("I32") {
-                        arr.iter()
+                            .collect::<Vec<(String, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
+                    } else if field_type.contains("I32") {
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_i32().unwrap().to_string(),
+                                    arr[0].as_i32().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("U32") || widget_type.contains("I64") {
-                        arr.iter()
+                            .collect::<Vec<(i32, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
+                    } else if field_type.contains("U32") || field_type.contains("I64") {
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_i64().unwrap().to_string(),
+                                    arr[0].as_i64().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
-                    } else if widget_type.contains("F64") {
-                        arr.iter()
+                            .collect::<Vec<(i64, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
+                    } else if field_type.contains("F64") {
+                        let options = arr
+                            .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
                                 (
-                                    arr[0].as_f64().unwrap().to_string(),
+                                    arr[0].as_f64().unwrap(),
                                     arr[1].as_str().unwrap().to_string(),
                                 )
                             })
-                            .collect::<Vec<(String, String)>>()
+                            .collect::<Vec<(f64, String)>>();
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut("options")
+                            .unwrap() = json!(options);
                     } else {
                         Err(format!(
-                            "Model: {} > Method: `vitaminize` => \
-                            Invalid data type.",
-                            Self::meta()?.model_name,
+                            "Model: {} > Method: `injection()` => \
+                                Invalid data type.",
+                            Self::generate_metadata()?.0.model_name,
                         ))?
-                    };
-                    //
-                    widget.options = options;
+                    }
                 }
             }
-        } else {
-            Err(format!(
-                "Model: {} ; Method: `vitaminize()` => \
-                Document with values for dynamic widgets not found.",
-                Self::meta()?.model_name
-            ))?
         }
-        //
+
         Ok(())
     }
 }

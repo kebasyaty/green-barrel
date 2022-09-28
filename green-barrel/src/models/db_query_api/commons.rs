@@ -10,11 +10,12 @@ use mongodb::{
     sync::Collection,
     Namespace,
 };
-use std::{collections::HashMap, error::Error};
+use serde::{de::DeserializeOwned, ser::Serialize};
+use std::error::Error;
 
 use crate::{
     models::{caching::Caching, converters::Converters, output_data::OutputData, Main, Meta},
-    widgets::Widget,
+    store::MONGODB_CLIENT_STORE,
 };
 
 /// Common query methods.
@@ -30,19 +31,24 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let documents  = ModelName::aggregate(pipeline, None)?;
-    /// println!("{:?}", documents);
+    /// let doc_list  = ModelName::aggregate(pipeline, None)?;
+    /// println!("{:?}", doc_list);
     /// ```
     ///
     fn aggregate(
         pipeline: Vec<Document>,
         options: Option<AggregateOptions>,
-    ) -> Result<Vec<Document>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<Vec<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -69,12 +75,17 @@ pub trait QCommons: Main + Caching + Converters {
     fn count_documents(
         filter: Option<Document>,
         options: Option<CountOptions>,
-    ) -> Result<i64, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<i64, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -100,10 +111,15 @@ pub trait QCommons: Main + Caching + Converters {
     fn delete_many(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -117,7 +133,7 @@ pub trait QCommons: Main + Caching + Converters {
         let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -148,10 +164,15 @@ pub trait QCommons: Main + Caching + Converters {
     fn delete_one(
         query: Document,
         options: Option<DeleteOptions>,
-    ) -> Result<OutputData, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -165,7 +186,7 @@ pub trait QCommons: Main + Caching + Converters {
         let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -196,12 +217,17 @@ pub trait QCommons: Main + Caching + Converters {
         field_name: &str,
         filter: Option<Document>,
         options: Option<DistinctOptions>,
-    ) -> Result<Vec<Bson>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<Vec<Bson>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -221,10 +247,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -236,7 +267,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -261,12 +292,17 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn estimated_document_count(
         options: Option<EstimatedDocumentCountOptions>,
-    ) -> Result<i64, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<i64, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -274,34 +310,38 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds the documents in the collection matching filter and
-    /// return document list ( missing widgets ).
+    /// return document list ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_doc(None, None)?;
-    /// if result.is_some() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result = ModelName::find_many_to_doc_list(None, None)?;
+    /// if let Some(doc_list) = result {
+    ///     println!("{:?}", doc_list);
     /// }
     /// ```
     ///
-    fn find_many_to_doc(
+    fn find_many_to_doc_list(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<Option<Vec<Document>>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<Option<Vec<Document>>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
-        let options = if options.is_some() {
-            let mut options = options.unwrap();
+        let options = if let Some(mut options) = options {
             if options.limit == Some(0_i64) {
                 options.limit = Some(meta.db_query_docs_limit as i64);
             }
@@ -312,42 +352,44 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        let docs = Self::many_to_doc(filter, Some(options), coll)?;
-        if docs.is_empty() {
+        let doc_list = Self::many_to_doc_list(filter, Some(options), coll)?;
+        if doc_list.is_empty() {
             return Ok(None);
         }
-        Ok(Some(docs))
+        Ok(Some(doc_list))
     }
 
     /// Finds the documents in the collection matching filter and
-    /// return in JSON format ( missing widgets ).
+    /// return in JSON format ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json(None, None);
-    /// if result.is_ok() {
-    ///     println!("{}", result?);
-    /// }
+    /// let json = ModelName::find_many_to_json(None, None)?;
+    /// println!("{}", json);
     /// ```
     ///
     fn find_many_to_json(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<String, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
-        let options = if options.is_some() {
-            let mut options = options.unwrap();
+        let options = if let Some(mut options) = options {
             if options.limit == Some(0_i64) {
                 options.limit = Some(meta.db_query_docs_limit as i64);
             }
@@ -363,13 +405,13 @@ pub trait QCommons: Main + Caching + Converters {
             Some(options),
             coll,
             &meta.ignore_fields,
-            &meta.widget_type_map,
+            &meta.field_type_map,
             meta.model_name.as_str(),
         )
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return in Doc format ( missing widgets ).
+    /// return in Doc format ( missing fields type ).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -378,21 +420,26 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_doc(filter, None)?;
-    /// if result.is_some() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result = ModelName::find_one_to_doc(filter, None)?;
+    /// if let Some(doc) = result {
+    ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
     fn find_one_to_doc(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<Option<Document>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<Option<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -400,7 +447,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return in JSON format ( presence of widgets ).
+    /// return in JSON format.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -409,41 +456,43 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_json(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{}", result);
-    /// }
+    /// let json = ModelName::find_one_to_json(filter, None)?;
+    /// println!("{}", json);
     /// ```
     ///
     fn find_one_to_json(
         filter: Document,
         options: Option<FindOneOptions>,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
         // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Execute query.
-        let widget_map = Self::one_to_wig(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            &meta.model_name,
-            &meta.fields_name,
-            model_cache.widget_map.clone(),
-        )?;
-
-        if widget_map.is_none() {
-            return Ok(String::new());
+        // Get document from database and convert to model instance in jsob-line format.
+        if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+            let mut model_json = model_cache.model_json;
+            Self::one_to_json_val(
+                db_doc,
+                &meta.ignore_fields,
+                &meta.field_type_map,
+                &meta.model_name,
+                &meta.fields_name,
+                &mut model_json,
+            )?;
+            return Ok(serde_json::to_string(&model_json)?);
         }
-        Self::widget_map_to_json(widget_map.unwrap())
+        //
+        Ok(String::new())
     }
 
     /// Finds a single document in the collection matching filter and
-    /// return widget map.
+    /// return as model instance.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
     // ---------------------------------------------------------------------------------------------
     ///
@@ -452,75 +501,45 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_wig(filter, None)?;
-    /// if result.is_some()) {
-    ///     println!("{:?}", result.unwrap());
+    /// let result  = ModelName::find_one_to_instance(filter, None)?;
+    /// if let Some(instance) = result {
+    ///     println!("{:?}", instance);
     /// }
     /// ```
     ///
-    fn find_one_to_wig(
-        filter: Document,
-        options: Option<FindOneOptions>,
-    ) -> Result<Option<HashMap<String, Widget>>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
-        // Access collection.
-        let coll: Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Execute query.
-        Self::one_to_wig(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            &meta.model_name,
-            &meta.fields_name,
-            model_cache.widget_map.clone(),
-        )
-    }
-
-    /// Finds a single document in the collection matching filter and
-    /// return as model instance ( missing widgets ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// use mongodb::bson::doc;
-    /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_model_instance(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{:?}", result.unwrap());
-    /// }
-    /// ```
-    ///
-    fn find_one_to_model_instance(
+    fn find_one_to_instance(
         filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
-        Self: serde::de::DeserializeOwned + Sized,
+        Self: Serialize + DeserializeOwned + Sized,
     {
         // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
-        // Execute query.
-        Self::to_model_instance(
-            coll.find_one(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            meta.model_name.as_str(),
-        )
+        // Get document from database and convert to model instance.
+        if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+            let mut model_json = model_cache.model_json;
+            Self::one_to_json_val(
+                db_doc,
+                &meta.ignore_fields,
+                &meta.field_type_map,
+                &meta.model_name,
+                &meta.fields_name,
+                &mut model_json,
+            )?;
+            return Ok(Some(serde_json::from_value(model_json)?));
+        }
+        //
+        Ok(None)
     }
 
     /// Atomically finds up to one document in the collection matching filter and
-    /// deletes it ( missing widgets ).
+    /// deletes it ( missing fields type ).
     /// Returns the deleted document (in Doc format).
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
     // ---------------------------------------------------------------------------------------------
@@ -531,19 +550,24 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete_to_doc(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{:?}", result.unwrap());
+    /// let result  = ModelName::find_one_and_delete(filter, None)?;
+    /// if let Some(doc) = result) {
+    ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
-    fn find_one_and_delete_to_doc(
+    fn find_one_and_delete(
         filter: Document,
         options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<Option<Document>, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    ) -> Result<Option<Document>, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -551,112 +575,11 @@ pub trait QCommons: Main + Caching + Converters {
             Err("It is forbidden to perform delete.".to_string())?
         }
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.find_one_and_delete(filter, options)?)
-    }
-
-    /// Atomically finds up to one document in the collection matching filter and
-    /// deletes it ( missing widgets ).
-    /// Returns the deleted document (in JSON format).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// ```
-    /// use mongodb::bson::doc;
-    /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete_to_json(filter, None);
-    /// if result.is_ok() {
-    ///     println!("{}", result);
-    /// }
-    /// ```
-    ///
-    fn find_one_and_delete_to_json(
-        filter: Document,
-        options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<String, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
-        // Get permission to delete the document.
-        let is_permission_delete: bool = meta.is_del_docs;
-        //
-        if !is_permission_delete {
-            Err("It is forbidden to perform delete.".to_string())?
-        }
-        // Access collection.
-        let coll: Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Execute query.
-        let doc = coll.find_one_and_delete(filter, options)?;
-        if doc.is_none() {
-            return Ok(String::new());
-        }
-        let widget_map = Self::one_to_wig(
-            doc,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            &meta.model_name,
-            &meta.fields_name,
-            model_cache.widget_map.clone(),
-        )?;
-        if widget_map.is_none() {
-            return Ok(String::new());
-        }
-        Self::widget_map_to_json(widget_map.unwrap())
-    }
-
-    /// Atomically finds up to one document in the collection matching filter and
-    /// deletes it ( missing widgets ).
-    /// Returns the deleted document (in Model instance).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// ```
-    /// use mongodb::bson::doc;
-    /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete_to_model_instance(filter, None)?;
-    /// if result.is_some() {
-    ///     println!("{}", result.unwrap());
-    /// }
-    /// ```
-    ///
-    fn find_one_and_delete_to_model_instance(
-        filter: Document,
-        options: Option<FindOneAndDeleteOptions>,
-    ) -> Result<Option<Self>, Box<dyn Error>>
-    where
-        Self: serde::de::DeserializeOwned + Sized,
-    {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
-        // Get permission to delete the document.
-        let is_permission_delete: bool = meta.is_del_docs;
-        //
-        if !is_permission_delete {
-            Err("It is forbidden to perform delete.".to_string())?
-        }
-        // Access collection.
-        let coll: Collection = client_cache
-            .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
-        // Execute query.
-        Self::to_model_instance(
-            coll.find_one_and_delete(filter, options)?,
-            &meta.ignore_fields,
-            &meta.widget_type_map,
-            meta.model_name.as_str(),
-        )
     }
 
     /// Gets the name of the Collection.
@@ -670,12 +593,17 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", name);
     /// ```
     ///
-    fn name() -> Result<String, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    fn collection_name() -> Result<String, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -693,12 +621,17 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{:?}", name);
     /// ```
     ///
-    fn namespace() -> Result<Namespace, Box<dyn Error>> {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+    fn namespace() -> Result<Namespace, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.

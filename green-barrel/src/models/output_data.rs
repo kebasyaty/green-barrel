@@ -1,17 +1,14 @@
 //! Output data for QPaladins.
 
 use mongodb::bson::{document::Document, oid::ObjectId};
-use std::collections::HashMap;
+use serde::de::DeserializeOwned;
+use serde_json::{json, Value};
 use std::error::Error;
 
-use crate::{
-    helpers::{Enctype, HttpMethod},
-    models::converters::Converters,
-    widgets::{generate_html::GenerateHtml, Widget},
-};
+use crate::models::converters::Converters;
 
-/// Helper methods for converting output data (use in the paladins.rs module).
-// *************************************************************************************************
+/// Output data for delete(), update_password(), delete_many(), delete_one, drop() methods.
+// =================================================================================================
 #[derive(Debug)]
 pub enum OutputData {
     Delete(
@@ -36,9 +33,12 @@ impl OutputData {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.delete()?;
+    /// // or
     /// let output_data = model_name.update_password()?;
+    ///
     /// assert!(output_data.is_valid());
     /// ```
     ///
@@ -56,9 +56,12 @@ impl OutputData {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.delete()?;
+    /// // or
     /// let output_data = model_name.update_password()?;
+    ///
     /// if output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -68,6 +71,30 @@ impl OutputData {
         match self {
             Self::Delete(data) => data.1.clone(),
             Self::UpdatePassword(data) => data.1.clone(),
+        }
+    }
+
+    /// Printing errors to the console ( for development ).
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.delete()?;
+    /// // or
+    /// let output_data = model_name.update_password()?;
+    ///
+    /// if !output_data.is_valid() {
+    ///     output_data.print_err();
+    /// }
+    /// ```
+    ///
+    pub fn print_err(&self) {
+        let errors = self.err_msg();
+        if !errors.is_empty() {
+            println!("\nERRORS:{}\n", errors);
         }
     }
 
@@ -81,55 +108,95 @@ impl OutputData {
     }
 }
 
-/// Helper methods for converting output data (use in the paladins.rs module).
-// *************************************************************************************************
+/// Output data for check() and save() methods.
+// =================================================================================================
 #[derive(Debug)]
-pub struct OutputDataCheck {
-    is_valid: bool,
-    final_doc: Option<Document>,
-    final_widget_map: HashMap<String, Widget>,
-    service_name: String,
-    model_name: String,
-    fields_name: Vec<String>,
+pub struct OutputData2 {
+    pub is_valid: bool,
+    pub final_doc: Option<Document>,
+    pub final_model_json: Value,
+    pub fields_name: Vec<String>,
 }
 
-impl GenerateHtml for OutputDataCheck {}
-impl Converters for OutputDataCheck {}
+impl Converters for OutputData2 {}
 
-impl OutputDataCheck {
-    /// Output data initialization.
-    pub fn from(
-        is_valid: bool,
-        final_doc: Option<Document>,
-        final_widget_map: HashMap<String, Widget>,
-        service_name: String,
-        model_name: String,
-        fields_name: Vec<String>,
-    ) -> Self {
-        Self {
-            is_valid,
-            final_doc,
-            final_widget_map,
-            service_name,
-            model_name,
-            fields_name,
-        }
-    }
-
-    /// Get Hash-line
+impl OutputData2 {
+    /// Get validation status (boolean).
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
+    /// assert!(output_data.is_valid());
+    /// ```
+    ///
+    pub fn is_valid(&self) -> bool {
+        self.is_valid
+    }
+
+    /// If there are AutoSlug fields, do an update. Use only for save() method.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// if output_data.is_valid() {
+    ///     model_name = output_data.update()?;
+    /// }
+    /// ```
+    ///
+    pub fn update<T>(&self) -> Result<T, serde_json::Error>
+    where
+        T: DeserializeOwned + Sized,
+    {
+        serde_json::from_value::<T>(self.final_model_json.clone())
+    }
+
+    /// Get/Set Hash-line
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check(None)?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
     /// println!("{}", output_data.hash());
+    /// println!("{}", output_data.set_hash(hash_line));
     /// ```
     ///
     pub fn hash(&self) -> String {
-        self.final_widget_map.get("hash").unwrap().value.clone()
+        let value = self
+            .final_model_json
+            .get("hash")
+            .unwrap()
+            .get("value")
+            .unwrap();
+        if value.is_null() {
+            return String::new();
+        }
+        value.as_str().unwrap().to_string()
+    }
+    pub fn set_hash(&mut self, hash: String) {
+        *self
+            .final_model_json
+            .get_mut("hash")
+            .unwrap()
+            .get_mut("value")
+            .unwrap() = json!(hash);
     }
 
     /// Get MongoDB ID from hash-line
@@ -138,154 +205,88 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
-    /// println!("{:?}", output_data.object_id()?);
+    ///
+    /// println!("{:?}", output_data.obj_id()?);
     /// ```
     ///
-    pub fn object_id(&self) -> Result<ObjectId, Box<dyn Error>> {
-        let hash_line = self.hash();
-        let object_id = ObjectId::with_string(hash_line.as_str())?;
-        Ok(object_id)
-    }
-
-    /// Get/Set final document
-    // ---------------------------------------------------------------------------------------------
-    /// ( Wig - Widgets )
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let model_name = ModelName {...};
-    /// let output_data = model_name.check()?;
-    /// let output_data = model_name.save(None, None)?;
-    /// println!("{:?}", output_data.get_doc());
-    /// println!("{:?}", output_data.set_doc(Some(new_doc)));
-    /// ```
-    ///
-    pub fn get_doc(&self) -> Option<Document> {
-        self.final_doc.clone()
-    }
-    pub fn set_doc(&mut self, new_doc: Option<Document>) {
-        self.final_doc = new_doc;
-    }
-
-    /// Get/Set Map of Widgets
-    // ---------------------------------------------------------------------------------------------
-    /// ( Wig - Widgets )
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let model_name = ModelName {...};
-    /// let output_data = model_name.check()?;
-    /// let output_data = model_name.save(None, None)?;
-    /// println!("{:?}", output_data.to_wig());
-    /// println!("{:?}", output_data.set_wig(updated_widget_map));
-    /// ```
-    ///
-    pub fn to_wig(&self) -> HashMap<String, Widget> {
-        self.final_widget_map.clone()
-    }
-    pub fn set_wig(&mut self, new_widget_map: HashMap<String, Widget>) {
-        self.final_widget_map = new_widget_map
-    }
-
-    /// Get Json-line
-    // ---------------------------------------------------------------------------------------------
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let model_name = ModelName {...};
-    /// let output_data = model_name.check()?;
-    /// let output_data = model_name.save(None, None)?;
-    /// println!("{}", output_data.to_json()?);
-    /// ```
-    ///
-    pub fn to_json(&self) -> Result<String, Box<dyn Error>> {
-        Self::widget_map_to_json(self.final_widget_map.clone())
-    }
-
-    /// Json-line for admin panel.
-    // ---------------------------------------------------------------------------------------------
-    /// ( converts a widget map to a list, in the order of the Model fields )
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let model_name = ModelName {...};
-    /// let output_data = model_name.check()?;
-    /// let output_data = model_name.save(None, None)?;
-    /// println!("{}", output_data.to_json_for_admin()?);
-    /// ```
-    ///
-    pub fn to_json_for_admin(&self) -> Result<String, Box<dyn Error>> {
-        let mut widget_list: Vec<Widget> = Vec::new();
-        let hash = self.final_widget_map.get("hash").unwrap().clone().value;
-        // Get a list of widgets in the order of the model fields.
-        for field_name in self.fields_name.iter() {
-            let mut widget = self.final_widget_map.get(field_name).unwrap().clone();
-            if field_name == "created_at" || field_name == "updated_at" {
-                widget.is_hide = false;
-            }
-            if field_name.contains("password") && !hash.is_empty() {
-                widget.widget = "hiddenText".to_string();
-                widget.input_type = "hidden".to_string();
-            }
-            widget_list.push(widget);
+    pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
+        let hash = self.hash();
+        if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
+            return Ok(Some(obj_id));
         }
-        //
-        Ok(serde_json::to_string(&widget_list)?)
+        Ok(None)
     }
 
-    /// Get Html-code
+    /// Get Model instance in Json-line format.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
-    /// //
-    /// println!("{}", output_data.to_html(None, None, None)?);
-    /// // OR
-    /// println!("{}", output_data.to_html(Some("/login"), Some(HttpMethod::POST), Some(Enctype::Multipart))?);
+    ///
+    /// println!("{}", output_data.json()?);
     /// ```
     ///
-    pub fn to_html(
-        &self,
-        action: Option<&str>,
-        method: Option<HttpMethod>,
-        enctype: Option<Enctype>,
-    ) -> Result<String, Box<dyn Error>> {
-        Self::generate_html(
-            action,
-            method,
-            enctype,
-            &self.service_name,
-            &self.model_name,
-            &self.fields_name,
-            &self.final_widget_map,
-        )
+    pub fn json(&self) -> Result<String, Box<dyn Error>> {
+        Ok(serde_json::to_string(&self.final_model_json).unwrap())
     }
 
-    /// Get validation status (boolean).
+    /// Get the creation date of the document.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
-    /// assert!(output_data.is_valid());
+    ///
+    /// println!("{}", output_data.created_at());
     /// ```
     ///
-    pub fn is_valid(&self) -> bool {
-        self.is_valid
+    pub fn created_at(&self) -> Option<&str> {
+        self.final_model_json
+            .get("created_at")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
+    }
+
+    /// Get the date the document was updated.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{}", output_data.updated_at());
+    /// ```
+    ///
+    pub fn updated_at(&self) -> Option<&str> {
+        self.final_model_json
+            .get("updated_at")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
     }
 
     /// Get errors message ( for user side ).
@@ -294,9 +295,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// if output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -304,10 +308,12 @@ impl OutputDataCheck {
     ///
     pub fn err_msg(&self) -> String {
         let mut errors = String::new();
-        for (field_name, widget) in self.final_widget_map.iter() {
+        for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
-            if !widget.error.is_empty() {
-                errors = format!("{}\nField: `{}` => {}", tmp, field_name, widget.error);
+            let field_type = self.final_model_json.get(field_name).unwrap();
+            let error = field_type.get("error").unwrap().as_str().unwrap();
+            if !error.is_empty() {
+                errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
             }
         }
         if !errors.is_empty() {
@@ -322,9 +328,12 @@ impl OutputDataCheck {
     /// # Example:
     ///
     /// ```
-    /// let model_name = ModelName {...};
+    /// let mut model_name = ModelName::new()?;
+    ///
     /// let output_data = model_name.check()?;
+    /// // or
     /// let output_data = model_name.save(None, None)?;
+    ///
     /// if output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -335,5 +344,93 @@ impl OutputDataCheck {
         if !errors.is_empty() {
             println!("\nERRORS:{}\n", errors);
         }
+    }
+
+    // Methods for internal needs.
+    // *********************************************************************************************
+    /// Get field type list in json-line format for admin panel.
+    // ---------------------------------------------------------------------------------------------
+    /// ( converts a field type map to a list, in the order of the Model fields )
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{}", output_data.json_for_admin()?);
+    /// ```
+    ///
+    pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+        let mut field_type_list: Vec<Value> = Vec::new();
+        let hash: &str = self
+            .final_model_json
+            .get("hash")
+            .unwrap()
+            .get("value")
+            .unwrap()
+            .as_str()
+            .unwrap_or_default();
+        // Get a list of fields type in the order of the model fields.
+        for field_name in self.fields_name.iter() {
+            let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
+            if field_name == "created_at" || field_name == "updated_at" {
+                *field_type.get_mut("input_type").unwrap() = json!("datetime");
+                *field_type.get_mut("is_hide").unwrap() = json!(false);
+            }
+            if field_name.contains("password") && !hash.is_empty() {
+                *field_type.get_mut("input_type").unwrap() = json!("hidden");
+                *field_type.get_mut("is_hide").unwrap() = json!(true);
+                *field_type.get_mut("value").unwrap() = json!("");
+            }
+            field_type_list.push(field_type);
+        }
+        //
+        Ok(serde_json::to_string(&field_type_list)?)
+    }
+
+    /// Get/Set final document
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?;
+    ///
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{:?}", output_data.get_doc());
+    /// println!("{:?}", output_data.set_doc(Some(new_doc)));
+    /// ```
+    ///
+    pub fn get_doc(&self) -> Option<Document> {
+        self.final_doc.clone()
+    }
+    pub fn set_doc(&mut self, new_doc: Option<Document>) {
+        self.final_doc = new_doc;
+    }
+
+    /// Get Model instance in serde_json::Value format.
+    // ---------------------------------------------------------------------------------------------
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let mut model_name = ModelName::new()?
+    /// ;
+    /// let output_data = model_name.check()?;
+    /// // or
+    /// let output_data = model_name.save(None, None)?;
+    ///
+    /// println!("{:?}", output_data.model_json());
+    /// ```
+    ///
+    pub fn model_json(&self) -> Value {
+        self.final_model_json.clone()
     }
 }
