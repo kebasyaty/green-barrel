@@ -13,8 +13,9 @@ use mongodb::{
 use serde::{de::DeserializeOwned, ser::Serialize};
 use std::error::Error;
 
-use crate::models::{
-    caching::Caching, converters::Converters, output_data::OutputData, Main, Meta,
+use crate::{
+    models::{caching::Caching, converters::Converters, output_data::OutputData, Main, Meta},
+    store::MONGODB_CLIENT_STORE,
 };
 
 /// Common query methods.
@@ -41,11 +42,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -76,11 +79,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -110,9 +115,11 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -126,7 +133,7 @@ pub trait QCommons: Main + Caching + Converters {
         let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -161,9 +168,11 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -177,7 +186,7 @@ pub trait QCommons: Main + Caching + Converters {
         let mut deleted_count = 0_i64;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -212,11 +221,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -240,9 +251,11 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -254,7 +267,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client_cache
+            let coll: Collection = client
                 .database(meta.database_name.as_str())
                 .collection(meta.collection_name.as_str());
             // Execute query.
@@ -283,11 +296,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -315,11 +330,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
@@ -361,11 +378,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
@@ -414,11 +433,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -447,10 +468,10 @@ pub trait QCommons: Main + Caching + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get document from database and convert to model instance in jsob-line format.
@@ -494,10 +515,10 @@ pub trait QCommons: Main + Caching + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
+        let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Get document from database and convert to model instance.
@@ -542,9 +563,11 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -552,7 +575,7 @@ pub trait QCommons: Main + Caching + Converters {
             Err("It is forbidden to perform delete.".to_string())?
         }
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -574,11 +597,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.
@@ -600,11 +625,13 @@ pub trait QCommons: Main + Caching + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get metadata of Model.
+        let meta = Self::meta()?;
+        // Get client of MongoDB.
+        let client_store = MONGODB_CLIENT_STORE.read()?;
+        let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client_cache
+        let coll: Collection = client
             .database(meta.database_name.as_str())
             .collection(meta.collection_name.as_str());
         // Execute query.

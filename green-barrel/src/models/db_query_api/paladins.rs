@@ -156,8 +156,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     {
         //
         let is_save = is_save.unwrap_or(false);
-        // Get Model metadata.
+        // Get metadata of Model.
         let meta = Self::meta()?;
+        // Get client of MongoDB.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Get model name.
