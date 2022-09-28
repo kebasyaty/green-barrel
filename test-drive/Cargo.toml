@@ -7,15 +7,15 @@ name = "test-drive"
 version = "0.1.0"
 
 [dependencies]
-chrono = "0.4.19"
-lazy_static = "1.4.0"
+chrono = "0.4.22"
 green-barrel = {path = "../green-barrel"}
+lazy_static = "1.4.0"
 metamorphose = {path = "../metamorphose"}
 rand = "0.8.5"
-regex = "1.5.6"
+regex = "1.6.0"
 rust-argon2 = "1.0.0"
-serde_json = "1.0.81"
-validator = "0.15.0"
+serde_json = "1.0.85"
+validator = "0.16.0"
 
 [dependencies.mongodb]
 default-features = false
@@ -24,4 +24,4 @@ version = "1.2.5"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.137"
+version = "1.0.145"

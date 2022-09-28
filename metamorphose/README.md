@@ -27,6 +27,7 @@
 
 ## Changelog
 
+- **v1.0.0-beta** _Not compatible with version 0.x.x_
 - **v0.7.12** _Fixed **README.md**._
 - **v0.7.8** _Fixed validation for multi-select fields._
 - **v0.7.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
