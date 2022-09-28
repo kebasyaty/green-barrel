@@ -371,7 +371,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     migration::run_migration()?;
 
     // Create model instance.
-    // *********************************************************************************************
+    // ---------------------------------------------------------------------------------------------
     let mut user = models::User::new()?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
