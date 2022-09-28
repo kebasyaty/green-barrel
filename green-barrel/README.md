@@ -53,7 +53,7 @@
 
 ## Field types
 
-See documentation -**fields**.
+See documentation -**[fields](https://docs.rs/green-barrel/1.0.0-beta/green_barrel/fields/index.html "fields")**.
 
 ## Install mongodb (if not installed)
 
@@ -102,8 +102,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green_barrel = "1.0.0-beta"
-metamorphose = "1.0.0-beta"
+green-barrel = "1.0.1-beta"
+metamorphose = "1.0.1-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
@@ -154,8 +154,8 @@ pub mod users {
 #### src/migration.rs
 
 ```rust
-use green_barrel::{Main, Monitor, MONGODB_CLIENT_STORE};
 use crate::{models, settings};
+use green_barrel::{Caching, Monitor, MONGODB_CLIENT_STORE};
 use std::error::Error;
 
 // Migration
@@ -173,7 +173,7 @@ pub fn run_migration() -> Result<(), Box<dyn Error>> {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
-        models: vec![models::User::meta()?],
+        metadata_list: vec![models::User::meta()?],
     };
     // Run migration
     monitor.migrat()?;
