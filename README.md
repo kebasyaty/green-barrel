@@ -159,7 +159,7 @@ use crate::{models, settings};
 use std::error::Error;
 
 // Migration
-pub fn mango_migration() -> Result<(), Box<dyn Error>> {
+pub fn run_migration() -> Result<(), Box<dyn Error>> {
     // Caching MongoDB clients.
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
@@ -368,9 +368,9 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Run migration.
-    migration::mango_migration()?;
+    migration::run_migration()?;
 
-       // Create model instance.
+    // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
     user.username.set("user_1");
