@@ -199,7 +199,7 @@ use crate::settings::{
 #[Model(
     is_use_add_valid = true,
     is_use_hooks = true,
-    ignore_fields = "confirm_password"
+    ignore_fields = "confirm_password" // Example: "field_name, field_name 2"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
