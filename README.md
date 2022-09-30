@@ -53,7 +53,51 @@
 
 ## Field types
 
-See documentation -**[fields](https://docs.rs/green-barrel/1.0.0-beta/green_barrel/fields/index.html "fields")**.
+See documentation -**[fields](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/fields/index.html "fields")**.
+
+## Methods for Developers
+
+**[Caching](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/caching/trait.Caching.html "Caching")**
+- meta()
+- new()
+- json()
+- update_dyn_field()
+
+[Control](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/control/trait.Control.html "Control")
+- custom_default()
+
+[Hooks](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+- pre_create()
+- post_create()
+- pre_update()
+- post_update()
+- pre_delete()
+- post_delete()
+
+[QCommons](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+- aggregate()
+- count_documents()
+- delete_many()
+- delete_one()
+- distinct()
+- drop()
+- estimated_document_count()
+- find_many_to_doc_list()
+- find_many_to_json()
+- find_one_to_doc()
+- find_one_to_json()
+- find_one_to_instance()
+- find_one_and_delete()
+- collection_name()
+- namespace()
+
+[QPaladins](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+- check()
+- save()
+- delete()
+- create_password_hash()
+- verify_password()
+- update_password()
 
 ## Install mongodb (if not installed)
 
