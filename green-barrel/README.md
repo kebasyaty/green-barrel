@@ -102,8 +102,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.2-beta"
-metamorphose = "1.0.1-beta"
+green-barrel = "1.0.4-beta"
+metamorphose = "1.0.2-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
@@ -473,7 +473,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
-- **v1.0.0-beta** _Not compatible with version 0.x.x_
+- **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
 - **v0.12.14** _Fixed **README.md**._
 - **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
 - **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._
