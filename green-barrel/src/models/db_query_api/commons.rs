@@ -367,8 +367,8 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json = ModelName::find_many_to_json(None, None)?;
-    /// println!("{}", json);
+    /// let json_line = ModelName::find_many_to_json(None, None)?;
+    /// println!("{}", json_line);
     /// ```
     ///
     fn find_many_to_json(

@@ -99,7 +99,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // If there are AutoSlug fields, do an update.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.get().unwrap())
+        println!("Slug: {}", user.slug.get().unwrap());
 
         //println!("Json:\n{}", output_data.json()?);
         //println!("Json for admin:\n{}", output_data.json_for_admin()?);
