@@ -53,7 +53,56 @@
 
 ## Field types
 
-See documentation -**[fields](https://docs.rs/green-barrel/1.0.0-beta/green_barrel/fields/index.html "fields")**.
+See documentation -**[fields](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/fields/index.html "fields")**.
+
+## Methods for Developers
+
+**[Caching](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/caching/trait.Caching.html "Caching")**
+
+- meta()
+- new()
+- json()
+- update_dyn_field()
+
+[Control](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/control/trait.Control.html "Control")
+
+- custom_default()
+
+[Hooks](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+
+- pre_create()
+- post_create()
+- pre_update()
+- post_update()
+- pre_delete()
+- post_delete()
+
+[QCommons](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+
+- aggregate()
+- count_documents()
+- delete_many()
+- delete_one()
+- distinct()
+- drop()
+- estimated_document_count()
+- find_many_to_doc_list()
+- find_many_to_json()
+- find_one_to_doc()
+- find_one_to_json()
+- find_one_to_instance()
+- find_one_and_delete()
+- collection_name()
+- namespace()
+
+[QPaladins](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+
+- check()
+- save()
+- delete()
+- create_password_hash()
+- verify_password()
+- update_password()
 
 ## Install mongodb (if not installed)
 
@@ -102,8 +151,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.2-beta"
-metamorphose = "1.0.1-beta"
+green-barrel = "1.0.4-beta"
+metamorphose = "1.0.2-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
@@ -376,7 +425,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
-    user.confirm_password.set("12345678");
+    user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
     user.is_active.set(true);
 
@@ -473,7 +522,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
-- **v1.0.0-beta** _Not compatible with version 0.x.x_
+- **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
 - **v0.12.14** _Fixed **README.md**._
 - **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
 - **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._

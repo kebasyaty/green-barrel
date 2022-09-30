@@ -123,8 +123,8 @@ pub trait Converters {
         //
         let mut doc_list: Vec<Document> = Vec::new();
         let mut cursor = collection.find(filter, find_options)?;
-        while let Some(Ok(db_doc)) = cursor.next() {
-            doc_list.push(db_doc);
+        while let Some(Ok(doc)) = cursor.next() {
+            doc_list.push(doc);
         }
 
         Ok(doc_list)
@@ -141,22 +141,15 @@ pub trait Converters {
         model_name: &str,
     ) -> Result<String, Box<dyn Error>> {
         //
-        let mut json_line = String::new();
+        let mut doc_list: Vec<Bson> = Vec::new();
         let mut cursor = collection.find(filter, find_options)?;
-        while let Some(Ok(db_doc)) = cursor.next() {
-            let prepared_doc =
-                Self::to_prepared_doc(db_doc, ignore_fields, field_type_map, model_name)?;
-            //
-            json_line = format!(
-                "{},{:?}",
-                json_line,
-                Bson::Document(prepared_doc).into_relaxed_extjson()
-            );
+        while let Some(Ok(doc)) = cursor.next() {
+            let doc = Self::to_prepared_doc(doc, ignore_fields, field_type_map, model_name)?;
+            doc_list.push(Bson::Document(doc));
         }
 
-        if json_line.is_empty() {
-            return Ok(json_line);
-        }
-        Ok(format!("[{}]", &json_line[1..]))
+        Ok(serde_json::to_string(
+            &Bson::Array(doc_list).into_relaxed_extjson(),
+        )?)
     }
 }

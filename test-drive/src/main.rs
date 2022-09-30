@@ -54,7 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
-    user.confirm_password.set("12345678");
+    user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
     user.is_active.set(true);
 
@@ -99,7 +99,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // If there are AutoSlug fields, do an update.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.get().unwrap())
+        println!("Slug: {}", user.slug.get().unwrap());
 
         //println!("Json:\n{}", output_data.json()?);
         //println!("Json for admin:\n{}", output_data.json_for_admin()?);
