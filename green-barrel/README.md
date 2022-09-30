@@ -58,15 +58,18 @@ See documentation -**[fields](https://docs.rs/green-barrel/1.0.4-beta/green_barr
 ## Methods for Developers
 
 **[Caching](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/caching/trait.Caching.html "Caching")**
+
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
 [Control](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/control/trait.Control.html "Control")
+
 - custom_default()
 
 [Hooks](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+
 - pre_create()
 - post_create()
 - pre_update()
@@ -75,6 +78,7 @@ See documentation -**[fields](https://docs.rs/green-barrel/1.0.4-beta/green_barr
 - post_delete()
 
 [QCommons](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+
 - aggregate()
 - count_documents()
 - delete_many()
@@ -92,6 +96,7 @@ See documentation -**[fields](https://docs.rs/green-barrel/1.0.4-beta/green_barr
 - namespace()
 
 [QPaladins](https://docs.rs/green-barrel/1.0.4-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+
 - check()
 - save()
 - delete()
