@@ -59,7 +59,6 @@ See documentation -**[fields](https://docs.rs/green-barrel/1.0.6-beta/green_barr
 
 [Main](https://docs.rs/green-barrel/1.0.6-beta/green_barrel/models/trait.Main.html "Main")
 
-- key()
 - hash()
 - set_hash()
 - obj_id()
