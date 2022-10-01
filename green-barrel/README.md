@@ -57,7 +57,19 @@ See documentation -**[fields](https://docs.rs/green-barrel/1.0.6-beta/green_barr
 
 ## Methods for Developers
 
-**[Caching](https://docs.rs/green-barrel/1.0.6-beta/green_barrel/models/caching/trait.Caching.html "Caching")**
+[Main](https://docs.rs/green-barrel/1.0.6-beta/green_barrel/models/trait.Main.html "Main")
+
+- hash()
+- set_hash()
+- obj_id()
+- set_obj_id()
+- created_at()
+- set_created_at)
+- updated_at()
+- set_updated_at()
+- self_to_json_val()
+
+[Caching](https://docs.rs/green-barrel/1.0.6-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
