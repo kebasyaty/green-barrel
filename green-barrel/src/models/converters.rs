@@ -139,7 +139,7 @@ pub trait Converters {
         ignore_fields: &[String],
         field_type_map: &HashMap<String, String>,
         model_name: &str,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<Option<String>, Box<dyn Error>> {
         //
         let mut doc_list: Vec<Bson> = Vec::new();
         let mut cursor = collection.find(filter, find_options)?;
@@ -148,8 +148,11 @@ pub trait Converters {
             doc_list.push(Bson::Document(doc));
         }
 
-        Ok(serde_json::to_string(
+        if doc_list.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some(serde_json::to_string(
             &Bson::Array(doc_list).into_relaxed_extjson(),
-        )?)
+        )?))
     }
 }

@@ -374,7 +374,7 @@ pub trait QCommons: Main + Caching + Converters {
     fn find_many_to_json(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<String, Box<dyn Error>>
+    ) -> Result<Option<String>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
