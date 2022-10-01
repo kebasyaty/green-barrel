@@ -197,11 +197,11 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     assert!(result.is_none(), "find_many_to_doc_list() != is_none()");
     // find_many_to_json
     let result = TestModel::find_many_to_json(None, None)?;
-    assert_eq!(result, "[]", "find_many_to_json() != '[]'");
+    assert!(result.is_none(), "find_many_to_json() != is_none");
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_to_doc(filter, None)?;
-    assert!(result.is_none(), "find_many_to_json() != is_none()");
+    assert!(result.is_none(), "find_one_to_doc() != is_none()");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
     let result = TestModel::find_one_to_json(filter, None)?;
