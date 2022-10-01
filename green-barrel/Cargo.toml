@@ -11,6 +11,9 @@ repository = "https://github.com/kebasyaty/green-barrel"
 rust-version = "1.57"
 version = "1.0.6-beta"
 
+[lib]
+doctest = false
+
 [dependencies]
 actix-web = "3.3.3"
 chrono = "0.4.22"
