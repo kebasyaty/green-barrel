@@ -6,9 +6,6 @@ edition = "2021"
 name = "test-drive"
 version = "0.1.0"
 
-[lib]
-doctest = false
-
 [dependencies]
 chrono = "0.4.22"
 green-barrel = {path = "../green-barrel"}
