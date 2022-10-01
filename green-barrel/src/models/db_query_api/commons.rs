@@ -367,14 +367,16 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = ModelName::find_many_to_json(None, None)?;
-    /// println!("{}", json_line);
+    /// let result = ModelName::find_many_to_json(None, None)?;
+    /// if let Some(json_line) = result {
+    ///     println!("{}", json_line);
+    /// }
     /// ```
     ///
     fn find_many_to_json(
         filter: Option<Document>,
         options: Option<FindOptions>,
-    ) -> Result<String, Box<dyn Error>>
+    ) -> Result<Option<String>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

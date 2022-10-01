@@ -275,13 +275,6 @@ pub trait Caching: Main + Converters {
     ///
     /// # Example:
     ///
-    /// ```
-    /// // Field attributes for "value":
-    /// // minlength - for string type ; Default = 0
-    /// // maxlength - for string type ; Default = 256
-    /// // min - for numeric type
-    /// // max - for numeric type
-    ///
     /// let dyn_data = json!({
     ///     "field_name": "field_name",
     ///     "value": 5, // restrict with field attributes
