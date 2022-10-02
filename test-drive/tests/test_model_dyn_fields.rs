@@ -43,21 +43,6 @@ mod data_test {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
-                select_text_dyn: SelectTextDyn::default(),
-                select_text_mult_dyn: SelectTextMultDyn::default(),
-                select_i32_dyn: SelectI32Dyn::default(),
-                select_i32_mult_dyn: SelectI32MultDyn::default(),
-                select_u32_dyn: SelectU32Dyn::default(),
-                select_u32_mult_dyn: SelectU32MultDyn::default(),
-                select_i64_dyn: SelectI64Dyn::default(),
-                select_i64_mult_dyn: SelectI64MultDyn::default(),
-                select_f64_dyn: SelectF64Dyn::default(),
-                select_f64_mult_dyn: SelectF64MultDyn::default(),
-                /*
-                hash: HiddenHash::default(),
-                created_at: HiddenDateTime::default(),
-                updated_at: HiddenDateTime::default(),
-                */
                 ..Default::default()
             }
         }
@@ -259,21 +244,6 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     assert!(
         TestModel::update_dyn_field(dyn_data).is_err(),
         "select_f64_mult_dyn, value = 'Some text 8'"
-    );
-    //
-    //
-    // Error: Title length is more than 150 characters.
-    // ---------------------------------------------------------------------------------------------
-    //
-    let dyn_data = json!({
-        "field_name": "select_text_dyn",
-        "value": "Some text",
-        "title": "x".repeat(151),
-        "is_delete": false,
-    });
-    assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
-        "title > 150 characters"
     );
     //
     //
