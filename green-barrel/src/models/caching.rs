@@ -271,14 +271,14 @@ pub trait Caching: Main + Converters {
     }
 
     /// Update data for dynamic fields.
-    /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/mango-panel
+    /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/actix-greenpanel
     ///
     /// # Example:
     ///
     /// let dyn_data = json!({
     ///     "field_name": "field_name",
     ///     "value": 5, // restrict with field attributes
-    ///     "title": "Title", // maximum title length = 150 characters
+    ///     "title": "Title",
     ///     "is_delete": false
     /// });
     /// assert!(ModelName::update_dyn_field(dyn_data).is_ok());
@@ -305,14 +305,6 @@ pub trait Caching: Main + Converters {
         };
         let const_title = {
             if let Some(title) = dyn_data["title"].as_str() {
-                if title.len() > 150 {
-                    Err(format!(
-                        "Model: {} > Method: `update_dyn_field()` > \
-                            Parameter: `dyn_data` > Field: `title` => \
-                            The maximum title length is 150 characters.",
-                        Self::meta()?.model_name
-                    ))?
-                }
                 title
             } else {
                 Err(format!(

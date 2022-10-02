@@ -44,6 +44,14 @@ use syn::{
 ///    pub confirm_password: InputPassword,
 ///    pub is_active: CheckBox,
 /// }
+///
+/// impl Control for User {
+///     fn custom_default() -> Self {
+///         Self {
+///             ..Default::default()
+///         }
+///     }
+/// }
 /// ```
 ///
 #[allow(non_snake_case)]
@@ -561,10 +569,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         impl QCommons for #model_name_ident {}
         /// Query methods for a Model instance.
         impl QPaladins for #model_name_ident {}
-
-        /// Helper methods for the admin panel.
-        // *****************************************************************************************
-        impl Administrator for #model_name_ident {}
 
     };
 
