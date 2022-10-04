@@ -5,7 +5,8 @@
 #### ORM-like API MongoDB for Rust
 
 **To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
-Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
+
+- Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
@@ -18,7 +19,7 @@ Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Ac
 
 #### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
 
-Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
+- Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
 
 ## Requirements
 
@@ -54,11 +55,11 @@ Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Ac
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -67,18 +68,18 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.9-beta/green_barrel
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[Hooks](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -87,7 +88,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.9-beta/green_barrel
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -105,7 +106,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.9-beta/green_barrel
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.0.9-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.0.10-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -161,7 +162,7 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.9-beta"
+green-barrel = "1.0.10-beta"
 metamorphose = "1.0.3-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
@@ -532,6 +533,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.0.10-beta** _Updated comments for dynamic field types._
 - **v1.0.8-beta** _The 150 character limit has been removed from the **update_dyn_field()** method._
 - **v1.0.7-beta** _The **administrator** module has been removed and moved to a separate project._
 - **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
