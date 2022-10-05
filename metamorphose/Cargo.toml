@@ -9,11 +9,11 @@ name = "metamorphose"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/mango-orm/tree/master/metamorphose"
 rust-version = "1.57"
-version = "1.0.3-beta"
+version = "1.0.4-beta"
 
 [lib]
-proc-macro = true
 doctest = false
+proc-macro = true
 
 [dependencies]
 quote = "1.0.21"
