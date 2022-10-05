@@ -260,7 +260,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 tmp
             };
-            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u32;
+            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u8;
             //
             let is_required = final_field.get("required").unwrap().as_bool().unwrap();
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
