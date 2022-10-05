@@ -407,6 +407,20 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             ))?
                         }
                     }
+                    // For dynamic field types, the `options` parameter must be an empty vector.
+                    if let Some(field_type) = instance_json_val.get(field_name).unwrap().get("field_type") {
+                        if field_type.as_str().unwrap().contains("Dyn") {
+                            if let Some(options) = instance_json_val.get(field_name).unwrap().get("options") {
+                                if options.as_array().unwrap().len() > 0 {
+                                    Err(format!(
+                                        "Field: `{}` => \
+                                            For dynamic field types, the `options` parameter must be an empty vector.",
+                                        field_name
+                                    ))?
+                                }
+                            }
+                        }
+                    }
                     // Add `id` and `name`
                     *instance_json_val
                         .get_mut(field_name)
