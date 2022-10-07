@@ -35,7 +35,6 @@
 - [slug](https://crates.io/crates/slug "slug")
 - [validator](https://crates.io/crates/validator "validator")
 - [uuid](https://crates.io/crates/uuid "uuid")
-- [actix-web](https://crates.io/crates/actix-web "actix-web")
 - [metamorphose](https://crates.io/crates/metamorphose "metamorphose")
 
 ## Model parameters
