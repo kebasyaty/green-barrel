@@ -117,10 +117,10 @@ impl AdditionalValidation for User {
         let mut error_map = HashMap::<&'a str, &'a str>::new();
 
         // Get clean data
-        let hash = self.hash.value.clone().unwrap_or_default();
-        let password = self.password.value.clone().unwrap_or_default();
-        let confirm_password = self.confirm_password.value.clone().unwrap_or_default();
-        let username = self.username.value.clone().unwrap_or_default();
+        let hash = self.hash.get().unwrap_or_default();
+        let password = self.password.get().unwrap_or_default();
+        let confirm_password = self.confirm_password.get().unwrap_or_default();
+        let username = self.username.get().unwrap_or_default();
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
