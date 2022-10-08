@@ -307,8 +307,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation field attribute `pattern`.
                     // -----------------------------------------------------------------------------
-                    let pattern = final_field.get("pattern");
-                    if let Some(pattern) = pattern {
+                    if let Some(pattern) = final_field.get("pattern") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
@@ -328,8 +327,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation in regular expression.
                     // Checking `minlength`.
                     // -----------------------------------------------------------------------------
-                    let minlength = final_field.get("minlength");
-                    if let Some(minlength) = minlength {
+                    if let Some(minlength) = final_field.get("minlength") {
                         Self::check_minlength(minlength.as_i64().unwrap() as usize, curr_val)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
@@ -346,8 +344,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             });
                     }
                     // Checking `maxlength`.
-                    let maxlength = final_field.get("maxlength");
-                    if let Some(maxlength) = maxlength {
+                    if let Some(maxlength) = final_field.get("maxlength") {
                         Self::check_maxlength(maxlength.as_i64().unwrap() as usize, curr_val)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
@@ -366,8 +363,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let unique = final_field.get("unique");
-                    if let Some(unique) = unique {
+                    if let Some(unique) = final_field.get("unique") {
                         let is_unique = unique.as_bool().unwrap();
                         if field_type != "InputPassword" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
@@ -476,8 +472,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`.
                     // Validation of `unique`.
                     // -----------------------------------------------------------------------------
-                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
-                    if is_unique {
+                    if final_field.get("unique").unwrap().as_bool().unwrap() {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
