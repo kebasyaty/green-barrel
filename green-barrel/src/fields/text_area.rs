@@ -14,8 +14,6 @@ pub struct TextArea {
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
-    pub minlength: usize, // The minimum number of characters allowed in the text.
-    pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool,  // Mandatory field.
     pub unique: bool,    // The unique value of a field in a collection.
     pub disabled: bool,  // Blocks access and modification of the element.
@@ -44,8 +42,6 @@ impl Default for TextArea {
             default: None,
             placeholder: String::new(),
             pattern: String::new(),
-            minlength: 0_usize,
-            maxlength: 2000_usize,
             required: false,
             unique: false,
             disabled: false,
