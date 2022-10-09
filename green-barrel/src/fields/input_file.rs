@@ -14,6 +14,7 @@ pub struct InputFile {
     pub name: String, // The value is determined automatically.
     pub value: Option<FileData>, // Sets the value of an element.
     pub default: Option<FileData>, // Value by default
+    pub target_dir: String, // Directory for files inside media directory (inner path).
     pub accept: String, // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
@@ -38,6 +39,7 @@ impl Default for InputFile {
             name: String::new(),
             value: None,
             default: None,
+            target_dir: String::new(),
             accept: String::new(),
             placeholder: String::new(),
             required: false,
