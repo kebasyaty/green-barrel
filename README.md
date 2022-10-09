@@ -54,11 +54,11 @@
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -67,22 +67,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.15-beta/green_barre
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.0.14-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -91,7 +91,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.15-beta/green_barre
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -109,7 +109,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.15-beta/green_barre
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.0.15-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.0.16-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -165,7 +165,7 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.15-beta"
+green-barrel = "1.0.16-beta"
 metamorphose = "1.0.4-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
@@ -536,6 +536,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.0.16-beta** _Added parameter **target_dir** for field types **InputFile** and **InputImage**._
 - **v1.0.10-beta** _Updated comments for dynamic field types._
 - **v1.0.8-beta** _The 150 character limit has been removed from the **update_dyn_field()** method._
 - **v1.0.7-beta** _The **administrator** module has been removed and moved to a separate project._
