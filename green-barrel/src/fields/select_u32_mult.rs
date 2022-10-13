@@ -8,7 +8,6 @@ pub struct SelectU32Mult {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<Vec<u32>>, // Sets the value of an element.
     pub default: Option<Vec<u32>>, // Value by default.
@@ -32,7 +31,6 @@ impl Default for SelectU32Mult {
             id: String::new(),
             label: String::new(),
             field_type: String::from("SelectU32Mult"),
-            input_type: String::from("select"),
             name: String::new(),
             value: None,
             default: None,
