@@ -8,7 +8,6 @@ pub struct SelectI64Mult {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<Vec<i64>>, // Sets the value of an element.
     pub default: Option<Vec<i64>>, // Value by default.
@@ -32,7 +31,6 @@ impl Default for SelectI64Mult {
             id: String::new(),
             label: String::new(),
             field_type: String::from("SelectI64Mult"),
-            input_type: String::from("select"),
             name: String::new(),
             value: None,
             default: None,

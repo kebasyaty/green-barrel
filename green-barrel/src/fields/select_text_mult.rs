@@ -8,7 +8,6 @@ pub struct SelectTextMult {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<Vec<String>>, // Sets the value of an element.
     pub default: Option<Vec<String>>, // Value by default.
@@ -33,7 +32,6 @@ impl Default for SelectTextMult {
             id: String::new(),
             label: String::new(),
             field_type: String::from("SelectTextMul"),
-            input_type: String::from("select"),
             name: String::new(),
             value: None,
             default: None,

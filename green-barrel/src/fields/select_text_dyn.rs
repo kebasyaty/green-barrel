@@ -8,7 +8,6 @@ pub struct SelectTextDyn {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
@@ -32,7 +31,6 @@ impl Default for SelectTextDyn {
             id: String::new(),
             label: String::new(),
             field_type: String::from("SelectTextDyn"),
-            input_type: String::from("select"),
             name: String::new(),
             value: None,
             placeholder: String::new(),
