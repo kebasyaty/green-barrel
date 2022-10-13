@@ -234,7 +234,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let final_field = final_model_json.get_mut(field_name).unwrap();
             // Define conditional constants.
             let mut is_use_default = false;
-            let const_value = {
+            let mut const_value = {
                 let mut tmp = json!(null);
                 if let Some(val) = final_field.get("value") {
                     if (val.is_string() && val.as_str().unwrap().is_empty())
@@ -840,7 +840,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputFile"
                 8 => {
                     // Get data for validation.
-                    let mut file_data = if !const_value.is_null() {
+                    let mut file_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
                     } else {
                         FileData::default()
@@ -871,11 +871,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
                         {
+                            let file_default;
+                            if let Some(val) = final_field.get("default") {
+                                if !val.is_null() {
+                                    file_default = serde_json::from_value::<FileData>(val.clone())?;
+                                    file_data = file_default.clone();
+                                } else {
+                                    file_default = FileData::default();
+                                }
+                            } else {
+                                file_default = FileData::default();
+                            }
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(const_value.clone())?),
+                                Some(file_default),
                                 None,
                             )?;
                         } else {
@@ -890,9 +901,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if is_use_default {
+                    if file_data.path.is_empty() && file_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if const_value.is_null() {
+                            if is_use_default && !const_value.is_null() {
+                                file_data =
+                                    serde_json::from_value::<FileData>(const_value.clone())?;
+                            } else {
                                 if is_required {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
@@ -960,7 +974,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputImage"
                 9 => {
                     // Get data for validation.
-                    let mut image_data = if !const_value.is_null() {
+                    let mut image_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
                     } else {
                         ImageData::default()
@@ -987,17 +1001,30 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         continue;
                     }
-                    // Delete file.
+                    // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
                             || (!image_data.path.is_empty() && !image_data.url.is_empty())
                         {
+                            let image_default;
+                            if let Some(val) = final_field.get("default") {
+                                if !val.is_null() {
+                                    image_default =
+                                        serde_json::from_value::<ImageData>(val.clone())?;
+                                    const_value = val.clone();
+                                    is_use_default = true;
+                                } else {
+                                    image_default = ImageData::default();
+                                }
+                            } else {
+                                image_default = ImageData::default();
+                            }
                             self.delete_file(
                                 &coll,
                                 model_name,
                                 field_name,
-                                Some(serde_json::from_value(const_value.clone())?),
                                 None,
+                                Some(image_default),
                             )?;
                         } else {
                             is_err_symptom = true;
@@ -1015,9 +1042,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_field.get("thumbnails").unwrap().clone(),
                     )?;
                     //
-                    if is_use_default {
+                    if image_data.path.is_empty() && image_data.url.is_empty() {
                         if curr_file_info.is_null() {
-                            if !const_value.is_null() {
+                            if is_use_default && !const_value.is_null() {
+                                image_data =
+                                    serde_json::from_value::<ImageData>(const_value.clone())?;
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
                                     let new_file_name = Uuid::new_v4().to_string();
