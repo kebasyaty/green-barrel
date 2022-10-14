@@ -872,13 +872,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
                         {
                             let file_default;
-                            if let Some(val) = final_field.get("default") {
-                                if !val.is_null() {
-                                    file_default = serde_json::from_value::<FileData>(val.clone())?;
-                                    file_data = file_default.clone();
-                                } else {
-                                    file_default = FileData::default();
-                                }
+                            let val = final_field.get("default").unwrap();
+                            if !val.is_null() {
+                                file_default = serde_json::from_value::<FileData>(val.clone())?;
+                                const_value = val.clone();
+                                is_use_default = true;
                             } else {
                                 file_default = FileData::default();
                             }
@@ -1007,15 +1005,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             || (!image_data.path.is_empty() && !image_data.url.is_empty())
                         {
                             let image_default;
-                            if let Some(val) = final_field.get("default") {
-                                if !val.is_null() {
-                                    image_default =
-                                        serde_json::from_value::<ImageData>(val.clone())?;
-                                    const_value = val.clone();
-                                    is_use_default = true;
-                                } else {
-                                    image_default = ImageData::default();
-                                }
+                            let val = final_field.get("default").unwrap();
+                            if !val.is_null() {
+                                image_default = serde_json::from_value::<ImageData>(val.clone())?;
+                                const_value = val.clone();
+                                is_use_default = true;
                             } else {
                                 image_default = ImageData::default();
                             }
