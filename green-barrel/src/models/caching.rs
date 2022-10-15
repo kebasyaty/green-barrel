@@ -198,7 +198,7 @@ pub trait Caching: Main + Converters {
     /// println!("{}", json_line);
     /// ```
     ///
-    fn model_to_json_for_admin() -> Result<String, Box<dyn Error>>
+    fn model_to_json_for_admin() -> Result<Option<Value>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -217,9 +217,8 @@ pub trait Caching: Main + Converters {
             }
             field_type_list.push(field_type);
         }
-        //
-        let json_line = serde_json::to_string(&field_type_list)?;
-        Ok(json_line)
+
+        Ok(Some(json!(field_type_list)))
     }
 
     /// Get cached Model data.
