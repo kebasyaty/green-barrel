@@ -364,7 +364,7 @@ impl OutputData2 {
     /// println!("{}", output_data.json_for_admin()?);
     /// ```
     ///
-    pub fn json_for_admin(&self) -> Result<String, Box<dyn Error>> {
+    pub fn json_for_admin(&self) -> Result<Option<Value>, Box<dyn Error>> {
         let mut field_type_list: Vec<Value> = Vec::new();
         let hash: &str = self
             .final_model_json
@@ -389,7 +389,7 @@ impl OutputData2 {
             field_type_list.push(field_type);
         }
         //
-        Ok(serde_json::to_string(&field_type_list)?)
+        Ok(Some(json!(field_type_list)))
     }
 
     /// Get/Set final document

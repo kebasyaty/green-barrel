@@ -155,8 +155,8 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     assert!(!TestModel::json()?.is_empty(), "json() != is_empty()");
     // model_to_json_for_admin
     assert!(
-        !TestModel::model_to_json_for_admin()?.is_empty(),
-        "model_to_json_for_admin != is_empty()"
+        !TestModel::model_to_json_for_admin()?.is_none(),
+        "model_to_json_for_admin != is_none()"
     );
     // Get cached Model data
     let _cache_data: (ModelCache, Client) = TestModel::get_cache_data_for_query()?;

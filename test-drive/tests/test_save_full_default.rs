@@ -167,8 +167,8 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
     assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
     assert!(
-        !output_data.json_for_admin()?.is_empty(),
-        "json_for_admin() == is_empty()"
+        output_data.json_for_admin()?.is_some(),
+        "json_for_admin() != is_some()"
     );
     test_model = output_data.update()?;
     assert!(
@@ -259,8 +259,8 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
     assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
     assert!(
-        !output_data.json_for_admin()?.is_empty(),
-        "json_for_admin() == is_empty()"
+        output_data.json_for_admin()?.is_some(),
+        "json_for_admin() != is_some()"
     );
     test_model = output_data.update()?;
     assert!(
