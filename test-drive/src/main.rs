@@ -79,7 +79,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     //println!("Json:\n{}", output_data.json()?);
-    //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+    //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
 
     // Create document in database.
     // ---------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Slug: {}", user.slug.get().unwrap());
 
         //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
         output_data.print_err();
     }
@@ -129,7 +129,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Slug: {}", user.slug.get().unwrap())
 
         //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
+        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();

@@ -5,7 +5,7 @@ use mongodb::{
     sync::Client,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::{convert::TryFrom, error::Error};
 
 use crate::{
@@ -184,41 +184,6 @@ pub trait Caching: Main + Converters {
         //
         let json_line = serde_json::to_string(&model_cache.unwrap().model_json)?;
         Ok(json_line)
-    }
-
-    /// Json-line for admin panel.
-    /// ( converts a field map to a list, in the order of the Model fields )
-    // *********************************************************************************************
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let json_line = UserProfile::model_to_json_for_admin()?;
-    ///
-    /// println!("{}", json_line);
-    /// ```
-    ///
-    fn model_to_json_for_admin() -> Result<Option<Value>, Box<dyn Error>>
-    where
-        Self: Serialize + DeserializeOwned + Sized,
-    {
-        // Get cached Model data.
-        let (model_cache, _client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = model_cache.meta;
-        let model_json = model_cache.model_json;
-        let mut field_type_list: Vec<Value> = Vec::new();
-        // Get a list of fields in the order of the model fields.
-        for field_name in meta.fields_name.iter() {
-            let mut field_type = model_json.get(field_name).unwrap().clone();
-            if field_name == "created_at" || field_name == "updated_at" {
-                *field_type.get_mut("input_type").unwrap() = json!("datetime");
-                *field_type.get_mut("is_hide").unwrap() = json!(false);
-            }
-            field_type_list.push(field_type);
-        }
-
-        Ok(Some(json!(field_type_list)))
     }
 
     /// Get cached Model data.
