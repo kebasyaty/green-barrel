@@ -365,7 +365,7 @@ impl OutputData2 {
     /// ```
     ///
     pub fn json_for_admin(&self) -> Result<Option<Value>, Box<dyn Error>> {
-        let mut field_type_list: Vec<Value> = Vec::new();
+        let mut field_list: Vec<Value> = Vec::new();
         let hash: &str = self
             .final_model_json
             .get("hash")
@@ -376,20 +376,20 @@ impl OutputData2 {
             .unwrap_or_default();
         // Get a list of fields type in the order of the model fields.
         for field_name in self.fields_name.iter() {
-            let mut field_type = self.final_model_json.get(field_name).unwrap().clone();
+            let mut field = self.final_model_json.get(field_name).unwrap().clone();
             if field_name == "created_at" || field_name == "updated_at" {
-                *field_type.get_mut("input_type").unwrap() = json!("datetime");
-                *field_type.get_mut("is_hide").unwrap() = json!(false);
+                *field.get_mut("input_type").unwrap() = json!("datetime");
+                *field.get_mut("is_hide").unwrap() = json!(false);
             }
             if field_name.contains("password") && !hash.is_empty() {
-                *field_type.get_mut("input_type").unwrap() = json!("hidden");
-                *field_type.get_mut("is_hide").unwrap() = json!(true);
-                *field_type.get_mut("value").unwrap() = json!("");
+                *field.get_mut("input_type").unwrap() = json!("hidden");
+                *field.get_mut("is_hide").unwrap() = json!(true);
+                *field.get_mut("value").unwrap() = json!("");
             }
-            field_type_list.push(field_type);
+            field_list.push(field);
         }
         //
-        Ok(Some(json!(field_type_list)))
+        Ok(Some(json!(field_list)))
     }
 
     /// Get/Set final document
