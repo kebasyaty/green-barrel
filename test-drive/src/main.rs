@@ -39,7 +39,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     // *********************************************************************************************
     // println!("Convert Model:\n");
     //println!("{}", models::User::json()?);
-    //println!("{}", models::User::model_json_for_admin()?);
     //
     /*
         println!(
@@ -97,7 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // If there are AutoSlug fields, do an update.
+        // Update user state.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap());
 
@@ -124,7 +123,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // If there are AutoSlug fields, do an update.
+        // Update user state.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap())
 
