@@ -54,11 +54,11 @@
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -67,22 +67,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.22-beta/green_barre
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -91,7 +91,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.22-beta/green_barre
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -109,7 +109,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.22-beta/green_barre
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.0.22-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.0.23-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -165,7 +165,7 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.22-beta"
+green-barrel = "1.0.23-beta"
 metamorphose = "1.0.4-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
@@ -482,12 +482,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // If there are AutoSlug fields, do an update.
+        //println!("Json:\n{}", output_data.json()?);
+
+        // Update user state.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap())
-
-        //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
@@ -510,12 +509,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // If there are AutoSlug fields, do an update.
+        //println!("Json:\n{}", output_data.json()?);
+
+        // Update user state.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap())
-
-        //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
