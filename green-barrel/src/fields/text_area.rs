@@ -18,6 +18,7 @@ pub struct TextArea {
     pub disabled: bool,  // Blocks access and modification of the element.
     pub readonly: bool,  // Specifies that the field cannot be modified by the user.
     pub is_hide: bool,   // Hide field from user.
+    pub dir: String,     // Specifies the direction and display of text. Options: ltr|rtl
     pub cols: u32,       // 	Specifies the visible width of a text area.
     pub rows: u32,       // Specifies the visible number of lines in a text area.
     pub wrap: String, // Specifies how the text in a text area is to be wrapped when submitted in a form - wrap="soft | hard".
@@ -45,6 +46,7 @@ impl Default for TextArea {
             disabled: false,
             readonly: false,
             is_hide: false,
+            dir: String::from("ltr"),
             cols: 20_u32,
             rows: 2_u32,
             wrap: String::from("soft"),
