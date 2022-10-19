@@ -17,7 +17,7 @@ pub struct RangeF64 {
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub step: i64,  // Increment step for numeric fields.
+    pub step: f64,  // Increment step for numeric fields.
     pub min: Option<f64>, // The lower value for entering a number or date.
     pub max: Option<f64>, // The top value for entering a number or date.
     pub is_hide: bool, // Hide field from user.
@@ -44,16 +44,16 @@ impl Default for RangeF64 {
             unique: false,
             disabled: false,
             readonly: false,
-            step: 1,
-            min: None,
-            max: None,
+            step: 1.0,
+            min: Some(0.0),
+            max: Some(100.0),
             other_attrs: String::new(),
             css_classes: String::new(),
             is_hide: false,
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 12_u32,
+            group: 12,
         }
     }
 }

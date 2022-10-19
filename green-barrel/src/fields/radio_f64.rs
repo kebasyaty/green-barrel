@@ -47,7 +47,7 @@ impl Default for RadioF64 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 12_u32,
+            group: 12,
         }
     }
 }

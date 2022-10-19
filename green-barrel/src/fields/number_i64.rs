@@ -53,7 +53,7 @@ impl Default for NumberI64 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 11_u32,
+            group: 11,
         }
     }
 }

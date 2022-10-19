@@ -53,7 +53,7 @@ impl Default for InputImage {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 9_u32,
+            group: 9,
         }
     }
 }

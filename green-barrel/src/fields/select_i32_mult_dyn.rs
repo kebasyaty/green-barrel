@@ -43,7 +43,7 @@ impl Default for SelectI32MultDyn {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 7_u32,
+            group: 7,
         }
     }
 }

@@ -44,16 +44,16 @@ impl Default for RangeI64 {
             unique: false,
             disabled: false,
             readonly: false,
-            step: 1_i64,
-            min: None,
-            max: None,
+            step: 1,
+            min: Some(0),
+            max: Some(100),
             other_attrs: String::new(),
             css_classes: String::new(),
             is_hide: false,
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 11_u32,
+            group: 11,
         }
     }
 }

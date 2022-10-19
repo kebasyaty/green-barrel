@@ -47,7 +47,7 @@ impl Default for RadioI32 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 10_u32,
+            group: 10,
         }
     }
 }

@@ -51,7 +51,7 @@ impl Default for InputEmail {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 1_u32,
+            group: 1,
         }
     }
 }

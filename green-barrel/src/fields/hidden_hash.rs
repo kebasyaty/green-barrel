@@ -55,7 +55,7 @@ impl Default for HiddenHash {
             warning: String::new(),
             error: String::new(),
             alert: String::new(),
-            group: 1_u32,
+            group: 1,
         }
     }
 }

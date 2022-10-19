@@ -43,7 +43,7 @@ impl Default for SelectI64Dyn {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 5_u32,
+            group: 5,
         }
     }
 }
