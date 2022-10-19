@@ -140,7 +140,7 @@ impl OutputData2 {
         self.is_valid
     }
 
-    /// If there are AutoSlug fields, do an update. Use only for save() method.
+    /// Update instance. Use only for save() method.
     // ---------------------------------------------------------------------------------------------
     ///
     /// # Example:
