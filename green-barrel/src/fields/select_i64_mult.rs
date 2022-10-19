@@ -45,7 +45,7 @@ impl Default for SelectI64Mult {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 6_u32,
+            group: 6,
         }
     }
 }

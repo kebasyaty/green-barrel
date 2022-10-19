@@ -51,7 +51,7 @@ impl Default for InputFile {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 8_u32,
+            group: 8,
         }
     }
 }

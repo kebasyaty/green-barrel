@@ -47,7 +47,7 @@ impl Default for SelectText {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 4_u32,
+            group: 4,
         }
     }
 }

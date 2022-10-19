@@ -44,7 +44,7 @@ impl Default for NumberU32 {
             unique: false,
             disabled: false,
             readonly: false,
-            step: 1_u32,
+            step: 1,
             min: None,
             max: None,
             is_hide: false,
@@ -53,7 +53,7 @@ impl Default for NumberU32 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 11_u32,
+            group: 11,
         }
     }
 }

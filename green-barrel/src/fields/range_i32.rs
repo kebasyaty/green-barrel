@@ -45,15 +45,15 @@ impl Default for RangeI32 {
             disabled: false,
             readonly: false,
             step: 1,
-            min: None,
-            max: None,
+            min: Some(0),
+            max: Some(100),
             other_attrs: String::new(),
             css_classes: String::new(),
             is_hide: false,
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 10_u32,
+            group: 10,
         }
     }
 }

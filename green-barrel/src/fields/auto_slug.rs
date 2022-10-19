@@ -47,7 +47,7 @@ impl Default for AutoSlug {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 2_u32,
+            group: 2,
         }
     }
 }

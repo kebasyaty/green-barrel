@@ -43,7 +43,7 @@ impl Default for CheckBox {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 13_u32,
+            group: 13,
         }
     }
 }

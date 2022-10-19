@@ -45,7 +45,7 @@ impl Default for SelectI32 {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 4_u32,
+            group: 4,
         }
     }
 }

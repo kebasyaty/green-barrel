@@ -53,7 +53,7 @@ impl Default for HiddenDateTime {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 3_u32,
+            group: 3,
         }
     }
 }
