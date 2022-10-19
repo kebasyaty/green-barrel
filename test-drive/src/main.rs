@@ -96,7 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // Update user state.
+        // Update instance.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap());
 
@@ -123,7 +123,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // Update user state.
+        // Update instance.
         user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap())
 
