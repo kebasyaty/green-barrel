@@ -297,6 +297,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
+                    }
+                    //
                     let curr_val = const_value.as_str().unwrap();
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = if field_type != "InputPassword" {
@@ -508,6 +512,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
+                    }
+                    //
                     let curr_val = const_value.as_str().unwrap();
 
                     // Validation in regular expression.
@@ -627,6 +635,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         continue;
                     }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
+                    }
                     // Get selected items.
                     if is_save {
                         final_doc.insert(
@@ -672,6 +684,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         continue;
                     }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
+                    }
                     // Get selected items.
                     if is_save {
                         final_doc.insert(
@@ -716,6 +732,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
+                    }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
                     if is_save {
@@ -784,6 +804,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
+                    }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
                     if is_save {
@@ -1208,6 +1232,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                         continue;
                     }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
+                    }
                     // Get clean data.
                     let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
                     // Used to validation uniqueness and in the final result.
@@ -1283,6 +1311,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
+                    }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get clean data.
                     let curr_val = const_value.as_i64().unwrap();
@@ -1360,6 +1392,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             final_doc.insert(field_name, Bson::Null);
                         }
                         continue;
+                    }
+                    //
+                    if is_use_default {
+                        *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get clean data.
                     let curr_val = const_value.as_f64().unwrap();
@@ -1442,6 +1478,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         } else {
                             false
                         };
+                        *final_field.get_mut("checked").unwrap() = json!(is_checked);
                         let field_value_bson = Bson::Boolean(is_checked);
                         final_doc.insert(field_name, field_value_bson);
                     }
