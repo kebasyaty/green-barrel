@@ -31,7 +31,7 @@ impl Default for SelectTextMult {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("SelectTextMul"),
+            field_type: String::from("SelectTextMult"),
             name: String::new(),
             value: None,
             default: None,
