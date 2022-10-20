@@ -37,7 +37,7 @@ impl Default for AutoSlug {
             placeholder: String::new(),
             unique: true,
             disabled: false,
-            readonly: false,
+            readonly: true,
             slug_sources: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
