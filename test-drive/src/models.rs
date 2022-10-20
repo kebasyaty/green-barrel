@@ -43,8 +43,6 @@ impl Control for User {
             },
             slug: AutoSlug {
                 label: "Slug".into(),
-                unique: true,
-                readonly: true,
                 hint: "To create a human readable url".into(),
                 slug_sources: vec!["hash".into(), "username".into()],
                 ..Default::default()
