@@ -262,7 +262,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             };
             let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u8;
             //
-            let is_required = final_field.get("required").unwrap().as_bool().unwrap();
+            let is_required = if let Some(required) = final_field.get("required") {
+                required.as_bool().unwrap()
+            } else {
+                false
+            };
             let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
             let field_type = field_type.as_str();
 

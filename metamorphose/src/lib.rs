@@ -366,16 +366,20 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     serde_json::from_str::<std::collections::HashMap<&str, &str>>(&#html_id_map_json)?;
                 for (field_name, id_name) in html_id_map {
                     // Check field attributes.
-                    if instance_json_val.get(field_name).unwrap().get("required").unwrap().as_bool().unwrap()
-                        && (instance_json_val.get(field_name).unwrap().get("disabled").unwrap().as_bool().unwrap()
-                        || instance_json_val.get(field_name).unwrap().get("readonly").unwrap().as_bool().unwrap()
-                        || instance_json_val.get(field_name).unwrap().get("is_hide").unwrap().as_bool().unwrap()) {
-                        //
-                        Err(format!(
-                            "Field: `{}` => Attribute required=true incompatible with \
-                                disabled=true or readonly=true or is_hide=true.",
-                            field_name
-                        ))?
+                    if let Some(required) = instance_json_val.get(field_name).unwrap().get("required") {
+                        let is_required = required.as_bool().unwrap();
+                        if is_required {
+                            if (instance_json_val.get(field_name).unwrap().get("disabled").unwrap().as_bool().unwrap()
+                            || instance_json_val.get(field_name).unwrap().get("readonly").unwrap().as_bool().unwrap()
+                            || instance_json_val.get(field_name).unwrap().get("is_hide").unwrap().as_bool().unwrap()) {
+                                //
+                                Err(format!(
+                                    "Field: `{}` => Attribute required=true incompatible with \
+                                        disabled=true or readonly=true or is_hide=true.",
+                                    field_name
+                                ))?
+                            }
+                        }
                     }
                     // Thumbnails sorting and validation.
                     if let Some(arr) = instance_json_val.get(field_name).unwrap().get("thumbnails") {

@@ -12,7 +12,6 @@ pub struct AutoSlug {
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
-    pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
@@ -36,8 +35,7 @@ impl Default for AutoSlug {
             name: String::new(),
             value: None,
             placeholder: String::new(),
-            required: false,
-            unique: false,
+            unique: true,
             disabled: false,
             readonly: false,
             slug_sources: Vec::new(),
