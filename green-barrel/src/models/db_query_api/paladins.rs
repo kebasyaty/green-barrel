@@ -1012,16 +1012,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let f_path = std::path::Path::new(image_data.path.as_str());
                             if !f_path.exists() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => Image is missing - {}",
-                                    model_name, field_name, image_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => Image is missing - {0}",
+                                    image_data.path
                                 ))?
                             }
                             if !f_path.is_file() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => The path does not lead to a file - {}",
-                                    model_name, field_name, image_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => The path does not lead to a file - {0}",
+                                    image_data.path
+                                ))?
+                            }
+                            if image_data.url.is_empty() {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => ???"
                                 ))?
                             }
                         }
@@ -1127,9 +1133,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                                `check()` => Required `path` and `url` fields.",
-                            model_name, field_name
+                            "Model: `{model_name}` > Field: `{field_name}` > \
+                                Type: `FileData` ; Method: `check()` => \
+                                Required `path` and `url` fields.",
                         ))?
                     }
                     // Create path for validation of file.
