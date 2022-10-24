@@ -880,16 +880,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let f_path = std::path::Path::new(file_data.path.as_str());
                             if !f_path.exists() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => File is missing - {}",
-                                    model_name, field_name, file_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => File is missing - {0}",
+                                    file_data.path
                                 ))?
                             }
                             if !f_path.is_file() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => The path does not lead to a file - {}",
-                                    model_name, field_name, file_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => The path does not lead to a file - {0}",
+                                    file_data.path
+                                ))?
+                            }
+                            if file_data.url.is_empty() {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => Add a file URL."
                                 ))?
                             }
                         }
@@ -1027,7 +1033,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if image_data.url.is_empty() {
                                 Err(format!(
                                     "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => ???"
+                                        `check()` => Add a image URL."
                                 ))?
                             }
                         }
