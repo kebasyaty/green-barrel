@@ -114,8 +114,8 @@ mod data_test {
                 file: InputFile {
                     required: true,
                     default: Some(FileData {
-                        path: "./media/hello_world.odt".into(),
-                        url: "/media/hello_world.odt".into(),
+                        path: "./media/default/no_file.odt".into(),
+                        url: "/media/default/no_file.odt".into(),
                         ..Default::default()
                     }),
                     ..Default::default()
@@ -123,8 +123,8 @@ mod data_test {
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
-                        path: "./media/beautiful-mountains.jpg".into(),
-                        url: "/media/beautiful-mountains.jpg".into(),
+                        path: "./media/default/no_image.png".into(),
+                        url: "/media/default/no_image.png".into(),
                         ..Default::default()
                     }),
                     thumbnails: vec![

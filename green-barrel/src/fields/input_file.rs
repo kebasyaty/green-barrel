@@ -39,7 +39,7 @@ impl Default for InputFile {
             name: String::new(),
             value: None,
             default: None,
-            target_dir: String::new(),
+            target_dir: String::from("files"),
             accept: String::new(),
             placeholder: String::new(),
             required: false,

@@ -153,13 +153,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
         test_model.file.set(FileData {
-            path: "./media/hello_world.odt".into(),
-            url: "/media/hello_world.odt".into(),
+            path: "./media/default/no_file.odt".into(),
+            url: "/media/default/no_file.odt".into(),
             ..Default::default()
         });
         test_model.image.set(ImageData {
-            path: "./media/no-image-found.png".into(),
-            url: "/media/no-image-found.png".into(),
+            path: "./media/default/no_image.png".into(),
+            url: "/media/default/no_image.png".into(),
             ..Default::default()
         });
         test_model.number_i32.set(0);
