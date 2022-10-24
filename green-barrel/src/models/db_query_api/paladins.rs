@@ -1084,20 +1084,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     //
                                     let extension = path.extension().unwrap().to_str().unwrap();
                                     let mut new_file_name;
-                                    let mut path_buf;
-                                    let new_file_path;
+                                    let mut new_file_path;
                                     loop {
                                         new_file_name = format!("{}.{extension}", Uuid::new_v4());
-                                        path_buf = Path::new(grand_parent)
+                                        new_file_path = Path::new(grand_parent)
                                             .join(target_dir)
                                             .join(new_file_name.as_str());
-                                        let path = path_buf.as_path();
-                                        if !path.exists() {
-                                            new_file_path = path;
+                                        if !new_file_path.as_path().exists() {
                                             break;
                                         }
                                     }
                                     //
+                                    let new_file_path = new_file_path.as_path();
                                     fs::copy(Path::new(&image_data.path), new_file_path)?;
                                     image_data.path = new_file_path.to_str().unwrap().to_string();
                                     //
