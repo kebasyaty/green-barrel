@@ -880,16 +880,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let f_path = std::path::Path::new(file_data.path.as_str());
                             if !f_path.exists() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => File is missing - {}",
-                                    model_name, field_name, file_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => File is missing - {0}",
+                                    file_data.path
                                 ))?
                             }
                             if !f_path.is_file() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => The path does not lead to a file - {}",
-                                    model_name, field_name, file_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => The path does not lead to a file - {0}",
+                                    file_data.path
+                                ))?
+                            }
+                            if file_data.url.is_empty() {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => Add a file URL."
                                 ))?
                             }
                         }
@@ -955,25 +961,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                                `check()` => Required `path` and `url` fields.",
-                            model_name, field_name
+                            "Model: `{model_name}` > Field: `{field_name}` > \
+                                Type: `FileData` ; Method: `check()` => \
+                                Required `path` and `url` fields.",
                         ))?
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(file_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => File is missing - {}",
-                            model_name, field_name, file_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => File is missing - {0}",
+                            file_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}",
-                            model_name, field_name, file_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => The path does not lead to a file - {0}",
+                            file_data.path
                         ))?
                     }
                     // Get file metadata.
@@ -1012,16 +1018,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let f_path = std::path::Path::new(image_data.path.as_str());
                             if !f_path.exists() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => Image is missing - {}",
-                                    model_name, field_name, image_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => Image is missing - {0}",
+                                    image_data.path
                                 ))?
                             }
                             if !f_path.is_file() {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` ; Method: \
-                                        `check()` => The path does not lead to a file - {}",
-                                    model_name, field_name, image_data.path
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => The path does not lead to a file - {0}",
+                                    image_data.path
+                                ))?
+                            }
+                            if image_data.url.is_empty() {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                        `check()` => Add a image URL."
                                 ))?
                             }
                         }
@@ -1071,28 +1083,35 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     serde_json::from_value::<ImageData>(const_value.clone())?;
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
-                                    let new_file_name = Uuid::new_v4().to_string();
+                                    let target_dir =
+                                        final_field.get("target_dir").unwrap().as_str().unwrap();
                                     let path = Path::new(image_data.path.as_str());
-                                    let parent = path.parent().unwrap().to_str().unwrap();
-                                    let extension =
-                                        path.extension().unwrap().to_str().unwrap().to_string();
-                                    fs::create_dir_all(format!("{}/default", parent))?;
-                                    let new_default_path = format!(
-                                        "{}/default/{}.{}",
-                                        parent, new_file_name, extension
-                                    );
-                                    fs::copy(
-                                        Path::new(image_data.path.as_str()),
-                                        Path::new(new_default_path.as_str()),
-                                    )?;
-                                    image_data.path = new_default_path;
+                                    let mut grand_parent = "./media";
+                                    if let Some(parent) = path.parent() {
+                                        if let Some(grand_p) = parent.parent() {
+                                            grand_parent = grand_p.to_str().unwrap();
+                                        }
+                                    }
+                                    fs::create_dir_all(format!("{grand_parent}/{target_dir}"))?;
                                     //
-                                    let url = Path::new(image_data.url.as_str());
-                                    let parent = url.parent().unwrap().to_str().unwrap();
-                                    image_data.url = format!(
-                                        "{}/default/{}.{}",
-                                        parent, new_file_name, extension
-                                    );
+                                    let extension = path.extension().unwrap().to_str().unwrap();
+                                    let mut new_file_name;
+                                    let mut new_file_path;
+                                    loop {
+                                        new_file_name = format!("{}.{extension}", Uuid::new_v4());
+                                        new_file_path = Path::new(grand_parent)
+                                            .join(target_dir)
+                                            .join(new_file_name.as_str());
+                                        if !new_file_path.as_path().exists() {
+                                            break;
+                                        }
+                                    }
+                                    //
+                                    let new_file_path = new_file_path.as_path();
+                                    fs::copy(Path::new(&image_data.path), new_file_path)?;
+                                    image_data.path = new_file_path.to_str().unwrap().to_string();
+                                    //
+                                    image_data.url = format!("/media/{target_dir}/{new_file_name}");
                                 }
                             } else {
                                 if is_required {
@@ -1116,25 +1135,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Invalid if there is only one value.
                     if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` > Type: `FileData` ; Method: \
-                                `check()` => Required `path` and `url` fields.",
-                            model_name, field_name
+                            "Model: `{model_name}` > Field: `{field_name}` > \
+                                Type: `FileData` ; Method: `check()` => \
+                                Required `path` and `url` fields.",
                         ))?
                     }
                     // Create path for validation of file.
                     let f_path = std::path::Path::new(image_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => Image is missing - {}",
-                            model_name, field_name, image_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => Image is missing - {0}",
+                            image_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}",
-                            model_name, field_name, image_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => The path does not lead to a file - {0}",
+                            image_data.path
                         ))?
                     }
                     // Get file metadata.
@@ -1195,10 +1214,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
-                                        "Model: `{}` > Field: `{}` > Type: `ImageData` ; \
-                                            Method: `check()` => Valid size names -\
-                                            `xs`, `sm`, `md`, `lg`.",
-                                        model_name, field_name
+                                        "Model: `{model_name}` > Field: `{field_name}` > \
+                                            Type: `ImageData` ; Method: `check()` => \
+                                            Valid size names - `xs`, `sm`, `md`, `lg`."
                                     ))?,
                                 }
                             };
