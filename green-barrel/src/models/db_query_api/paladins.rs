@@ -1086,7 +1086,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     let target_dir =
                                         final_field.get("target_dir").unwrap().as_str().unwrap();
                                     let path = Path::new(image_data.path.as_str());
-                                    let mut grand_parent = "./";
+                                    let mut grand_parent = "./media";
                                     if let Some(parent) = path.parent() {
                                         if let Some(grand_p) = parent.parent() {
                                             grand_parent = grand_p.to_str().unwrap();
@@ -1111,11 +1111,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     fs::copy(Path::new(&image_data.path), new_file_path)?;
                                     image_data.path = new_file_path.to_str().unwrap().to_string();
                                     //
-                                    image_data.url = {
-                                        let url = Path::new(image_data.url.as_str());
-                                        let parent = url.parent().unwrap().to_str().unwrap();
-                                        format!("{parent}/{new_file_name}")
-                                    };
+                                    image_data.url = format!("/media/{target_dir}/{new_file_name}");
                                 }
                             } else {
                                 if is_required {
