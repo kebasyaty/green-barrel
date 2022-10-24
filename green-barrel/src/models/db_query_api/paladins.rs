@@ -1103,7 +1103,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     //
                                     let url = Path::new(image_data.url.as_str());
                                     let parent = url.parent().unwrap().to_str().unwrap();
-                                    image_data.url = format!("{parent}/{new_file_name}");
+                                    image_data.url = {
+                                        let url = Path::new(image_data.url.as_str());
+                                        let parent = url.parent().unwrap().to_str().unwrap();
+                                        format!("{parent}/{new_file_name}")
+                                    };
                                 }
                             } else {
                                 if is_required {
