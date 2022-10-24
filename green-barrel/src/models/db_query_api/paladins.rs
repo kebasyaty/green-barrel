@@ -1071,21 +1071,35 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     serde_json::from_value::<ImageData>(const_value.clone())?;
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
-                                    let new_file_name = Uuid::new_v4().to_string();
+                                    let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                                     let path = Path::new(image_data.path.as_str());
-                                    let parent = path.parent().unwrap().to_str().unwrap();
-                                    let extension =
-                                        path.extension().unwrap().to_str().unwrap().to_string();
-                                    fs::create_dir_all(format!("{}/default", parent))?;
-                                    let new_default_path = format!(
-                                        "{}/default/{}.{}",
-                                        parent, new_file_name, extension
-                                    );
+                                    let mut grand_parent = "./";
+                                    if let Some(parent) = path.parent() {
+                                            if let Some(grand_parent) = parent.parent() {
+                                                grand_parent = grand_parent.to_str().unwrap();
+                                            }
+                                        }
+                                    }
+                                    let extension = path.extension().unwrap().to_str().unwrap();
+                                    fs::create_dir_all(format!("{grand_parent}/{target_dir}"))?;
+                                    //
+                                    let mut new_file_name;
+                                    let mut new_file_path;
+                                    loop {
+                                        new_file_name = format!("{}.{extension}", Uuid::new_v4());
+                                        new_file_path = Path::new(grand_parent)
+                                            .join(target_dir)
+                                            .join(new_file_name.as_str());
+                                        if !new_file_path.as_path().exists() {
+                                            break;
+                                        }
+                                    }
+                                    //
                                     fs::copy(
                                         Path::new(image_data.path.as_str()),
-                                        Path::new(new_default_path.as_str()),
+                                        new_file_path.as_path(),
                                     )?;
-                                    image_data.path = new_default_path;
+                                    image_data.path = new_file_path;
                                     //
                                     let url = Path::new(image_data.url.as_str());
                                     let parent = url.parent().unwrap().to_str().unwrap();
