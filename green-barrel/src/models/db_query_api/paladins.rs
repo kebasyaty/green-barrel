@@ -1080,9 +1080,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                             }
                                         }
                                     }
-                                    let extension = path.extension().unwrap().to_str().unwrap();
                                     fs::create_dir_all(format!("{grand_parent}/{target_dir}"))?;
                                     //
+                                    let extension = path.extension().unwrap().to_str().unwrap();
                                     let mut new_file_name;
                                     let mut new_file_path;
                                     loop {
