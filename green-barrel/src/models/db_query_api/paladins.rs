@@ -1142,16 +1142,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let f_path = std::path::Path::new(image_data.path.as_str());
                     if !f_path.exists() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => Image is missing - {}",
-                            model_name, field_name, image_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => Image is missing - {0}",
+                            image_data.path
                         ))?
                     }
                     if !f_path.is_file() {
                         Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: \
-                                `check()` => The path does not lead to a file - {}",
-                            model_name, field_name, image_data.path
+                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
+                                `check()` => The path does not lead to a file - {0}",
+                            image_data.path
                         ))?
                     }
                     // Get file metadata.
@@ -1212,10 +1212,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         image_data.url_xs = thumb_url;
                                     }
                                     _ => Err(format!(
-                                        "Model: `{}` > Field: `{}` > Type: `ImageData` ; \
-                                            Method: `check()` => Valid size names -\
-                                            `xs`, `sm`, `md`, `lg`.",
-                                        model_name, field_name
+                                        "Model: `{model_name}` > Field: `{field_name}` > \
+                                            Type: `ImageData` ; Method: `check()` => \
+                                            Valid size names - `xs`, `sm`, `md`, `lg`."
                                     ))?,
                                 }
                             };
