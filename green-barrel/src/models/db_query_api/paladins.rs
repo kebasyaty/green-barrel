@@ -1091,9 +1091,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         path_buf = Path::new(grand_parent)
                                             .join(target_dir)
                                             .join(new_file_name.as_str());
-                                        let new_path = path_buf.as_path();
-                                        if !new_path.exists() {
-                                            new_file_path = new_path;
+                                        let path = path_buf.as_path();
+                                        if !path.exists() {
+                                            new_file_path = path;
                                             break;
                                         }
                                     }
