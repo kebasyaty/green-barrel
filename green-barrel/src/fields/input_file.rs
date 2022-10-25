@@ -14,13 +14,15 @@ pub struct InputFile {
     pub name: String, // The value is determined automatically.
     pub value: Option<FileData>, // Sets the value of an element.
     pub default: Option<FileData>, // Value by default
-    pub target_dir: String, // Directory for files inside media directory (inner path).
-    pub accept: String, // Example: "image/jpeg,image/png,image/gif"
+    pub media_root: String, // Root partition for storing files.
+    pub media_url: String, // Url address to the root section.
+    pub target_dir: String, // Directory for files inside media directory (inner path). Example: "files/resume".
+    pub accept: String,     // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
-    pub required: bool, // Mandatory field.
-    pub disabled: bool, // Blocks access and modification of the element.
-    pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub is_hide: bool, // Hide field from user.
+    pub required: bool,     // Mandatory field.
+    pub disabled: bool,     // Blocks access and modification of the element.
+    pub readonly: bool,     // Specifies that the field cannot be modified by the user.
+    pub is_hide: bool,      // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -39,6 +41,8 @@ impl Default for InputFile {
             name: String::new(),
             value: None,
             default: None,
+            media_root: String::from("./media"),
+            media_url: String::from("/media"),
             target_dir: String::from("files"),
             accept: String::new(),
             placeholder: String::new(),

@@ -1083,23 +1083,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     serde_json::from_value::<ImageData>(const_value.clone())?;
                                 // Copy the default image to the default section.
                                 if !thumbnails.is_empty() {
+                                    let media_root =
+                                        final_field.get("media_root").unwrap().as_str().unwrap();
+                                    let media_url =
+                                        final_field.get("media_url").unwrap().as_str().unwrap();
                                     let target_dir =
                                         final_field.get("target_dir").unwrap().as_str().unwrap();
                                     let path = Path::new(image_data.path.as_str());
-                                    let mut grand_parent = "./media";
-                                    if let Some(parent) = path.parent() {
-                                        if let Some(grand_p) = parent.parent() {
-                                            grand_parent = grand_p.to_str().unwrap();
-                                        }
-                                    }
-                                    fs::create_dir_all(format!("{grand_parent}/{target_dir}"))?;
+                                    //
+                                    fs::create_dir_all(format!("{media_root}/{target_dir}"))?;
                                     //
                                     let extension = path.extension().unwrap().to_str().unwrap();
                                     let mut new_file_name;
                                     let mut new_file_path;
                                     loop {
                                         new_file_name = format!("{}.{extension}", Uuid::new_v4());
-                                        new_file_path = Path::new(grand_parent)
+                                        new_file_path = Path::new(media_root)
                                             .join(target_dir)
                                             .join(new_file_name.as_str());
                                         if !new_file_path.as_path().exists() {
@@ -1109,9 +1108,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     //
                                     let new_file_path = new_file_path.as_path();
                                     fs::copy(Path::new(&image_data.path), new_file_path)?;
-                                    image_data.path = new_file_path.to_str().unwrap().to_string();
                                     //
-                                    image_data.url = format!("/media/{target_dir}/{new_file_name}");
+                                    image_data.path = new_file_path.to_str().unwrap().to_string();
+                                    image_data.url =
+                                        format!("{media_url}/{target_dir}/{new_file_name}");
                                 }
                             } else {
                                 if is_required {
