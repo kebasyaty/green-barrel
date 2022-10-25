@@ -1842,17 +1842,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
-                                let default_value = field.get("default").unwrap();
+                                let default = field.get("default").unwrap();
                                 //
-                                if !default_value.is_null() {
-                                    let file_data_default =
-                                        serde_json::from_value::<FileData>(default_value.clone())?;
-                                    // Exclude files by default.
-                                    if path != file_data_default.path {
-                                        let path = Path::new(path);
-                                        if path.exists() {
-                                            fs::remove_file(path)?;
-                                        }
+                                let file_data_default = if !default.is_null() {
+                                    serde_json::from_value::<FileData>(default.clone())?
+                                } else {
+                                    FileData::default()
+                                };
+                                // Exclude files by default.
+                                if path != file_data_default.path {
+                                    let path = Path::new(path);
+                                    if path.exists() {
+                                        fs::remove_file(path)?;
                                     }
                                 }
                             } else {
@@ -1866,27 +1867,28 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
-                                let default_value = field.get("default").unwrap();
+                                let default = field.get("default").unwrap();
                                 //
-                                if !default_value.is_null() {
-                                    let img_data_default =
-                                        serde_json::from_value::<ImageData>(default_value.clone())?;
-                                    // Exclude files by default.
-                                    if path != img_data_default.path {
-                                        let path = Path::new(path);
-                                        if path.exists() {
-                                            fs::remove_file(path)?;
-                                        }
-                                        // Remove thumbnails.
-                                        let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                                        for size_name in size_names.iter() {
-                                            let key_name = format!("path_{}", size_name);
-                                            let path = info_file.get_str(key_name.as_str())?;
-                                            if !path.is_empty() {
-                                                let path = Path::new(path);
-                                                if path.exists() {
-                                                    fs::remove_file(path)?;
-                                                }
+                                let img_data_default = if !default.is_null() {
+                                    serde_json::from_value::<ImageData>(default.clone())?
+                                } else {
+                                    ImageData::default()
+                                };
+                                // Exclude files by default.
+                                if path != img_data_default.path {
+                                    let path = Path::new(path);
+                                    if path.exists() {
+                                        fs::remove_file(path)?;
+                                    }
+                                    // Remove thumbnails.
+                                    let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
+                                    for size_name in size_names.iter() {
+                                        let key_name = format!("path_{}", size_name);
+                                        let path = info_file.get_str(key_name.as_str())?;
+                                        if !path.is_empty() {
+                                            let path = Path::new(path);
+                                            if path.exists() {
+                                                fs::remove_file(path)?;
                                             }
                                         }
                                     }
