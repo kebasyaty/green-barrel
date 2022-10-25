@@ -1089,11 +1089,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         final_field.get("media_url").unwrap().as_str().unwrap();
                                     let target_dir =
                                         final_field.get("target_dir").unwrap().as_str().unwrap();
-                                    let path = Path::new(image_data.path.as_str());
                                     //
                                     fs::create_dir_all(format!("{media_root}/{target_dir}"))?;
                                     //
-                                    let extension = path.extension().unwrap().to_str().unwrap();
+                                    let extension = {
+                                        let path = Path::new(image_data.path.as_str());
+                                        path.extension().unwrap().to_str().unwrap()
+                                    };
                                     let mut new_file_name;
                                     let mut new_file_path;
                                     loop {
