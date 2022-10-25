@@ -1586,11 +1586,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 //
                 if field_type == "InputFile" {
                     let value = field.get("value").unwrap();
-                    let default_value = field.get("default").unwrap();
-                    if !value.is_null() && !default_value.is_null() {
+                    let default = field.get("default").unwrap();
+                    if !value.is_null() && !default.is_null() {
                         let file_data = serde_json::from_value::<FileData>(value.clone())?;
                         let file_data_default =
-                            serde_json::from_value::<FileData>(default_value.clone())?;
+                            serde_json::from_value::<FileData>(default.clone())?;
                         // Exclude files by default.
                         if file_data.path != file_data_default.path {
                             let path = Path::new(&file_data.path);
@@ -1607,11 +1607,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 } else if field_type == "InputImage" {
                     let value = field.get("value").unwrap();
-                    let default_value = field.get("default").unwrap();
-                    if !value.is_null() && !default_value.is_null() {
+                    let default = field.get("default").unwrap();
+                    if !value.is_null() && !default.is_null() {
                         let img_data = serde_json::from_value::<ImageData>(value.clone())?;
                         let img_data_default =
-                            serde_json::from_value::<ImageData>(default_value.clone())?;
+                            serde_json::from_value::<ImageData>(default.clone())?;
                         // Exclude files by default.
                         if img_data.path != img_data_default.path {
                             let path = Path::new(&img_data.path);
