@@ -1100,6 +1100,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path = Path::new(image_data.path.as_str());
                         path.extension().unwrap().to_str().unwrap().to_string()
                     };
+                    let mut img_dir_path;
+                    let img_dir_url;
                     {
                         let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
                         let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
@@ -1110,31 +1112,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let mut new_img_path;
                         loop {
                             uuid = Uuid::new_v4().to_string();
-                            fs::create_dir_all(format!(
-                                "{media_root}/{target_dir}/{date_slug}/{uuid}"
-                            ))?;
-                            new_img_path = Path::new(media_root)
-                                .join(target_dir)
-                                .join(date_slug.as_str())
-                                .join(uuid.as_str())
-                                .join(new_img_name.as_str());
-                            if !new_img_path.as_path().exists() {
+                            img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
+                            fs::create_dir_all(img_dir_path.clone())?;
+                            new_img_path = Path::new(&img_dir_path);
+                            if !new_img_path.exists() {
                                 break;
                             }
-                            fs::remove_dir(Path::new(
-                                format!("{media_root}/{target_dir}/{date_slug}/{uuid}").as_str(),
-                            ))?;
+                            fs::remove_dir(Path::new(img_dir_path.as_str()))?;
                         }
-                        let new_img_path = new_img_path.as_path();
                         fs::copy(source_img_path, new_img_path)?;
                         if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
                         //
                         image_data.name = new_img_name.clone();
-                        image_data.path = new_img_path.to_str().unwrap().to_string();
-                        image_data.url =
-                            format!("{media_url}/{target_dir}/{date_slug}/{uuid}/{new_img_name}");
+                        image_data.path = format!("{img_dir_path}/{new_img_name}");
+                        img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
+                        image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
                     //
                     let f_path = std::path::Path::new(image_data.path.as_str());
@@ -1159,14 +1153,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
                                 let thumb_name = format!("{}.{extension}", max_size.0);
-                                let thumb_path = image_data
-                                    .path
-                                    .clone()
-                                    .replace(image_data.name.as_str(), thumb_name.as_str());
-                                let thumb_url = image_data
-                                    .url
-                                    .clone()
-                                    .replace(image_data.name.as_str(), thumb_name.as_str());
+                                let thumb_path = format!("{img_dir_path}/{thumb_name}");
+                                let thumb_url = format!("{img_dir_url}/{thumb_name}");
                                 img = img.resize_exact(
                                     width as u32,
                                     height as u32,
