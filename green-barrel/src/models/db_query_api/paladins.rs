@@ -978,7 +978,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if !is_use_default {
                             fs::remove_file(source_file_path)?;
                         }
-                        //
                         file_data.name = new_file_name.clone();
                         file_data.path = new_file_path.to_str().unwrap().to_string();
                         file_data.url =
@@ -1124,7 +1123,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
-                        //
                         image_data.name = new_img_name.clone();
                         image_data.path = format!("{img_dir_path}/{new_img_name}");
                         img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
