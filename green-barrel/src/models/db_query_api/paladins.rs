@@ -1142,8 +1142,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     image_data.size = metadata.len() as f64;
-                    // Get file name
-                    image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions = image::image_dimensions(f_path)?;
                     image_data.width = dimensions.0 as f64;
