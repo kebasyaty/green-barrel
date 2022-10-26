@@ -115,7 +115,6 @@ mod data_test {
                     required: true,
                     default: Some(FileData {
                         path: "./media/default/no_file.odt".into(),
-                        url: "/media/default/no_file.odt".into(),
                         ..Default::default()
                     }),
                     ..Default::default()
@@ -124,7 +123,6 @@ mod data_test {
                     required: true,
                     default: Some(ImageData {
                         path: "./media/default/no_image.png".into(),
-                        url: "/media/default/no_image.png".into(),
                         ..Default::default()
                     }),
                     thumbnails: vec![

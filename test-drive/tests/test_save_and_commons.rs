@@ -154,12 +154,10 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.datetime.set("1900-01-31T00:00");
         test_model.file.set(FileData {
             path: "./media/default/no_file.odt".into(),
-            url: "/media/default/no_file.odt".into(),
             ..Default::default()
         });
         test_model.image.set(ImageData {
             path: "./media/default/no_image.png".into(),
-            url: "/media/default/no_image.png".into(),
             ..Default::default()
         });
         test_model.number_i32.set(0);
