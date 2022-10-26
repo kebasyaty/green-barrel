@@ -951,22 +951,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         };
                         let mut new_file_name;
                         let mut new_file_path;
-                        let mut tmp_path;
                         fs::create_dir_all(file_dir_path.clone())?;
                         loop {
                             new_file_name = format!("{}.{extension}", Uuid::new_v4());
-                            tmp_path = format!("{file_dir_path}/{new_file_name}");
-                            new_file_path = Path::new(&tmp_path);
-                            if !new_file_path.exists() {
+                            new_file_path = format!("{file_dir_path}/{new_file_name}");
+                            if !Path::new(&new_file_path).exists() {
                                 break;
                             }
                         }
-                        fs::copy(source_file_path, new_file_path)?;
+                        fs::copy(source_file_path, new_file_path.clone())?;
                         if !is_use_default {
                             fs::remove_file(source_file_path)?;
                         }
                         file_data.name = new_file_name.clone();
-                        file_data.path = format!("{file_dir_path}/{new_file_name}");
+                        file_data.path = new_file_path;
                         file_data.url =
                             format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
                     }
