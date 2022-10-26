@@ -1058,7 +1058,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Invalid if there is only one value.
-                    if !image_data.path.is_empty() {
+                    if image_data.path.is_empty() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` > \
                                 Type: `FileData` ; Method: `check()` => \
