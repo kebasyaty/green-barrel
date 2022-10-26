@@ -956,7 +956,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = slugify(chrono::Utc::now().to_rfc3339()[..10].to_string());
-                        fs::create_dir_all(format!("{media_root}/{target_dir}/{date_slug}"))?;
+                        let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
+                        fs::create_dir_all(file_dir_path.clone())?;
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
                             path.extension().unwrap().to_str().unwrap()
@@ -965,21 +966,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let mut new_file_path;
                         loop {
                             new_file_name = format!("{}.{extension}", Uuid::new_v4());
-                            new_file_path = Path::new(media_root)
-                                .join(target_dir)
-                                .join(date_slug.as_str())
-                                .join(new_file_name.as_str());
-                            if !new_file_path.as_path().exists() {
+                            new_file_path = format!("{file_dir_path}/{new_file_name}");
+                            if !Path::new(&new_file_path).exists() {
                                 break;
                             }
                         }
-                        let new_file_path = new_file_path.as_path();
-                        fs::copy(source_file_path, new_file_path)?;
+                        fs::copy(source_file_path, new_file_path.clone())?;
                         if !is_use_default {
                             fs::remove_file(source_file_path)?;
                         }
                         file_data.name = new_file_name.clone();
-                        file_data.path = new_file_path.to_str().unwrap().to_string();
+                        file_data.path = new_file_path;
                         file_data.url =
                             format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
                     }
