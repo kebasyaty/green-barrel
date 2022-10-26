@@ -1017,34 +1017,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         ImageData::default()
                     };
-                    //
-                    if !is_save {
-                        if !image_data.path.is_empty() {
-                            // Create path for validation of file.
-                            let f_path = std::path::Path::new(image_data.path.as_str());
-                            if !f_path.exists() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Image is missing - {0}",
-                                    image_data.path
-                                ))?
-                            }
-                            if !f_path.is_file() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => The path does not lead to a file - {0}",
-                                    image_data.path
-                                ))?
-                            }
-                            if image_data.url.is_empty() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Add a image URL."
-                                ))?
-                            }
-                        }
-                        continue;
-                    }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required
@@ -1138,32 +1110,33 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Flags to check.
-                    let is_emty_path = image_data.path.is_empty();
-                    let is_emty_url = image_data.url.is_empty();
+                    //
                     // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                    if !image_data.path.is_empty() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` > \
                                 Type: `FileData` ; Method: `check()` => \
-                                Required `path` and `url` fields.",
+                                An empty `path` field is not allowed.",
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(image_data.path.as_str());
-                    if !f_path.exists() {
+                    let source_img_path = std::path::Path::new(image_data.path.as_str());
+                    if !source_img_path.exists() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
                                 `check()` => Image is missing - {0}",
                             image_data.path
                         ))?
                     }
-                    if !f_path.is_file() {
+                    if !source_img_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
                                 `check()` => The path does not lead to a file - {0}",
                             image_data.path
                         ))?
                     }
+                    //
+                    let f_path = std::path::Path::new(image_data.path.as_str());
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
