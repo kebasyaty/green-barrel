@@ -1106,15 +1106,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let path = Path::new(image_data.path.as_str());
                             path.extension().unwrap().to_str().unwrap()
                         };
+                        let new_img_name = format!("main.{extension}");
                         let mut uuid;
-                        let mut new_img_name;
                         let mut new_img_path;
                         loop {
                             uuid = Uuid::new_v4().to_string();
                             fs::create_dir_all(format!(
                                 "{media_root}/{target_dir}/{date_slug}/{uuid}"
                             ))?;
-                            new_img_name = format!("main.{extension}");
                             new_img_path = Path::new(media_root)
                                 .join(target_dir)
                                 .join(date_slug.as_str())
