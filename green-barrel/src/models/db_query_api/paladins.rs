@@ -64,21 +64,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path_default = image_default.path;
                         let path = info_file.get_str("path")?;
                         if path != path_default {
-                            let path = Path::new(path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
-                            }
-                            // Remove thumbnails.
-                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names {
-                                let key_name = format!("path_{}", size_name);
-                                let path = info_file.get_str(key_name.as_str())?;
-                                if !path.is_empty() {
-                                    let path = Path::new(path);
-                                    if path.exists() {
-                                        fs::remove_file(path)?;
-                                    }
-                                }
+                            let dir_path = Path::new(path).parent().unwrap();
+                            if dir_path.exists() {
+                                fs::remove_dir_all(dir_path)?;
                             }
                         }
                     }
