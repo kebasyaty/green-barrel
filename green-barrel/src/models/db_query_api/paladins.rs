@@ -873,34 +873,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         FileData::default()
                     };
-                    //
-                    if !is_save {
-                        if !file_data.path.is_empty() {
-                            // Create path for validation of file.
-                            let f_path = std::path::Path::new(file_data.path.as_str());
-                            if !f_path.exists() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => File is missing - {0}",
-                                    file_data.path
-                                ))?
-                            }
-                            if !f_path.is_file() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => The path does not lead to a file - {0}",
-                                    file_data.path
-                                ))?
-                            }
-                            if file_data.url.is_empty() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Add a file URL."
-                                ))?
-                            }
-                        }
-                        continue;
-                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
@@ -933,7 +905,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if file_data.path.is_empty() && file_data.url.is_empty() {
+                    if file_data.path.is_empty() {
                         if curr_file_info.is_null() {
                             if is_use_default && !const_value.is_null() {
                                 file_data =
@@ -956,14 +928,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     // Flags to check.
-                    let is_emty_path = file_data.path.is_empty();
-                    let is_emty_url = file_data.url.is_empty();
                     // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                    if file_data.path.is_empty() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` > \
                                 Type: `FileData` ; Method: `check()` => \
-                                Required `path` and `url` fields.",
+                                An empty `path` field is not allowed.",
                         ))?
                     }
                     // Create path for validation of file.
@@ -982,6 +952,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             file_data.path
                         ))?
                     }
+                    //
+                    // Create a new path and URL for the file.
+                    {
+                        let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
+                        let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
+                        let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
+                        let date_slug = slugify(chrono::Utc::now().to_rfc3339()[..10].to_string());
+                        fs::create_dir_all(format!("{media_root}/{target_dir}/{date_slug}/{}"))?;
+                    }
+                    //
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
