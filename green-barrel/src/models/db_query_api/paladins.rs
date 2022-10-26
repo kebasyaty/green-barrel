@@ -1093,18 +1093,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let date_slug = slugify(&chrono::Utc::now().to_rfc3339()[..10]);
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
-                        let mut new_img_path;
                         loop {
                             uuid = Uuid::new_v4().to_string();
                             img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
                             fs::create_dir_all(img_dir_path.clone())?;
-                            new_img_path = Path::new(&img_dir_path);
-                            if !new_img_path.exists() {
+                            if !Path::new(&img_dir_path).exists() {
                                 break;
                             }
                             fs::remove_dir(Path::new(img_dir_path.as_str()))?;
                         }
-                        fs::copy(source_img_path, new_img_path)?;
+                        fs::copy(source_img_path, img_dir_path.clone())?;
                         if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
