@@ -1104,11 +1104,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         loop {
                             uuid = Uuid::new_v4().to_string();
                             img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
-                            if !Path::new(&img_dir_path).is_dir() {
+                            let tmp_path = Path::new(&img_dir_path);
+                            if !tmp_path.is_dir() {
                                 fs::create_dir_all(img_dir_path.clone())?;
                                 break;
                             }
-                            fs::remove_dir(Path::new(img_dir_path.as_str()))?;
+                            fs::remove_dir(tmp_path)?;
                         }
                         fs::copy(source_img_path, img_dir_path.clone())?;
                         if !is_use_default {
