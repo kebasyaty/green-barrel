@@ -976,6 +976,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 break;
                             }
                         }
+                        let source_file_path = Path::new(&file_data.path);
+                        let new_file_path = new_file_path.as_path();
+                        fs::copy(source_file_path, new_file_path)?;
+                        if !is_use_default {
+                            fs::remove_file(source_file_path)?;
+                        }
+                        //
+                        file_data.path = new_file_path.to_str().unwrap().to_string();
+                        file_data.url =
+                            format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
                     }
                     //
                     // Get file metadata.
