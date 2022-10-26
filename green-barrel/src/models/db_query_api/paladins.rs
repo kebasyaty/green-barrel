@@ -1128,7 +1128,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
                         image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
-                    //
+                    // Get image path.
                     let f_path = std::path::Path::new(image_data.path.as_str());
                     // Get file metadata.
                     let metadata: std::fs::Metadata = f_path.metadata()?;
@@ -1138,7 +1138,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let dimensions = image::image_dimensions(f_path)?;
                     image_data.width = dimensions.0 as f64;
                     image_data.height = dimensions.1 as f64;
-                    // Generate sub-size images.
+                    // Create thumbnails.
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
