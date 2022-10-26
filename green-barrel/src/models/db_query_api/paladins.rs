@@ -854,7 +854,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of file type fields.
                 // *********************************************************************************
                 // "InputFile"
-                8 if is_save => {
+                8 => {
+                    //
+                    if !is_save {
+                        continue;
+                    }
                     // Get data for validation.
                     let mut file_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
@@ -990,7 +994,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 //
                 // "InputImage"
-                9 if is_save => {
+                9 => {
+                    //
+                    if !is_save {
+                        continue;
+                    }
                     // Get data for validation.
                     let mut image_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
