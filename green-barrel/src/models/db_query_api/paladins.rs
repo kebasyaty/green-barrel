@@ -1552,7 +1552,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Exclude files by default.
                         if file_data.path != file_data_default.path {
                             let path = Path::new(&file_data.path);
-                            if path.exists() {
+                            if path.is_file() {
                                 fs::remove_file(path)?;
                             }
                             //
@@ -1576,7 +1576,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Exclude files by default.
                         if img_data.path != img_data_default.path {
                             let dir_path = Path::new(&img_data.path).parent().unwrap();
-                            if dir_path.exists() {
+                            if dir_path.is_dir() {
                                 fs::remove_dir_all(dir_path)?;
                             }
                             //
@@ -1790,7 +1790,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 // Exclude files by default.
                                 if path != file_data_default.path {
                                     let path = Path::new(path);
-                                    if path.exists() {
+                                    if path.is_file() {
                                         fs::remove_file(path)?;
                                     }
                                 }
@@ -1815,7 +1815,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 // Exclude files by default.
                                 if path != img_data_default.path {
                                     let dir_path = Path::new(path).parent().unwrap();
-                                    if dir_path.exists() {
+                                    if dir_path.is_dir() {
                                         fs::remove_dir_all(dir_path)?;
                                     }
                                 }
