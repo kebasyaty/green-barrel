@@ -1169,7 +1169,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         //
                         image_data.path = new_img_path.to_str().unwrap().to_string();
                         image_data.url =
-                            format!("{media_url}/{target_dir}/{date_slug}/{new_img_name}");
+                            format!("{media_url}/{target_dir}/{date_slug}/{uuid}/main.{extension}");
                     }
                     //
                     let f_path = std::path::Path::new(image_data.path.as_str());
