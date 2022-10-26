@@ -957,13 +957,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = slugify(chrono::Utc::now().to_rfc3339()[..10].to_string());
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
-                        fs::create_dir_all(file_dir_path.clone())?;
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
                             path.extension().unwrap().to_str().unwrap()
                         };
                         let mut new_file_name;
                         let mut new_file_path;
+                        fs::create_dir_all(file_dir_path.clone())?;
                         loop {
                             new_file_name = format!("{}.{extension}", Uuid::new_v4());
                             new_file_path = format!("{file_dir_path}/{new_file_name}");
