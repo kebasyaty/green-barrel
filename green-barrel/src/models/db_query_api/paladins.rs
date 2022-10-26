@@ -979,6 +979,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             fs::remove_file(source_file_path)?;
                         }
                         //
+                        file_data.name = new_file_name.clone();
                         file_data.path = new_file_path.to_str().unwrap().to_string();
                         file_data.url =
                             format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
@@ -989,8 +990,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let metadata: std::fs::Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     file_data.size = metadata.len() as f64;
-                    // Get file name.
-                    file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !ignore_fields.contains(field_name) {
                         // Add file data to controller.
@@ -1097,15 +1096,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Create a new path and URL for the image.
+                    let extension = {
+                        let path = Path::new(image_data.path.as_str());
+                        path.extension().unwrap().to_str().unwrap().to_string()
+                    };
                     {
                         let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
                         let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = slugify(chrono::Utc::now().to_rfc3339()[..10].to_string());
-                        let extension = {
-                            let path = Path::new(image_data.path.as_str());
-                            path.extension().unwrap().to_str().unwrap()
-                        };
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
                         let mut new_img_path;
@@ -1132,6 +1131,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             fs::remove_file(source_img_path)?;
                         }
                         //
+                        image_data.name = new_img_name.clone();
                         image_data.path = new_img_path.to_str().unwrap().to_string();
                         image_data.url =
                             format!("{media_url}/{target_dir}/{date_slug}/{uuid}/{new_img_name}");
@@ -1160,7 +1160,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if thumbnail_size.0 > 0.0 && thumbnail_size.1 > 0.0 {
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
-                                let thumb_name = format!("{}_{}", max_size.0, image_data.name);
+                                let thumb_name = format!("{}.{extension}", max_size.0);
                                 let thumb_path = image_data
                                     .path
                                     .clone()
