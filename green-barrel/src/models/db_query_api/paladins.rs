@@ -1571,26 +1571,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         };
                         // Exclude files by default.
                         if img_data.path != img_data_default.path {
-                            let path = Path::new(&img_data.path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
-                            }
-                            // Remove thumbnails.
-                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names {
-                                let path = match size_name {
-                                    "lg" => img_data.path_lg.clone(),
-                                    "md" => img_data.path_md.clone(),
-                                    "sm" => img_data.path_sm.clone(),
-                                    "xs" => img_data.path_xs.clone(),
-                                    _ => Err("")?,
-                                };
-                                if !path.is_empty() {
-                                    let path = Path::new(&path);
-                                    if path.exists() {
-                                        fs::remove_file(path)?;
-                                    }
-                                }
+                            let dir_path = Path::new(&img_data.path).parent().unwrap();
+                            if dir_path.exists() {
+                                fs::remove_dir_all(dir_path)?;
                             }
                             //
                             *final_model_json
