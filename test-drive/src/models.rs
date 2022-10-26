@@ -28,7 +28,7 @@ pub struct User {
     pub is_staff: CheckBox,
     pub is_active: CheckBox,
     //
-    pub file: InputFile,
+    //pub file: InputFile,
     pub image: InputImage,
 }
 
@@ -107,6 +107,7 @@ impl Control for User {
                 hint: "Is this an active account?".into(),
                 ..Default::default()
             },
+            /*
             file: InputFile {
                 required: true,
                 default: Some(FileData {
@@ -115,6 +116,7 @@ impl Control for User {
                 }),
                 ..Default::default()
             },
+            */
             image: InputImage {
                 required: true,
                 default: Some(ImageData {

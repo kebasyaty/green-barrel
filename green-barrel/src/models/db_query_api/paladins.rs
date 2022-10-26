@@ -56,7 +56,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path = info_file.get_str("path")?;
                         if path != path_default {
                             let path = Path::new(path);
-                            if path.exists() {
+                            if path.is_file() {
                                 fs::remove_file(path)?;
                             }
                         }
@@ -65,7 +65,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path = info_file.get_str("path")?;
                         if path != path_default {
                             let dir_path = Path::new(path).parent().unwrap();
-                            if dir_path.exists() {
+                            if dir_path.is_dir() {
                                 fs::remove_dir_all(dir_path)?;
                             }
                         }
@@ -959,7 +959,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         loop {
                             new_file_name = format!("{}.{extension}", Uuid::new_v4());
                             new_file_path = format!("{file_dir_path}/{new_file_name}");
-                            if !Path::new(&new_file_path).exists() {
+                            if !Path::new(&new_file_path).is_file() {
                                 break;
                             }
                         }
@@ -1104,8 +1104,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         loop {
                             uuid = Uuid::new_v4().to_string();
                             img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
-                            fs::create_dir_all(img_dir_path.clone())?;
-                            if !Path::new(&img_dir_path).exists() {
+                            if !Path::new(&img_dir_path).is_dir() {
+                                fs::create_dir_all(img_dir_path.clone())?;
                                 break;
                             }
                             fs::remove_dir(Path::new(img_dir_path.as_str()))?;
