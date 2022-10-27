@@ -867,8 +867,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         FileData::default()
                     };
                     //
-                    if !file_data.path.is_empty() {
-                        file_data.is_delete = true;
+                    if !file_data.url.is_empty()
+                        && !file_data.is_delete
+                        && REGEX_TOKEN_DATE_SLUG.is_match(file_data.url.as_str())
+                    {
+                        continue;
                     }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
