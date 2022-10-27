@@ -6,6 +6,7 @@ use mongodb::{
     sync::Collection,
 };
 use rand::Rng;
+use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
@@ -1002,8 +1003,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ImageData::default()
                     };
                     //
-                    if !image_data.path.is_empty() {
-                        image_data.is_delete = true;
+                    if !image_data.url.is_empty() && !image_data.is_delete {
+                        //
                     }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
