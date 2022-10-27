@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     fn regex_validate_date_slug() {
-        let re = Regex::new(r"(?:/\d{4}-\d{2}-\d{2}/)").unwrap();
+        let re = Regex::new(r"(?:(?:/|\\)\d{4}-\d{2}-\d{2}(?:/|\\))").unwrap();
         // invalids
         assert!(!re.is_match("0123456789"));
         assert!(!re.is_match(&"`".repeat(10)));
@@ -77,7 +77,15 @@ mod tests {
         assert!(re.is_match("/media/files/0000-00-00/"));
         assert!(re.is_match("/media/images/2022-10-27/"));
         assert!(re.is_match("/media/files/0000-00-00/123e4567-e89b-12d3-a456-426655440000"));
-        assert!(re.is_match("/media/images/2022-10-27/123e4567-e89b-12d3-a456-426655440000"));
+        assert!(re.is_match(r#"/media/images/2022-10-27/123e4567-e89b-12d3-a456-426655440000/"#));
+        assert!(re.is_match(r#"\0000-00-00\"#));
+        assert!(re.is_match(r#"\2022-10-27\"#));
+        assert!(re.is_match(r#"\media\0000-00-00\"#));
+        assert!(re.is_match(r#"\media\2022-10-27\"#));
+        assert!(re.is_match(r#"\media\files\0000-00-00\"#));
+        assert!(re.is_match(r#"\media\images\2022-10-27\"#));
+        assert!(re.is_match(r#"\media\files\0000-00-00\123e4567-e89b-12d3-a456-426655440000"#));
+        assert!(re.is_match(r#"\media\images\2022-10-27\123e4567-e89b-12d3-a456-426655440000\"#));
     }
 
     #[test]

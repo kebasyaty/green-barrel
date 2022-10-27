@@ -1005,9 +1005,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ImageData::default()
                     };
                     //
-                    if !image_data.url.is_empty()
+                    if is_update
                         && !image_data.is_delete
-                        && REGEX_TOKEN_DATE_SLUG.is_match(image_data.url.as_str())
+                        && REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str())
                     {
                         continue;
                     }
