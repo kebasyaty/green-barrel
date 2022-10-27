@@ -867,8 +867,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
-                        if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
-                        {
+                        if !is_required || !file_data.path.is_empty() {
                             let file_default;
                             let val = final_field.get("default").unwrap();
                             if !val.is_null() {
@@ -1000,9 +999,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
-                        if !is_required
-                            || (!image_data.path.is_empty() && !image_data.url.is_empty())
-                        {
+                        if !is_required || !image_data.path.is_empty() {
                             let image_default;
                             let val = final_field.get("default").unwrap();
                             if !val.is_null() {
