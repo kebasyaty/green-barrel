@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
-    user.username.set("user_4");
-    user.email.set("user_4_@noreply.net");
+    user.username.set("user_5");
+    user.email.set("user_5_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
@@ -114,7 +114,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Update instance.
         user = output_data.update()?;
 
-        user.username.set("user_4_update");
+        user.username.set("new_user_5");
 
         let output_data = user.save(None, None)?;
         if output_data.is_valid() {
