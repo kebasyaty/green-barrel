@@ -865,6 +865,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         FileData::default()
                     };
+                    //
+                    if !file_data.path.is_empty() {
+                        file_data.is_delete = true;
+                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || !file_data.path.is_empty() {
@@ -997,6 +1001,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         ImageData::default()
                     };
+                    //
+                    if !image_data.path.is_empty() {
+                        image_data.is_delete = true;
+                    }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || !image_data.path.is_empty() {
