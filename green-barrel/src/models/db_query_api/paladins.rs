@@ -1081,10 +1081,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Create a new path and URL for the image.
-                    let extension = {
-                        let path = Path::new(image_data.path.as_str());
-                        path.extension().unwrap().to_str().unwrap().to_string()
-                    };
+                    let extension = source_img_path
+                        .extension()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
                     let mut img_dir_path;
                     let img_dir_url;
                     {
