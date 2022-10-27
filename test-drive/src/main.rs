@@ -85,6 +85,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
     if output_data.is_valid() {
+        // Update instance.
+        user = output_data.update()?;
+
         println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
@@ -96,8 +99,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
-        // Update instance.
-        user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap());
 
         //println!("Json:\n{}", output_data.json()?);
@@ -110,25 +111,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        user.username.set("user_1_update");
-        let output_data = user.save(None, None)?;
-        println!("Hash: {}", user.hash.get().unwrap());
-        println!("Hash: {}", output_data.hash());
-
-        println!("Created at: {}", user.created_at.get().unwrap());
-        println!("Updated at: {}", user.updated_at.get().unwrap());
-        println!("Created at: {}", output_data.created_at().unwrap());
-        println!("Updated at: {}", output_data.updated_at().unwrap());
-
-        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
-        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
-
         // Update instance.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.get().unwrap())
 
-        //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
+        user.username.set("user_1_update");
+
+        let output_data = user.save(None, None)?;
+        if output_data.is_valid() {
+            println!("Hash: {}", user.hash.get().unwrap());
+            println!("Hash: {}", output_data.hash());
+
+            println!("Created at: {}", user.created_at.get().unwrap());
+            println!("Updated at: {}", user.updated_at.get().unwrap());
+            println!("Created at: {}", output_data.created_at().unwrap());
+            println!("Updated at: {}", output_data.updated_at().unwrap());
+
+            println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+            println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
+
+            println!("Slug: {}", user.slug.get().unwrap())
+
+            //println!("Json:\n{}", output_data.json()?);
+            //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
+        } else {
+            // Printing errors to the console ( for development ).
+            output_data.print_err();
+        }
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
