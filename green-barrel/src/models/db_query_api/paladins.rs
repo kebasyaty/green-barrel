@@ -1071,19 +1071,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 An empty `path` field is not allowed.",
                         ))?
                     }
-                    // Create path for validation of file.
+                    // Validation of file.
                     let source_img_path = std::path::Path::new(image_data.path.as_str());
-                    if !source_img_path.exists() {
-                        Err(format!(
-                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => Image is missing - {0}",
-                            image_data.path
-                        ))?
-                    }
                     if !source_img_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => The path does not lead to a file - {0}",
+                                `check()` => Image is missing - {0}",
                             image_data.path
                         ))?
                     }
@@ -1104,17 +1097,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         loop {
                             uuid = Uuid::new_v4().to_string();
                             img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
-                            let tmp_path = Path::new(&img_dir_path);
-                            if !tmp_path.is_dir() {
+                            if !Path::new(&img_dir_path).is_dir() {
                                 fs::create_dir_all(img_dir_path.clone())?;
                                 break;
                             }
-                            fs::remove_dir(tmp_path)?;
                         }
                         fs::copy(source_img_path, img_dir_path.clone())?;
                         if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
+                        print!("\n\nYes!!!\n\n");
                         image_data.name = new_img_name.clone();
                         image_data.path = format!("{img_dir_path}/{new_img_name}");
                         img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
