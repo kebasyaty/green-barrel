@@ -1104,13 +1104,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 break;
                             }
                         }
-                        fs::copy(source_img_path, img_dir_path.clone())?;
+                        let new_img_path = format!("{img_dir_path}/{new_img_name}");
+                        fs::copy(source_img_path, new_img_path.clone())?;
                         if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
-                        print!("\n\nYes!!!\n\n");
                         image_data.name = new_img_name.clone();
-                        image_data.path = format!("{img_dir_path}/{new_img_name}");
+                        image_data.path = new_img_path;
                         img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
                         image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
