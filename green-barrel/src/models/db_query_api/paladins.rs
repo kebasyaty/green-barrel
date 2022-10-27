@@ -22,7 +22,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::MONGODB_CLIENT_STORE,
+    store::{MONGODB_CLIENT_STORE, REGEX_TOKEN_DATE_SLUG},
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -1003,8 +1003,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ImageData::default()
                     };
                     //
-                    if !image_data.url.is_empty() && !image_data.is_delete {
-                        //
+                    if !image_data.url.is_empty()
+                        && !image_data.is_delete
+                        && REGEX_TOKEN_DATE_SLUG.is_match(image_data.url.as_str())
+                    {
+                        continue;
                     }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
