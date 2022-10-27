@@ -866,9 +866,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         FileData::default()
                     };
                     //
-                    if !file_data.url.is_empty()
+                    if is_update
+                        && (file_data.path.is_empty()
+                            || REGEX_TOKEN_DATE_SLUG.is_match(file_data.path.as_str()))
                         && !file_data.is_delete
-                        && REGEX_TOKEN_DATE_SLUG.is_match(file_data.url.as_str())
                     {
                         continue;
                     }
@@ -1006,8 +1007,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     //
                     if is_update
+                        && (image_data.path.is_empty()
+                            || REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str()))
                         && !image_data.is_delete
-                        && REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str())
                     {
                         continue;
                     }
