@@ -16,7 +16,7 @@ use mongodb::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
+use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard};
 
 use crate::{
     models::helpers::{FileData, ImageData, Meta},
@@ -452,10 +452,7 @@ impl<'a> Monitor<'a> {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<FileData>(default_value.clone())?;
                                                 // Define flags to check.
-                                                let is_emty_path = file_data.path.is_empty();
-                                                let is_emty_url = file_data.url.is_empty();
-                                                if (!is_emty_path && is_emty_url)
-                                                    || (is_emty_path && !is_emty_url) {
+                                                if file_data.path.is_empty() || file_data.url.is_empty() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                         `migrat()` => Check the `path` and `url` \
                                                         attributes in the `default` field parameter.",
@@ -465,14 +462,14 @@ impl<'a> Monitor<'a> {
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
-                                                if !f_path.exists() || !f_path.is_file() {
+                                                if !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; \
                                                     Method: `migrat()` => File is missing - {}",
                                                         meta.model_name, field_name, path)
                                                     )?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: Metadata = f_path.metadata()?;
+                                                let metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as f64;
                                                 // Get file name.
@@ -488,10 +485,7 @@ impl<'a> Monitor<'a> {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<ImageData>(default_value.clone())?;
                                                 // Define flags to check.
-                                                let is_emty_path = file_data.path.is_empty();
-                                                let is_emty_url = file_data.url.is_empty();
-                                                if (!is_emty_path && is_emty_url)
-                                                    || (is_emty_path && !is_emty_url) {
+                                                if file_data.path.is_empty() || file_data.url.is_empty() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                         `migrat()` => Check the `path` and `url` \
                                                         attributes in the `default` field parameter.",
@@ -501,20 +495,20 @@ impl<'a> Monitor<'a> {
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
-                                                if !f_path.exists() || !f_path.is_file() {
+                                                if !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                            `migrat()` => File is missing - {}",
+                                                            `migrat()` => Image is missing - {}",
                                                         meta.model_name, field_name, path
                                                     ))?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: Metadata = f_path.metadata()?;
+                                                let metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as f64;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.
-                                                let dimensions: (u32, u32) = image::image_dimensions(path)?;
+                                                let dimensions = image::image_dimensions(path)?;
                                                 file_data.width = dimensions.0 as f64;
                                                 file_data.height = dimensions.1 as f64;
                                                 // Create doc.
