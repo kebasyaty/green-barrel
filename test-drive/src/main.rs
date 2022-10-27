@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
-    user.username.set("user_8");
-    user.email.set("user_8_@noreply.net");
+    user.username.set("user_10");
+    user.email.set("user_10_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
@@ -114,10 +114,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Update instance.
         user = output_data.update()?;
 
-        user.username.set("new_user_8");
+        user.username.set("new_user_10");
         let output_data = user.save(None, None)?;
 
         if output_data.is_valid() {
+            // Update instance.
+            user = output_data.update()?;
+
             println!("Hash: {}", user.hash.get().unwrap());
             println!("Hash: {}", output_data.hash());
 
@@ -143,13 +146,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Delete document in database.
-    /*
     println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
     if !output_data.is_valid() {
         println!("{}", output_data.err_msg());
     }
-    */
 
     Ok(())
 }
