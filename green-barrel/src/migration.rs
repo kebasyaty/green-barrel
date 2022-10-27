@@ -53,7 +53,7 @@ impl<'a> Monitor<'a> {
         if !re.is_match(self.project_name) {
             Err("PROJECT_NAME => \
                     Valid characters: _ a-z A-Z 0-9 and \
-                    Max size: 21 ; \
+                    Max size: 20 ; \
                     First character: a-z A-Z")?
         }
         // UNIQUE_PROJECT_KEY Validation.
