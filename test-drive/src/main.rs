@@ -115,8 +115,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         user = output_data.update()?;
 
         user.username.set("new_user_5");
-
         let output_data = user.save(None, None)?;
+
         if output_data.is_valid() {
             println!("Hash: {}", user.hash.get().unwrap());
             println!("Hash: {}", output_data.hash());
