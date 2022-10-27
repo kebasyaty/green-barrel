@@ -207,14 +207,14 @@ impl<'a> Monitor<'a> {
                 ))?;
             }
             // Database name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$")
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,61}$")
                 .unwrap()
                 .is_match(meta.database_name.as_str())
             {
                 Err(format!(
                     "Model: `{}` > DATABASE_NAME => \
                         Valid characters: _ a-z A-Z 0-9 \
-                        ; Max size: 21 \
+                        ; Max size: 20 \
                         ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
