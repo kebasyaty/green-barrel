@@ -6,7 +6,6 @@ use mongodb::{
     sync::Collection,
 };
 use rand::Rng;
-use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
