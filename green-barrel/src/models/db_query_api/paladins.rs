@@ -9,7 +9,7 @@ use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::{convert::TryFrom, error::Error, fs, path::Path};
+use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
@@ -865,6 +865,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         FileData::default()
                     };
+                    //
+                    if !file_data.path.is_empty() {
+                        file_data.is_delete = true;
+                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || !file_data.path.is_empty() {
@@ -926,7 +930,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Create path for validation of file.
-                    let source_file_path = std::path::Path::new(file_data.path.as_str());
+                    let source_file_path = Path::new(file_data.path.as_str());
                     if !source_file_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
@@ -965,9 +969,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
                     }
                     //
-                    let f_path = std::path::Path::new(file_data.path.as_str());
+                    let f_path = Path::new(file_data.path.as_str());
                     // Get file metadata.
-                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    let metadata: Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     file_data.size = metadata.len() as f64;
                     // Insert result.
@@ -997,6 +1001,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         ImageData::default()
                     };
+                    //
+                    if !image_data.path.is_empty() {
+                        image_data.is_delete = true;
+                    }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || !image_data.path.is_empty() {
@@ -1062,7 +1070,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         ))?
                     }
                     // Validation of file.
-                    let source_img_path = std::path::Path::new(image_data.path.as_str());
+                    let source_img_path = Path::new(image_data.path.as_str());
                     if !source_img_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
@@ -1105,9 +1113,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
                     // Get image path.
-                    let f_path = std::path::Path::new(image_data.path.as_str());
+                    let f_path = Path::new(image_data.path.as_str());
                     // Get file metadata.
-                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    let metadata: Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     image_data.size = metadata.len() as f64;
                     // Get image width and height.
