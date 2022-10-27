@@ -928,17 +928,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Create path for validation of file.
                     let source_file_path = std::path::Path::new(file_data.path.as_str());
-                    if !source_file_path.exists() {
-                        Err(format!(
-                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => File is missing - {0}",
-                            file_data.path
-                        ))?
-                    }
                     if !source_file_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => The path does not lead to a file - {0}",
+                                `check()` => File is missing - {0}",
                             file_data.path
                         ))?
                     }
