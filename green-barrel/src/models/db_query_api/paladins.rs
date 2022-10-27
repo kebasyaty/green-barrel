@@ -867,9 +867,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     //
                     if is_update
+                        && !file_data.is_delete
                         && (file_data.path.is_empty()
                             || REGEX_TOKEN_DATE_SLUG.is_match(file_data.path.as_str()))
-                        && !file_data.is_delete
                     {
                         continue;
                     }
@@ -1007,9 +1007,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     //
                     if is_update
+                        && !image_data.is_delete
                         && (image_data.path.is_empty()
                             || REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str()))
-                        && !image_data.is_delete
                     {
                         continue;
                     }
