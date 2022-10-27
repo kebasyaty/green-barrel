@@ -48,8 +48,8 @@ impl<'a> Monitor<'a> {
     pub fn green_tech_name(&self) -> Result<String, Box<dyn Error>> {
         // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
-        // Max size: 21
-        let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$")?;
+        // Max size: 20
+        let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,20}$")?;
         if !re.is_match(self.project_name) {
             Err("PROJECT_NAME => \
                     Valid characters: _ a-z A-Z 0-9 and \
@@ -59,13 +59,13 @@ impl<'a> Monitor<'a> {
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
         // Valid characters: a-z A-Z 0-9
-        // Size: 8-16
+        // Size: 16
         // Example: "7rzgacfqQB3B7q7T"
-        let re = Regex::new(r"^[a-zA-Z\d]{8,16}$")?;
+        let re = Regex::new(r"^[a-zA-Z\d]{16}$")?;
         if !re.is_match(self.unique_project_key) {
             Err("UNIQUE_PROJECT_KEY => \
                     Valid characters: a-z A-Z 0-9 and \
-                    Size: 8-16.")?
+                    Size: 16.")?
         }
         //
         Ok(format!(
@@ -194,14 +194,14 @@ impl<'a> Monitor<'a> {
                 continue;
             }
             // Service_name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$")
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,30}$")
                 .unwrap()
                 .is_match(meta.service_name.as_str())
             {
                 Err(format!(
                     "Model: `{}` > SERVICE_NAME => \
                         Valid characters: _ a-z A-Z 0-9 \
-                        ; Max size: 31 \
+                        ; Max size: 30 \
                         ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
