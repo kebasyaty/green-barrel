@@ -865,14 +865,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         FileData::default()
                     };
-                    //
-                    if is_update
-                        && !file_data.is_delete
-                        && (file_data.path.is_empty()
-                            || REGEX_TOKEN_DATE_SLUG.is_match(file_data.path.as_str()))
-                    {
-                        continue;
-                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
                         if !is_required || !file_data.path.is_empty() {
@@ -924,6 +916,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             *final_field.get_mut("value").unwrap() = curr_file_info;
                             continue;
                         }
+                    }
+                    //
+                    if is_update
+                        && !is_use_default
+                        && REGEX_TOKEN_DATE_SLUG.is_match(file_data.path.as_str())
+                    {
+                        continue;
                     }
                     // Invalid if there is only one value.
                     if file_data.path.is_empty() {
@@ -1063,8 +1062,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !is_use_default
                         && REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str())
                     {
-                        print!("\n\nimage_data: {:?}\n\n", image_data);
-                        print!("\n\ncurr_file_info: {:?}\n\n", curr_file_info);
                         continue;
                     }
                     // Invalid if there is only one value.
