@@ -1011,6 +1011,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && (image_data.path.is_empty()
                             || REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str()))
                     {
+                        print!("\n\nimage_data: {:?}\n\n", image_data);
                         continue;
                     }
                     // Delete image.
@@ -1044,9 +1045,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
-                        final_field.get("thumbnails").unwrap().clone(),
-                    )?;
                     //
                     if image_data.path.is_empty() {
                         if curr_file_info.is_null() {
@@ -1131,6 +1129,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     image_data.width = dimensions.0 as f64;
                     image_data.height = dimensions.1 as f64;
                     // Create thumbnails.
+                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
+                        final_field.get("thumbnails").unwrap().clone(),
+                    )?;
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
