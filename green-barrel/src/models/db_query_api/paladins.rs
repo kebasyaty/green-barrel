@@ -21,7 +21,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::{MONGODB_CLIENT_STORE, REGEX_TOKEN_DATE_SLUG},
+    store::{MONGODB_CLIENT_STORE, REGEX_TOKEN_DATED_PATH},
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -918,7 +918,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATE_SLUG.is_match(file_data.path.as_str()) {
+                    if REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                        *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
                     // Invalid if there is only one value.
@@ -1055,7 +1056,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATE_SLUG.is_match(image_data.path.as_str()) {
+                    if REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
