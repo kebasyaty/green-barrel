@@ -3,7 +3,7 @@
 .DS_Store
 
 /media
-
+/test-drive/media/*
 !/test-drive/media/default/
 !/test-drive/media/tmp/
 !/test-drive/media/readme.txt
