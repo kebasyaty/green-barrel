@@ -37,20 +37,23 @@ mod tests {
     }
 
     #[test]
-    fn regex_validate_date_slug() {
-        let re = Regex::new(r"(?:(?:/|\\)\d{4}-\d{2}-\d{2}(?:/|\\))").unwrap();
+    fn regex_validate_dated_path() {
+        let re = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-UTC(?:/|\\))").unwrap();
         // invalids
         assert!(!re.is_match(""));
-        assert!(!re.is_match("\\"));
+        assert!(!re.is_match("-UTC"));
+        assert!(!re.is_match(r#"\-UTC\"#));
         assert!(!re.is_match("\\\\"));
         assert!(!re.is_match(r#"//"#));
         assert!(!re.is_match(r#"////"#));
         assert!(!re.is_match("0000-00-00"));
+        assert!(!re.is_match("0000-00-00-UTC"));
         assert!(!re.is_match("000-00-00"));
         assert!(!re.is_match("00-00-00"));
         assert!(!re.is_match("0-0-0"));
         assert!(!re.is_match("/0000-00-00"));
         assert!(!re.is_match("0000-00-00/"));
+        assert!(!re.is_match("/0000-00-00/"));
         assert!(!re.is_match("0000-00"));
         assert!(!re.is_match("-00-00"));
         assert!(!re.is_match("-00"));
@@ -59,29 +62,41 @@ mod tests {
         assert!(!re.is_match("/-00-00/"));
         assert!(!re.is_match("/-00/"));
         assert!(!re.is_match("/-00-/"));
+        assert!(!re.is_match(r#"\0000-00-00\"#));
+        assert!(!re.is_match(r#"\0000-00-00-UTC"#));
+        assert!(!re.is_match(r#"0000-00-00-UTC\"#));
         assert!(!re.is_match(r#"\0000-00\"#));
         assert!(!re.is_match(r#"\-00-00\"#));
         assert!(!re.is_match(r#"\-00\"#));
         assert!(!re.is_match(r#"\-00-\"#));
+        assert!(!re.is_match(r#"\0000-00-UTC\"#));
+        assert!(!re.is_match(r#"\-00-00-UTC\"#));
+        assert!(!re.is_match(r#"\-00-UTC\"#));
         // valids
-        assert!(re.is_match("/0000-00-00/"));
-        assert!(re.is_match("./2022-10-27/"));
-        assert!(re.is_match("/media/0000-00-00/"));
-        assert!(re.is_match("./media/2022-10-27/"));
-        assert!(re.is_match("/media/files/0000-00-00/"));
-        assert!(re.is_match("./media/images/2022-10-27/"));
-        assert!(re.is_match("/media/files/0000-00-00/123e4567-e89b-12d3-a456-426655440000"));
-        assert!(re.is_match("./media/files/0000-00-00/123e4567-e89b-12d3-a456-426655440000"));
-        assert!(re.is_match(r#"/media/images/2022-10-27/123e4567-e89b-12d3-a456-426655440000/"#));
-        assert!(re.is_match(r#"./media/images/2022-10-27/123e4567-e89b-12d3-a456-426655440000/"#));
-        assert!(re.is_match(r#"\0000-00-00\"#));
-        assert!(re.is_match(r#".\2022-10-27\"#));
-        assert!(re.is_match(r#"\media\0000-00-00\"#));
-        assert!(re.is_match(r#".\media\2022-10-27\"#));
-        assert!(re.is_match(r#"\media\files\0000-00-00\"#));
-        assert!(re.is_match(r#".\media\images\2022-10-27\"#));
-        assert!(re.is_match(r#"\media\files\0000-00-00\123e4567-e89b-12d3-a456-426655440000"#));
-        assert!(re.is_match(r#".\media\images\2022-10-27\123e4567-e89b-12d3-a456-426655440000\"#));
+        assert!(re.is_match("/0000-00-00-UTC/"));
+        assert!(re.is_match("./2022-10-27-UTC/"));
+        assert!(re.is_match("/media/0000-00-00-UTC/"));
+        assert!(re.is_match("./media/2022-10-27-UTC/"));
+        assert!(re.is_match("/media/files/0000-00-00-UTC/"));
+        assert!(re.is_match("./media/images/2022-10-27-UTC/"));
+        assert!(re.is_match("/media/files/0000-00-00-UTC/123e4567-e89b-12d3-a456-426655440000"));
+        assert!(re.is_match("./media/files/0000-00-00-UTC/123e4567-e89b-12d3-a456-426655440000"));
+        assert!(
+            re.is_match(r#"/media/images/2022-10-27-UTC/123e4567-e89b-12d3-a456-426655440000/"#)
+        );
+        assert!(
+            re.is_match(r#"./media/images/2022-10-27-UTC/123e4567-e89b-12d3-a456-426655440000/"#)
+        );
+        assert!(re.is_match(r#"\0000-00-00-UTC\"#));
+        assert!(re.is_match(r#".\2022-10-27-UTC\"#));
+        assert!(re.is_match(r#"\media\0000-00-00-UTC\"#));
+        assert!(re.is_match(r#".\media\2022-10-27-UTC\"#));
+        assert!(re.is_match(r#"\media\files\0000-00-00-UTC\"#));
+        assert!(re.is_match(r#".\media\images\2022-10-27-UTC\"#));
+        assert!(re.is_match(r#"\media\files\0000-00-00-UTC\123e4567-e89b-12d3-a456-426655440000"#));
+        assert!(
+            re.is_match(r#".\media\images\2022-10-27-UTC\123e4567-e89b-12d3-a456-426655440000\"#)
+        );
     }
 
     #[test]
