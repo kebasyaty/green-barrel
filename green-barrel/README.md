@@ -54,11 +54,11 @@
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -67,22 +67,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.34-beta/green_barre
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -91,7 +91,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.34-beta/green_barre
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -109,7 +109,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.0.34-beta/green_barre
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.0.34-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.0.35-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -165,8 +165,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.0.34-beta"
-metamorphose = "1.0.5-beta"
+green-barrel = "1.0.35-beta"
+metamorphose = "1.0.6-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
@@ -187,14 +187,14 @@ version = "1.0.145"
 // Project name.
 // Hint: PROJECT_NAM it is recommended not to change.
 // Valid characters: _ a-z A-Z 0-9
-// Max size: 21
+// Max size: 20
 // First character: a-z A-Z
 pub const PROJECT_NAME: &str = "store";
 
 // Unique project key.
 // Hint: UNIQUE_PROJECT_KEY it is recommended not to change.
 // Valid characters: a-z A-Z 0-9
-// Size: 8-16
+// Size: 16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key: https://randompasswordgen.com/
 pub const UNIQUE_PROJECT_KEY: &str = "A3iBcq9K19287PN3";
@@ -202,13 +202,14 @@ pub const UNIQUE_PROJECT_KEY: &str = "A3iBcq9K19287PN3";
 // Settings for user accounts.
 pub mod users {
     // Valid characters: _ a-z A-Z 0-9
-    // Max size: 31
+    // Max size: 30
     // First character: a-z A-Z
     pub const SERVICE_NAME: &str = "accounts";
     // Valid characters: _ a-z A-Z 0-9
-    // Max size: 21
+    // Max size: 20
     // First character: a-z A-Z
     pub const DATABASE_NAME: &str = "accounts";
+    //
     pub const DB_CLIENT_NAME: &str = "default";
     pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 }
@@ -471,6 +472,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
     if output_data.is_valid() {
+        // Update instance.
+        user = output_data.update()?;
+
         println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
@@ -484,8 +488,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         //println!("Json:\n{}", output_data.json()?);
 
-        // Update instance.
-        user = output_data.update()?;
         println!("Slug: {}", user.slug.get().unwrap())
     } else {
         // Printing errors to the console ( for development ).
@@ -496,24 +498,34 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        user.username.set("user_1_update");
-        let output_data = user.save(None, None)?;
-        println!("Hash: {}", user.hash.get().unwrap());
-        println!("Hash: {}", output_data.hash());
-
-        println!("Created at: {}", user.created_at.get().unwrap());
-        println!("Updated at: {}", user.updated_at.get().unwrap());
-        println!("Created at: {}", output_data.created_at().unwrap());
-        println!("Updated at: {}", output_data.updated_at().unwrap());
-
-        println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
-        println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
-
-        //println!("Json:\n{}", output_data.json()?);
-
         // Update instance.
         user = output_data.update()?;
-        println!("Slug: {}", user.slug.get().unwrap())
+
+        user.username.set("new_user_1");
+        let output_data = user.save(None, None)?;
+
+        if output_data.is_valid() {
+            // Update instance.
+            user = output_data.update()?;
+
+            println!("Hash: {}", user.hash.get().unwrap());
+            println!("Hash: {}", output_data.hash());
+
+            println!("Created at: {}", user.created_at.get().unwrap());
+            println!("Updated at: {}", user.updated_at.get().unwrap());
+            println!("Created at: {}", output_data.created_at().unwrap());
+            println!("Updated at: {}", output_data.updated_at().unwrap());
+
+            println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+            println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
+
+            //println!("Json:\n{}", output_data.json()?);
+
+            println!("Slug: {}", user.slug.get().unwrap())
+        } else {
+            // Printing errors to the console ( for development ).
+            output_data.print_err();
+        }
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();

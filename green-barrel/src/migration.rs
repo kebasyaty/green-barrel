@@ -16,7 +16,7 @@ use mongodb::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, error::Error, fs::Metadata, path::Path, sync::RwLockReadGuard};
+use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard};
 
 use crate::{
     models::helpers::{FileData, ImageData, Meta},
@@ -48,24 +48,24 @@ impl<'a> Monitor<'a> {
     pub fn green_tech_name(&self) -> Result<String, Box<dyn Error>> {
         // PROJECT_NAME Validation.
         // Valid characters: _ a-z A-Z 0-9
-        // Max size: 21
-        let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,21}$")?;
+        // Max size: 20
+        let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,20}$")?;
         if !re.is_match(self.project_name) {
             Err("PROJECT_NAME => \
                     Valid characters: _ a-z A-Z 0-9 and \
-                    Max size: 21 ; \
+                    Max size: 20 ; \
                     First character: a-z A-Z")?
         }
         // UNIQUE_PROJECT_KEY Validation.
         // UNIQUE_PROJECT_KEY - It is recommended not to change.
         // Valid characters: a-z A-Z 0-9
-        // Size: 8-16
+        // Size: 16
         // Example: "7rzgacfqQB3B7q7T"
-        let re = Regex::new(r"^[a-zA-Z\d]{8,16}$")?;
+        let re = Regex::new(r"^[a-zA-Z\d]{16}$")?;
         if !re.is_match(self.unique_project_key) {
             Err("UNIQUE_PROJECT_KEY => \
                     Valid characters: a-z A-Z 0-9 and \
-                    Size: 8-16.")?
+                    Size: 16.")?
         }
         //
         Ok(format!(
@@ -194,27 +194,27 @@ impl<'a> Monitor<'a> {
                 continue;
             }
             // Service_name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,31}$")
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{1,30}$")
                 .unwrap()
                 .is_match(meta.service_name.as_str())
             {
                 Err(format!(
                     "Model: `{}` > SERVICE_NAME => \
                         Valid characters: _ a-z A-Z 0-9 \
-                        ; Max size: 31 \
+                        ; Max size: 30 \
                         ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
             }
             // Database name validation.
-            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,62}$")
+            if !Regex::new(r"^[_a-zA-Z][_a-zA-Z\d]{14,61}$")
                 .unwrap()
                 .is_match(meta.database_name.as_str())
             {
                 Err(format!(
                     "Model: `{}` > DATABASE_NAME => \
                         Valid characters: _ a-z A-Z 0-9 \
-                        ; Max size: 21 \
+                        ; Max size: 20 \
                         ; First character: _ a-z A-Z",
                     meta.model_name
                 ))?;
@@ -452,10 +452,7 @@ impl<'a> Monitor<'a> {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<FileData>(default_value.clone())?;
                                                 // Define flags to check.
-                                                let is_emty_path = file_data.path.is_empty();
-                                                let is_emty_url = file_data.url.is_empty();
-                                                if (!is_emty_path && is_emty_url)
-                                                    || (is_emty_path && !is_emty_url) {
+                                                if file_data.path.is_empty() || file_data.url.is_empty() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                         `migrat()` => Check the `path` and `url` \
                                                         attributes in the `default` field parameter.",
@@ -465,14 +462,14 @@ impl<'a> Monitor<'a> {
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
-                                                if !f_path.exists() || !f_path.is_file() {
+                                                if !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; \
                                                     Method: `migrat()` => File is missing - {}",
                                                         meta.model_name, field_name, path)
                                                     )?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: Metadata = f_path.metadata()?;
+                                                let metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as f64;
                                                 // Get file name.
@@ -488,10 +485,7 @@ impl<'a> Monitor<'a> {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<ImageData>(default_value.clone())?;
                                                 // Define flags to check.
-                                                let is_emty_path = file_data.path.is_empty();
-                                                let is_emty_url = file_data.url.is_empty();
-                                                if (!is_emty_path && is_emty_url)
-                                                    || (is_emty_path && !is_emty_url) {
+                                                if file_data.path.is_empty() || file_data.url.is_empty() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
                                                         `migrat()` => Check the `path` and `url` \
                                                         attributes in the `default` field parameter.",
@@ -501,20 +495,20 @@ impl<'a> Monitor<'a> {
                                                 // Create path for validation of file.
                                                 let path: String = file_data.path.clone();
                                                 let f_path = Path::new(path.as_str());
-                                                if !f_path.exists() || !f_path.is_file() {
+                                                if !f_path.is_file() {
                                                     Err(format!("Model: `{}` > Field: `{}` ; Method: \
-                                                            `migrat()` => File is missing - {}",
+                                                            `migrat()` => Image is missing - {}",
                                                         meta.model_name, field_name, path
                                                     ))?
                                                 }
                                                 // Get file metadata.
-                                                let metadata: Metadata = f_path.metadata()?;
+                                                let metadata = f_path.metadata()?;
                                                 // Get file size in bytes.
                                                 file_data.size = metadata.len() as f64;
                                                 // Get file name.
                                                 file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                                                 // Get image width and height.
-                                                let dimensions: (u32, u32) = image::image_dimensions(path)?;
+                                                let dimensions = image::image_dimensions(path)?;
                                                 file_data.width = dimensions.0 as f64;
                                                 file_data.height = dimensions.1 as f64;
                                                 // Create doc.

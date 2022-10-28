@@ -2,9 +2,13 @@
 .directory
 .DS_Store
 
+/media
 /test-drive/media/*
+!/test-drive/media/default/
+!/test-drive/media/tmp/
+!/test-drive/media/readme.txt
+/test-drive/media/tmp/*
 /test-drive/media/default/*
-!/test-drive/media/default
 !/test-drive/media/default/no_file.odt
 !/test-drive/media/default/no_image.png
 

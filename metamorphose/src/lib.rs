@@ -68,9 +68,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let model_name_ident = &ast.ident;
     let model_name_str = model_name_ident.to_string();
     //
-    if model_name_str.len() > 31 {
+    if model_name_str.len() > 30 {
         panic!(
-            "Model: `{}` => Model name: Max size 31 characters.",
+            "Model: `{}` => Model name: Max size 30 characters.",
             model_name_str
         )
     }

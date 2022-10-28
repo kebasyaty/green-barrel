@@ -9,7 +9,7 @@ use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::{convert::TryFrom, error::Error, fs, path::Path};
+use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
@@ -21,7 +21,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::MONGODB_CLIENT_STORE,
+    store::{MONGODB_CLIENT_STORE, REGEX_TOKEN_DATED_PATH},
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -56,7 +56,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path = info_file.get_str("path")?;
                         if path != path_default {
                             let path = Path::new(path);
-                            if path.exists() {
+                            if path.is_file() {
                                 fs::remove_file(path)?;
                             }
                         }
@@ -64,21 +64,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let path_default = image_default.path;
                         let path = info_file.get_str("path")?;
                         if path != path_default {
-                            let path = Path::new(path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
-                            }
-                            // Remove thumbnails.
-                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names {
-                                let key_name = format!("path_{}", size_name);
-                                let path = info_file.get_str(key_name.as_str())?;
-                                if !path.is_empty() {
-                                    let path = Path::new(path);
-                                    if path.exists() {
-                                        fs::remove_file(path)?;
-                                    }
-                                }
+                            let dir_path = Path::new(path).parent().unwrap();
+                            if dir_path.is_dir() {
+                                fs::remove_dir_all(dir_path)?;
                             }
                         }
                     }
@@ -867,50 +855,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 // "InputFile"
                 8 => {
+                    //
+                    if !is_save {
+                        continue;
+                    }
                     // Get data for validation.
                     let mut file_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<FileData>(const_value.clone())?
                     } else {
                         FileData::default()
                     };
-                    //
-                    if !is_save {
-                        if !file_data.path.is_empty() {
-                            // Create path for validation of file.
-                            let f_path = std::path::Path::new(file_data.path.as_str());
-                            if !f_path.exists() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => File is missing - {0}",
-                                    file_data.path
-                                ))?
-                            }
-                            if !f_path.is_file() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => The path does not lead to a file - {0}",
-                                    file_data.path
-                                ))?
-                            }
-                            if file_data.url.is_empty() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Add a file URL."
-                                ))?
-                            }
-                        }
-                        continue;
-                    }
                     // Delete file.
                     if file_data.is_delete && is_update && !ignore_fields.contains(field_name) {
-                        if !is_required || (!file_data.path.is_empty() && !file_data.url.is_empty())
-                        {
+                        if !is_required || !file_data.path.is_empty() {
                             let file_default;
                             let val = final_field.get("default").unwrap();
                             if !val.is_null() {
                                 file_default = serde_json::from_value::<FileData>(val.clone())?;
-                                const_value = val.clone();
-                                is_use_default = true;
+                                if file_data.path.is_empty() {
+                                    const_value = val.clone();
+                                    is_use_default = true;
+                                }
                             } else {
                                 file_default = FileData::default();
                             }
@@ -933,7 +898,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    if file_data.path.is_empty() && file_data.url.is_empty() {
+                    if file_data.path.is_empty() {
                         if curr_file_info.is_null() {
                             if is_use_default && !const_value.is_null() {
                                 file_data =
@@ -955,39 +920,63 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    // Flags to check.
-                    let is_emty_path = file_data.path.is_empty();
-                    let is_emty_url = file_data.url.is_empty();
+                    if REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                        *final_field.get_mut("value").unwrap() = curr_file_info;
+                        continue;
+                    }
                     // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                    if file_data.path.is_empty() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` > \
                                 Type: `FileData` ; Method: `check()` => \
-                                Required `path` and `url` fields.",
+                                An empty `path` field is not allowed.",
                         ))?
                     }
                     // Create path for validation of file.
-                    let f_path = std::path::Path::new(file_data.path.as_str());
-                    if !f_path.exists() {
+                    let source_file_path = Path::new(file_data.path.as_str());
+                    if !source_file_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
                                 `check()` => File is missing - {0}",
                             file_data.path
                         ))?
                     }
-                    if !f_path.is_file() {
-                        Err(format!(
-                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => The path does not lead to a file - {0}",
-                            file_data.path
-                        ))?
+                    // Create a new path and URL for the file.
+                    {
+                        let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
+                        let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
+                        let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
+                        let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
+                        let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
+                        let extension = {
+                            let path = Path::new(file_data.path.as_str());
+                            path.extension().unwrap().to_str().unwrap()
+                        };
+                        let mut new_file_name;
+                        let mut new_file_path;
+                        fs::create_dir_all(file_dir_path.clone())?;
+                        loop {
+                            new_file_name = format!("{}.{extension}", Uuid::new_v4());
+                            new_file_path = format!("{file_dir_path}/{new_file_name}");
+                            if !Path::new(&new_file_path).is_file() {
+                                break;
+                            }
+                        }
+                        fs::copy(source_file_path, new_file_path.clone())?;
+                        if !is_use_default {
+                            fs::remove_file(source_file_path)?;
+                        }
+                        file_data.name = new_file_name.clone();
+                        file_data.path = new_file_path;
+                        file_data.url =
+                            format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
                     }
+                    //
+                    let f_path = Path::new(file_data.path.as_str());
                     // Get file metadata.
-                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    let metadata: Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     file_data.size = metadata.len() as f64;
-                    // Get file name.
-                    file_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Insert result.
                     if !ignore_fields.contains(field_name) {
                         // Add file data to controller.
@@ -1005,51 +994,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 //
                 // "InputImage"
                 9 => {
+                    //
+                    if !is_save {
+                        continue;
+                    }
                     // Get data for validation.
                     let mut image_data = if !is_use_default && !const_value.is_null() {
                         serde_json::from_value::<ImageData>(const_value.clone())?
                     } else {
                         ImageData::default()
                     };
-                    //
-                    if !is_save {
-                        if !image_data.path.is_empty() {
-                            // Create path for validation of file.
-                            let f_path = std::path::Path::new(image_data.path.as_str());
-                            if !f_path.exists() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Image is missing - {0}",
-                                    image_data.path
-                                ))?
-                            }
-                            if !f_path.is_file() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => The path does not lead to a file - {0}",
-                                    image_data.path
-                                ))?
-                            }
-                            if image_data.url.is_empty() {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                        `check()` => Add a image URL."
-                                ))?
-                            }
-                        }
-                        continue;
-                    }
                     // Delete image.
                     if image_data.is_delete && is_update && !ignore_fields.contains(field_name) {
-                        if !is_required
-                            || (!image_data.path.is_empty() && !image_data.url.is_empty())
-                        {
+                        if !is_required || !image_data.path.is_empty() {
                             let image_default;
                             let val = final_field.get("default").unwrap();
                             if !val.is_null() {
                                 image_default = serde_json::from_value::<ImageData>(val.clone())?;
-                                const_value = val.clone();
-                                is_use_default = true;
+                                if image_data.path.is_empty() {
+                                    const_value = val.clone();
+                                    is_use_default = true;
+                                }
                             } else {
                                 image_default = ImageData::default();
                             }
@@ -1072,49 +1037,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
-                        final_field.get("thumbnails").unwrap().clone(),
-                    )?;
                     //
-                    if image_data.path.is_empty() && image_data.url.is_empty() {
+                    if image_data.path.is_empty() {
                         if curr_file_info.is_null() {
                             if is_use_default && !const_value.is_null() {
                                 image_data =
                                     serde_json::from_value::<ImageData>(const_value.clone())?;
-                                // Copy the default image to the default section.
-                                if !thumbnails.is_empty() {
-                                    let media_root =
-                                        final_field.get("media_root").unwrap().as_str().unwrap();
-                                    let media_url =
-                                        final_field.get("media_url").unwrap().as_str().unwrap();
-                                    let target_dir =
-                                        final_field.get("target_dir").unwrap().as_str().unwrap();
-                                    //
-                                    fs::create_dir_all(format!("{media_root}/{target_dir}"))?;
-                                    //
-                                    let extension = {
-                                        let path = Path::new(image_data.path.as_str());
-                                        path.extension().unwrap().to_str().unwrap()
-                                    };
-                                    let mut new_file_name;
-                                    let mut new_file_path;
-                                    loop {
-                                        new_file_name = format!("{}.{extension}", Uuid::new_v4());
-                                        new_file_path = Path::new(media_root)
-                                            .join(target_dir)
-                                            .join(new_file_name.as_str());
-                                        if !new_file_path.as_path().exists() {
-                                            break;
-                                        }
-                                    }
-                                    //
-                                    let new_file_path = new_file_path.as_path();
-                                    fs::copy(Path::new(&image_data.path), new_file_path)?;
-                                    //
-                                    image_data.path = new_file_path.to_str().unwrap().to_string();
-                                    image_data.url =
-                                        format!("{media_url}/{target_dir}/{new_file_name}");
-                                }
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
@@ -1131,44 +1059,76 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     }
-                    // Flags to check.
-                    let is_emty_path = image_data.path.is_empty();
-                    let is_emty_url = image_data.url.is_empty();
+                    //
+                    if REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                        *final_field.get_mut("value").unwrap() = curr_file_info;
+                        continue;
+                    }
                     // Invalid if there is only one value.
-                    if (!is_emty_path && is_emty_url) || (is_emty_path && !is_emty_url) {
+                    if image_data.path.is_empty() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` > \
                                 Type: `FileData` ; Method: `check()` => \
-                                Required `path` and `url` fields.",
+                                An empty `path` field is not allowed.",
                         ))?
                     }
-                    // Create path for validation of file.
-                    let f_path = std::path::Path::new(image_data.path.as_str());
-                    if !f_path.exists() {
+                    // Validation of file.
+                    let source_img_path = Path::new(image_data.path.as_str());
+                    if !source_img_path.is_file() {
                         Err(format!(
                             "Model: `{model_name}` > Field: `{field_name}` ; Method: \
                                 `check()` => Image is missing - {0}",
                             image_data.path
                         ))?
                     }
-                    if !f_path.is_file() {
-                        Err(format!(
-                            "Model: `{model_name}` > Field: `{field_name}` ; Method: \
-                                `check()` => The path does not lead to a file - {0}",
-                            image_data.path
-                        ))?
+                    // Create a new path and URL for the image.
+                    let extension = source_img_path
+                        .extension()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    let mut img_dir_path;
+                    let img_dir_url;
+                    {
+                        let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
+                        let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
+                        let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
+                        let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
+                        let new_img_name = format!("main.{extension}");
+                        let mut uuid;
+                        loop {
+                            uuid = Uuid::new_v4().to_string();
+                            img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
+                            if !Path::new(&img_dir_path).is_dir() {
+                                fs::create_dir_all(img_dir_path.clone())?;
+                                break;
+                            }
+                        }
+                        let new_img_path = format!("{img_dir_path}/{new_img_name}");
+                        fs::copy(source_img_path, new_img_path.clone())?;
+                        if !is_use_default {
+                            fs::remove_file(source_img_path)?;
+                        }
+                        image_data.name = new_img_name.clone();
+                        image_data.path = new_img_path;
+                        img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
+                        image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
+                    // Get image path.
+                    let f_path = Path::new(image_data.path.as_str());
                     // Get file metadata.
-                    let metadata: std::fs::Metadata = f_path.metadata()?;
+                    let metadata: Metadata = f_path.metadata()?;
                     // Get file size in bytes.
                     image_data.size = metadata.len() as f64;
-                    // Get file name
-                    image_data.name = f_path.file_name().unwrap().to_str().unwrap().to_string();
                     // Get image width and height.
                     let dimensions = image::image_dimensions(f_path)?;
                     image_data.width = dimensions.0 as f64;
                     image_data.height = dimensions.1 as f64;
-                    // Generate sub-size images.
+                    // Create thumbnails.
+                    let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
+                        final_field.get("thumbnails").unwrap().clone(),
+                    )?;
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
@@ -1180,15 +1140,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             if thumbnail_size.0 > 0.0 && thumbnail_size.1 > 0.0 {
                                 let width = thumbnail_size.0;
                                 let height = thumbnail_size.1;
-                                let thumb_name = format!("{}_{}", max_size.0, image_data.name);
-                                let thumb_path = image_data
-                                    .path
-                                    .clone()
-                                    .replace(image_data.name.as_str(), thumb_name.as_str());
-                                let thumb_url = image_data
-                                    .url
-                                    .clone()
-                                    .replace(image_data.name.as_str(), thumb_name.as_str());
+                                let thumb_name = format!("{}.{extension}", max_size.0);
+                                let thumb_path = format!("{img_dir_path}/{thumb_name}");
+                                let thumb_url = format!("{img_dir_url}/{thumb_name}");
                                 img = img.resize_exact(
                                     width as u32,
                                     height as u32,
@@ -1597,7 +1551,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Exclude files by default.
                         if file_data.path != file_data_default.path {
                             let path = Path::new(&file_data.path);
-                            if path.exists() {
+                            if path.is_file() {
                                 fs::remove_file(path)?;
                             }
                             //
@@ -1620,26 +1574,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         };
                         // Exclude files by default.
                         if img_data.path != img_data_default.path {
-                            let path = Path::new(&img_data.path);
-                            if path.exists() {
-                                fs::remove_file(path)?;
-                            }
-                            // Remove thumbnails.
-                            let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                            for size_name in size_names {
-                                let path = match size_name {
-                                    "lg" => img_data.path_lg.clone(),
-                                    "md" => img_data.path_md.clone(),
-                                    "sm" => img_data.path_sm.clone(),
-                                    "xs" => img_data.path_xs.clone(),
-                                    _ => Err("")?,
-                                };
-                                if !path.is_empty() {
-                                    let path = Path::new(&path);
-                                    if path.exists() {
-                                        fs::remove_file(path)?;
-                                    }
-                                }
+                            let dir_path = Path::new(&img_data.path).parent().unwrap();
+                            if dir_path.is_dir() {
+                                fs::remove_dir_all(dir_path)?;
                             }
                             //
                             *final_model_json
@@ -1852,7 +1789,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 // Exclude files by default.
                                 if path != file_data_default.path {
                                     let path = Path::new(path);
-                                    if path.exists() {
+                                    if path.is_file() {
                                         fs::remove_file(path)?;
                                     }
                                 }
@@ -1876,21 +1813,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 };
                                 // Exclude files by default.
                                 if path != img_data_default.path {
-                                    let path = Path::new(path);
-                                    if path.exists() {
-                                        fs::remove_file(path)?;
-                                    }
-                                    // Remove thumbnails.
-                                    let size_names: [&str; 4] = ["lg", "md", "sm", "xs"];
-                                    for size_name in size_names.iter() {
-                                        let key_name = format!("path_{}", size_name);
-                                        let path = info_file.get_str(key_name.as_str())?;
-                                        if !path.is_empty() {
-                                            let path = Path::new(path);
-                                            if path.exists() {
-                                                fs::remove_file(path)?;
-                                            }
-                                        }
+                                    let dir_path = Path::new(path).parent().unwrap();
+                                    if dir_path.is_dir() {
+                                        fs::remove_dir_all(dir_path)?;
                                     }
                                 }
                             } else {
