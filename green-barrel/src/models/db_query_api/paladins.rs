@@ -944,7 +944,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
                         let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
-                        let date_slug = slugify(&chrono::Utc::now().to_rfc3339()[..10]);
+                        let date_slug = chrono::Utc::now().format("%Y-%m-%d").to_string();
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
@@ -1090,7 +1090,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
                         let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
-                        let date_slug = slugify(&chrono::Utc::now().to_rfc3339()[..10]);
+                        let date_slug = chrono::Utc::now().format("%Y-%m-%d").to_string();
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
                         loop {
