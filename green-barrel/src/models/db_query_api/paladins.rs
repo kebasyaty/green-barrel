@@ -872,7 +872,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let val = final_field.get("default").unwrap();
                             if !val.is_null() {
                                 file_default = serde_json::from_value::<FileData>(val.clone())?;
-                                if image_data.path.is_empty() {
+                                if file_data.path.is_empty() {
                                     const_value = val.clone();
                                     is_use_default = true;
                                 }
