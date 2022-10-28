@@ -2,6 +2,7 @@
 .directory
 .DS_Store
 
+/media
 /test-drive/media/*
 !/test-drive/media/default/
 !/test-drive/media/tmp/
