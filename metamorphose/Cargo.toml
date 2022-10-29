@@ -1,6 +1,6 @@
 [package]
 authors = ["Gennady Kostunin <kebasyaty@gmail.com>"]
-description = "Macros collection for converting Structure to Model, for a mango-orm project."
+description = "Macros collection for converting Structure to Model, for a green-barrel project."
 edition = "2021"
 homepage = "https://github.com/kebasyaty/mango-orm/tree/master/metamorphose"
 keywords = ["mongodb", "mango", "mongo", "model", "macro"]
@@ -18,12 +18,12 @@ proc-macro = true
 [dependencies]
 quote = "1.0.21"
 regex = "1.6.0"
-serde_json = "1.0.85"
-syn = "1.0.101"
+serde_json = "1.0.87"
+syn = "1.0.103"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.145"
+version = "1.0.147"
 
 [dependencies.mongodb]
 default-features = false
