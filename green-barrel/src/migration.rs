@@ -373,7 +373,7 @@ impl<'a> Monitor<'a> {
                                                         meta.service_name, meta.model_name))?
                                                 }
                                                 let val = format!("{}T00:00", val);
-                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                let dt =
                                                     chrono::DateTime::<chrono::Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             val.as_str(),
@@ -397,7 +397,7 @@ impl<'a> Monitor<'a> {
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
-                                                let dt: chrono::DateTime<chrono::Utc> =
+                                                let dt =
                                                     chrono::DateTime::<chrono::Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             val,
