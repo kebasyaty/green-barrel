@@ -3,7 +3,7 @@
 .DS_Store
 
 /test-drive/media/*
-!/test-drive/media/tmp/*
+/test-drive/media/tmp/*
 !/test-drive/media/tmp/.gitkeep
 !/test-drive/media/readme.txt
 !/test-drive/media/default/no_file.odt
