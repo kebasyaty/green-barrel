@@ -1472,8 +1472,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Insert or update fields for timestamps `created_at` and `updated_at`.
         // -------------------------------------------------------------------------------------
         if !is_err_symptom {
-            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
-            let dt_text: String = dt.to_rfc3339()[..19].into();
+            let dt = chrono::Utc::now();
+            let dt_text: String = dt.format("%Y-%m-%dT%H:%M:%S").to_string();
             if is_update {
                 // Get the `created_at` value from the database.
                 let doc = {
@@ -1482,7 +1482,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     coll.find_one(filter, None)?.unwrap()
                 };
                 let dt2 = doc.get("created_at").unwrap();
-                let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                let dt_text2 = dt2
+                    .as_datetime()
+                    .unwrap()
+                    .format("%Y-%m-%dT%H:%M:%S")
+                    .to_string();
                 //
                 *final_model_json
                     .get_mut("created_at")
@@ -1502,7 +1506,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     self.set_updated_at(dt_text);
                 } else {
                     let dt = doc.get("updated_at").unwrap();
-                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    let dt_text = dt
+                        .as_datetime()
+                        .unwrap()
+                        .format("%Y-%m-%dT%H:%M:%S")
+                        .to_string();
                     if is_save {
                         final_doc.insert("updated_at", dt);
                     }
