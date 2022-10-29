@@ -7,8 +7,8 @@
 /test-drive/media/default/*
 !/test-drive/media/.gitkeep
 !/test-drive/media/tmp/.gitkeep
-!/test-drive/media/readme.txt
 !/test-drive/media/default/.gitkeep
+!/test-drive/media/readme.txt
 !/test-drive/media/default/no_file.odt
 !/test-drive/media/default/no_image.png
 
