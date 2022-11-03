@@ -77,20 +77,20 @@ pub trait Validation {
             }
             "InputPassword" => {
                 if !REGEX_IS_PASSWORD.is_match(value) {
-                    Err("Size 8-256 chars.<br>\
-                        Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (")?
+                    Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
+                            <br>Size 8-256 chars")?
                 }
             }
             "InputDate" => {
                 if !REGEX_IS_DATE.is_match(value) {
-                    Err("Incorrect date format.<br>\
-                         Example: 1970-02-28")?
+                    Err("Incorrect date format.\
+                            <br>Example: 1970-02-28")?
                 }
             }
             "InputDateTime" | "HiddenDateTime" => {
                 if !REGEX_IS_DATETIME.is_match(value) {
-                    Err("Incorrect date and time format.<br>\
-                         Example: 1970-02-28T00:00")?
+                    Err("Incorrect date and time format.\
+                            <br>Example: 1970-02-28T00:00")?
                 }
             }
             _ => return Ok(()),
