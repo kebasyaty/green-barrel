@@ -190,32 +190,42 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             }
         }
-
+        // Check `hash` field.
+        if !final_model_json
+            .get("hash")
+            .unwrap()
+            .get("alert")
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .is_empty()
+        {
+            is_err_symptom = true;
+        }
+        if !is_update && !meta.is_add_docs {
+            if is_save {
+                is_err_symptom = true;
+            }
+            *final_model_json
+                .get_mut("hash")
+                .unwrap()
+                .get_mut("alert")
+                .unwrap() = json!("It is forbidden to perform saves.");
+        }
+        if is_update && !meta.is_up_docs {
+            if is_save {
+                is_err_symptom = true;
+            }
+            *final_model_json
+                .get_mut("hash")
+                .unwrap()
+                .get_mut("alert")
+                .unwrap() = json!("It is forbidden to perform updates.");
+        }
         // Loop over fields for validation.
         for (field_name, field_type) in field_type_map {
             // Don't check the `hash` field.
             if field_name == "hash" {
-                //
-                if !is_update && !meta.is_add_docs {
-                    if is_save {
-                        is_err_symptom = true;
-                    }
-                    *final_model_json
-                        .get_mut(field_name)
-                        .unwrap()
-                        .get_mut("alert")
-                        .unwrap() = json!("It is forbidden to perform saves.");
-                }
-                if is_update && !meta.is_up_docs {
-                    if is_save {
-                        is_err_symptom = true;
-                    }
-                    *final_model_json
-                        .get_mut(field_name)
-                        .unwrap()
-                        .get_mut("alert")
-                        .unwrap() = json!("It is forbidden to perform updates.");
-                }
                 continue;
             }
             // Get values for validation.
@@ -1472,8 +1482,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Insert or update fields for timestamps `created_at` and `updated_at`.
         // -------------------------------------------------------------------------------------
         if !is_err_symptom {
-            let dt = chrono::Utc::now();
-            let dt_text: String = dt.format("%Y-%m-%dT%H:%M:%S").to_string();
+            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
+            let dt_text: String = dt.to_rfc3339()[..19].into();
             if is_update {
                 // Get the `created_at` value from the database.
                 let doc = {
@@ -1482,11 +1492,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     coll.find_one(filter, None)?.unwrap()
                 };
                 let dt2 = doc.get("created_at").unwrap();
-                let dt_text2 = dt2
-                    .as_datetime()
-                    .unwrap()
-                    .format("%Y-%m-%dT%H:%M:%S")
-                    .to_string();
+                let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
                 //
                 *final_model_json
                     .get_mut("created_at")
@@ -1506,11 +1512,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     self.set_updated_at(dt_text);
                 } else {
                     let dt = doc.get("updated_at").unwrap();
-                    let dt_text = dt
-                        .as_datetime()
-                        .unwrap()
-                        .format("%Y-%m-%dT%H:%M:%S")
-                        .to_string();
+                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
                     if is_save {
                         final_doc.insert("updated_at", dt);
                     }
