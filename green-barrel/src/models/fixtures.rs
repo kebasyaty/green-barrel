@@ -7,8 +7,10 @@ use std::path::Path;
 use crate::models::caching::Caching;
 
 /// To populate the database with pre-created data.
-/// fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
-/// unique_field - The name of any unique field in the Model.
+/// Create a fixtures folder at the root of the project.
+/// Method parameters:
+/// `fixture_name` - Name of the fixture file in the ./fixtures directory, no extension (.json).
+/// `unique_field`- The name of any unique field in the Model.
 ///
 /// # Example:
 ///
