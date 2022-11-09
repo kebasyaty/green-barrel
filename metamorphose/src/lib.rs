@@ -569,13 +569,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         // *****************************************************************************************
         #add_trait_custom_valid
 
-        /// Methods that are called at different stages when accessing the database.
-        #add_trait_hooks
-
-        ///
-        // *****************************************************************************************
-        #add_trait_fixtures
-
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
         impl Caching for #model_name_ident {}
@@ -592,6 +585,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
         impl QCommons for #model_name_ident {}
         /// Query methods for a Model instance.
         impl QPaladins for #model_name_ident {}
+
+        /// To populate the database with pre-created data.
+        // *****************************************************************************************
+        #add_trait_fixtures
+
+        /// Methods that are called at different stages when accessing the database.
+        /// ****************************************************************************************
+        #add_trait_hooks
 
     };
 
