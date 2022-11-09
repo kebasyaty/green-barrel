@@ -1,7 +1,9 @@
 //! Methods that are called at different stages when accessing the database.
 
+use crate::models::Main;
+
 /// Hooks methods.
-pub trait Hooks {
+pub trait Hooks: Main {
     /// Called before a new document is created in the database.
     ///
     /// # Example:
