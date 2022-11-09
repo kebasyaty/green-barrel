@@ -15,6 +15,7 @@ pub use crate::{
         control::Control,
         converters::Converters,
         db_query_api::{commons::QCommons, paladins::QPaladins},
+        fixtures::Fixtures,
         helpers::{ControlArr, FileData, ImageData, Meta},
         hooks::Hooks,
         output_data::{OutputData, OutputData2},

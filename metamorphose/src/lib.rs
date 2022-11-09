@@ -84,6 +84,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     //
     let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name_ident {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name_ident {}};
+    let add_trait_fixtures = quote! {impl Fixtures for #model_name_ident {}};
 
     // Get Model attributes.
     // *********************************************************************************************
@@ -570,6 +571,10 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// Methods that are called at different stages when accessing the database.
         #add_trait_hooks
+
+        ///
+        // *****************************************************************************************
+        #add_trait_fixtures
 
         /// Caching information about Models for speed up work.
         // *****************************************************************************************
