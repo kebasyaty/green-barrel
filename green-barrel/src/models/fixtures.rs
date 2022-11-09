@@ -15,6 +15,25 @@ use crate::models::caching::Caching;
 /// # Example:
 ///
 /// ```
+/// // Initial data for Model.
+/// // ./fixtures/cities.json
+/// [
+///   {
+///     "city_name": "London",
+///     "description": "London is the capital city of England and the United Kingdom.",
+///  },
+///  {
+///     "city_name": "Dresden",
+///     "description": "Dresden is the capital of the East German state of Saxony.",
+///  }
+/// ]
+///
+/// // Run fixtures
+/// fn run_migration() -> Result<(), Box<dyn Error>> {
+///     ...
+///     ModelName::run_fixture("cities", "city_name");
+///     Ok(())
+/// }
 /// ```
 ///
 pub trait Fixtures: Caching {
