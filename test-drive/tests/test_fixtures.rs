@@ -493,22 +493,8 @@ fn test_fixtures() -> Result<(), Box<dyn Error>> {
     // Testing
     // =============================================================================================
     type TestModel = data_test::TestModel;
-    //
-    let mut test_model = TestModel::new()?;
-    test_model.password.set("j2972K4R3uQeVFPF");
-    test_model.email.set("jane32@enhanceronly.com");
-    test_model.select_text_dyn.set("Some text");
-    test_model
-        .select_text_mult_dyn
-        .set(vec!["Some text", "Some text 2"]);
-    test_model.select_i32_dyn.set(0);
-    test_model.select_i32_mult_dyn.set(vec![0, 1]);
-    test_model.select_u32_dyn.set(0);
-    test_model.select_u32_mult_dyn.set(vec![0, 1]);
-    test_model.select_i64_dyn.set(0);
-    test_model.select_i64_mult_dyn.set(vec![0, 1]);
-    test_model.select_f64_dyn.set(0.0);
-    test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
+    let count = TestModel::estimated_document_count(None)?;
+    assert_eq!(count, 1, "count != 1");
 
     // Delete test database
     // =============================================================================================
