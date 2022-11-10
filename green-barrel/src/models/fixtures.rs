@@ -45,7 +45,6 @@ pub trait Fixtures: Caching {
         let (model_cache, _) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         let fields_name = &meta.fields_name;
-        let model_json = model_cache.model_json;
         // Get fixtures list
         let json_val = {
             // Create path
@@ -73,8 +72,13 @@ pub trait Fixtures: Caching {
         //
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
+                let mut model_json = model_cache.model_json.clone();
                 for field_name in fields_name {
-                    //
+                    *model_json
+                        .get_mut(field_name)
+                        .unwrap()
+                        .get_mut("value")
+                        .unwrap() = fixture.get(field_name).unwrap().clone();
                 }
             }
         } else {
