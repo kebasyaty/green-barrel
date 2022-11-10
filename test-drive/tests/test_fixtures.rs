@@ -484,7 +484,7 @@ fn test_fixtures() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
     let count = TestModel::estimated_document_count(None)?;
-    assert_eq!(count, 1, "count != 1");
+    assert_eq!(count, 2, "count != 2");
 
     // Delete test database
     // =============================================================================================
