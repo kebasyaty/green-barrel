@@ -63,7 +63,7 @@ pub trait Caching: Main + Converters {
     /// println!("{:?}", metadata);
     /// ```
     ///
-    fn meta() -> Result<Meta, Box<dyn std::error::Error>>
+    fn meta() -> Result<Meta, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

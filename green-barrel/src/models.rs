@@ -4,6 +4,7 @@ pub mod caching;
 pub mod control;
 pub mod converters;
 pub mod db_query_api;
+pub mod fixtures;
 pub mod helpers;
 pub mod hooks;
 pub mod output_data;

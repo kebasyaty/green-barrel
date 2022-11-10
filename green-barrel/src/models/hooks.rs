@@ -4,7 +4,7 @@
 pub trait Hooks {
     /// Called before a new document is created in the database.
     ///
-    //// # Example:
+    /// # Example:
     ///
     /// ```
     /// #[Model(

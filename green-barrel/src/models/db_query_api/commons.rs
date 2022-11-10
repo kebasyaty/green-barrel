@@ -275,7 +275,7 @@ pub trait QCommons: Main + Caching + Converters {
         } else {
             false
         };
-        let deleted_count = if result_bool { 1_i64 } else { 0_i64 };
+        let deleted_count = i64::from(result_bool);
         Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
