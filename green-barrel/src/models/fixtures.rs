@@ -52,7 +52,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get cached Model data.
         let (model_cache, _) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
-        let fields_name = &meta.fields_name;
+        let field_type_map = &meta.field_type_map;
         // Get data from fixture file
         let json_val = {
             // Create path
@@ -81,9 +81,18 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
                 let mut model_json = model_cache.model_json.clone();
-                for field_name in fields_name {
-                    if let Some(field) = model_json.get_mut(field_name) {
-                        *field.get_mut("value").unwrap() = fixture.get(field_name).unwrap().clone();
+                for (field_name, field_type) in field_type_map {
+                    if let Some(data) = fixture.get(field_name) {
+                        let value_key = if field_type == "CheckBox" {
+                            "checked"
+                        } else {
+                            "value"
+                        };
+                        *model_json
+                            .get_mut(field_name)
+                            .unwrap()
+                            .get_mut(value_key)
+                            .unwrap() = data.clone();
                     }
                 }
                 // Get an instance of the model and save the data to the database
