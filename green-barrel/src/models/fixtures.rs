@@ -45,7 +45,7 @@ pub trait Fixtures: Caching + QPaladins {
         let (model_cache, _) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         let fields_name = &meta.fields_name;
-        // Get fixtures list
+        // Get data from fixture file
         let json_val = {
             // Create path
             let fixture_path = format!("./fixtures/{fixture_name}.json");
@@ -69,7 +69,7 @@ pub trait Fixtures: Caching + QPaladins {
             });
             serde_json::from_str::<Value>(json_str.as_str())?
         };
-        //
+        // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
                 let mut model_json = model_cache.model_json.clone();
