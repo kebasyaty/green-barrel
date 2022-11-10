@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::{error::Error, fs, io::ErrorKind};
 
-use crate::models::{caching::Caching, Meta};
+use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
 
 /// To populate the database with pre-created data.
 /// Create a fixtures folder at the root of the project.
@@ -36,7 +36,7 @@ use crate::models::{caching::Caching, Meta};
 /// }
 /// ```
 ///
-pub trait Fixtures: Caching {
+pub trait Fixtures: Caching + QPaladins {
     fn run_fixture(fixture_name: &str, _unique_field: &str) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
@@ -78,7 +78,11 @@ pub trait Fixtures: Caching {
                         *field.get_mut("value").unwrap() = fixture.get(field_name).unwrap().clone();
                     }
                 }
-                let instance = serde_json::from_value::<Self>(model_json)?;
+                let mut instance = serde_json::from_value::<Self>(model_json)?;
+                let output_data = instance.save(None, None)?;
+                if !output_data.is_valid() {
+                    output_data.print_err();
+                }
             }
         } else {
             Err(format!(

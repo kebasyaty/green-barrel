@@ -104,6 +104,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         //println!("Json:\n{}", output_data.json()?);
         //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
+        // Printing errors to the console ( for development ).
         output_data.print_err();
     }
 
