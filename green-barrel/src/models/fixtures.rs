@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::{error::Error, fs, io::ErrorKind};
 
-use crate::models::caching::Caching;
+use crate::models::{caching::Caching, Meta};
 
 /// To populate the database with pre-created data.
 /// Create a fixtures folder at the root of the project.
@@ -41,9 +41,11 @@ pub trait Fixtures: Caching {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get meta-data
-        let meta = Self::meta()?;
+        // Get cached Model data.
+        let (model_cache, _) = Self::get_cache_data_for_query()?;
+        let meta: Meta = model_cache.meta;
         let fields_name = &meta.fields_name;
+        let model_json = model_cache.model_json;
         // Get fixtures list
         let json_val = {
             // Create path
@@ -52,14 +54,14 @@ pub trait Fixtures: Caching {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{} ; Method: \
+                        "Model: `{} > Method: \
                     run_fixture()` => File is missing - {fixture_path}",
                         meta.model_name
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{} ; Method: \
+                        "Model: `{} > Method: \
                     run_fixture()` => Problem opening the file: {:?}",
                         meta.model_name, error
                     ))
@@ -77,7 +79,7 @@ pub trait Fixtures: Caching {
             }
         } else {
             Err(format!(
-                "Model: `{} ; Method: \
+                "Model: `{} > Method: \
                     run_fixture()` => Fixture does not contain an array of objects.",
                 meta.model_name
             ))?
