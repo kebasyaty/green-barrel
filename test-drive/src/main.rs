@@ -8,6 +8,7 @@ use std::error::Error;
 // Migration
 fn run_migration() -> Result<(), Box<dyn Error>> {
     // Caching MongoDB clients.
+    // ---------------------------------------------------------------------------------------------
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
         client_store.insert(
@@ -19,14 +20,20 @@ fn run_migration() -> Result<(), Box<dyn Error>> {
             mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
         );
     }
+
     // Monitor initialization.
+    // ---------------------------------------------------------------------------------------------
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
         // Register models.
-        metadata_list: vec![models::User::meta()?],
+        metadata_list: vec![models::User::meta()?, models::City::meta()?],
     };
     monitor.migrat()?;
+
+    // Run fixtures
+    // ---------------------------------------------------------------------------------------------
+    models::City::run_fixture("cities")?;
 
     Ok(())
 }
