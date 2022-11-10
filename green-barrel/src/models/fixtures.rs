@@ -90,7 +90,11 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
                 let output_data = instance.save(None, None)?;
                 if !output_data.is_valid() {
-                    output_data.print_err();
+                    Err(format!(
+                        "Model: `{} > Method: run_fixture()` => {}",
+                        meta.model_name,
+                        output_data.err_msg()
+                    ))?
                 }
             }
         } else {
