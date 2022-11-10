@@ -78,6 +78,7 @@ pub trait Fixtures: Caching {
                         *field.get_mut("value").unwrap() = fixture.get(field_name).unwrap().clone();
                     }
                 }
+                let instance = serde_json::from_value::<Self>(model_json)?;
             }
         } else {
             Err(format!(
