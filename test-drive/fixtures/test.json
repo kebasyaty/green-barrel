@@ -40,11 +40,28 @@
         ],
         "select_u32_mult_dyn": null,
         "select_i64": 0,
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": ""
+        "select_i64_dyn": null,
+        "select_i64_mult": [
+            0,
+            1
+        ],
+        "select_i64_mult_dyn": 0.0,
+        "select_f64": 0.0,
+        "select_f64_dyn": null,
+        "select_f64_mult": [
+            0.0,
+            0.1
+        ],
+        "select_f64_mult_dyn": null,
+        "text": "Some text",
+        "color": "#ffffff",
+        "email": "jane32@enhanceronly.com",
+        "password": "j2972K4R3uQeVFPF",
+        "phone": "+1 202-918-2132",
+        "url": "https://ru.wikipedia.org/wiki/URL",
+        "ip": "192.168.123.132",
+        "ipv4": "192.168.50.1",
+        "ipv6": "1050:0:0:0:5:600:300c:326b",
+        "textarea": "Some text"
     }
 ]
