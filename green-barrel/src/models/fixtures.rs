@@ -74,11 +74,9 @@ pub trait Fixtures: Caching {
             for fixture in fixtures_vec {
                 let mut model_json = model_cache.model_json.clone();
                 for field_name in fields_name {
-                    *model_json
-                        .get_mut(field_name)
-                        .unwrap()
-                        .get_mut("value")
-                        .unwrap() = fixture.get(field_name).unwrap().clone();
+                    if let Some(field) = model_json.get_mut(field_name) {
+                        *field.get_mut("value").unwrap() = fixture.get(field_name).unwrap().clone();
+                    }
                 }
             }
         } else {
