@@ -476,7 +476,7 @@ mod data_test {
         monitor.migrat()?;
 
         // Run fixtures
-        TestModel::run_fixture("")?;
+        TestModel::run_fixture("test")?;
 
         Ok(())
     }
