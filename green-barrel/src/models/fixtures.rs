@@ -62,14 +62,14 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
                         "Model: `{} > Method: \
-                    run_fixture()` => File is missing - {fixture_path}",
+                            run_fixture()` => File is missing - {fixture_path}",
                         meta.model_name
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
                         "Model: `{} > Method: \
-                    run_fixture()` => Problem opening the file: {:?}",
+                            run_fixture()` => Problem opening the file: {:?}",
                         meta.model_name, error
                     ))
                     .unwrap()
