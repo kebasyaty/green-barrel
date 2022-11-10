@@ -37,7 +37,7 @@ use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
 /// ```
 ///
 pub trait Fixtures: Caching + QPaladins {
-    fn run_fixture(fixture_name: &str, _unique_field: &str) -> Result<(), Box<dyn Error>>
+    fn run_fixture(fixture_name: &str) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
