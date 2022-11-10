@@ -4,7 +4,11 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::{error::Error, fs, io::ErrorKind};
 
-use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
+use crate::models::{
+    caching::Caching,
+    db_query_api::{commons::QCommons, paladins::QPaladins},
+    Meta,
+};
 
 /// To populate the database with pre-created data.
 ///
@@ -36,11 +40,15 @@ use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
 /// }
 /// ```
 ///
-pub trait Fixtures: Caching + QPaladins {
+pub trait Fixtures: Caching + QPaladins + QCommons {
     fn run_fixture(fixture_name: &str) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // If the collection is not empty, exit the method
+        if Self::estimated_document_count(None)? > 0 {
+            return Ok(());
+        }
         // Get cached Model data.
         let (model_cache, _) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
@@ -78,6 +86,7 @@ pub trait Fixtures: Caching + QPaladins {
                         *field.get_mut("value").unwrap() = fixture.get(field_name).unwrap().clone();
                     }
                 }
+                // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
                 let output_data = instance.save(None, None)?;
                 if !output_data.is_valid() {
