@@ -27,6 +27,7 @@
 
 ## Changelog
 
+- **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
 - **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
 - **v0.7.12** _Fixed **README.md**._
 - **v0.7.8** _Fixed validation for multi-select fields._
