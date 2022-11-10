@@ -7,10 +7,9 @@ use std::{error::Error, fs, io::ErrorKind};
 use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
 
 /// To populate the database with pre-created data.
-/// Create a fixtures folder at the root of the project.
-/// Method parameters:
-/// `fixture_name` - Name of the fixture file in the ./fixtures directory, no extension (.json).
-/// `unique_field`- The name of any unique field in the Model.
+///
+/// 1.Create a fixtures folder at the root of the project.
+/// 2.Save data files for Models in it.
 ///
 /// # Example:
 ///
@@ -31,7 +30,8 @@ use crate::models::{caching::Caching, db_query_api::paladins::QPaladins, Meta};
 /// // Run fixtures
 /// fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
-///     ModelName::run_fixture("cities", "city_name");
+///     // fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
+///     ModelName::run_fixture("cities")?;
 ///     Ok(())
 /// }
 /// ```
