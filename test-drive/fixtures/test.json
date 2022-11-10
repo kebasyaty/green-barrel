@@ -45,7 +45,7 @@
             0,
             1
         ],
-        "select_i64_mult_dyn": 0.0,
+        "select_i64_mult_dyn": null,
         "select_f64": 0.0,
         "select_f64_dyn": null,
         "select_f64_mult": [

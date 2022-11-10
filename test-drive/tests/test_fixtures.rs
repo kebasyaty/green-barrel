@@ -252,7 +252,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_text_dyn: SelectTextDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_text_mult: SelectTextMult {
@@ -266,7 +265,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_text_mult_dyn: SelectTextMultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i32: SelectI32 {
@@ -280,7 +278,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i32_dyn: SelectI32Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i32_mult: SelectI32Mult {
@@ -294,7 +291,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i32_mult_dyn: SelectI32MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_u32: SelectU32 {
@@ -308,7 +304,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_u32_dyn: SelectU32Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_u32_mult: SelectI32Mult {
@@ -322,7 +317,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_u32_mult_dyn: SelectU32MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i64: SelectI64 {
@@ -336,7 +330,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i64_dyn: SelectI64Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i64_mult: SelectI64Mult {
@@ -350,7 +343,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i64_mult_dyn: SelectI64MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_f64: SelectF64 {
@@ -364,7 +356,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_f64_dyn: SelectF64Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_f64_mult: SelectF64Mult {
@@ -378,7 +369,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_f64_mult_dyn: SelectF64MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 text: InputText {
