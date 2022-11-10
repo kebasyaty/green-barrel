@@ -61,15 +61,15 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{} > Method: \
-                            run_fixture()` => File is missing - {fixture_path}",
+                        "Model: `{}` > Method: \
+                            `run_fixture()` => File is missing - {fixture_path}",
                         meta.model_name
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{} > Method: \
-                            run_fixture()` => Problem opening the file: {:?}",
+                        "Model: `{}` > Method: \
+                            `run_fixture()` => Problem opening the file: {:?}",
                         meta.model_name, error
                     ))
                     .unwrap()
@@ -100,7 +100,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 let output_data = instance.save(None, None)?;
                 if !output_data.is_valid() {
                     Err(format!(
-                        "Model: `{} > Method: run_fixture()` => {}",
+                        "Model: `{}` > Method: `run_fixture()` => {}",
                         meta.model_name,
                         output_data.err_msg()
                     ))?
@@ -108,8 +108,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             }
         } else {
             Err(format!(
-                "Model: `{} > Method: \
-                    run_fixture()` => Fixture does not contain an array of objects.",
+                "Model: `{}` > Method: \
+                    `run_fixture()` => Fixture does not contain an array of objects.",
                 meta.model_name
             ))?
         }
