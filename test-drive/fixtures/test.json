@@ -1,0 +1,50 @@
+[
+    {
+        "checkbox": true,
+        "date": "1970-02-28",
+        "datetime": "1970-02-28T00:00",
+        "file": "",
+        "image": "",
+        "number_i32": 0,
+        "radio_i32": 0,
+        "range_i32": 0,
+        "number_u32": 0,
+        "radio_u32": 0,
+        "range_u32": 0,
+        "number_i64": 0,
+        "radio_i64": 0,
+        "range_i64": 0,
+        "number_f64": 0.0,
+        "radio_f64": 0.0,
+        "range_f64": 0.0,
+        "radio_text": "value",
+        "select_text": "value",
+        "select_text_dyn": null,
+        "select_text_mult": [
+            "value",
+            "value_2"
+        ],
+        "select_text_mult_dyn": null,
+        "select_i32": 0,
+        "select_i32_dyn": null,
+        "select_i32_mult": [
+            0,
+            1
+        ],
+        "select_i32_mult_dyn": null,
+        "select_u32": 0,
+        "select_u32_dyn": null,
+        "select_u32_mult": [
+            0,
+            1
+        ],
+        "select_u32_mult_dyn": null,
+        "select_i64": 0,
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": ""
+    }
+]
