@@ -17,6 +17,11 @@ use crate::{
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
 };
 
+type OptionsStrMap = HashMap<String, Vec<String>>;
+type OptionsI32Map = HashMap<String, Vec<i32>>;
+type OptionsI64Map = HashMap<String, Vec<i64>>;
+type OptionsF64Map = HashMap<String, Vec<f64>>;
+
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
 pub trait Caching: Main + Converters {
@@ -62,15 +67,7 @@ pub trait Caching: Main + Converters {
     fn get_option_map(
         model_json: &Value,
         field_type_map: &HashMap<String, String>,
-    ) -> Result<
-        (
-            HashMap<String, Vec<String>>,
-            HashMap<String, Vec<i32>>,
-            HashMap<String, Vec<i64>>,
-            HashMap<String, Vec<f64>>,
-        ),
-        Box<dyn Error>,
-    > {
+    ) -> Result<(OptionsStrMap, OptionsI32Map, OptionsI64Map, OptionsF64Map), Box<dyn Error>> {
         //
         let mut options_str_map = HashMap::<String, Vec<String>>::new();
         let mut options_i32_map = HashMap::<String, Vec<i32>>::new();
@@ -92,7 +89,7 @@ pub trait Caching: Main + Converters {
                     options_str_map.insert(field_name.into(), options);
                 } else if field_type.contains("I32") {
                     let options = model_json
-                        .get(&field_name)
+                        .get(field_name)
                         .unwrap()
                         .get("options")
                         .unwrap()
@@ -106,7 +103,7 @@ pub trait Caching: Main + Converters {
                     options_i32_map.insert(field_name.into(), options);
                 } else if field_type.contains("U32") || field_type.contains("I64") {
                     let options = model_json
-                        .get(&field_name)
+                        .get(field_name)
                         .unwrap()
                         .get("options")
                         .unwrap()
@@ -118,7 +115,7 @@ pub trait Caching: Main + Converters {
                     options_i64_map.insert(field_name.into(), options);
                 } else if field_type.contains("F64") {
                     let options = model_json
-                        .get(&field_name)
+                        .get(field_name)
                         .unwrap()
                         .get("options")
                         .unwrap()
