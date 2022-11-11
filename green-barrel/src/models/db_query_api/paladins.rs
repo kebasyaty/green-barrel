@@ -304,7 +304,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     //
@@ -519,7 +519,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     //
@@ -643,7 +643,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
@@ -732,7 +732,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
@@ -821,7 +821,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
@@ -965,7 +965,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get selected items.
@@ -1450,7 +1450,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get clean data.
@@ -1530,7 +1530,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get clean data.
@@ -1611,7 +1611,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
-                    if is_use_default {
+                    if is_save && is_use_default {
                         *final_field.get_mut("value").unwrap() = const_value.clone();
                     }
                     // Get clean data.
