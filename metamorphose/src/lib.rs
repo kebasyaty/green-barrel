@@ -630,6 +630,11 @@ struct Meta {
     pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
+    // Option maps for fields type `select` - <field_name, options>
+    pub option_str_map: std::collections::HashMap<String, Vec<String>>,
+    pub option_i32_map: std::collections::HashMap<String, Vec<i32>>,
+    pub option_i64_map: std::collections::HashMap<String, Vec<i64>>,
+    pub option_f64_map: std::collections::HashMap<String, Vec<f64>>,
 }
 
 impl Default for Meta {
@@ -655,6 +660,10 @@ impl Default for Meta {
             field_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             ignore_fields: Vec::new(),
+            option_str_map: std::collections::HashMap::new(),
+            option_i32_map: std::collections::HashMap::new(),
+            option_i64_map: std::collections::HashMap::new(),
+            option_f64_map: std::collections::HashMap::new(),
         }
     }
 }

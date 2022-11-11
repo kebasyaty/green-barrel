@@ -151,6 +151,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Get model name.
         let model_name: &str = meta.model_name.as_str();
+        // Get option maps for fields type `select`.
+        let option_str_map = &meta.option_str_map;
+        let option_i32_map = &meta.option_i32_map;
+        let option_i64_map = &meta.option_i64_map;
+        let option_f64_map = &meta.option_f64_map;
         // Determines the mode of accessing the database (insert or update).
         let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
@@ -647,20 +652,60 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             field_name,
                             match field_type {
                                 "SelectText" => {
-                                    let val = const_value.as_str().unwrap();
-                                    Bson::String(val.to_string())
+                                    let val = const_value.as_str().unwrap().to_string();
+                                    if option_str_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::String(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectI32" => {
                                     let val = i32::try_from(const_value.as_i64().unwrap())?;
-                                    Bson::Int32(val)
+                                    if option_i32_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Int32(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectU32" | "SelectI64" => {
                                     let val = const_value.as_i64().unwrap();
-                                    Bson::Int64(val)
+                                    if option_i64_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Int64(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectF64" => {
                                     let val = const_value.as_f64().unwrap();
-                                    Bson::Double(val)
+                                    if option_f64_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Double(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 _ => Err(format!(
                                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
@@ -697,19 +742,59 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             match field_type {
                                 "SelectTextDyn" => {
                                     let val = const_value.as_str().unwrap().to_string();
-                                    Bson::String(val)
+                                    if option_str_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::String(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectI32Dyn" => {
                                     let val = i32::try_from(const_value.as_i64().unwrap())?;
-                                    Bson::Int32(val)
+                                    if option_i32_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Int32(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectU32Dyn" | "SelectI64Dyn" => {
                                     let val = const_value.as_i64().unwrap();
-                                    Bson::Int64(val)
+                                    if option_i64_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Int64(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 "SelectF64Dyn" => {
                                     let val = const_value.as_f64().unwrap();
-                                    Bson::Double(val)
+                                    if option_f64_map.get(field_name).unwrap().contains(&val) {
+                                        Bson::Double(val)
+                                    } else {
+                                        is_err_symptom = true;
+                                        *final_field.get_mut("error").unwrap() =
+                                            json!(Self::accumula_err(
+                                                final_field,
+                                                "Value does not match possible options."
+                                            ));
+                                        Bson::Null
+                                    }
                                 }
                                 _ => Err(format!(
                                     "Model: `{}` > Field: `{}` ; Method: `check()` => \
