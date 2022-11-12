@@ -494,6 +494,7 @@ fn test_save_param_required() -> Result<(), Box<dyn Error>> {
         "Create document - is_valid(): {}",
         output_data.err_msg()
     );
+    assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
         output_data.created_at().is_some(),
