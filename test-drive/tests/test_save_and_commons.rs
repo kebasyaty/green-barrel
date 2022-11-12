@@ -155,18 +155,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.file.set(FileData::default());
         test_model.image.set(ImageData::default());
         test_model.number_i32.set(0);
-        test_model.radio_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
-        test_model.radio_u32.set(0);
         test_model.range_u32.set(0);
         test_model.number_i64.set(0);
-        test_model.radio_i64.set(0);
         test_model.range_i64.set(0);
         test_model.number_f64.set(0.0);
-        test_model.radio_f64.set(0.0);
         test_model.range_f64.set(0.0);
-        test_model.radio_text.set("Some text");
         test_model.text.set("Some text");
         test_model.color.set("#ffffff");
         test_model.email.value = Some(format!("x{num}@x.xx"));
