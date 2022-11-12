@@ -22,7 +22,7 @@
         "select_text_dyn": null,
         "select_text_mult": [
             "value",
-            "value_2"
+            "value 2"
         ],
         "select_text_mult_dyn": null,
         "select_i32": 0,
@@ -87,7 +87,7 @@
         "select_text_dyn": null,
         "select_text_mult": [
             "value",
-            "value_2"
+            "value 2"
         ],
         "select_text_mult_dyn": null,
         "select_i32": 0,

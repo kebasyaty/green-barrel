@@ -13,7 +13,7 @@ mod data_test {
     // The unique key for this test.
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
-    // Size: 8-16
+    // Size: 16
     pub const UNIQUE_PROJECT_KEY: &str = "4c571936Hk318vAp";
     //
     pub const SERVICE_NAME: &str = "test_service_name";
@@ -252,7 +252,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_text_dyn: SelectTextDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_text_mult: SelectTextMult {
@@ -266,7 +265,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_text_mult_dyn: SelectTextMultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i32: SelectI32 {
@@ -280,7 +278,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i32_dyn: SelectI32Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i32_mult: SelectI32Mult {
@@ -294,7 +291,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i32_mult_dyn: SelectI32MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_u32: SelectU32 {
@@ -308,7 +304,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_u32_dyn: SelectU32Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_u32_mult: SelectI32Mult {
@@ -322,7 +317,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_u32_mult_dyn: SelectU32MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i64: SelectI64 {
@@ -336,7 +330,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i64_dyn: SelectI64Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_i64_mult: SelectI64Mult {
@@ -350,7 +343,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_i64_mult_dyn: SelectI64MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_f64: SelectF64 {
@@ -364,7 +356,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_f64_dyn: SelectF64Dyn {
-                    required: true,
                     ..Default::default()
                 },
                 select_f64_mult: SelectF64Mult {
@@ -378,7 +369,6 @@ mod data_test {
                     ..Default::default()
                 },
                 select_f64_mult_dyn: SelectF64MultDyn {
-                    required: true,
                     ..Default::default()
                 },
                 text: InputText {
@@ -494,18 +484,6 @@ fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     let mut test_model = TestModel::new()?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
-    test_model.select_text_dyn.set("Some text");
-    test_model
-        .select_text_mult_dyn
-        .set(vec!["Some text", "Some text 2"]);
-    test_model.select_i32_dyn.set(0);
-    test_model.select_i32_mult_dyn.set(vec![0, 1]);
-    test_model.select_u32_dyn.set(0);
-    test_model.select_u32_mult_dyn.set(vec![0, 1]);
-    test_model.select_i64_dyn.set(0);
-    test_model.select_i64_mult_dyn.set(vec![0, 1]);
-    test_model.select_f64_dyn.set(0.0);
-    test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
 
     // Create document
     // ---------------------------------------------------------------------------------------------
@@ -516,6 +494,7 @@ fn test_save_param_required() -> Result<(), Box<dyn Error>> {
         "Create document - is_valid(): {}",
         output_data.err_msg()
     );
+    assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
         output_data.created_at().is_some(),

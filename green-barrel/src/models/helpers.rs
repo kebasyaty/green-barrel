@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::collections::HashMap;
 
 /// Metadata ( model parameters )
 // -------------------------------------------------------------------------------------------------
@@ -24,13 +25,18 @@ pub struct Meta {
     pub is_use_hooks: bool,
     pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
-    pub field_value_type_map: std::collections::HashMap<String, String>,
+    pub field_value_type_map: HashMap<String, String>,
     // <field_name, fields_type>
-    pub field_type_map: std::collections::HashMap<String, String>,
+    pub field_type_map: HashMap<String, String>,
     // <field_name, default_value>
-    pub default_value_map: std::collections::HashMap<String, Value>,
+    pub default_value_map: HashMap<String, Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
+    // Option maps for fields type `select` - <field_name, options>
+    pub option_str_map: HashMap<String, Vec<String>>,
+    pub option_i32_map: HashMap<String, Vec<i32>>,
+    pub option_i64_map: HashMap<String, Vec<i64>>,
+    pub option_f64_map: HashMap<String, Vec<f64>>,
 }
 
 impl Default for Meta {
@@ -52,10 +58,14 @@ impl Default for Meta {
             is_use_add_valid: false,
             is_use_hooks: false,
             is_use_hash_slug: false,
-            field_value_type_map: std::collections::HashMap::new(),
-            field_type_map: std::collections::HashMap::new(),
-            default_value_map: std::collections::HashMap::new(),
+            field_value_type_map: HashMap::new(),
+            field_type_map: HashMap::new(),
+            default_value_map: HashMap::new(),
             ignore_fields: Vec::new(),
+            option_str_map: HashMap::new(),
+            option_i32_map: HashMap::new(),
+            option_i64_map: HashMap::new(),
+            option_f64_map: HashMap::new(),
         }
     }
 }

@@ -14,7 +14,7 @@ mod data_test {
     // The unique key for this test.
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
-    // Size: 8-16
+    // Size: 16
     pub const UNIQUE_PROJECT_KEY: &str = "dNTFT8173D6i3255";
     //
     pub const SERVICE_NAME: &str = "test_service_name";

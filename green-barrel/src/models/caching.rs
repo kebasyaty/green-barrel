@@ -6,7 +6,7 @@ use mongodb::{
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::{convert::TryFrom, error::Error};
+use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::{
     models::{
@@ -16,6 +16,11 @@ use crate::{
     },
     store::{ModelCache, MODEL_STORE, MONGODB_CLIENT_STORE},
 };
+
+type OptionsStrMap = HashMap<String, Vec<String>>;
+type OptionsI32Map = HashMap<String, Vec<i32>>;
+type OptionsI64Map = HashMap<String, Vec<i64>>;
+type OptionsF64Map = HashMap<String, Vec<f64>>;
 
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
@@ -31,7 +36,7 @@ pub trait Caching: Main + Converters {
         // Get write access in cache.
         let mut model_store = MODEL_STORE.write()?;
         // Create `ModelCache` default and add map of fields and metadata of model.
-        let (meta, mut model_json) = Self::generate_metadata()?;
+        let (mut meta, mut model_json) = Self::generate_metadata()?;
         // Get MongoDB client for current model.
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
@@ -44,12 +49,75 @@ pub trait Caching: Main + Converters {
             &mut model_json,
             &meta.fields_name,
         )?;
+        let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
+            Self::get_option_maps(&model_json, &meta.field_type_map)?;
+        meta.option_str_map = options_str_map;
+        meta.option_i32_map = options_i32_map;
+        meta.option_i64_map = options_i64_map;
+        meta.option_f64_map = options_f64_map;
         // Init new ModelCache.
         let new_model_cache = ModelCache { meta, model_json };
         // Save structure `ModelCache` to store.
         model_store.insert(key, new_model_cache);
         //
         Ok(())
+    }
+
+    /// Get option maps for fields type `select`.
+    fn get_option_maps(
+        model_json: &Value,
+        field_type_map: &HashMap<String, String>,
+    ) -> Result<(OptionsStrMap, OptionsI32Map, OptionsI64Map, OptionsF64Map), Box<dyn Error>> {
+        //
+        let mut options_str_map = HashMap::<String, Vec<String>>::new();
+        let mut options_i32_map = HashMap::<String, Vec<i32>>::new();
+        let mut options_i64_map = HashMap::<String, Vec<i64>>::new();
+        let mut options_f64_map = HashMap::<String, Vec<f64>>::new();
+        for (field_name, field_type) in field_type_map {
+            if let Some(options) = model_json.get(field_name).unwrap().get("options") {
+                if field_type.contains("Text") {
+                    let options = options
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_str().unwrap().to_string())
+                        .collect::<Vec<String>>();
+                    options_str_map.insert(field_name.into(), options);
+                } else if field_type.contains("I32") {
+                    let options = options
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| {
+                            i32::try_from(item.as_array().unwrap()[0].as_i64().unwrap()).unwrap()
+                        })
+                        .collect::<Vec<i32>>();
+                    options_i32_map.insert(field_name.into(), options);
+                } else if field_type.contains("U32") || field_type.contains("I64") {
+                    let options = options
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
+                        .collect::<Vec<i64>>();
+                    options_i64_map.insert(field_name.into(), options);
+                } else if field_type.contains("F64") {
+                    let options = options
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|item| item.as_array().unwrap()[0].as_f64().unwrap())
+                        .collect::<Vec<f64>>();
+                    options_f64_map.insert(field_name.into(), options);
+                }
+            }
+        }
+        Ok((
+            options_str_map,
+            options_i32_map,
+            options_i64_map,
+            options_f64_map,
+        ))
     }
 
     /// Get metadata of Model.
