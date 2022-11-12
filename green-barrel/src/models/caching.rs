@@ -74,13 +74,9 @@ pub trait Caching: Main + Converters {
         let mut options_i64_map = HashMap::<String, Vec<i64>>::new();
         let mut options_f64_map = HashMap::<String, Vec<f64>>::new();
         for (field_name, field_type) in field_type_map {
-            if field_type.contains("Select") {
+            if let Some(options) = model_json.get(field_name).unwrap().get("options") {
                 if field_type.contains("Text") {
-                    let options = model_json
-                        .get(field_name)
-                        .unwrap()
-                        .get("options")
-                        .unwrap()
+                    let options = options
                         .as_array()
                         .unwrap()
                         .iter()
@@ -88,11 +84,7 @@ pub trait Caching: Main + Converters {
                         .collect::<Vec<String>>();
                     options_str_map.insert(field_name.into(), options);
                 } else if field_type.contains("I32") {
-                    let options = model_json
-                        .get(field_name)
-                        .unwrap()
-                        .get("options")
-                        .unwrap()
+                    let options = options
                         .as_array()
                         .unwrap()
                         .iter()
@@ -102,11 +94,7 @@ pub trait Caching: Main + Converters {
                         .collect::<Vec<i32>>();
                     options_i32_map.insert(field_name.into(), options);
                 } else if field_type.contains("U32") || field_type.contains("I64") {
-                    let options = model_json
-                        .get(field_name)
-                        .unwrap()
-                        .get("options")
-                        .unwrap()
+                    let options = options
                         .as_array()
                         .unwrap()
                         .iter()
@@ -114,11 +102,7 @@ pub trait Caching: Main + Converters {
                         .collect::<Vec<i64>>();
                     options_i64_map.insert(field_name.into(), options);
                 } else if field_type.contains("F64") {
-                    let options = model_json
-                        .get(field_name)
-                        .unwrap()
-                        .get("options")
-                        .unwrap()
+                    let options = options
                         .as_array()
                         .unwrap()
                         .iter()
