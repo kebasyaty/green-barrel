@@ -309,6 +309,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
+                    //
+                    if field_type == "RadioText"
+                        && !option_str_map
+                            .get(field_name)
+                            .unwrap()
+                            .contains(&curr_val.to_string())
+                    {
+                        is_err_symptom = true;
+                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            final_field,
+                            "Value does not match possible options."
+                        ));
+                        continue;
+                    }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = if field_type != "InputPassword" {
                         Bson::String(curr_val.to_string())
@@ -1483,6 +1497,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get clean data.
                     let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
+                    //
+                    if field_type == "RadioI32"
+                        && !option_i32_map.get(field_name).unwrap().contains(&curr_val)
+                    {
+                        is_err_symptom = true;
+                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            final_field,
+                            "Value does not match possible options."
+                        ));
+                        continue;
+                    }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
@@ -1563,6 +1588,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get clean data.
                     let curr_val = const_value.as_i64().unwrap();
+                    //
+                    if field_type == "RadioU32"
+                        || field_type == "RadioI64"
+                            && !option_i64_map.get(field_name).unwrap().contains(&curr_val)
+                    {
+                        is_err_symptom = true;
+                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            final_field,
+                            "Value does not match possible options."
+                        ));
+                        continue;
+                    }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
@@ -1644,6 +1681,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get clean data.
                     let curr_val = const_value.as_f64().unwrap();
+                    //
+                    if field_type == "RadioF64"
+                        && !option_f64_map.get(field_name).unwrap().contains(&curr_val)
+                    {
+                        is_err_symptom = true;
+                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            final_field,
+                            "Value does not match possible options."
+                        ));
+                        continue;
+                    }
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
