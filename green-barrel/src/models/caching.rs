@@ -50,7 +50,7 @@ pub trait Caching: Main + Converters {
             &meta.fields_name,
         )?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
-            Self::get_option_map(&model_json, &meta.field_type_map)?;
+            Self::get_option_maps(&model_json, &meta.field_type_map)?;
         meta.option_str_map = options_str_map;
         meta.option_i32_map = options_i32_map;
         meta.option_i64_map = options_i64_map;
@@ -64,7 +64,7 @@ pub trait Caching: Main + Converters {
     }
 
     /// Get option maps for fields type `select`.
-    fn get_option_map(
+    fn get_option_maps(
         model_json: &Value,
         field_type_map: &HashMap<String, String>,
     ) -> Result<(OptionsStrMap, OptionsI32Map, OptionsI64Map, OptionsF64Map), Box<dyn Error>> {
