@@ -492,6 +492,10 @@ fn test_check_param_required() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
+    assert!(
+        output_data.get_doc().unwrap().is_empty(),
+        "get_doc() != is_empty()"
+    );
     assert!(output_data.hash().is_empty(), "hash() != is_empty()");
     assert!(
         output_data.created_at().is_none(),
