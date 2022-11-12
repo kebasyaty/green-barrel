@@ -155,20 +155,17 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
+    assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
+    assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
-        output_data.get_doc().unwrap().is_empty(),
-        "get_doc() != is_empty()"
-    );
-    assert!(output_data.hash().is_empty(), "hash() != is_empty()");
-    assert!(
-        output_data.created_at().is_none(),
-        "created_at() != is_none()"
+        output_data.created_at().is_some(),
+        "created_at() != is_some()"
     );
     assert!(
-        output_data.updated_at().is_none(),
-        "updated_at() != is_none()"
+        output_data.updated_at().is_some(),
+        "updated_at() != is_some()"
     );
-    assert!(output_data.obj_id()?.is_none(), "obj_id() != is_none()");
+    assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
     assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
     assert!(
         output_data.json_for_admin()?.is_some(),
@@ -235,8 +232,8 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
 
     assert!(!output_data.is_valid(), "is_valid() != false");
     assert!(
-        output_data.get_doc().unwrap().is_empty(),
-        "get_doc() != is_empty()"
+        !output_data.get_doc().unwrap().is_empty(),
+        "get_doc() == is_empty()"
     );
     assert!(output_data.hash().is_empty(), "hash() != is_empty()");
     assert!(
