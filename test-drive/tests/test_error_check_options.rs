@@ -137,7 +137,7 @@ mod data_test {
 // TEST
 // #################################################################################################
 #[test]
-fn test_check_full_default() -> Result<(), Box<dyn Error>> {
+fn test_error_check_options() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     data_test::run_migration()?;
@@ -196,6 +196,30 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.radio_f64.set(0.0);
     test_model.range_f64.set(0.0);
     test_model.radio_text.set("Some text");
+    test_model.select_text.set("Some text");
+    test_model.select_text_dyn.set("Some text");
+    test_model
+        .select_text_mult
+        .set(vec!["Some text", "Some text 2"]);
+    test_model
+        .select_text_mult_dyn
+        .set(vec!["Some text", "Some text 2"]);
+    test_model.select_i32.set(0);
+    test_model.select_i32_dyn.set(0);
+    test_model.select_i32_mult.set(vec![0, 1]);
+    test_model.select_i32_mult_dyn.set(vec![0, 1]);
+    test_model.select_u32.set(0);
+    test_model.select_u32_dyn.set(0);
+    test_model.select_u32_mult.set(vec![0, 1]);
+    test_model.select_u32_mult_dyn.set(vec![0, 1]);
+    test_model.select_i64.set(0);
+    test_model.select_i64_dyn.set(0);
+    test_model.select_i64_mult.set(vec![0, 1]);
+    test_model.select_i64_mult_dyn.set(vec![0, 1]);
+    test_model.select_f64.set(0.0);
+    test_model.select_f64_dyn.set(0.0);
+    test_model.select_f64_mult.set(vec![0.0, 1.0]);
+    test_model.select_f64_mult_dyn.set(vec![0.0, 1.0]);
     test_model.text.set("Some text");
     test_model.color.set("#ffffff");
     test_model.email.set("jane32@enhanceronly.com");
@@ -209,11 +233,7 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
 
     let output_data = test_model.check(None)?;
 
-    assert!(
-        output_data.is_valid(),
-        "is_valid(): {}",
-        output_data.err_msg()
-    );
+    assert!(!output_data.is_valid(), "is_valid() != false");
     assert!(
         output_data.get_doc().unwrap().is_empty(),
         "get_doc() != is_empty()"
