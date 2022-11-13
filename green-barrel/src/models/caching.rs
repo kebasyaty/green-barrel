@@ -80,7 +80,13 @@ pub trait Caching: Main + Converters {
                         .as_array()
                         .unwrap()
                         .iter()
-                        .map(|item| item.as_array().unwrap()[0].as_str().unwrap().to_string())
+                        .map(|item| {
+                            if field_type.contains("Radio") {
+                                item.as_str().unwrap().to_string()
+                            } else {
+                                item.as_array().unwrap()[0].as_str().unwrap().to_string()
+                            }
+                        })
                         .collect::<Vec<String>>();
                     options_str_map.insert(field_name.into(), options);
                 } else if field_type.contains("I32") {
@@ -89,7 +95,12 @@ pub trait Caching: Main + Converters {
                         .unwrap()
                         .iter()
                         .map(|item| {
-                            i32::try_from(item.as_array().unwrap()[0].as_i64().unwrap()).unwrap()
+                            if field_type.contains("Radio") {
+                                i32::try_from(item.as_i64().unwrap()).unwrap()
+                            } else {
+                                i32::try_from(item.as_array().unwrap()[0].as_i64().unwrap())
+                                    .unwrap()
+                            }
                         })
                         .collect::<Vec<i32>>();
                     options_i32_map.insert(field_name.into(), options);
@@ -98,7 +109,13 @@ pub trait Caching: Main + Converters {
                         .as_array()
                         .unwrap()
                         .iter()
-                        .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
+                        .map(|item| {
+                            if field_type.contains("Radio") {
+                                item.as_i64().unwrap()
+                            } else {
+                                item.as_array().unwrap()[0].as_i64().unwrap()
+                            }
+                        })
                         .collect::<Vec<i64>>();
                     options_i64_map.insert(field_name.into(), options);
                 } else if field_type.contains("F64") {
@@ -106,7 +123,13 @@ pub trait Caching: Main + Converters {
                         .as_array()
                         .unwrap()
                         .iter()
-                        .map(|item| item.as_array().unwrap()[0].as_f64().unwrap())
+                        .map(|item| {
+                            if field_type.contains("Radio") {
+                                item.as_f64().unwrap()
+                            } else {
+                                item.as_array().unwrap()[0].as_f64().unwrap()
+                            }
+                        })
                         .collect::<Vec<f64>>();
                     options_f64_map.insert(field_name.into(), options);
                 }
