@@ -145,7 +145,11 @@ mod data_test {
                 radio_i32: RadioI32 {
                     required: true,
                     default: Some(0),
-                    options: vec![0, 1, 2],
+                    options: vec![
+                        (0, "Title".into()),
+                        (1, "Title 1".into()),
+                        (2, "Title 2".into()),
+                    ],
                     ..Default::default()
                 },
                 range_i32: RangeI32 {
@@ -165,7 +169,11 @@ mod data_test {
                 radio_u32: RadioU32 {
                     required: true,
                     default: Some(0),
-                    options: vec![0, 1, 2],
+                    options: vec![
+                        (0, "Title".into()),
+                        (1, "Title 1".into()),
+                        (2, "Title 2".into()),
+                    ],
                     ..Default::default()
                 },
                 range_u32: RangeU32 {
@@ -185,7 +193,11 @@ mod data_test {
                 radio_i64: RadioI64 {
                     required: true,
                     default: Some(0),
-                    options: vec![0, 1, 2],
+                    options: vec![
+                        (0, "Title".into()),
+                        (1, "Title 1".into()),
+                        (2, "Title 2".into()),
+                    ],
                     ..Default::default()
                 },
                 range_i64: RangeI64 {
@@ -205,7 +217,11 @@ mod data_test {
                 radio_f64: RadioF64 {
                     required: true,
                     default: Some(0.0),
-                    options: vec![0.0, 1.0, 2.0],
+                    options: vec![
+                        (0.0, "Title".into()),
+                        (0.1, "Title 1".into()),
+                        (0.2, "Title 2".into()),
+                    ],
                     ..Default::default()
                 },
                 range_f64: RangeF64 {
@@ -218,7 +234,11 @@ mod data_test {
                 radio_text: RadioText {
                     required: true,
                     default: Some("value".to_string()),
-                    options: vec!["value".into(), "value 1".into(), "value 2".into()],
+                    options: vec![
+                        ("value".into(), "Title".into()),
+                        ("value 1".into(), "Title 1".into()),
+                        ("value 2".into(), "Title 2".into()),
+                    ],
                     ..Default::default()
                 },
                 select_text: SelectText {
