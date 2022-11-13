@@ -72,8 +72,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.1.2-beta"
-metamorphose = "1.1.2-beta"
+green-barrel = "1.1.3-beta"
+metamorphose = "1.1.3-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
