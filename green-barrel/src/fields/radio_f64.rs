@@ -16,7 +16,7 @@ pub struct RadioF64 {
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub options: Vec<f64>, // Html tag: <input type="radio" />
+    pub options: Vec<(f64, String)>, // Html tag: <input type="radio" />
     pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
