@@ -147,16 +147,17 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
 
-    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_2.odt")?;
-    fs::copy("./media/default/no_image.png", "./media/tmp/no_image_2.png")?;
-
     for num in 1..=10 {
+        let target_file = format!("./media/tmp/no_file_2_{num}.odt");
+        let target_image = format!("./media/tmp/no_image_2_{num}.png");
+        fs::copy("./media/default/no_file.odt", target_file.clone())?;
+        fs::copy("./media/default/no_image.png", target_image.clone())?;
         let mut test_model = TestModel::new()?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
-        test_model.file.set("./media/tmp/no_file_2.odt");
-        test_model.image.set("./media/tmp/no_image_2.png");
+        test_model.file.set(target_file.as_str());
+        test_model.image.set(target_image.as_str());
         test_model.number_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
