@@ -1979,7 +1979,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if !is_update && is_no_error && meta.is_use_hash_slug {
                 stop_step = 2;
             }
-
             // Save to database.
             // -------------------------------------------------------------------------------------
             if is_no_error {
