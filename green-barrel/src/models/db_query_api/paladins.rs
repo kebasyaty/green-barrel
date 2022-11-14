@@ -1964,7 +1964,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
             // Get checked data from the `check()` method.
             let is_update: bool = !self.hash().is_empty();
-            let is_block_file = !is_update && meta.is_use_hash_slug;
+            let is_block_file = is_update && step == 2;
             let mut verified_data = self.check(Some((true, is_block_file)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
