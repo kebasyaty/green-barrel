@@ -183,6 +183,11 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
             "is_valid(): {}",
             output_data.err_msg()
         );
+        test_model = output_data.update()?;
+        assert!(
+            test_model.slug.get().is_none(),
+            "test_model.slug.get() != is_none()"
+        );
         assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
         assert!(
             output_data.created_at().is_some(),
@@ -197,11 +202,6 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         assert!(
             output_data.json_for_admin()?.is_some(),
             "json_for_admin() != is_some()"
-        );
-        test_model = output_data.update()?;
-        assert!(
-            test_model.slug.get().is_none(),
-            "test_model.slug.get() != is_none()"
         );
     }
 
