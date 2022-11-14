@@ -138,12 +138,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn check(&mut self, is_save: Option<bool>) -> Result<OutputData2, Box<dyn Error>>
+    fn check(&mut self, params: Option<(bool, bool)>) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        let is_save = is_save.unwrap_or(false);
+        let (is_save, is_block_file) = params.unwrap_or((false, false));
         // Get metadata of Model.
         let meta = Self::meta()?;
         // Get client of MongoDB.
@@ -1243,8 +1243,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 break;
                             }
                         }
-                        fs::copy(source_file_path, new_file_path.clone())?;
-                        if !is_use_default {
+                        if !is_block_file {
+                            fs::copy(source_file_path, new_file_path.clone())?;
+                        }
+                        if !is_use_default && !is_block_file {
                             fs::remove_file(source_file_path)?;
                         }
                         file_data.name = new_file_name.clone();
@@ -1387,8 +1389,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         let new_img_path = format!("{img_dir_path}/{new_img_name}");
-                        fs::copy(source_img_path, new_img_path.clone())?;
-                        if !is_use_default {
+                        if !is_block_file {
+                            fs::copy(source_img_path, new_img_path.clone())?;
+                        }
+                        if !is_use_default && !is_block_file {
                             fs::remove_file(source_img_path)?;
                         }
                         image_data.name = new_img_name.clone();
@@ -1963,7 +1967,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(Some(true))?;
+            let mut verified_data = self.check(Some((true, false)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             // Get client of MongoDB.
