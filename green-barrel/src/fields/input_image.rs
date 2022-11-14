@@ -66,7 +66,10 @@ impl InputImage {
     pub fn get(&self) -> Option<ImageData> {
         self.value.clone()
     }
-    pub fn set(&mut self, value: ImageData) {
-        self.value = Some(value);
+    pub fn set(&mut self, value: &str) {
+        self.value = Some(ImageData {
+            path: value.into(),
+            ..Default::default()
+        });
     }
 }

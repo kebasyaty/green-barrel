@@ -38,7 +38,7 @@ impl Default for AutoSlug {
             unique: true,
             disabled: false,
             readonly: true,
-            slug_sources: Vec::new(),
+            slug_sources: vec!["hash".into()],
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),

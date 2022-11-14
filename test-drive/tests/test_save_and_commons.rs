@@ -3,7 +3,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
+use std::{error::Error, fs};
 
 mod data_test {
     use super::*;
@@ -147,13 +147,16 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
 
+    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file.odt")?;
+    fs::copy("./media/default/no_image.png", "./media/tmp/no_image.png")?;
+
     for num in 1..=10 {
         let mut test_model = TestModel::new()?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
-        test_model.file.set(FileData::default());
-        test_model.image.set(ImageData::default());
+        test_model.file.set("./media/tmp/no_file.odt");
+        test_model.image.set("./media/tmp/no_image.png");
         test_model.number_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
