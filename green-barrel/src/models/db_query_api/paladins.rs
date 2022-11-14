@@ -1137,7 +1137,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputFile"
                 8 => {
                     //
-                    if !is_save {
+                    if !is_save || is_block_file {
                         continue;
                     }
                     // Get data for validation.
@@ -1243,10 +1243,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 break;
                             }
                         }
-                        if !is_block_file {
-                            fs::copy(source_file_path, new_file_path.clone())?;
-                        }
-                        if !is_use_default && !is_block_file {
+                        fs::copy(source_file_path, new_file_path.clone())?;
+                        if !is_use_default {
                             fs::remove_file(source_file_path)?;
                         }
                         file_data.name = new_file_name.clone();
@@ -1278,7 +1276,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputImage"
                 9 => {
                     //
-                    if !is_save {
+                    if !is_save || is_block_file {
                         continue;
                     }
                     // Get data for validation.
@@ -1389,10 +1387,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         let new_img_path = format!("{img_dir_path}/{new_img_name}");
-                        if !is_block_file {
-                            fs::copy(source_img_path, new_img_path.clone())?;
-                        }
-                        if !is_use_default && !is_block_file {
+                        fs::copy(source_img_path, new_img_path.clone())?;
+                        if !is_use_default {
                             fs::remove_file(source_img_path)?;
                         }
                         image_data.name = new_img_name.clone();
