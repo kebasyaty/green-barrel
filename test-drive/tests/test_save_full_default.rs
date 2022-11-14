@@ -232,8 +232,8 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     );
     test_model = output_data.update()?;
     assert!(
-        test_model.slug.get().is_none(),
-        "test_model.slug.get() != is_none()"
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
     );
 
     // Delete test database
