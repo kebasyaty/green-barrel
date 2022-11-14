@@ -79,7 +79,7 @@ mod data_test {
         pub select_f64_mult_dyn: SelectF64MultDyn,
         //
         pub text: InputText,
-        //pub slug: AutoSlug,
+        pub slug: AutoSlug,
         pub color: InputColor,
         pub email: InputEmail,
         pub password: InputPassword,
@@ -185,13 +185,11 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
             output_data.err_msg()
         );
         //
-        /*/
         test_model = output_data.update()?;
         assert!(
             test_model.slug.get().is_none(),
             "test_model.slug.get() != is_none()"
         );
-        */
         //
         assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
         assert!(
