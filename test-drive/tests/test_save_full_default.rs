@@ -155,6 +155,11 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
+    test_model = output_data.update()?;
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
+    );
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
@@ -170,11 +175,6 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     assert!(
         output_data.json_for_admin()?.is_some(),
         "json_for_admin() != is_some()"
-    );
-    test_model = output_data.update()?;
-    assert!(
-        test_model.slug.get().is_some(),
-        "test_model.slug.get() != is_some()"
     );
 
     // Add data
@@ -214,6 +214,11 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
+    test_model = output_data.update()?;
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
+    );
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(
@@ -229,11 +234,6 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     assert!(
         output_data.json_for_admin()?.is_some(),
         "json_for_admin() != is_some()"
-    );
-    test_model = output_data.update()?;
-    assert!(
-        test_model.slug.get().is_some(),
-        "test_model.slug.get() != is_some()"
     );
 
     // Delete test database
