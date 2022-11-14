@@ -18,8 +18,8 @@ pub struct NumberI32 {
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub step: i32,  // Increment step for numeric fields.
-    pub min: Option<i32>, // The lower value for entering a number or date.
-    pub max: Option<i32>, // The top value for entering a number or date.
+    pub min: i32,   // The lower value for entering a number or date.
+    pub max: i32,   // The top value for entering a number or date.
     pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -45,8 +45,8 @@ impl Default for NumberI32 {
             disabled: false,
             readonly: false,
             step: 1,
-            min: None,
-            max: None,
+            min: 0,
+            max: i32::MAX,
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),

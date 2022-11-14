@@ -138,12 +138,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn check(&mut self, is_save: Option<bool>) -> Result<OutputData2, Box<dyn Error>>
+    fn check(&mut self, params: Option<(bool, bool)>) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        let is_save = is_save.unwrap_or(false);
+        let (is_save, is_block_file) = params.unwrap_or((false, false));
         // Get metadata of Model.
         let meta = Self::meta()?;
         // Get client of MongoDB.
@@ -1201,7 +1201,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1265,8 +1265,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         //
                         if !is_err_symptom {
                             let value = final_field.get("value").unwrap();
-                            let bson_field_value = mongodb::bson::ser::to_bson(value)?;
-                            final_doc.insert(field_name, bson_field_value);
+                            let field_value_bson = to_bson(value)?;
+                            final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
                         *final_field.get_mut("value").unwrap() = json!(null);
@@ -1341,7 +1341,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1466,7 +1466,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         //
                         if !is_err_symptom {
                             let value = final_field.get("value").unwrap();
-                            let field_value_bson = mongodb::bson::ser::to_bson(value)?;
+                            let field_value_bson = to_bson(value)?;
                             final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
@@ -1963,14 +1963,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(Some(true))?;
+            let is_update: bool = !self.hash().is_empty();
+            let is_block_file = is_update && step == 2;
+            let mut verified_data = self.check(Some((true, is_block_file)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             // Get client of MongoDB.
             let client_store = MONGODB_CLIENT_STORE.read()?;
             let client = client_store.get(&meta.db_client_name).unwrap();
-            //
-            let is_update: bool = !self.hash().is_empty();
             //
             let coll: Collection = client
                 .database(meta.database_name.as_str())
@@ -1979,7 +1979,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if !is_update && is_no_error && meta.is_use_hash_slug {
                 stop_step = 2;
             }
-
             // Save to database.
             // -------------------------------------------------------------------------------------
             if is_no_error {

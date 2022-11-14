@@ -3,7 +3,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
+use std::{error::Error, fs};
 
 mod data_test {
     use super::*;
@@ -148,12 +148,16 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     type TestModel = data_test::TestModel;
 
     for num in 1..=10 {
+        let target_file = format!("./media/tmp/no_file_2_{num}.odt");
+        let target_image = format!("./media/tmp/no_image_2_{num}.png");
+        fs::copy("./media/default/no_file.odt", target_file.clone())?;
+        fs::copy("./media/default/no_image.png", target_image.clone())?;
         let mut test_model = TestModel::new()?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
-        test_model.file.set(FileData::default());
-        test_model.image.set(ImageData::default());
+        test_model.file.set(target_file.as_str());
+        test_model.image.set(target_image.as_str());
         test_model.number_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
@@ -180,6 +184,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
             "is_valid(): {}",
             output_data.err_msg()
         );
+        //
+        test_model = output_data.update()?;
+        assert!(
+            test_model.slug.get().is_some(),
+            "test_model.slug.get() != is_some()"
+        );
+        //
         assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
         assert!(
             output_data.created_at().is_some(),
@@ -194,11 +205,6 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         assert!(
             output_data.json_for_admin()?.is_some(),
             "json_for_admin() != is_some()"
-        );
-        test_model = output_data.update()?;
-        assert!(
-            test_model.slug.get().is_none(),
-            "test_model.slug.get() != is_none()"
         );
     }
 

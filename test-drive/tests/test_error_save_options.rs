@@ -2,8 +2,7 @@ use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
-
+use std::{error::Error, fs};
 mod data_test {
     use super::*;
 
@@ -172,14 +171,17 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
         "json_for_admin() != is_some()"
     );
 
-    // With data
+    // Add data
     // ---------------------------------------------------------------------------------------------
+    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_3.odt")?;
+    fs::copy("./media/default/no_image.png", "./media/tmp/no_image_3.png")?;
+
     let mut test_model = TestModel::new()?;
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
-    test_model.file.set(FileData::default());
-    test_model.image.set(ImageData::default());
+    test_model.file.set("./media/tmp/no_file_3.odt");
+    test_model.image.set("./media/tmp/no_image_3.png");
     test_model.number_i32.set(0);
     test_model.radio_i32.set(0);
     test_model.range_i32.set(0);
