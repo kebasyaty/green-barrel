@@ -175,7 +175,7 @@ fn test_error_check_options() -> Result<(), Box<dyn Error>> {
         "json_for_admin() != is_some()"
     );
 
-    // With data
+    // Add data
     // ---------------------------------------------------------------------------------------------
     fs::copy("./media/default/no_file.odt", "./media/tmp/no_file.odt")?;
     fs::copy("./media/default/no_image.png", "./media/tmp/no_image.png")?;
