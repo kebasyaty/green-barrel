@@ -1137,7 +1137,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputFile"
                 8 => {
                     //
-                    if !is_save || is_block_file {
+                    if !is_save {
                         continue;
                     }
                     // Get data for validation.
@@ -1201,7 +1201,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1276,7 +1276,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // "InputImage"
                 9 => {
                     //
-                    if !is_save || is_block_file {
+                    if !is_save {
                         continue;
                     }
                     // Get data for validation.
@@ -1341,7 +1341,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
