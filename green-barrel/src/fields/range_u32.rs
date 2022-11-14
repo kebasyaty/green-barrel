@@ -18,8 +18,8 @@ pub struct RangeU32 {
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub step: u32,  // Increment step for numeric fields.
-    pub min: Option<u32>, // The lower value for entering a number or date.
-    pub max: Option<u32>, // The top value for entering a number or date.
+    pub min: u32,   // The lower value for entering a number or date.
+    pub max: u32,   // The top value for entering a number or date.
     pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -45,8 +45,8 @@ impl Default for RangeU32 {
             disabled: false,
             readonly: false,
             step: 1,
-            min: Some(0),
-            max: Some(100),
+            min: 0,
+            max: 100,
             other_attrs: String::new(),
             css_classes: String::new(),
             is_hide: false,
