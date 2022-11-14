@@ -1967,14 +1967,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(Some((true, false)))?;
+            let is_update: bool = !self.hash().is_empty();
+            let is_block_file = !is_update && meta.is_use_hash_slug;
+            let mut verified_data = self.check(Some((true, is_block_file)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             // Get client of MongoDB.
             let client_store = MONGODB_CLIENT_STORE.read()?;
             let client = client_store.get(&meta.db_client_name).unwrap();
-            //
-            let is_update: bool = !self.hash().is_empty();
             //
             let coll: Collection = client
                 .database(meta.database_name.as_str())
