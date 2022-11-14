@@ -138,8 +138,8 @@ mod data_test {
                 number_i32: NumberI32 {
                     required: true,
                     default: Some(0),
-                    min: Some(-1),
-                    max: Some(1),
+                    min: -1,
+                    max: 1,
                     ..Default::default()
                 },
                 radio_i32: RadioI32 {
@@ -155,15 +155,15 @@ mod data_test {
                 range_i32: RangeI32 {
                     required: true,
                     default: Some(0),
-                    min: Some(-1),
-                    max: Some(1),
+                    min: -1,
+                    max: 1,
                     ..Default::default()
                 },
                 number_u32: NumberU32 {
                     required: true,
                     default: Some(0),
-                    min: Some(0),
-                    max: Some(1),
+                    min: 0,
+                    max: 1,
                     ..Default::default()
                 },
                 radio_u32: RadioU32 {
@@ -179,15 +179,15 @@ mod data_test {
                 range_u32: RangeU32 {
                     required: true,
                     default: Some(1),
-                    min: Some(0),
-                    max: Some(1),
+                    min: 0,
+                    max: 1,
                     ..Default::default()
                 },
                 number_i64: NumberI64 {
                     required: true,
                     default: Some(0),
-                    min: Some(-1),
-                    max: Some(1),
+                    min: -1,
+                    max: 1,
                     ..Default::default()
                 },
                 radio_i64: RadioI64 {
@@ -203,15 +203,15 @@ mod data_test {
                 range_i64: RangeI64 {
                     required: true,
                     default: Some(0),
-                    min: Some(-1),
-                    max: Some(1),
+                    min: -1,
+                    max: 1,
                     ..Default::default()
                 },
                 number_f64: NumberF64 {
                     required: true,
                     default: Some(0.0),
-                    min: Some(0.0),
-                    max: Some(1.0),
+                    min: 0.0,
+                    max: 1.0,
                     ..Default::default()
                 },
                 radio_f64: RadioF64 {
@@ -227,8 +227,8 @@ mod data_test {
                 range_f64: RangeF64 {
                     required: true,
                     default: Some(0.0),
-                    min: Some(-1.0),
-                    max: Some(1.0),
+                    min: -1.0,
+                    max: 1.0,
                     ..Default::default()
                 },
                 radio_text: RadioText {
