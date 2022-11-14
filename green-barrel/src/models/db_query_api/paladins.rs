@@ -1265,7 +1265,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         //
                         if !is_err_symptom {
                             let value = final_field.get("value").unwrap();
-                            let bson_field_value = mongodb::bson::ser::to_bson(value)?;
+                            let bson_field_value = to_bson(value)?;
                             final_doc.insert(field_name, bson_field_value);
                         }
                     } else {
@@ -1466,7 +1466,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         //
                         if !is_err_symptom {
                             let value = final_field.get("value").unwrap();
-                            let field_value_bson = mongodb::bson::ser::to_bson(value)?;
+                            let field_value_bson = to_bson(value)?;
                             final_doc.insert(field_name, field_value_bson);
                         }
                     } else {
