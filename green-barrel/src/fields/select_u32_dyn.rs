@@ -14,6 +14,7 @@ pub struct SelectU32Dyn {
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
+    pub multiple: String, // Specifies that multiple options can be selected at once.
     pub options: Vec<(u32, String)>, // Elements are added via the ModelName::update_dyn_field() method.
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
@@ -36,6 +37,7 @@ impl Default for SelectU32Dyn {
             required: false,
             disabled: false,
             readonly: false,
+            multiple: String::new(),
             options: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
