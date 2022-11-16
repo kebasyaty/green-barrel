@@ -1,4 +1,5 @@
 //! Query methods for a Model instance.
+use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, ser::to_bson, spec::ElementType, Bson},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
@@ -1410,6 +1411,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let thumbnails = serde_json::from_value::<Vec<(String, u32)>>(
                         final_field.get("thumbnails").unwrap().clone(),
                     )?;
+                    let filter_type = if final_field.get("is_quality").unwrap().as_bool().unwrap() {
+                        Triangle
+                    } else {
+                        Nearest
+                    };
                     if !thumbnails.is_empty() {
                         let mut img = image::open(f_path)?;
                         for max_size in thumbnails.iter() {
@@ -1424,11 +1430,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 let thumb_name = format!("{}.{extension}", max_size.0);
                                 let thumb_path = format!("{img_dir_path}/{thumb_name}");
                                 let thumb_url = format!("{img_dir_url}/{thumb_name}");
-                                img = img.resize_exact(
-                                    width as u32,
-                                    height as u32,
-                                    image::imageops::FilterType::Triangle,
-                                );
+                                img = img.resize_exact(width as u32, height as u32, filter_type);
                                 match max_size.0.as_str() {
                                     "lg" => {
                                         img.save(thumb_path.clone())?;
