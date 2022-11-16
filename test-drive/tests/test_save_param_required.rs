@@ -133,6 +133,7 @@ mod data_test {
                         ("md".into(), 600),
                         ("lg".into(), 1200),
                     ],
+                    is_quality: false,
                     ..Default::default()
                 },
                 number_i32: NumberI32 {
