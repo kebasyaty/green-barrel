@@ -21,7 +21,7 @@ pub struct SelectU32Mult {
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // The value is determined automatically.
+    pub warning: String,     // Warning information.
     pub error: String,       // The value is determined automatically.
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
