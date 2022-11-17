@@ -93,6 +93,22 @@ mod data_test {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
+                image: InputImage {
+                    required: true,
+                    default: Some(ImageData {
+                        path: "./media/default/no_image.png".into(),
+                        url: "/media/default/no_image.png".into(),
+                        ..Default::default()
+                    }),
+                    thumbnails: vec![
+                        ("xs".into(), 150),
+                        ("sm".into(), 300),
+                        ("md".into(), 600),
+                        ("lg".into(), 1200),
+                    ],
+                    is_quality: false,
+                    ..Default::default()
+                },
                 ..Default::default()
             }
         }
