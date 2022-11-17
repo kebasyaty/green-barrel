@@ -14,7 +14,7 @@ mod data_test {
     // To generate a key: https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "4c571936Hk318vAp";
+    pub const UNIQUE_PROJECT_KEY: &str = "11de1G87Q41n46b2";
     //
     pub const SERVICE_NAME: &str = "test_service_name";
     pub const DATABASE_NAME: &str = "test_database_name";
@@ -472,7 +472,7 @@ mod data_test {
 // TEST
 // #################################################################################################
 #[test]
-fn test_save_param_required() -> Result<(), Box<dyn Error>> {
+fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
     // Run migration
     // =============================================================================================
     data_test::run_migration()?;
@@ -509,6 +509,15 @@ fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     assert!(
         output_data.json_for_admin()?.is_some(),
         "json_for_admin() != is_some()"
+    );
+
+    // Delete document
+    // ---------------------------------------------------------------------------------------------
+    let output_data = test_model.delete(None)?;
+    assert!(
+        output_data.is_valid(),
+        "Delete document - is_valid(): {}",
+        output_data.err_msg()
     );
 
     // Delete test database
