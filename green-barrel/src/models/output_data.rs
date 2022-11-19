@@ -311,7 +311,15 @@ impl OutputData2 {
         for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
             let field_type = self.final_model_json.get(field_name).unwrap();
-            let error = field_type.get("error").unwrap().as_str().unwrap();
+            let mut error = field_type
+                .get("error")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string();
+            if let Some(alert) = field_type.get("alert") {
+                error = format!("{error} | {0}", alert.as_str().unwrap());
+            }
             if !error.is_empty() {
                 errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
             }

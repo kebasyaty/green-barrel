@@ -168,6 +168,7 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         let target_image = format!("./media/tmp/no_image_2_{num}.png");
         fs::copy("./media/default/no_file.odt", target_file.clone())?;
         fs::copy("./media/default/no_image.png", target_image.clone())?;
+
         let mut test_model = TestModel::new()?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
@@ -194,14 +195,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.textarea.set("Some text");
 
         let output_data = test_model.save(None, None)?;
+        test_model = output_data.update()?;
 
         assert!(
             output_data.is_valid(),
             "is_valid(): {}",
             output_data.err_msg()
         );
-        //
-        test_model = output_data.update()?;
         assert!(
             test_model.slug.get().is_some(),
             "test_model.slug.get() != is_some()"

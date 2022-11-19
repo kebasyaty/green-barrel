@@ -166,13 +166,13 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     let output_data = test_model.save(None, None)?;
+    test_model = output_data.update()?;
+
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
         output_data.err_msg()
     );
-    //
-    test_model = output_data.update()?;
     assert!(
         test_model.slug.get().is_some(),
         "test_model.slug.get() != is_some()"
@@ -226,14 +226,13 @@ fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     test_model.textarea.set("Some text");
 
     let output_data = test_model.save(None, None)?;
+    test_model = output_data.update()?;
 
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
         output_data.err_msg()
     );
-    //
-    test_model = output_data.update()?;
     assert!(
         test_model.slug.get().is_some(),
         "test_model.slug.get() != is_some()"

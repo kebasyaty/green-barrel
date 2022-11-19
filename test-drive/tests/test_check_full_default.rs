@@ -150,10 +150,16 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     let output_data = test_model.check(None)?;
+    test_model = output_data.update()?;
+
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
         output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_none(),
+        "test_model.slug.get() != is_none()"
     );
     assert!(
         output_data.get_doc().unwrap().is_empty(),
@@ -206,11 +212,16 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.textarea.set("Some text");
 
     let output_data = test_model.check(None)?;
+    test_model = output_data.update()?;
 
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
         output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_none(),
+        "test_model.slug.get() != is_none()"
     );
     assert!(
         output_data.get_doc().unwrap().is_empty(),

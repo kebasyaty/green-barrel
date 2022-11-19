@@ -72,8 +72,8 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.1.8-beta"
-metamorphose = "1.1.8-beta"
+green-barrel = "1.1.10-beta"
+metamorphose = "1.1.10-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
@@ -355,6 +355,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
+    user = output_data.update()?;
+
     if output_data.is_valid() {
         println!("Hash: {:?}", user.hash.get());
         println!("Hash: {}", output_data.hash());
@@ -378,10 +380,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
-    if output_data.is_valid() {
-        // Update instance.
-        user = output_data.update()?;
+    user = output_data.update()?;
 
+    if output_data.is_valid() {
         println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
@@ -405,16 +406,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        // Update instance.
+        user.username.set("new_user_1");
+
+        let output_data = user.save(None, None)?;
         user = output_data.update()?;
 
-        user.username.set("new_user_1");
-        let output_data = user.save(None, None)?;
-
         if output_data.is_valid() {
-            // Update instance.
-            user = output_data.update()?;
-
             println!("Hash: {}", user.hash.get().unwrap());
             println!("Hash: {}", output_data.hash());
 
@@ -453,6 +450,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.1.9-beta** _Updated **README.md** file._
 - **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
 - **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
 - **v0.7.12** _Fixed **README.md**._
