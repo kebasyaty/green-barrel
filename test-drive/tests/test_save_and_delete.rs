@@ -488,6 +488,7 @@ fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
     // Create document
     // ---------------------------------------------------------------------------------------------
     let output_data = test_model.save(None, None)?;
+    test_model = output_data.update()?;
     //
     assert!(
         output_data.is_valid(),

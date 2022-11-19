@@ -488,11 +488,16 @@ fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // Create document
     // ---------------------------------------------------------------------------------------------
     let output_data = test_model.save(None, None)?;
-    //
+    test_model = output_data.update()?;
+
     assert!(
         output_data.is_valid(),
         "Create document - is_valid(): {}",
         output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
     );
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");

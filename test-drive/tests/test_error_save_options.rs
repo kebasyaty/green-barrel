@@ -149,10 +149,16 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     let output_data = test_model.save(None, None)?;
+    test_model = output_data.update()?;
+
     assert!(
         output_data.is_valid(),
         "is_valid(): {}",
         output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
     );
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
@@ -231,8 +237,13 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     test_model.textarea.set("Some text");
 
     let output_data = test_model.save(None, None)?;
+    test_model = output_data.update()?;
 
     assert!(!output_data.is_valid(), "is_valid() != false");
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
+    );
     assert!(
         !output_data.get_doc().unwrap().is_empty(),
         "get_doc() == is_empty()"
