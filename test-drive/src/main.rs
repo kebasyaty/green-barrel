@@ -68,6 +68,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
+    user = output_data.update()?;
+
     if output_data.is_valid() {
         println!("Hash: {:?}", user.hash.get());
         println!("Hash: {}", output_data.hash());
@@ -91,10 +93,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
-    if output_data.is_valid() {
-        // Update instance.
-        user = output_data.update()?;
+    user = output_data.update()?;
 
+    if output_data.is_valid() {
         println!("Hash: {}", user.hash.get().unwrap());
         println!("Hash: {}", output_data.hash());
 
@@ -119,16 +120,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        // Update instance.
+        user.username.set("new_user_12");
+
+        let output_data = user.save(None, None)?;
         user = output_data.update()?;
 
-        user.username.set("new_user_12");
-        let output_data = user.save(None, None)?;
-
         if output_data.is_valid() {
-            // Update instance.
-            user = output_data.update()?;
-
             println!("Hash: {}", user.hash.get().unwrap());
             println!("Hash: {}", output_data.hash());
 
