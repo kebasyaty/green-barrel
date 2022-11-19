@@ -492,6 +492,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     //
+                    if !is_save {
+                        continue;
+                    }
                     slug = slugify(slug);
                     *final_field.get_mut("value").unwrap() = json!(slug);
                     let field_value_bson = Bson::String(slug.clone());
