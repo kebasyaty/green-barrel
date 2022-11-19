@@ -145,7 +145,7 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = data_test::TestModel;
     //
-    // No data
+    // Positive
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new()?;
     let output_data = test_model.save(None, None)?;
@@ -177,7 +177,7 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
         "json_for_admin() != is_some()"
     );
 
-    // Add data
+    // Negative - In select type, there are no options to select
     // ---------------------------------------------------------------------------------------------
     fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_3.odt")?;
     fs::copy("./media/default/no_image.png", "./media/tmp/no_image_3.png")?;
@@ -241,8 +241,8 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
 
     assert!(!output_data.is_valid(), "is_valid() != false");
     assert!(
-        test_model.slug.get().is_some(),
-        "test_model.slug.get() != is_some()"
+        test_model.slug.get().is_none(),
+        "test_model.slug.get() != is_none()"
     );
     assert!(
         !output_data.get_doc().unwrap().is_empty(),
