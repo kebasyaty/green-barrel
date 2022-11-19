@@ -311,7 +311,11 @@ impl OutputData2 {
         for field_name in self.fields_name.iter() {
             let tmp = errors.clone();
             let field_type = self.final_model_json.get(field_name).unwrap();
-            let error = field_type.get("error").unwrap().as_str().unwrap();
+            let error = if field_name != "hash" {
+                field_type.get("error").unwrap().as_str().unwrap()
+            } else {
+                field_type.get("alert").unwrap().as_str().unwrap()
+            };
             if !error.is_empty() {
                 errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
             }
