@@ -69,10 +69,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     let model_name_str = model_name_ident.to_string();
     //
     if model_name_str.len() > 30 {
-        panic!(
-            "Model: `{}` => Model name: Max size 30 characters.",
-            model_name_str
-        )
+        panic!("Model: `{model_name_str}` => Model name: Max size 30 characters.")
     }
     //
     let mut trans_meta = Meta {
@@ -96,9 +93,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.database_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `database`. Use the `&str` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `database`. Use the `&str` type."
                         )
                     }
                 } else if mnv.path.is_ident("db_client_name") {
@@ -106,9 +102,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_client_name = lit_str.value().trim().to_string();
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `db_client_name`. Use the `&str` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `db_client_name`. Use the `&str` type."
                         )
                     }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
@@ -116,9 +111,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `db_query_docs_limit`. Use the `&str` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `db_query_docs_limit`. Use the `&str` type."
                         )
                     }
                 } else if mnv.path.is_ident("is_add_docs") {
@@ -126,9 +120,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_add_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_add_docs`. Use the `bool` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `is_add_docs`. Use the `bool` type."
                         )
                     }
                 } else if mnv.path.is_ident("is_up_docs") {
@@ -136,9 +129,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_up_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_up_docs`. Use the `bool` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `is_up_docs`. Use the `bool` type."
                         )
                     }
                 } else if mnv.path.is_ident("is_del_docs") {
@@ -146,9 +138,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         trans_meta.is_del_docs = lit_bool.value;
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_del_docs`. Use the `bool` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `is_del_docs`. Use the `bool` type."
                         )
                     }
                 } else if mnv.path.is_ident("ignore_fields") {
@@ -162,10 +153,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             .collect();
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
+                            "Model: `{model_name_str}` => Could not determine value for \
                             parameter `ignore_fields`. Use the type `&str` in \
-                            the format - <field_name, field_name>.",
-                            model_name_str
+                            the format - <field_name, field_name>."
                         )
                     }
                 } else if mnv.path.is_ident("is_use_add_valid") {
@@ -176,9 +166,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_use_add_valid`. Use the `bool` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `is_use_add_valid`. Use the `bool` type."
                         )
                     }
                 } else if mnv.path.is_ident("is_use_hooks") {
@@ -189,17 +178,15 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         }
                     } else {
                         panic!(
-                            "Model: `{}` => Could not determine value for \
-                            parameter `is_use_hooks`. Use the `bool` type.",
-                            model_name_str
+                            "Model: `{model_name_str}` => Could not determine value for \
+                            parameter `is_use_hooks`. Use the `bool` type."
                         )
                     }
+                } else {
+                    panic!("Model: `{model_name_str}` => Invalid parameter!")
                 }
             } else {
-                panic!(
-                    "Model: `{}` => syn::Meta::NameValue is missing.",
-                    model_name_str
-                )
+                panic!("Model: `{model_name_str}` => syn::Meta::NameValue is missing.")
             }
         }
     }
@@ -218,19 +205,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
                     // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
                     if field_name == "hash" {
-                        panic!(
-                            "Model: `{}` => The field named `hash` is reserved.",
-                            model_name_str
-                        )
+                        panic!("Model: `{model_name_str}` => The field named `hash` is reserved.")
                     } else if field_name == "created_at" {
                         panic!(
-                            "Model: `{}` => The field named `created_at` is reserved.",
-                            model_name_str
+                            "Model: `{model_name_str}` => The field named `created_at` is reserved."
                         )
                     } else if field_name == "updated_at" {
                         panic!(
-                            "Model: `{}` => The field named `updated_at` is reserved.",
-                            model_name_str
+                            "Model: `{model_name_str}` => The field named `updated_at` is reserved."
                         )
                     }
                 }
@@ -305,10 +287,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 field.attrs = Vec::new();
             }
         } else {
-            panic!(
-                "Model: `{}` => Expected a struct with named fields.",
-                model_name_str
-            )
+            panic!("Model: `{model_name_str}` => Expected a struct with named fields.")
         }
     }
 
@@ -318,20 +297,19 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
-                "Model: `{}` => Model does not have an ignored field named `{}`.",
-                model_name_str, field_name,
+                "Model: `{model_name_str}` => Model does not have an ignored field named `{field_name}`."
             )
         }
     }
     // trans_meta to Json-line.
     let trans_meta_json = match serde_json::to_string(&trans_meta) {
         Ok(json_line) => json_line,
-        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
+        Err(err) => panic!("Model: `{model_name_str}` => {0:?}", err),
     };
     // html_id_map to Json-line.
     let html_id_map_json = match serde_json::to_string(&html_id_map) {
         Ok(json_line) => json_line,
-        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
+        Err(err) => panic!("Model: `{model_name_str}` => {0:?}", err),
     };
 
     // Implementation of methods.
@@ -728,8 +706,8 @@ fn get_field_info<'a>(
         "HiddenHash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
         _ => Err(format!(
-            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid field type.",
-            model_name, field_name, field_type,
+            "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \
+            Invalid field type."
         ))?,
     };
     //
@@ -744,5 +722,5 @@ fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
         .map(|word| word[0..1].to_uppercase() + &word[1..])
         .collect::<Vec<String>>()
         .join("");
-    format!("{}-{}", model_name, field_name_upper)
+    format!("{model_name}-{field_name_upper}")
 }

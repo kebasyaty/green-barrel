@@ -321,7 +321,7 @@ impl OutputData2 {
                 if !error.is_empty() && !alert.is_empty() {
                     error = format!("{error} | {alert}");
                 } else if !alert.is_empty() {
-                    error = format!("{alert}");
+                    error = alert.to_string();
                 }
             }
             if !error.is_empty() {
