@@ -144,7 +144,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        let (is_save, is_block_file) = params.unwrap_or((false, false));
+        let (is_save, is_slug_update) = params.unwrap_or((false, false));
         // Get metadata of Model.
         let meta = Self::meta()?;
         // Get client of MongoDB.
@@ -1215,7 +1215,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1355,7 +1355,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }

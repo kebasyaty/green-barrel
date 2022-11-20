@@ -11,7 +11,6 @@ use crate::settings::{
 };
 
 #[Model(
-    is_up_docs = false,
     is_use_add_valid = true,
     is_use_hooks = true,
     ignore_fields = "confirm_password"
