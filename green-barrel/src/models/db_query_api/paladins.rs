@@ -197,7 +197,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
         // Check param `alert` in `hash` field.
-        {
+        if !is_slug_update {
             let alert = final_model_json
                 .get("hash")
                 .unwrap()
