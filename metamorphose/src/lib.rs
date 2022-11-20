@@ -706,8 +706,8 @@ fn get_field_info<'a>(
         "HiddenHash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
         _ => Err(format!(
-            "Model: `{:?}` > Field: `{}` > Field type: `{}` => Invalid field type.",
-            model_name, field_name, field_type,
+            "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \
+            Invalid field type."
         ))?,
     };
     //
@@ -722,5 +722,5 @@ fn get_html_id<'a>(model_name: &'a str, field_name: &'a str) -> String {
         .map(|word| word[0..1].to_uppercase() + &word[1..])
         .collect::<Vec<String>>()
         .join("");
-    format!("{}-{}", model_name, field_name_upper)
+    format!("{model_name}-{field_name_upper}")
 }
