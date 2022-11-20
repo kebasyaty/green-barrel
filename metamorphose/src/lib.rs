@@ -297,20 +297,19 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     for field_name in trans_meta.ignore_fields.iter() {
         if !trans_meta.fields_name.contains(field_name) {
             panic!(
-                "Model: `{}` => Model does not have an ignored field named `{}`.",
-                model_name_str, field_name,
+                "Model: `{model_name_str}` => Model does not have an ignored field named `{field_name}`."
             )
         }
     }
     // trans_meta to Json-line.
     let trans_meta_json = match serde_json::to_string(&trans_meta) {
         Ok(json_line) => json_line,
-        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
+        Err(err) => panic!("Model: `{model_name_str}` => {0:?}", err),
     };
     // html_id_map to Json-line.
     let html_id_map_json = match serde_json::to_string(&html_id_map) {
         Ok(json_line) => json_line,
-        Err(err) => panic!("Model: `{}` => {:?}", model_name_str, err),
+        Err(err) => panic!("Model: `{model_name_str}` => {0:?}", err),
     };
 
     // Implementation of methods.
