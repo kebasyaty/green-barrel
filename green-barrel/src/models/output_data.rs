@@ -309,7 +309,6 @@ impl OutputData2 {
     pub fn err_msg(&self) -> String {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
-            let tmp = errors.clone();
             let field_type = self.final_model_json.get(field_name).unwrap();
             let mut error = field_type
                 .get("error")
@@ -318,10 +317,15 @@ impl OutputData2 {
                 .unwrap()
                 .to_string();
             if let Some(alert) = field_type.get("alert") {
-                error = format!("{error} | {0}", alert.as_str().unwrap());
+                let alert = alert.as_str().unwrap();
+                if !error.is_empty() && !alert.is_empty() {
+                    error = format!("{error} | {alert}");
+                } else if !alert.is_empty() {
+                    error = format!("{alert}");
+                }
             }
             if !error.is_empty() {
-                errors = format!("{}\nField: `{}` => {}", tmp, field_name, error);
+                errors = format!("{errors}\nField: `{field_name}` => {error}");
             }
         }
         if !errors.is_empty() {
@@ -350,7 +354,7 @@ impl OutputData2 {
     pub fn print_err(&self) {
         let errors = self.err_msg();
         if !errors.is_empty() {
-            println!("\nERRORS:{}\n", errors);
+            println!("\nERRORS:{errors}\n");
         }
     }
 

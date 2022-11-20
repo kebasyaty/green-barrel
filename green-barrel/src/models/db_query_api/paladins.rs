@@ -1961,14 +1961,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         for step in 1_u8..=2_u8 {
             // Get metadata of Model.
             let meta = Self::meta()?;
-            //
-            if !meta.is_add_docs {
-                Err(format!(
-                    "Model: `{}` > Method: `save()` => \
-                        The ability to add documents is blocked - is_add_docs = false.",
-                    meta.model_name
-                ))?
-            }
             // Get checked data from the `check()` method.
             let mut verified_data = self.check(Some((true, step == 2)))?;
             let is_no_error: bool = verified_data.is_valid();
