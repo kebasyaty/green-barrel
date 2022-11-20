@@ -205,19 +205,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
                     // Check for fields with reserved names - 'hash', `created_at`, `updated_at`.
                     if field_name == "hash" {
-                        panic!(
-                            "Model: `{}` => The field named `hash` is reserved.",
-                            model_name_str
-                        )
+                        panic!("Model: `{model_name_str}` => The field named `hash` is reserved.")
                     } else if field_name == "created_at" {
                         panic!(
-                            "Model: `{}` => The field named `created_at` is reserved.",
-                            model_name_str
+                            "Model: `{model_name_str}` => The field named `created_at` is reserved."
                         )
                     } else if field_name == "updated_at" {
                         panic!(
-                            "Model: `{}` => The field named `updated_at` is reserved.",
-                            model_name_str
+                            "Model: `{model_name_str}` => The field named `updated_at` is reserved."
                         )
                     }
                 }
@@ -292,10 +287,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 field.attrs = Vec::new();
             }
         } else {
-            panic!(
-                "Model: `{}` => Expected a struct with named fields.",
-                model_name_str
-            )
+            panic!("Model: `{model_name_str}` => Expected a struct with named fields.")
         }
     }
 
