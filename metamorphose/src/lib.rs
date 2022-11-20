@@ -194,6 +194,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             model_name_str
                         )
                     }
+                } else {
+                    panic!("Model: `{model_name_str}` => Invalid parameter!")
                 }
             } else {
                 panic!(
