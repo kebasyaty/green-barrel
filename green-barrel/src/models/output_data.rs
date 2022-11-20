@@ -92,9 +92,9 @@ impl OutputData {
     /// ```
     ///
     pub fn print_err(&self) {
-        let errors = self.err_msg();
-        if !errors.is_empty() {
-            println!("\nERRORS:{}\n", errors);
+        let error = self.err_msg();
+        if !error.is_empty() {
+            println!("\nERROR: {error}\n");
         }
     }
 
