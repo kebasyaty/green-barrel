@@ -57,8 +57,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new()?;
-    user.username.set("user_12");
-    user.email.set("user_12_@noreply.net");
+    user.username.set("user_5");
+    user.email.set("user_5_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
@@ -120,7 +120,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        user.username.set("new_user_12");
+        user.username.set("new_user_5");
 
         let output_data = user.save(None, None)?;
         user = output_data.update()?;
@@ -154,7 +154,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
     if !output_data.is_valid() {
-        println!("{}", output_data.err_msg());
+        output_data.print_err();
+        // or
+        println!("ERROR: {}", output_data.err_msg());
     }
 
     Ok(())

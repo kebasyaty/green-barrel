@@ -144,7 +144,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         Self: Serialize + DeserializeOwned + Sized,
     {
         //
-        let (is_save, is_block_file) = params.unwrap_or((false, false));
+        let (is_save, is_slug_update) = params.unwrap_or((false, false));
         // Get metadata of Model.
         let meta = Self::meta()?;
         // Get client of MongoDB.
@@ -196,37 +196,47 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             }
         }
-        // Check `hash` field.
-        if !final_model_json
-            .get("hash")
-            .unwrap()
-            .get("alert")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .is_empty()
-        {
-            is_err_symptom = true;
-        }
-        if !is_update && !meta.is_add_docs {
-            if is_save {
+        // Check param `alert` in `hash` field.
+        if !is_slug_update {
+            let alert = final_model_json
+                .get("hash")
+                .unwrap()
+                .get("alert")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string();
+            if !alert.is_empty() {
                 is_err_symptom = true;
             }
-            *final_model_json
-                .get_mut("hash")
-                .unwrap()
-                .get_mut("alert")
-                .unwrap() = json!("It is forbidden to perform saves.");
-        }
-        if is_update && !meta.is_up_docs {
             if is_save {
-                is_err_symptom = true;
+                if !is_update && !meta.is_add_docs {
+                    let msg = if !alert.is_empty() {
+                        format!("{alert}<br>It is forbidden to perform saves!")
+                    } else {
+                        String::from("It is forbidden to perform saves!")
+                    };
+                    is_err_symptom = true;
+                    *final_model_json
+                        .get_mut("hash")
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!(msg);
+                }
+                if is_update && !meta.is_up_docs {
+                    let msg = if !alert.is_empty() {
+                        format!("{alert}<br>It is forbidden to perform updates!")
+                    } else {
+                        String::from("It is forbidden to perform updates!")
+                    };
+                    is_err_symptom = true;
+                    *final_model_json
+                        .get_mut("hash")
+                        .unwrap()
+                        .get_mut("alert")
+                        .unwrap() = json!(msg);
+                }
             }
-            *final_model_json
-                .get_mut("hash")
-                .unwrap()
-                .get_mut("alert")
-                .unwrap() = json!("It is forbidden to perform updates.");
         }
         // Loop over fields for validation.
         for (field_name, field_type) in field_type_map {
@@ -236,8 +246,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
             // Get values for validation.
             let final_field = final_model_json.get_mut(field_name).unwrap();
-            // To clean up possible duplicates.
-            *final_field.get_mut("error").unwrap() = json!("");
             // Define conditional constants.
             let mut is_use_default = false;
             let mut const_value = {
@@ -1207,7 +1215,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1347,7 +1355,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_block_file || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1961,14 +1969,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         for step in 1_u8..=2_u8 {
             // Get metadata of Model.
             let meta = Self::meta()?;
-            //
-            if !meta.is_add_docs {
-                Err(format!(
-                    "Model: `{}` > Method: `save()` => \
-                        The ability to add documents is blocked - is_add_docs = false.",
-                    meta.model_name
-                ))?
-            }
             // Get checked data from the `check()` method.
             let mut verified_data = self.check(Some((true, step == 2)))?;
             let is_no_error: bool = verified_data.is_valid();
