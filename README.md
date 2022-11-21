@@ -547,6 +547,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.1.14-beta** _Rename Model parameters: **is_add_docs**, **is_up_docs**, **is_del_docs** to **is_add_doc**, **is_up_doc**, **is_del_doc**._
 - **v1.1.9-beta** _Tests updated and **README.md** file updated._
 - **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
 - **v1.0.16-beta** _Added parameter **target_dir** for field types **InputFile** and **InputImage**._
