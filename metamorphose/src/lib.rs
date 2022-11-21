@@ -183,7 +183,12 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         )
                     }
                 } else {
-                    panic!("Model: `{model_name_str}` => Invalid parameter!")
+                    panic!(
+                        "Model: `{model_name_str}` => Invalid parameter! => \
+                        Valid Parameters: database, db_client_name, db_query_docs_limit, \
+                        is_add_docs, is_up_docs, is_del_docs, ignore_fields, is_use_add_valid, \
+                        is_use_hooks."
+                    )
                 }
             } else {
                 panic!("Model: `{model_name_str}` => syn::Meta::NameValue is missing.")
