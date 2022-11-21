@@ -12,7 +12,7 @@ mod data_test {
     // =============================================================================================
     pub const PROJECT_NAME: &str = "test_project_name";
     // The unique key for this test.
-    // To generate a key: https://randompasswordgen.com/
+    // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
     pub const UNIQUE_PROJECT_KEY: &str = "dNTFT8173D6i3255";
