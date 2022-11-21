@@ -115,7 +115,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             parameter `db_query_docs_limit`. Use the `&str` type."
                         )
                     }
-                } else if mnv.path.is_ident("is_add_docs") {
+                } else if mnv.path.is_ident("is_add_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
                         trans_meta.is_add_docs = lit_bool.value;
                     } else {
@@ -124,7 +124,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             parameter `is_add_docs`. Use the `bool` type."
                         )
                     }
-                } else if mnv.path.is_ident("is_up_docs") {
+                } else if mnv.path.is_ident("is_up_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
                         trans_meta.is_up_docs = lit_bool.value;
                     } else {
@@ -133,7 +133,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             parameter `is_up_docs`. Use the `bool` type."
                         )
                     }
-                } else if mnv.path.is_ident("is_del_docs") {
+                } else if mnv.path.is_ident("is_del_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
                         trans_meta.is_del_docs = lit_bool.value;
                     } else {
@@ -186,7 +186,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     panic!(
                         "Model: `{model_name_str}` => Invalid parameter! => \
                         Valid Parameters: database, db_client_name, db_query_docs_limit, \
-                        is_add_docs, is_up_docs, is_del_docs, ignore_fields, is_use_add_valid, \
+                        is_add_doc, is_up_doc, is_del_doc, ignore_fields, is_use_add_valid, \
                         is_use_hooks."
                     )
                 }
