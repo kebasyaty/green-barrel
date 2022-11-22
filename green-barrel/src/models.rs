@@ -10,10 +10,8 @@ pub mod hooks;
 pub mod output_data;
 pub mod validation;
 
-use mongodb::{
-    bson::{doc, oid::ObjectId},
-    sync::Client,
-};
+use bson::{doc, document::Document, oid::ObjectId};
+use mongodb::sync::Client;
 use serde_json::{json, value::Value};
 use std::error::Error;
 
@@ -83,7 +81,9 @@ pub trait Main {
         // Init the name of the project's technical database.
         let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
         // Access to the collection with values for dynamic fields type.
-        let collection = client.database(&db_green_tech).collection("dynamic_fields");
+        let collection = client
+            .database(&db_green_tech)
+            .collection::<Document>("dynamic_fields");
         // Filter for searching a document.
         let filter = doc! {
             "collection": collection_name
