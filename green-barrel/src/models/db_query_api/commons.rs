@@ -441,9 +441,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.find_one(filter, options)?)
     }
@@ -473,9 +473,9 @@ pub trait QCommons: Main + Caching + Converters {
         let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance in jsob-line format.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = model_cache.model_json;
@@ -520,9 +520,9 @@ pub trait QCommons: Main + Caching + Converters {
         let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = model_cache.model_json;
