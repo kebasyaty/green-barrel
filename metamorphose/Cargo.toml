@@ -28,4 +28,4 @@ version = "1.0.147"
 [dependencies.mongodb]
 default-features = false
 features = ["sync"]
-version = "1.2.5"
+version = "2.3.1"

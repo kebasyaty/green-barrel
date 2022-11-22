@@ -90,7 +90,7 @@ impl<'a> Monitor<'a> {
         let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.metadata_list.iter() {
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
+            let client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             // Collection for monitoring the state of Models.
@@ -114,9 +114,9 @@ impl<'a> Monitor<'a> {
             } else {
                 // Reset models state information.
                 let green_tech_db: Database = client.database(&db_green_tech);
-                let collection_models: Collection =
-                    green_tech_db.collection(collection_models_name);
-                let cursor: Cursor = collection_models.find(None, None)?;
+                let collection_models =
+                    green_tech_db.collection::<Document>(collection_models_name);
+                let cursor = collection_models.find(None, None)?;
 
                 for result in cursor {
                     let document = result?;
@@ -149,11 +149,11 @@ impl<'a> Monitor<'a> {
             let collection_models_name: &str = "monitor_models";
             let collection_dyn_fields_type: &str = "dynamic_fields";
             let green_tech_db: Database = client.database(&db_green_tech);
-            let collection_models: Collection = green_tech_db.collection(collection_models_name);
-            let collection_dyn_fields: Collection =
-                green_tech_db.collection(collection_dyn_fields_type);
+            let collection_models = green_tech_db.collection::<Document>(collection_models_name);
+            let collection_dyn_fields =
+                green_tech_db.collection::<Document>(collection_dyn_fields_type);
             // Delete orphaned Collections.
-            let cursor: Cursor = collection_models.find(None, None)?;
+            let cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
             for result in results {
                 let document = result?;
@@ -294,10 +294,9 @@ impl<'a> Monitor<'a> {
                 if !changed_fields.is_empty() {
                     // Get the database and collection of the current Model.
                     let db: Database = client.database(&meta.database_name);
-                    let collection: mongodb::sync::Collection =
-                        db.collection(&meta.collection_name);
+                    let collection = db.collection::<Document>(&meta.collection_name);
                     // Get cursor to all documents of the current Model.
-                    let mut cursor: Cursor = collection.find(None, None)?;
+                    let mut cursor = collection.find(None, None)?;
                     // Iterate through all documents in a current (model) collection.
                     while let Some(Ok(doc_from_db)) = cursor.next() {
                         // Create temporary blank document.
@@ -611,7 +610,7 @@ impl<'a> Monitor<'a> {
                 Err("In the `refresh()` method, \
                         no technical database has been created for the project.")?
             } else {
-                let collection: Collection = db.collection("monitor_models");
+                let collection = db.collection::<Document>("monitor_models");
                 let filter = doc! {
                     "database": &meta.database_name,
                     "collection": &meta.collection_name
@@ -625,7 +624,7 @@ impl<'a> Monitor<'a> {
                     "status": true
                 };
                 // Check if there is model state in the database.
-                if collection.count_documents(filter.clone(), None)? == 0_i64 {
+                if collection.count_documents(filter.clone(), None)? == 0 {
                     // Add model state information.
                     collection.insert_one(doc, None)?;
                 } else {
@@ -647,14 +646,14 @@ impl<'a> Monitor<'a> {
                         no technical database has been created for the project.")?
             }
             //
-            let collection: Collection = db.collection("dynamic_fields");
+            let collection = db.collection::<Document>("dynamic_fields");
             let filter = doc! {
                 "database": &meta.database_name,
                 "collection": &meta.collection_name
             };
             // Check if there is a document in the database for
             // storing the values of dynamic fields type of model.
-            if collection.count_documents(filter.clone(), None)? == 0_i64 {
+            if collection.count_documents(filter.clone(), None)? == 0 {
                 // Init new document.
                 let mut new_doc = doc! {
                     "database": &meta.database_name,

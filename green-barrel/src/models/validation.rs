@@ -1,7 +1,7 @@
 //! Validating Model fields for save and update.
 
 use mongodb::{
-    bson::{doc, oid::ObjectId, Bson},
+    bson::{doc, document::Document, oid::ObjectId, Bson},
     sync::Collection,
 };
 use regex::Regex;
@@ -104,7 +104,7 @@ pub trait Validation {
         hash: &str,
         field_name: &str,
         field_value_bson: &Bson,
-        coll: &Collection,
+        coll: &Collection<Document>,
     ) -> Result<(), Box<dyn Error>> {
         //
         let object_id = ObjectId::with_string(hash);

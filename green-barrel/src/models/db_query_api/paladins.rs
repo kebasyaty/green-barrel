@@ -1,4 +1,5 @@
 //! Query methods for a Model instance.
+
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId, ser::to_bson, spec::ElementType, Bson},
@@ -30,7 +31,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     // *********************************************************************************************
     fn delete_file(
         &self,
-        coll: &Collection,
+        coll: &Collection<Document>,
         model_name: &str,
         field_name: &str,
         file_default: Option<FileData>,
@@ -94,7 +95,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     // *********************************************************************************************
     fn db_get_file_info(
         &self,
-        coll: &Collection,
+        coll: &Collection<Document>,
         field_name: &str,
     ) -> Result<Value, Box<dyn Error>> {
         //
@@ -165,9 +166,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a list of fields that should not be included in the document.
         let ignore_fields = &meta.ignore_fields;
         // Access the collection.
-        let coll: Collection = client
+        let coll = client
             .database(&meta.database_name)
-            .collection(&meta.collection_name);
+            .collection::<Document>(&meta.collection_name);
         // Get preliminary data from model instance and use for final result.
         let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.

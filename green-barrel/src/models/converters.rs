@@ -130,7 +130,7 @@ pub trait Converters {
     fn many_to_doc_list(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
-        collection: Collection,
+        collection: Collection<Document>,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
         let mut doc_list: Vec<Document> = Vec::new();
@@ -147,7 +147,7 @@ pub trait Converters {
     fn many_to_json(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
-        collection: Collection,
+        collection: Collection<Document>,
         ignore_fields: &[String],
         field_type_map: &HashMap<String, String>,
         model_name: &str,
