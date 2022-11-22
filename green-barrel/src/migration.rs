@@ -1,20 +1,16 @@
 //! Migrations are green-barrel’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
+//use bson::UtcDateTime;
+use bson::{
+    de::from_document,
+    doc,
+    document::Document,
+    ser::{to_bson, to_document},
+    Bson,
+};
 use chrono::Utc;
 use mongodb::{
-    bson,
-    bson::{
-        de::from_document,
-        doc,
-        document::Document,
-        ser::{to_bson, to_document},
-        Bson,
-    },
-    options::UpdateModifications,
-    sync::Client,
-    sync::Collection,
-    sync::Cursor,
-    sync::Database,
+    options::UpdateModifications, sync::Client, sync::Collection, sync::Cursor, sync::Database,
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
