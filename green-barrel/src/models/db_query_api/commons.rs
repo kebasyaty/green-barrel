@@ -577,9 +577,9 @@ pub trait QCommons: Main + Caching + Converters {
             Err("It is forbidden to perform delete.".to_string())?
         }
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.find_one_and_delete(filter, options)?)
     }
@@ -605,9 +605,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.name().to_string())
     }
@@ -633,9 +633,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.namespace())
     }
