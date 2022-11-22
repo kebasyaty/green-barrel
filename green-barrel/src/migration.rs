@@ -1,6 +1,8 @@
 //! Migrations are green-barrel’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
 
+use chrono::Utc;
 use mongodb::{
+    bson,
     bson::{
         de::from_document,
         doc,
@@ -162,7 +164,7 @@ impl<'a> Monitor<'a> {
                     // Delete Collection (left without a model).
                     client
                         .database(&model_state.database)
-                        .collection(&model_state.collection)
+                        .collection::<Document>(&model_state.collection)
                         .drop(None)?;
                     // Delete a document with a record about the state of
                     // the model from the technical base.
@@ -371,15 +373,14 @@ impl<'a> Monitor<'a> {
                                                             format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
                                                 }
-                                                let val = format!("{}T00:00", val);
-                                                let dt: chrono::DateTime<chrono::Utc> =
-                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                let dt =
+                                                    chrono::DateTime::<Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
-                                                            val.as_str(),
+                                                            val,
                                                             "%Y-%m-%dT%H:%M",
-                                                        )?, chrono::Utc,
+                                                        )?, Utc,
                                                     );
-                                                Bson::DateTime(dt)
+                                                Bson::DateTime(bson::DateTime::from_chrono(dt))
                                             } else {
                                                 Bson::Null
                                             }
@@ -396,14 +397,14 @@ impl<'a> Monitor<'a> {
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
-                                                let dt: chrono::DateTime<chrono::Utc> =
-                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                let dt =
+                                                    chrono::DateTime::<Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             val,
                                                             "%Y-%m-%dT%H:%M",
-                                                        )?, chrono::Utc,
+                                                        )?, Utc,
                                                     );
-                                                Bson::DateTime(dt)
+                                                Bson::DateTime(bson::DateTime::from_chrono(dt))
                                             } else {
                                                 Bson::Null
                                             }
