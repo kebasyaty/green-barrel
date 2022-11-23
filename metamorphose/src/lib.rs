@@ -185,9 +185,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 } else {
                     panic!(
                         "Model: `{model_name_str}` => Invalid parameter! => \
-                        Valid Parameters: database, db_client_name, db_query_docs_limit, \
-                        is_add_doc, is_up_doc, is_del_doc, ignore_fields, is_use_add_valid, \
-                        is_use_hooks."
+                        Valid Parameters: database | db_client_name | db_query_docs_limit | \
+                        is_add_doc | is_up_doc | is_del_doc | ignore_fields | \
+                        is_use_add_valid | is_use_hooksz"
                     )
                 }
             } else {
