@@ -3,6 +3,7 @@
 
 use chrono::Utc;
 use mongodb::{
+    bson,
     bson::{
         de::from_document,
         doc,
