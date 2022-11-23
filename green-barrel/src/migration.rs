@@ -3,7 +3,6 @@
 
 use chrono::Utc;
 use mongodb::{
-    bson,
     bson::{
         de::from_document,
         doc,
@@ -379,7 +378,7 @@ impl<'a> Monitor<'a> {
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, Utc,
                                                     );
-                                                Bson::DateTime(bson::DateTime::from_chrono(dt))
+                                                Bson::DateTime(dt.into())
                                             } else {
                                                 Bson::Null
                                             }
@@ -403,7 +402,7 @@ impl<'a> Monitor<'a> {
                                                             "%Y-%m-%dT%H:%M",
                                                         )?, Utc,
                                                     );
-                                                Bson::DateTime(bson::DateTime::from_chrono(dt))
+                                                Bson::DateTime(dt.into())
                                             } else {
                                                 Bson::Null
                                             }
