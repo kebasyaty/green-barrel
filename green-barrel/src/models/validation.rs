@@ -107,7 +107,7 @@ pub trait Validation {
         coll: &Collection<Document>,
     ) -> Result<(), Box<dyn Error>> {
         //
-        let object_id = ObjectId::with_string(hash);
+        let object_id = ObjectId::parse_str(hash);
         let mut filter = doc! { field_name: field_value_bson };
         if let Ok(id) = object_id {
             // If the document is will updated.
@@ -118,7 +118,7 @@ pub trait Validation {
                 ]
             };
         }
-        let count: i64 = coll.count_documents(filter, None)?;
+        let count = coll.count_documents(filter, None)?;
         if count > 0 {
             Err("Is not unique.")?
         }
