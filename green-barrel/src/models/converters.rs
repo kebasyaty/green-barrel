@@ -1,7 +1,7 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
 use mongodb::{
-    bson::{document::Document, spec::ElementType, Bson},
+    bson::{spec::ElementType, Bson, Document},
     options::FindOptions,
     sync::Collection,
 };
