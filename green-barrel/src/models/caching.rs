@@ -1,8 +1,7 @@
 //! Caching inmodelation about Models for speed up work.
 
-use bson::Document;
 use mongodb::{
-    bson::{doc, Bson},
+    bson::{doc, Bson, Document},
     sync::Client,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
