@@ -129,7 +129,7 @@ pub trait QCommons: Main + Caching + Converters {
             "It is forbidden to perform delete.".to_string()
         };
         //
-        let mut deleted_count = 0_i64;
+        let mut deleted_count = 0;
         let result_bool = if is_permission_delete {
             // Access collection.
             let coll = client
