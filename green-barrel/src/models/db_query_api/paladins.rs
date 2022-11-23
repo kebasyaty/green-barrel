@@ -2,7 +2,7 @@
 
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, ser::to_bson, spec::ElementType, Bson},
+    bson::{doc, oid::ObjectId, ser::to_bson, spec::ElementType, Bson, Document},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
     results::InsertOneResult,
     sync::Collection,
@@ -40,7 +40,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         let hash = self.hash();
         if !hash.is_empty() {
-            let object_id = ObjectId::with_string(hash.as_str())?;
+            let object_id = ObjectId::parse_str(hash.as_str())?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter.clone(), None)? {
                 // If `is_deleted=true` was passed incorrectly.
@@ -101,7 +101,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         let hash = self.hash();
         if !hash.is_empty() {
-            let object_id = ObjectId::with_string(hash.as_str())?;
+            let object_id = ObjectId::parse_str(hash.as_str())?;
             let filter = doc! {"_id": object_id};
             if let Some(document) = coll.find_one(filter, None)? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
@@ -634,7 +634,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
-                    let dt_val_bson = Bson::DateTime(dt_val);
+                    let dt_val_bson = Bson::DateTime(dt_val.into());
 
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
@@ -1807,12 +1807,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if is_update {
                 // Get the `created_at` value from the database.
                 let doc = {
-                    let object_id = ObjectId::with_string(hash)?;
+                    let object_id = ObjectId::parse_str(hash)?;
                     let filter = doc! {"_id": object_id};
                     coll.find_one(filter, None)?.unwrap()
                 };
                 let dt2 = doc.get("created_at").unwrap();
-                let dt_text2 = dt2.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                let dt_text2 =
+                    dt2.as_datetime().unwrap().try_to_rfc3339_string()?[..19].to_string();
                 //
                 *final_model_json
                     .get_mut("created_at")
@@ -1823,7 +1824,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // For update.
                 if is_save {
                     final_doc.insert("created_at", dt2);
-                    final_doc.insert("updated_at", Bson::DateTime(dt));
+                    final_doc.insert("updated_at", Bson::DateTime(dt.into()));
                     *final_model_json
                         .get_mut("updated_at")
                         .unwrap()
@@ -1832,7 +1833,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     self.set_updated_at(dt_text);
                 } else {
                     let dt = doc.get("updated_at").unwrap();
-                    let dt_text = dt.as_datetime().unwrap().to_rfc3339()[..19].to_string();
+                    let dt_text =
+                        dt.as_datetime().unwrap().try_to_rfc3339_string()?[..19].to_string();
                     if is_save {
                         final_doc.insert("updated_at", dt);
                     }
@@ -1845,8 +1847,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             } else if is_save {
                 // For create.
-                final_doc.insert("created_at", Bson::DateTime(dt));
-                final_doc.insert("updated_at", Bson::DateTime(dt));
+                final_doc.insert("created_at", Bson::DateTime(dt.into()));
+                final_doc.insert("updated_at", Bson::DateTime(dt.into()));
                 self.set_created_at(dt_text.clone());
                 self.set_updated_at(dt_text.clone());
                 *final_model_json
@@ -1980,9 +1982,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             //
             let is_update: bool = !self.hash().is_empty();
             //
-            let coll: Collection = client
+            let coll = client
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Having fields with a controller of inputSlug type.
             if !is_update && is_no_error && meta.is_use_hash_slug {
                 stop_step = 2;
@@ -1994,7 +1996,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 if is_update {
                     // Update document.
                     hash_line = self.hash();
-                    let object_id = ObjectId::with_string(hash_line.as_str())?;
+                    let object_id = ObjectId::parse_str(hash_line.as_str())?;
                     let query = doc! {"_id": object_id.clone()};
                     let update = doc! {
                         "$set": final_doc.clone(),
@@ -2072,9 +2074,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: mongodb::sync::Collection = client_cache
+            let coll = client_cache
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Get Model hash  for ObjectId.
             let hash = self.hash();
             if hash.is_empty() {
@@ -2084,7 +2086,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.model_name
                 ))?
             }
-            let object_id = ObjectId::with_string(hash.as_str())?;
+            let object_id = ObjectId::parse_str(hash.as_str())?;
             // Create query.
             let query = doc! {"_id": object_id};
             // Removeve files
@@ -2167,7 +2169,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             self.post_delete();
         }
         //
-        let deleted_count = i64::from(result_bool);
+        let deleted_count = u64::from(result_bool);
         Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
@@ -2226,9 +2228,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get Model metadata.
         let meta: Meta = model_cache.meta;
         // Access the collection.
-        let coll: Collection = client_cache
+        let coll = client_cache
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Get hash-line of Model.
         let hash = self.hash();
         if hash.is_empty() {
@@ -2239,7 +2241,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             ))?
         }
         // Convert hash-line to ObjectId.
-        let object_id = ObjectId::with_string(hash.as_str())?;
+        let object_id = ObjectId::parse_str(hash.as_str())?;
         // Create a filter to search for a document.
         let filter = doc! {"_id": object_id};
         // An attempt to find the required document.
@@ -2314,13 +2316,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get Model metadata.
             let meta: Meta = model_cache.meta;
             // Access the collection.
-            let coll: Collection = client_cache
+            let coll = client_cache
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Get hash-line of Model.
             let hash = self.hash();
             // Convert hash-line to ObjectId.
-            let object_id = ObjectId::with_string(hash.as_str())?;
+            let object_id = ObjectId::parse_str(hash.as_str())?;
             // Create a filter to search for a document.
             let query = doc! {"_id": object_id};
             let new_password_hash = Self::create_password_hash(new_password)?;
@@ -2332,7 +2334,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             result_bool = coll
                 .update_one(query, update, options_update)?
                 .modified_count
-                == 1_i64;
+                == 1;
             if !result_bool {
                 err_msg = "An error occurred while updating the password.".to_string();
             }
