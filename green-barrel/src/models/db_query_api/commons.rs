@@ -74,7 +74,7 @@ pub trait QCommons: Main + Caching + Converters {
     fn count_documents(
         filter: Option<Document>,
         options: Option<CountOptions>,
-    ) -> Result<i64, Box<dyn Error>>
+    ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -182,7 +182,7 @@ pub trait QCommons: Main + Caching + Converters {
             "It is forbidden to perform delete.".to_string()
         };
         //
-        let mut deleted_count = 0_i64;
+        let mut deleted_count = 0;
         let result_bool = if is_permission_delete {
             // Access collection.
             let coll = client
@@ -274,7 +274,7 @@ pub trait QCommons: Main + Caching + Converters {
         } else {
             false
         };
-        let deleted_count = i64::from(result_bool);
+        let deleted_count = u64::from(result_bool);
         Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
@@ -291,7 +291,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn estimated_document_count(
         options: Option<EstimatedDocumentCountOptions>,
-    ) -> Result<i64, Box<dyn Error>>
+    ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
