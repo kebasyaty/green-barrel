@@ -510,7 +510,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             // -------------------------------------------------------------------------------------
             fn obj_id(&self) -> Result<Option<mongodb::bson::oid::ObjectId>, Box<dyn std::error::Error>> {
                 let hash = self.hash.value.clone().unwrap_or_default();
-                if let Ok(obj_id) = mongodb::bson::oid::ObjectId::with_string(hash.as_str()) {
+                if let Ok(obj_id) = mongodb::bson::oid::ObjectId::parse_str(hash.as_str()) {
                     return Ok(Some(obj_id));
                 }
                 Ok(None)

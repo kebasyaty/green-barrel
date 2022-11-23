@@ -1,7 +1,7 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::bson::doc;
+use mongodb::bson::{doc, Document};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::error::Error;
@@ -107,7 +107,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
             meta.unique_project_key.clone()
         );
         let db = client_cache.database(&green_tech_keyword);
-        db.collection("dynamic_fields")
+        db.collection::<Document>("dynamic_fields")
     };
     //
     let filter = doc! {
