@@ -1997,7 +1997,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Update document.
                     hash_line = self.hash();
                     let object_id = ObjectId::parse_str(hash_line.as_str())?;
-                    let query = doc! {"_id": object_id.clone()};
+                    let query = doc! {"_id": object_id};
                     let update = doc! {
                         "$set": final_doc.clone(),
                     };
