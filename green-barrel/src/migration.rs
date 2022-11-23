@@ -10,7 +10,6 @@ use mongodb::{
         ser::{to_bson, to_document},
         Bson,
     },
-    options::UpdateModifications,
     sync::Client,
     sync::Database,
 };
@@ -113,20 +112,20 @@ impl<'a> Monitor<'a> {
                     .create_collection(collection_dyn_fields_type, None)?;
             } else {
                 // Reset models state information.
-                let green_tech_db: Database = client.database(&db_green_tech);
+                let green_tech_db = client.database(&db_green_tech);
                 let collection_models =
                     green_tech_db.collection::<Document>(collection_models_name);
                 let cursor = collection_models.find(None, None)?;
 
                 for result in cursor {
                     let document = result?;
-                    let mut model_state: ModelState = from_document(document)?;
+                    let mut model_state = from_document::<ModelState>(document)?;
                     model_state.status = false;
-                    let query: Document = doc! {
+                    let query = doc! {
                         "database": &model_state.database,
                         "collection": &model_state.collection
                     };
-                    let update = to_document(&model_state)?;
+                    let update = doc! {"$set": to_document(&model_state)?};
                     collection_models.update_one(query, update, None)?;
                 }
             }
@@ -574,7 +573,7 @@ impl<'a> Monitor<'a> {
                         }
                         // Save updated document.
                         let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
-                        collection.update_one(query, tmp_doc, None)?;
+                        collection.update_one(query, doc! {"$set": tmp_doc}, None)?;
                     }
                 }
             } else {
@@ -628,8 +627,7 @@ impl<'a> Monitor<'a> {
                     collection.insert_one(doc, None)?;
                 } else {
                     // Full update model state information.
-                    let update = UpdateModifications::Document(doc);
-                    collection.update_one(filter, update, None)?;
+                    collection.update_one(filter, doc! {"$set": doc}, None)?;
                 }
             }
 
@@ -703,7 +701,7 @@ impl<'a> Monitor<'a> {
                     }
                 }
                 // Full update existing document.
-                collection.update_one(filter, exist_doc, None)?;
+                collection.update_one(filter, doc! {"$set":exist_doc}, None)?;
             }
         }
 
