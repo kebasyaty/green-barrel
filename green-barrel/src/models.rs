@@ -10,8 +10,10 @@ pub mod hooks;
 pub mod output_data;
 pub mod validation;
 
-use bson::{doc, document::Document, oid::ObjectId};
-use mongodb::sync::Client;
+use mongodb::{
+    bson::{doc, document::Document, oid::ObjectId},
+    sync::Client,
+};
 use serde_json::{json, value::Value};
 use std::error::Error;
 
