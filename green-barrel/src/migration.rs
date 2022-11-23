@@ -1,5 +1,7 @@
-//! Migrations are green-barrel’s way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema.
+//! Migrations are green-barrel’s way of propagating changes you make to
+//! your models (adding a field, deleting a model, etc.) into your database schema.
 
+use chrono::Utc;
 use mongodb::{
     bson::{
         de::from_document,
@@ -8,10 +10,7 @@ use mongodb::{
         ser::{to_bson, to_document},
         Bson,
     },
-    options::UpdateModifications,
     sync::Client,
-    sync::Collection,
-    sync::Cursor,
     sync::Database,
 };
 use regex::Regex;
@@ -90,7 +89,7 @@ impl<'a> Monitor<'a> {
         let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
         //
         for meta in self.metadata_list.iter() {
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
+            let client = client_store.get(&meta.db_client_name).unwrap();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             // Collection for monitoring the state of Models.
@@ -113,20 +112,20 @@ impl<'a> Monitor<'a> {
                     .create_collection(collection_dyn_fields_type, None)?;
             } else {
                 // Reset models state information.
-                let green_tech_db: Database = client.database(&db_green_tech);
-                let collection_models: Collection =
-                    green_tech_db.collection(collection_models_name);
-                let cursor: Cursor = collection_models.find(None, None)?;
+                let green_tech_db = client.database(&db_green_tech);
+                let collection_models =
+                    green_tech_db.collection::<Document>(collection_models_name);
+                let cursor = collection_models.find(None, None)?;
 
                 for result in cursor {
                     let document = result?;
-                    let mut model_state: ModelState = from_document(document)?;
+                    let mut model_state = from_document::<ModelState>(document)?;
                     model_state.status = false;
-                    let query: Document = doc! {
+                    let query = doc! {
                         "database": &model_state.database,
                         "collection": &model_state.collection
                     };
-                    let update = to_document(&model_state)?;
+                    let update = doc! {"$set": to_document(&model_state)?};
                     collection_models.update_one(query, update, None)?;
                 }
             }
@@ -149,11 +148,11 @@ impl<'a> Monitor<'a> {
             let collection_models_name: &str = "monitor_models";
             let collection_dyn_fields_type: &str = "dynamic_fields";
             let green_tech_db: Database = client.database(&db_green_tech);
-            let collection_models: Collection = green_tech_db.collection(collection_models_name);
-            let collection_dyn_fields: Collection =
-                green_tech_db.collection(collection_dyn_fields_type);
+            let collection_models = green_tech_db.collection::<Document>(collection_models_name);
+            let collection_dyn_fields =
+                green_tech_db.collection::<Document>(collection_dyn_fields_type);
             // Delete orphaned Collections.
-            let cursor: Cursor = collection_models.find(None, None)?;
+            let cursor = collection_models.find(None, None)?;
             let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
             for result in results {
                 let document = result?;
@@ -162,7 +161,7 @@ impl<'a> Monitor<'a> {
                     // Delete Collection (left without a model).
                     client
                         .database(&model_state.database)
-                        .collection(&model_state.collection)
+                        .collection::<Document>(&model_state.collection)
                         .drop(None)?;
                     // Delete a document with a record about the state of
                     // the model from the technical base.
@@ -294,10 +293,9 @@ impl<'a> Monitor<'a> {
                 if !changed_fields.is_empty() {
                     // Get the database and collection of the current Model.
                     let db: Database = client.database(&meta.database_name);
-                    let collection: mongodb::sync::Collection =
-                        db.collection(&meta.collection_name);
+                    let collection = db.collection::<Document>(&meta.collection_name);
                     // Get cursor to all documents of the current Model.
-                    let mut cursor: Cursor = collection.find(None, None)?;
+                    let mut cursor = collection.find(None, None)?;
                     // Iterate through all documents in a current (model) collection.
                     while let Some(Ok(doc_from_db)) = cursor.next() {
                         // Create temporary blank document.
@@ -372,15 +370,14 @@ impl<'a> Monitor<'a> {
                                                             format. Example: 1970-02-28",
                                                         meta.service_name, meta.model_name))?
                                                 }
-                                                let val = format!("{}T00:00", val);
-                                                let dt: chrono::DateTime<chrono::Utc> =
-                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                let dt =
+                                                    chrono::DateTime::<Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
-                                                            val.as_str(),
+                                                            val,
                                                             "%Y-%m-%dT%H:%M",
-                                                        )?, chrono::Utc,
+                                                        )?, Utc,
                                                     );
-                                                Bson::DateTime(dt)
+                                                Bson::DateTime(dt.into())
                                             } else {
                                                 Bson::Null
                                             }
@@ -397,14 +394,14 @@ impl<'a> Monitor<'a> {
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
-                                                let dt: chrono::DateTime<chrono::Utc> =
-                                                    chrono::DateTime::<chrono::Utc>::from_utc(
+                                                let dt =
+                                                    chrono::DateTime::<Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             val,
                                                             "%Y-%m-%dT%H:%M",
-                                                        )?, chrono::Utc,
+                                                        )?, Utc,
                                                     );
-                                                Bson::DateTime(dt)
+                                                Bson::DateTime(dt.into())
                                             } else {
                                                 Bson::Null
                                             }
@@ -576,7 +573,7 @@ impl<'a> Monitor<'a> {
                         }
                         // Save updated document.
                         let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
-                        collection.update_one(query, tmp_doc, None)?;
+                        collection.update_one(query, doc! {"$set": tmp_doc}, None)?;
                     }
                 }
             } else {
@@ -611,7 +608,7 @@ impl<'a> Monitor<'a> {
                 Err("In the `refresh()` method, \
                         no technical database has been created for the project.")?
             } else {
-                let collection: Collection = db.collection("monitor_models");
+                let collection = db.collection::<Document>("monitor_models");
                 let filter = doc! {
                     "database": &meta.database_name,
                     "collection": &meta.collection_name
@@ -625,13 +622,12 @@ impl<'a> Monitor<'a> {
                     "status": true
                 };
                 // Check if there is model state in the database.
-                if collection.count_documents(filter.clone(), None)? == 0_i64 {
+                if collection.count_documents(filter.clone(), None)? == 0 {
                     // Add model state information.
                     collection.insert_one(doc, None)?;
                 } else {
                     // Full update model state information.
-                    let update = UpdateModifications::Document(doc);
-                    collection.update_one(filter, update, None)?;
+                    collection.update_one(filter, doc! {"$set": doc}, None)?;
                 }
             }
 
@@ -647,14 +643,14 @@ impl<'a> Monitor<'a> {
                         no technical database has been created for the project.")?
             }
             //
-            let collection: Collection = db.collection("dynamic_fields");
+            let collection = db.collection::<Document>("dynamic_fields");
             let filter = doc! {
                 "database": &meta.database_name,
                 "collection": &meta.collection_name
             };
             // Check if there is a document in the database for
             // storing the values of dynamic fields type of model.
-            if collection.count_documents(filter.clone(), None)? == 0_i64 {
+            if collection.count_documents(filter.clone(), None)? == 0 {
                 // Init new document.
                 let mut new_doc = doc! {
                     "database": &meta.database_name,
@@ -705,7 +701,7 @@ impl<'a> Monitor<'a> {
                     }
                 }
                 // Full update existing document.
-                collection.update_one(filter, exist_doc, None)?;
+                collection.update_one(filter, doc! {"$set":exist_doc}, None)?;
             }
         }
 

@@ -87,19 +87,19 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.1.14-beta"
-metamorphose = "1.1.14-beta"
+green-barrel = "1.2.0-beta"
+metamorphose = "1.2.0-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
 [dependencies.mongodb]
 default-features = false
-features = ["sync"]
-version = "1.2.5"
+features = ["sync", "bson-chrono-0_4"]
+version = "2.3.1"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.145"
+version = "1.0.147"
 ```
 
 #### src/settings.rs
@@ -465,6 +465,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.2.0-beta** _Updated dependency mongodb to version 2._
 - **v1.1.9-beta** _Updated **README.md** file._
 - **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
 - **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_

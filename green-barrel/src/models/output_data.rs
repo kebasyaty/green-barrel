@@ -15,7 +15,7 @@ pub enum OutputData {
         (
             bool,   // result_bool
             String, // err_msg
-            i64,    // deleted_count
+            u64,    // deleted_count
         ),
     ),
     UpdatePassword(
@@ -100,7 +100,7 @@ impl OutputData {
 
     /// Get deleted count.
     // ---------------------------------------------------------------------------------------------
-    pub fn deleted_count(&self) -> Result<i64, Box<dyn Error>> {
+    pub fn deleted_count(&self) -> Result<u64, Box<dyn Error>> {
         match self {
             Self::Delete(data) => Ok(data.2),
             _ => Err("Invalid output type.")?,
@@ -216,7 +216,7 @@ impl OutputData2 {
     ///
     pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
         let hash = self.hash();
-        if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
+        if let Ok(obj_id) = ObjectId::parse_str(hash.as_str()) {
             return Ok(Some(obj_id));
         }
         Ok(None)

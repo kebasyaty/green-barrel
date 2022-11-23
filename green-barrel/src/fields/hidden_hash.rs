@@ -70,7 +70,7 @@ impl HiddenHash {
 
     pub fn obj_id(&self) -> Result<Option<ObjectId>, Box<dyn Error>> {
         let hash = self.value.clone().unwrap_or_default();
-        if let Ok(obj_id) = ObjectId::with_string(hash.as_str()) {
+        if let Ok(obj_id) = ObjectId::parse_str(hash.as_str()) {
             return Ok(Some(obj_id));
         }
         Ok(None)

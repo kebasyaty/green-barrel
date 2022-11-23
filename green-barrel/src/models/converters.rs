@@ -1,7 +1,7 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
 use mongodb::{
-    bson::{document::Document, spec::ElementType, Bson},
+    bson::{spec::ElementType, Bson, Document},
     options::FindOptions,
     sync::Collection,
 };
@@ -55,10 +55,7 @@ pub trait Converters {
                     field_name,
                     if val_bson.element_type() != ElementType::Null {
                         Bson::String(
-                            val_bson
-                                .as_datetime()
-                                .unwrap()
-                                .format("%Y-%m-%d")
+                            val_bson.as_datetime().unwrap().try_to_rfc3339_string()?[..10]
                                 .to_string(),
                         )
                     } else {
@@ -71,10 +68,7 @@ pub trait Converters {
                     field_name,
                     if val_bson.element_type() != ElementType::Null {
                         Bson::String(
-                            val_bson
-                                .as_datetime()
-                                .unwrap()
-                                .format("%Y-%m-%dT%H:%M:%S")
+                            val_bson.as_datetime().unwrap().try_to_rfc3339_string()?[..19]
                                 .to_string(),
                         )
                     } else {
@@ -130,7 +124,7 @@ pub trait Converters {
     fn many_to_doc_list(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
-        collection: Collection,
+        collection: Collection<Document>,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
         let mut doc_list: Vec<Document> = Vec::new();
@@ -147,7 +141,7 @@ pub trait Converters {
     fn many_to_json(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
-        collection: Collection,
+        collection: Collection<Document>,
         ignore_fields: &[String],
         field_type_map: &HashMap<String, String>,
         model_name: &str,

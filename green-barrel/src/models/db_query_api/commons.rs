@@ -7,7 +7,6 @@ use mongodb::{
         CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
         EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
-    sync::Collection,
     Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -48,9 +47,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll
             .aggregate(pipeline, options)?
@@ -75,7 +74,7 @@ pub trait QCommons: Main + Caching + Converters {
     fn count_documents(
         filter: Option<Document>,
         options: Option<CountOptions>,
-    ) -> Result<i64, Box<dyn Error>>
+    ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -85,9 +84,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.count_documents(filter, options)?)
     }
@@ -130,12 +129,12 @@ pub trait QCommons: Main + Caching + Converters {
             "It is forbidden to perform delete.".to_string()
         };
         //
-        let mut deleted_count = 0_i64;
+        let mut deleted_count = 0;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client
+            let coll = client
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
             deleted_count = coll.delete_many(query, options)?.deleted_count;
             true
@@ -183,12 +182,12 @@ pub trait QCommons: Main + Caching + Converters {
             "It is forbidden to perform delete.".to_string()
         };
         //
-        let mut deleted_count = 0_i64;
+        let mut deleted_count = 0;
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client
+            let coll = client
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
             deleted_count = coll.delete_one(query, options)?.deleted_count;
             true
@@ -227,9 +226,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.distinct(field_name, filter, options)?)
     }
@@ -267,15 +266,15 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll: Collection = client
+            let coll = client
                 .database(meta.database_name.as_str())
-                .collection(meta.collection_name.as_str());
+                .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
             coll.drop(options).is_ok()
         } else {
             false
         };
-        let deleted_count = i64::from(result_bool);
+        let deleted_count = u64::from(result_bool);
         Ok(OutputData::Delete((result_bool, err_msg, deleted_count)))
     }
 
@@ -292,7 +291,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn estimated_document_count(
         options: Option<EstimatedDocumentCountOptions>,
-    ) -> Result<i64, Box<dyn Error>>
+    ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -302,9 +301,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.estimated_document_count(options)?)
     }
@@ -336,9 +335,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
@@ -386,9 +385,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
@@ -441,9 +440,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.find_one(filter, options)?)
     }
@@ -473,9 +472,9 @@ pub trait QCommons: Main + Caching + Converters {
         let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance in jsob-line format.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = model_cache.model_json;
@@ -520,9 +519,9 @@ pub trait QCommons: Main + Caching + Converters {
         let (model_cache, client) = Self::get_cache_data_for_query()?;
         let meta: Meta = model_cache.meta;
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance.
         if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
             let mut model_json = model_cache.model_json;
@@ -577,9 +576,9 @@ pub trait QCommons: Main + Caching + Converters {
             Err("It is forbidden to perform delete.".to_string())?
         }
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.find_one_and_delete(filter, options)?)
     }
@@ -605,9 +604,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.name().to_string())
     }
@@ -633,9 +632,9 @@ pub trait QCommons: Main + Caching + Converters {
         let client_store = MONGODB_CLIENT_STORE.read()?;
         let client = client_store.get(&meta.db_client_name).unwrap();
         // Access collection.
-        let coll: Collection = client
+        let coll = client
             .database(meta.database_name.as_str())
-            .collection(meta.collection_name.as_str());
+            .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll.namespace())
     }

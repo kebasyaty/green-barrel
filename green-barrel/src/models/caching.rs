@@ -1,7 +1,7 @@
 //! Caching inmodelation about Models for speed up work.
 
 use mongodb::{
-    bson::{doc, Bson},
+    bson::{doc, Bson, Document},
     sync::Client,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -395,7 +395,7 @@ pub trait Caching: Main + Converters {
                 meta.project_name, meta.unique_project_key
             );
             let db = client_cache.database(&green_tech_keyword);
-            db.collection("dynamic_fields")
+            db.collection::<Document>("dynamic_fields")
         };
         //
         let filter = doc! {
@@ -660,7 +660,7 @@ pub trait Caching: Main + Converters {
             };
             //
             let db = client_cache.database(meta.database_name.as_str());
-            let coll = db.collection(meta.collection_name.as_str());
+            let coll = db.collection::<Document>(meta.collection_name.as_str());
             let cursor = coll.find(None, None)?;
             // Iterate over all documents in the collection.
             for doc_from_db in cursor {

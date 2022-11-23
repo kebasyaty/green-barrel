@@ -6,7 +6,7 @@
 
 **To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
 
-- Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
+- Support for [GreenPanel](https://github.com/kebasyaty/green-panel "Green Panel") is temporarily unavailable.
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
@@ -15,11 +15,11 @@
 
 ## Attention
 
-#### [MongoDB](https://www.mongodb.com/ "MongoDB") version 4.4
+#### [MongoDB](https://www.mongodb.com/ "MongoDB") tested on version 4.4
 
-#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/1.2.5 "MongoDB Rust Driver") version 1.2.5 is used.
+#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/ "MongoDB Rust Driver") updated as a dependency to version 2.
 
-- Support for [Actix-GreenPanel](https://github.com/kebasyaty/actix-greenpanel "Actix-GreenPanel") is temporarily unavailable.
+- Support for [GreenPanel](https://github.com/kebasyaty/green-panel "Green Panel") is temporarily unavailable.
 
 ## Requirements
 
@@ -54,11 +54,11 @@
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -67,22 +67,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.1.14-beta/green_barre
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -91,7 +91,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.1.14-beta/green_barre
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -109,7 +109,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.1.14-beta/green_barre
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -118,7 +118,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.1.14-beta/green_barre
 - verify_password()
 - update_password()
 
-[Fixtures](https://docs.rs/green-barrel/1.1.14-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
+[Fixtures](https://docs.rs/green-barrel/1.2.0-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
 
 - run_fixture()
 
@@ -169,19 +169,19 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.1.14-beta"
-metamorphose = "1.1.14-beta"
+green-barrel = "1.2.0-beta"
+metamorphose = "1.2.0-beta"
 regex = "1.6.0"
 serde_json = "1.0.85"
 
 [dependencies.mongodb]
 default-features = false
-features = ["sync"]
-version = "1.2.5"
+features = ["sync", "bson-chrono-0_4"]
+version = "2.3.1"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.145"
+version = "1.0.147"
 ```
 
 #### src/settings.rs
@@ -547,6 +547,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Changelog
 
+- **v1.2.0-beta** _Updated dependency mongodb to version 2._
 - **v1.1.14-beta** _Rename Model parameters: **is_add_docs**, **is_up_docs**, **is_del_docs** to **is_add_doc**, **is_up_doc**, **is_del_doc**._
 - **v1.1.9-beta** _Tests updated and **README.md** file updated._
 - **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
