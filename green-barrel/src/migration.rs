@@ -19,8 +19,7 @@ use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard}
 
 use crate::{
     models::helpers::{FileData, ImageData, Meta},
-    store::MONGODB_CLIENT_STORE,
-    store::{REGEX_IS_DATE, REGEX_IS_DATETIME},
+    store::{MONGODB_CLIENT_STORE, REGEX_IS_DATE, REGEX_IS_DATETIME},
 };
 
 // MIGRATION
