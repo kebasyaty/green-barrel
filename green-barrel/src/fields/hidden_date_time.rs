@@ -1,6 +1,7 @@
 //! HiddenDateTime - Controller (field type)
 
 use core::fmt::Debug;
+use mongodb::bson;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -45,8 +46,8 @@ impl Default for HiddenDateTime {
             unique: false,
             disabled: true,
             readonly: false,
-            min: String::new(),
-            max: String::new(),
+            min: bson::DateTime::MIN.try_to_rfc3339_string().unwrap(),
+            max: bson::DateTime::MAX.try_to_rfc3339_string().unwrap(),
             is_hide: true,
             other_attrs: String::new(),
             css_classes: String::new(),
