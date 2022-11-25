@@ -562,10 +562,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(final_field, &err.to_string()));
                         continue;
                     }
-
                     // Create Date and Time Object.
-                    // -----------------------------------------------------------------------------
-                    // Date to DateTime.
                     let dt_val = {
                         let (fmt, err_msg) = if field_type == "InputDate" {
                             ("%Y-%m-%d", "Incorrect date format.<br>Example: 1970-02-28")
