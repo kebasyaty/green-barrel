@@ -566,14 +566,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create Date and Time Object.
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
-                    let dt_val: chrono::DateTime<chrono::Utc> = {
-                        let val = if field_type == "InputDate" {
-                            format!("{}T00:00", curr_val)
-                        } else {
-                            curr_val.to_string()
-                        };
+                    let dt_val = if field_type == "InputDate" {
                         chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")?,
+                            chrono::NaiveDateTime::parse_from_str(curr_val, "%Y-%m-%d")?,
+                            chrono::Utc,
+                        )
+                    } else {
+                        chrono::DateTime::<chrono::Utc>::from_utc(
+                            chrono::NaiveDateTime::parse_from_str(curr_val, "%Y-%m-%dT%H:%M")?,
                             chrono::Utc,
                         )
                     };
