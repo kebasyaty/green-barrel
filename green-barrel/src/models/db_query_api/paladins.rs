@@ -566,16 +566,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create Date and Time Object.
                     // -----------------------------------------------------------------------------
                     // Date to DateTime.
-                    let dt_val = if field_type == "InputDate" {
-                        chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(curr_val, "%Y-%m-%d")?,
-                            chrono::Utc,
-                        )
-                    } else {
-                        chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(curr_val, "%Y-%m-%dT%H:%M")?,
-                            chrono::Utc,
-                        )
+                    let dt_val = {
+                        let (fmt, err_msg) = if field_type == "InputDate" {
+                            ("%Y-%m-%d", "Incorrect date format.<br>Example: 1970-02-28")
+                        } else {
+                            (
+                                "%Y-%m-%dT%H:%M",
+                                "Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                            )
+                        };
+                        if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(curr_val, fmt) {
+                            chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                        } else {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, err_msg));
+                            continue;
+                        }
                     };
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
@@ -583,43 +590,49 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let min = final_field.get("min").unwrap().as_str().unwrap();
                     let max = final_field.get("max").unwrap().as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
-                        // Validation in regular expression (min).
-                        if let Err(err) = Self::regex_validation(field_type, min) {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
-                            continue;
-                        }
-                        // Validation in regular expression (max).
-                        if let Err(err) = Self::regex_validation(field_type, max) {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
-                            continue;
-                        }
-                        // Date to DateTime (min).
-                        let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_val: String = if field_type == "InputDate" {
-                                format!("{}T00:00", min)
+                        // Get param min.
+                        let dt_min = {
+                            let (fmt, err_msg) = if field_type == "InputDate" {
+                                (
+                                    "%Y-%m-%d",
+                                    "Param min - Incorrect date format.<br>Example: 1970-02-28",
+                                )
                             } else {
-                                min.to_string()
+                                (
+                                    "%Y-%m-%dT%H:%M",
+                                    "Param min - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                                )
                             };
-                            chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(&min_val, "%Y-%m-%dT%H:%M")?,
-                                chrono::Utc,
-                            )
+                            if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(min, fmt) {
+                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                            } else {
+                                is_err_symptom = true;
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, err_msg));
+                                continue;
+                            }
                         };
-                        // Date to DateTime (max).
-                        let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_val: String = if field_type == "InputDate" {
-                                format!("{}T00:00", max)
+                        // Get param max.
+                        let dt_max = {
+                            let (fmt, err_msg) = if field_type == "InputDate" {
+                                (
+                                    "%Y-%m-%d",
+                                    "Param max - Incorrect date format.<br>Example: 1970-02-28",
+                                )
                             } else {
-                                max.to_string()
+                                (
+                                    "%Y-%m-%dT%H:%M",
+                                    "Param max - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                                )
                             };
-                            chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(&max_val, "%Y-%m-%dT%H:%M")?,
-                                chrono::Utc,
-                            )
+                            if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(max, fmt) {
+                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                            } else {
+                                is_err_symptom = true;
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, err_msg));
+                                continue;
+                            }
                         };
                         // Check hit in range (min <> max).
                         if dt_val < dt_min || dt_val > dt_max {

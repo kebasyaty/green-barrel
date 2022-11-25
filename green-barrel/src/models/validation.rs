@@ -8,7 +8,7 @@ use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_DATE, REGEX_IS_DATETIME, REGEX_IS_PASSWORD};
+use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_PASSWORD};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
@@ -79,20 +79,6 @@ pub trait Validation {
                 if !REGEX_IS_PASSWORD.is_match(value) {
                     Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
                             <br>Size 8-256 chars")?
-                }
-            }
-            "InputDate" => {
-                print!("\n\n{value}\n\n");
-                if !REGEX_IS_DATE.is_match(value) {
-                    Err("Incorrect date format.\
-                            <br>Example: 1970-02-28")?
-                }
-            }
-            "InputDateTime" | "HiddenDateTime" => {
-                print!("\n\n{value}\n\n");
-                if !REGEX_IS_DATETIME.is_match(value) {
-                    Err("Incorrect date and time format.\
-                            <br>Example: 1970-02-28T00:00")?
                 }
             }
             _ => return Ok(()),
