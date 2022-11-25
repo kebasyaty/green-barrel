@@ -20,6 +20,7 @@ use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard}
 use crate::{
     models::helpers::{FileData, ImageData, Meta},
     store::MONGODB_CLIENT_STORE,
+    store::{REGEX_IS_DATE, REGEX_IS_DATETIME},
 };
 
 // MIGRATION
@@ -364,7 +365,7 @@ impl<'a> Monitor<'a> {
                                             // Example: "1970-02-28".
                                             if !default_value.is_null() {
                                                 let val = default_value.as_str().unwrap();
-                                                if !crate::store::REGEX_IS_DATE.is_match(val) {
+                                                if !REGEX_IS_DATE.is_match(val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
                                                             Method: `migrat()` => Incorrect date \
                                                             format. Example: 1970-02-28",
@@ -386,7 +387,7 @@ impl<'a> Monitor<'a> {
                                             // Example: "1970-02-28T00:00".
                                             if !default_value.is_null() {
                                                 let val = default_value.as_str().unwrap();
-                                                if !crate::store::REGEX_IS_DATETIME.is_match(val) {
+                                                if !REGEX_IS_DATETIME.is_match(val) {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
                                                             Method: `migrat()` => \
                                                             Incorrect date and time format. \
