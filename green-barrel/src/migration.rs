@@ -374,7 +374,7 @@ impl<'a> Monitor<'a> {
                                                     chrono::DateTime::<Utc>::from_utc(
                                                         chrono::NaiveDateTime::parse_from_str(
                                                             val,
-                                                            "%Y-%m-%dT%H:%M",
+                                                            "%Y-%m-%d",
                                                         )?, Utc,
                                                     );
                                                 Bson::DateTime(dt.into())

@@ -82,12 +82,14 @@ pub trait Validation {
                 }
             }
             "InputDate" => {
+                print!("\n\n{value}\n\n");
                 if !REGEX_IS_DATE.is_match(value) {
                     Err("Incorrect date format.\
                             <br>Example: 1970-02-28")?
                 }
             }
             "InputDateTime" | "HiddenDateTime" => {
+                print!("\n\n{value}\n\n");
                 if !REGEX_IS_DATETIME.is_match(value) {
                     Err("Incorrect date and time format.\
                             <br>Example: 1970-02-28T00:00")?
