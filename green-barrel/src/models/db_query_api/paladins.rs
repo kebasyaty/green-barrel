@@ -564,20 +564,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Create Date and Time Object.
                     let dt_val = {
-                        let (val, fmt, err_msg) = if field_type == "InputDate" {
+                        let (val, err_msg) = if field_type == "InputDate" {
                             (
                                 format!("{curr_val}T00:00"),
-                                "%Y-%m-%d",
                                 "Incorrect date format.<br>Example: 1970-02-28",
                             )
                         } else {
                             (
                                 curr_val.to_string(),
-                                "%Y-%m-%dT%H:%M",
                                 "Incorrect date and time format.<br>Example: 1970-02-28T00:00",
                             )
                         };
-                        if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(&val, fmt) {
+                        if let Ok(ndt) =
+                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                        {
                             chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                         } else {
                             is_err_symptom = true;

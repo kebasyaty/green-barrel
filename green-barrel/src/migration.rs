@@ -365,7 +365,7 @@ impl<'a> Monitor<'a> {
                                                 let val = format!("{}T00:00",default_value.as_str().unwrap());
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( 
                                                         &val,
-                                                        "%Y-%m-%d")
+                                                        "%Y-%m-%dT%H:%M")
                                                 {
                                                     let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
                                                     Bson::DateTime(dt.into())
