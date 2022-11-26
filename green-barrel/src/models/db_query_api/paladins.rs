@@ -562,7 +562,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(final_field, &err.to_string()));
                         continue;
                     }
-                    // Create Date and Time Object.
+                    // Create a Date object for the current value.
                     let val_dt = {
                         let (val, err_msg) = if field_type == "InputDate" {
                             (
@@ -586,12 +586,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     };
-                    // Create dates for `min` and `max` attributes values to
-                    // check, if the value of user falls within the range
-                    // between these dates.
+                    // Compare with the minimum allowed value.
                     let min = final_field["min"].as_str().unwrap();
-                    let max = final_field["max"].as_str().unwrap();
-                    if !min.is_empty() && !max.is_empty() {
+                    if !min.is_empty() {
                         // Get param min.
                         let min_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
@@ -616,6 +613,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         };
+                        //
+                        if val_dt < min_dt {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "The entered date is less than the minimum."
+                            ));
+                            continue;
+                        }
+                    }
+                    // Compare with the maximum allowed value.
+                    let max = final_field["max"].as_str().unwrap();
+                    if !max.is_empty() {
                         // Get param max.
                         let max_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
@@ -641,15 +651,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         };
                         // Check hit in range (min <> max).
-                        if val_dt < min_dt {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                                final_field,
-                                "The entered date is less than the minimum."
-                            ));
-                            continue;
-                        }
-                        //
                         if val_dt > max_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
@@ -659,11 +660,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     }
-
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
                     let val_dt_bson = Bson::DateTime(val_dt.into());
-
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
@@ -676,7 +675,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             },
                         );
                     }
-
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
