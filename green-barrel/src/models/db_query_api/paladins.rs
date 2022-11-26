@@ -641,11 +641,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         };
                         // Check hit in range (min <> max).
-                        if val_dt < min_dt || val_dt > max_dt {
+                        if val_dt < min_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                 final_field,
-                                "Date out of range between `min` and` max`."
+                                "The entered date is less than the minimum."
+                            ));
+                            continue;
+                        }
+                        //
+                        if val_dt > max_dt {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "The entered date is greater than the maximum."
                             ));
                             continue;
                         }
