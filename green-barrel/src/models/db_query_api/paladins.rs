@@ -589,8 +589,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Create dates for `min` and `max` attributes values to
                     // check, if the value of user falls within the range
                     // between these dates.
-                    let min = final_field.get("min").unwrap().as_str().unwrap();
-                    let max = final_field.get("max").unwrap().as_str().unwrap();
+                    let min = final_field["min"].as_str().unwrap();
+                    let max = final_field["max"].as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
                         // Get param min.
                         let dt_min = {
