@@ -589,7 +589,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Compare with the minimum allowed value.
                     let min = final_field["min"].as_str().unwrap();
                     if !min.is_empty() {
-                        // Get param min.
+                        // Get the minimum date object.
                         let min_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
                                 (
@@ -613,7 +613,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         };
-                        //
+                        // Match dates.
                         if val_dt < min_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
@@ -626,7 +626,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Compare with the maximum allowed value.
                     let max = final_field["max"].as_str().unwrap();
                     if !max.is_empty() {
-                        // Get param max.
+                        // Get the maximum date object.
                         let max_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
                                 (
@@ -650,7 +650,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 continue;
                             }
                         };
-                        // Check hit in range (min <> max).
+                        // Match dates.
                         if val_dt > max_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
