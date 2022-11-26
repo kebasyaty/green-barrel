@@ -362,9 +362,9 @@ impl<'a> Monitor<'a> {
                                         }
                                         "InputDate" => {
                                            if !default_value.is_null() {
-                                                let val = default_value.as_str().unwrap();
+                                                let val = format!("{}T00:00",default_value.as_str().unwrap());
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( 
-                                                        val,
+                                                        &val,
                                                         "%Y-%m-%d")
                                                 {
                                                     let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
