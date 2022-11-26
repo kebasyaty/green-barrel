@@ -45,12 +45,8 @@ impl Default for HiddenDateTime {
             unique: false,
             disabled: true,
             readonly: false,
-            min: chrono::DateTime::<chrono::Utc>::MIN_UTC
-                .format("%Y-%m-%dT%H:%M")
-                .to_string(),
-            max: chrono::DateTime::<chrono::Utc>::MAX_UTC
-                .format("%Y-%m-%dT%H:%M")
-                .to_string(),
+            min: String::new(),
+            max: String::new(),
             is_hide: true,
             other_attrs: String::new(),
             css_classes: String::new(),

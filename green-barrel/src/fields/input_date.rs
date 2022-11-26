@@ -45,12 +45,8 @@ impl Default for InputDate {
             unique: false,
             disabled: false,
             readonly: false,
-            min: chrono::DateTime::<chrono::Utc>::MIN_UTC
-                .format("%Y-%m-%d")
-                .to_string(),
-            max: chrono::DateTime::<chrono::Utc>::MAX_UTC
-                .format("%Y-%m-%d")
-                .to_string(),
+            min: String::new(),
+            max: String::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
