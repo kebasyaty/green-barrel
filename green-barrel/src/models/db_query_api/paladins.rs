@@ -563,7 +563,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     // Create Date and Time Object.
-                    let dt_val = {
+                    let val_dt = {
                         let (val, err_msg) = if field_type == "InputDate" {
                             (
                                 format!("{curr_val}T00:00"),
@@ -593,19 +593,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let max = final_field["max"].as_str().unwrap();
                     if !min.is_empty() && !max.is_empty() {
                         // Get param min.
-                        let dt_min = {
-                            let (fmt, err_msg) = if field_type == "InputDate" {
+                        let min_dt = {
+                            let (val, err_msg) = if field_type == "InputDate" {
                                 (
-                                    "%Y-%m-%d",
+                                    format!("{min}T00:00"),
                                     "Param min - Incorrect date format.<br>Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    "%Y-%m-%dT%H:%M",
+                                    min.to_string(),
                                     "Param min - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
                                 )
                             };
-                            if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(min, fmt) {
+                            if let Ok(ndt) =
+                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                            {
                                 chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                             } else {
                                 is_err_symptom = true;
@@ -615,19 +617,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         };
                         // Get param max.
-                        let dt_max = {
-                            let (fmt, err_msg) = if field_type == "InputDate" {
+                        let max_dt = {
+                            let (val, err_msg) = if field_type == "InputDate" {
                                 (
-                                    "%Y-%m-%d",
+                                    format!("{min}T00:00"),
                                     "Param max - Incorrect date format.<br>Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    "%Y-%m-%dT%H:%M",
+                                    min.to_string(),
                                     "Param max - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
                                 )
                             };
-                            if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str(max, fmt) {
+                            if let Ok(ndt) =
+                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                            {
                                 chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                             } else {
                                 is_err_symptom = true;
@@ -637,7 +641,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         };
                         // Check hit in range (min <> max).
-                        if dt_val < dt_min || dt_val > dt_max {
+                        if val_dt < min_dt || val_dt > max_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                 final_field,
@@ -649,13 +653,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Create datetime in bson type.
                     // -----------------------------------------------------------------------------
-                    let dt_val_bson = Bson::DateTime(dt_val.into());
+                    let val_dt_bson = Bson::DateTime(val_dt.into());
 
                     // Validation of `unique`
                     // -----------------------------------------------------------------------------
                     let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
                     if is_unique {
-                        Self::check_unique(hash, field_name, &dt_val_bson, &coll).unwrap_or_else(
+                        Self::check_unique(hash, field_name, &val_dt_bson, &coll).unwrap_or_else(
                             |err| {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() =
@@ -667,7 +671,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
-                        final_doc.insert(field_name, dt_val_bson);
+                        final_doc.insert(field_name, val_dt_bson);
                     }
                 }
                 // Validation of `select` type fields.
