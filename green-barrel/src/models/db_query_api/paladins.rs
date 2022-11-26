@@ -661,10 +661,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Create datetime in bson type.
-                    // -----------------------------------------------------------------------------
                     let val_dt_bson = Bson::DateTime(val_dt.into());
                     // Validation of `unique`
-                    // -----------------------------------------------------------------------------
                     let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
                     if is_unique {
                         Self::check_unique(hash, field_name, &val_dt_bson, &coll).unwrap_or_else(
@@ -676,7 +674,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         );
                     }
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, val_dt_bson);
                     }
