@@ -188,8 +188,8 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
 
     let mut test_model = TestModel::new()?;
     test_model.checkbox.set(true);
-    test_model.date.set("1900-01-31");
-    test_model.datetime.set("1900-01-31T00:00");
+    test_model.date.set("0000-01-01");
+    test_model.datetime.set("2039-01-01T00:00");
     test_model.file.set("./media/tmp/no_file_4.odt");
     test_model.image.set("./media/tmp/no_image_4.png");
     test_model.number_i32.set(0);

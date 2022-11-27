@@ -875,9 +875,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         _ => Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.",
-                            model_name, field_name, field_type
+                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                            Method: `check()` =>  Unsupported field type - `{field_type}`."
                         ))?,
                     }
                 }
@@ -1350,7 +1349,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    //
                     if image_data.path.is_empty() {
                         if curr_file_info.is_null() {
                             if is_use_default && !const_value.is_null() {
@@ -1512,7 +1510,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1544,7 +1541,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1567,26 +1563,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
@@ -1594,7 +1587,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
 
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
@@ -1603,7 +1595,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1635,7 +1626,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1658,33 +1648,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < min.as_i64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > max.as_i64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
@@ -1693,7 +1679,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1727,7 +1712,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1750,33 +1734,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < min.as_f64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > max.as_f64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
