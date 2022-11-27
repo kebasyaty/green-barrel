@@ -74,16 +74,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                            Document (info file) not found.",
-                        model_name, field_name
+                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                        Method: `delete_file()` => Document (info file) not found."
                     ))?
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                        Document not found.",
-                    model_name, field_name
+                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                    Method: `delete_file()` => Document not found."
                 ))?
             }
         }
@@ -173,11 +171,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.
         let mut final_doc = Document::new();
-
-        // Validation of field by attributes (maxlength, unique, min, max, etc...).
-        // -----------------------------------------------------------------------------------------
+        // Get Value json of current Model.
         let field_type_map = &meta.field_type_map;
-
         // Apply additional validation.
         if meta.is_use_add_valid {
             let error_map = self.add_validation()?;
@@ -300,10 +295,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
-
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -341,9 +334,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         Bson::Null
                     };
-
                     // Validation field attribute `pattern`.
-                    // -----------------------------------------------------------------------------
                     if let Some(pattern) = final_field.get("pattern") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|err| {
@@ -353,17 +344,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
                             });
                     }
-
                     // Validation in regular expression.
                     // Checking `minlength`.
-                    // -----------------------------------------------------------------------------
                     if let Some(minlength) = final_field.get("minlength") {
                         Self::check_minlength(minlength.as_i64().unwrap() as usize, curr_val)
                             .unwrap_or_else(|err| {
@@ -373,8 +363,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
@@ -390,16 +381,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
                             });
                     }
-
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     if let Some(unique) = final_field.get("unique") {
                         let is_unique = unique.as_bool().unwrap();
                         if field_type != "InputPassword" && is_unique {
@@ -412,18 +402,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "Model: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {:?}",
-                                            model_name, field_name, err
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                            Method: `check()` => {0:?}",
+                                            err
                                         ))
                                         .unwrap()
                                     }
                                 });
                         }
                     }
-
                     // Validation in regular expression (email, password, etc...).
-                    // -----------------------------------------------------------------------------
                     Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
@@ -431,15 +419,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 json!(Self::accumula_err(final_field, &err.to_string()));
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                model_name, field_name, err
+                                "Model: `{model_name}` > Field: `{field_name}` ; \
+                                Method: `check()` => {0:?}",
+                                err
                             ))
                             .unwrap()
                         }
                     });
-
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
                             "InputPassword" => {
@@ -510,8 +497,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     *final_field.get_mut("value").unwrap() = json!(slug);
                     let field_value_bson = Bson::String(slug.clone());
                     // Validation of `unique`.
-                    // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     if final_field.get("unique").unwrap().as_bool().unwrap() {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
@@ -535,7 +520,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -553,94 +537,113 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
-
-                    // Validation in regular expression.
-                    // -----------------------------------------------------------------------------
-                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
-                        is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &err.to_string()));
-                        continue;
-                    }
-
-                    // Create Date and Time Object.
-                    // -----------------------------------------------------------------------------
-                    // Date to DateTime.
-                    let dt_val: chrono::DateTime<chrono::Utc> = {
-                        let val = if field_type == "InputDate" {
-                            format!("{}T00:00", curr_val)
+                    // Create a Date object for the current value.
+                    let val_dt = {
+                        let (val, err_msg) = if field_type == "InputDate" {
+                            (
+                                format!("{curr_val}T00:00"),
+                                "Incorrect date format.<br>Example: 1970-02-28",
+                            )
                         } else {
-                            curr_val.to_string()
+                            (
+                                curr_val.to_string(),
+                                "Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                            )
                         };
-                        chrono::DateTime::<chrono::Utc>::from_utc(
-                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")?,
-                            chrono::Utc,
-                        )
+                        if let Ok(ndt) =
+                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                        {
+                            chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                        } else {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, err_msg));
+                            continue;
+                        }
                     };
-                    // Create dates for `min` and `max` attributes values to
-                    // check, if the value of user falls within the range
-                    // between these dates.
-                    let min = final_field.get("min").unwrap().as_str().unwrap();
-                    let max = final_field.get("max").unwrap().as_str().unwrap();
-                    if !min.is_empty() && !max.is_empty() {
-                        // Validation in regular expression (min).
-                        if let Err(err) = Self::regex_validation(field_type, min) {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
-                            continue;
-                        }
-                        // Validation in regular expression (max).
-                        if let Err(err) = Self::regex_validation(field_type, max) {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
-                            continue;
-                        }
-                        // Date to DateTime (min).
-                        let dt_min: chrono::DateTime<chrono::Utc> = {
-                            let min_val: String = if field_type == "InputDate" {
-                                format!("{}T00:00", min)
+                    // Compare with `min`.
+                    let min = final_field["min"].as_str().unwrap();
+                    if !min.is_empty() {
+                        // Get the minimum date object.
+                        let min_dt = {
+                            let (val, err_msg) = if field_type == "InputDate" {
+                                (
+                                    format!("{min}T00:00"),
+                                    "Param min - Incorrect date format.<br>Example: 1970-02-28",
+                                )
                             } else {
-                                min.to_string()
+                                (
+                                    min.to_string(),
+                                    "Param min - Incorrect date and time format. \
+                                    Example: 1970-02-28T00:00",
+                                )
                             };
-                            chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(&min_val, "%Y-%m-%dT%H:%M")?,
-                                chrono::Utc,
-                            )
-                        };
-                        // Date to DateTime (max).
-                        let dt_max: chrono::DateTime<chrono::Utc> = {
-                            let max_val: String = if field_type == "InputDate" {
-                                format!("{}T00:00", max)
+                            if let Ok(ndt) =
+                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                            {
+                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                             } else {
-                                max.to_string()
-                            };
-                            chrono::DateTime::<chrono::Utc>::from_utc(
-                                chrono::NaiveDateTime::parse_from_str(&max_val, "%Y-%m-%dT%H:%M")?,
-                                chrono::Utc,
-                            )
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                                    Method: `check()` => {err_msg}"
+                                ))
+                                .unwrap()
+                            }
                         };
-                        // Check hit in range (min <> max).
-                        if dt_val < dt_min || dt_val > dt_max {
+                        // Match dates.
+                        if val_dt < min_dt {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                 final_field,
-                                "Date out of range between `min` and` max`."
+                                "The entered date is less than the minimum."
                             ));
                             continue;
                         }
                     }
-
+                    // Compare with `max`.
+                    let max = final_field["max"].as_str().unwrap();
+                    if !max.is_empty() {
+                        // Get the maximum date object.
+                        let max_dt = {
+                            let (val, err_msg) = if field_type == "InputDate" {
+                                (
+                                    format!("{min}T00:00"),
+                                    "Param max - Incorrect date format.<br>Example: 1970-02-28",
+                                )
+                            } else {
+                                (
+                                    min.to_string(),
+                                    "Param max - Incorrect date and time format.<br>\
+                                    Example: 1970-02-28T00:00",
+                                )
+                            };
+                            if let Ok(ndt) =
+                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
+                            {
+                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                            } else {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                                    Method: `check()` => {err_msg}"
+                                ))
+                                .unwrap()
+                            }
+                        };
+                        // Match dates.
+                        if val_dt > max_dt {
+                            is_err_symptom = true;
+                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                final_field,
+                                "The entered date is greater than the maximum."
+                            ));
+                            continue;
+                        }
+                    }
                     // Create datetime in bson type.
-                    // -----------------------------------------------------------------------------
-                    let dt_val_bson = Bson::DateTime(dt_val.into());
-
+                    let val_dt_bson = Bson::DateTime(val_dt.into());
                     // Validation of `unique`
-                    // -----------------------------------------------------------------------------
-                    let is_unique = final_field.get("unique").unwrap().as_bool().unwrap();
-                    if is_unique {
-                        Self::check_unique(hash, field_name, &dt_val_bson, &coll).unwrap_or_else(
+                    if final_field["unique"].as_bool().unwrap() {
+                        Self::check_unique(hash, field_name, &val_dt_bson, &coll).unwrap_or_else(
                             |err| {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() =
@@ -648,11 +651,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             },
                         );
                     }
-
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
-                        final_doc.insert(field_name, dt_val_bson);
+                        final_doc.insert(field_name, val_dt_bson);
                     }
                 }
                 // Validation of `select` type fields.
@@ -754,9 +755,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         _ => Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.",
-                            model_name, field_name, field_type
+                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                            Method: `check()` => Unsupported field type - `{field_type}`."
                         ))?,
                     }
                 }
@@ -858,9 +858,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         _ => Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.",
-                            model_name, field_name, field_type
+                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                            Method: `check()` =>  Unsupported field type - `{field_type}`."
                         ))?,
                     }
                 }
@@ -1333,7 +1332,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_file_info = self.db_get_file_info(&coll, field_name)?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    //
                     if image_data.path.is_empty() {
                         if curr_file_info.is_null() {
                             if is_use_default && !const_value.is_null() {
@@ -1495,7 +1493,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1527,7 +1524,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int32(curr_val);
                     // Validation of `unique`
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1550,26 +1546,23 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
@@ -1577,7 +1570,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
 
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
@@ -1586,7 +1578,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1618,7 +1609,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Int64(curr_val);
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1641,33 +1631,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < min.as_i64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > max.as_i64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
@@ -1676,7 +1662,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -1710,7 +1695,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Used to validation uniqueness and in the final result.
                     let field_value_bson = Bson::Double(curr_val);
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     let unique = final_field.get("unique");
                     if let Some(unique) = unique {
                         let is_unique = unique.as_bool().unwrap();
@@ -1733,33 +1717,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation of range (`min` <> `max`).
-                    // -----------------------------------------------------------------------------
+                    // Compare with `min`.
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < min.as_f64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be less than min=`{}`.",
-                                curr_val, min
+                                "The number `{curr_val}` must not be less than min=`{min}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
-                    //
+                    // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > max.as_f64().unwrap() {
                             is_err_symptom = true;
                             let msg = format!(
-                                "The number `{}` must not be greater than max=`{}`.",
-                                curr_val, max
+                                "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
                             *final_field.get_mut("error").unwrap() =
                                 json!(Self::accumula_err(final_field, &msg));
                         }
                     }
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         final_doc.insert(field_name, field_value_bson);
                     }
@@ -1792,9 +1772,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 _ => Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                        Unsupported field type - `{}`.",
-                    model_name, field_name, field_type
+                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                    Method: `check()` => Unsupported field type - `{field_type}`."
                 ))?,
             }
         }
@@ -2118,9 +2097,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > \
+                                    "Model: `{}` > Field: `{field_name}` > \
                                         Method: `delete()` => Document (info file) not found.",
-                                    meta.model_name, field_name
+                                    meta.model_name
                                 ))?
                             }
                         } else if field_type == "InputImage" {
@@ -2143,9 +2122,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{}` > \
+                                    "Model: `{}` > Field: `{field_name}` > \
                                         Method: `delete()` => Document (info file) not found.",
-                                    meta.model_name, field_name
+                                    meta.model_name
                                 ))?
                             }
                         }
