@@ -553,15 +553,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
-
-                    // Validation in regular expression.
-                    // -----------------------------------------------------------------------------
-                    if let Err(err) = Self::regex_validation(field_type, curr_val) {
-                        is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &err.to_string()));
-                        continue;
-                    }
                     // Create a Date object for the current value.
                     let val_dt = {
                         let (val, err_msg) = if field_type == "InputDate" {
@@ -599,7 +590,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 (
                                     min.to_string(),
-                                    "Param min - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                                    "Param min - Incorrect date and time format. \
+                                    Example: 1970-02-28T00:00",
                                 )
                             };
                             if let Ok(ndt) =
@@ -607,10 +599,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             {
                                 chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                             } else {
-                                is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, err_msg));
-                                continue;
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                                    Method: `check()` => {err_msg}"
+                                ))
+                                .unwrap()
                             }
                         };
                         // Match dates.
@@ -644,10 +637,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             {
                                 chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
                             } else {
-                                is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, err_msg));
-                                continue;
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                                    Method: `check()` => {err_msg}"
+                                ))
+                                .unwrap()
                             }
                         };
                         // Match dates.
