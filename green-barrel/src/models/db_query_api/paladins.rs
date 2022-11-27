@@ -607,12 +607,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let max_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
                                 (
-                                    format!("{min}T00:00"),
+                                    format!("{max}T00:00"),
                                     "Param max - Incorrect date format.<br>Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    min.to_string(),
+                                    max.to_string(),
                                     "Param max - Incorrect date and time format.<br>\
                                     Example: 1970-02-28T00:00",
                                 )
