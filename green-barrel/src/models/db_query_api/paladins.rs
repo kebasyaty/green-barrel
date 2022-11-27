@@ -397,9 +397,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             });
                     }
-
                     // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     if let Some(unique) = final_field.get("unique") {
                         let is_unique = unique.as_bool().unwrap();
                         if field_type != "InputPassword" && is_unique {
@@ -413,7 +411,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     } else {
                                         Err(format!(
                                             "Model: `{}` > Field: `{}` ; \
-                                                Method: `check()` => {:?}",
+                                            Method: `check()` => {:?}",
                                             model_name, field_name, err
                                         ))
                                         .unwrap()
@@ -421,9 +419,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-
                     // Validation in regular expression (email, password, etc...).
-                    // -----------------------------------------------------------------------------
                     Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
@@ -431,15 +427,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 json!(Self::accumula_err(final_field, &err.to_string()));
                         } else {
                             Err(format!(
-                                "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                model_name, field_name, err
+                                "Model: `{model_name}` > Field: `{field_name}` ; \
+                                Method: `check()` => {0:?}",
+                                err
                             ))
                             .unwrap()
                         }
                     });
-
                     // Insert result.
-                    // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
                             "InputPassword" => {
