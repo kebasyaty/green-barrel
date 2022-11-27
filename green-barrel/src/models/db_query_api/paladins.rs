@@ -390,8 +390,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
