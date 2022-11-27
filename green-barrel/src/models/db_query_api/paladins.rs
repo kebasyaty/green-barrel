@@ -300,7 +300,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
-
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if const_value.is_null() {
@@ -340,7 +339,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         Bson::Null
                     };
-
                     // Validation field attribute `pattern`.
                     if let Some(pattern) = final_field.get("pattern") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
@@ -359,7 +357,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             });
                     }
-
                     // Validation in regular expression.
                     // Checking `minlength`.
                     if let Some(minlength) = final_field.get("minlength") {
