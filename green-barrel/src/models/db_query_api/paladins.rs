@@ -510,8 +510,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     *final_field.get_mut("value").unwrap() = json!(slug);
                     let field_value_bson = Bson::String(slug.clone());
                     // Validation of `unique`.
-                    // Validation of `unique`.
-                    // -----------------------------------------------------------------------------
                     if final_field.get("unique").unwrap().as_bool().unwrap() {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
                             .unwrap_or_else(|err| {
