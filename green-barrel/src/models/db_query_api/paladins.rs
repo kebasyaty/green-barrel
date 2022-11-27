@@ -535,7 +535,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -577,7 +576,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     };
-                    // Compare with the minimum allowed value.
+                    // Compare with `min`.
                     let min = final_field["min"].as_str().unwrap();
                     if !min.is_empty() {
                         // Get the minimum date object.
@@ -616,7 +615,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             continue;
                         }
                     }
-                    // Compare with the maximum allowed value.
+                    // Compare with `max`.
                     let max = final_field["max"].as_str().unwrap();
                     if !max.is_empty() {
                         // Get the maximum date object.
