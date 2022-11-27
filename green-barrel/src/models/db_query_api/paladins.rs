@@ -303,7 +303,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
-                    // -----------------------------------------------------------------------------
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
@@ -343,7 +342,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
 
                     // Validation field attribute `pattern`.
-                    // -----------------------------------------------------------------------------
                     if let Some(pattern) = final_field.get("pattern") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|err| {
@@ -353,8 +351,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
@@ -363,7 +362,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                     // Validation in regular expression.
                     // Checking `minlength`.
-                    // -----------------------------------------------------------------------------
                     if let Some(minlength) = final_field.get("minlength") {
                         Self::check_minlength(minlength.as_i64().unwrap() as usize, curr_val)
                             .unwrap_or_else(|err| {
@@ -373,8 +371,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         json!(Self::accumula_err(final_field, &err.to_string()));
                                 } else {
                                     Err(format!(
-                                        "Model: `{}` > Field: `{}` ; Method: `check()` => {:?}",
-                                        model_name, field_name, err
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {0:?}",
+                                        err
                                     ))
                                     .unwrap()
                                 }
