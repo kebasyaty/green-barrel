@@ -771,9 +771,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             }
                         }
                         _ => Err(format!(
-                            "Model: `{}` > Field: `{}` ; Method: `check()` => \
-                                        Unsupported field type - `{}`.",
-                            model_name, field_name, field_type
+                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                            Method: `check()` => Unsupported field type - `{field_type}`."
                         ))?,
                     }
                 }
