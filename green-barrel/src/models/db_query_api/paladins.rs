@@ -173,11 +173,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.
         let mut final_doc = Document::new();
-
-        // Validation of field by attributes (maxlength, unique, min, max, etc...).
-        // -----------------------------------------------------------------------------------------
+        // Get Value json of current Model.
         let field_type_map = &meta.field_type_map;
-
         // Apply additional validation.
         if meta.is_use_add_valid {
             let error_map = self.add_validation()?;
