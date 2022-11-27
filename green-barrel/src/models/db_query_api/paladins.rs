@@ -629,7 +629,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 (
                                     min.to_string(),
-                                    "Param max - Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                                    "Param max - Incorrect date and time format.<br>\
+                                    Example: 1970-02-28T00:00",
                                 )
                             };
                             if let Ok(ndt) =
