@@ -410,9 +410,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                         );
                                     } else {
                                         Err(format!(
-                                            "Model: `{}` > Field: `{}` ; \
-                                            Method: `check()` => {:?}",
-                                            model_name, field_name, err
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                            Method: `check()` => {0:?}",
+                                            err
                                         ))
                                         .unwrap()
                                     }
