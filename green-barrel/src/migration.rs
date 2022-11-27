@@ -363,17 +363,15 @@ impl<'a> Monitor<'a> {
                                         "InputDate" => {
                                            if !default_value.is_null() {
                                                 let val = format!("{}T00:00",default_value.as_str().unwrap());
-                                                if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( 
-                                                        &val,
-                                                        "%Y-%m-%dT%H:%M")
+                                                if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( &val, "%Y-%m-%dT%H:%M")
                                                 {
                                                     let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
                                                     Bson::DateTime(dt.into())
                                                 } else {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                            Method: `migrat()` => \
-                                                            Incorrect date format. \
-                                                            Example: 1970-02-28",
+                                                        Method: `migrat()` => \
+                                                        Incorrect date format. \
+                                                        Example: 1970-02-28",
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
@@ -384,17 +382,15 @@ impl<'a> Monitor<'a> {
                                         "InputDateTime" | "HiddenDateTime" => {
                                             if !default_value.is_null() {
                                                 let val = default_value.as_str().unwrap();
-                                                if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( 
-                                                        val,
-                                                        "%Y-%m-%dT%H:%M")
+                                                if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( val, "%Y-%m-%dT%H:%M")
                                                 {
                                                     let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
                                                     Bson::DateTime(dt.into())
                                                 } else {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
-                                                            Method: `migrat()` => \
-                                                            Incorrect date and time format. \
-                                                            Example: 1970-02-28T00:00",
+                                                        Method: `migrat()` => \
+                                                        Incorrect date and time format. \
+                                                        Example: 1970-02-28T00:00",
                                                         meta.service_name, meta.model_name
                                                     ))?
                                                 }
