@@ -67,10 +67,7 @@ pub trait Converters {
                 accumula_doc.insert(
                     field_name,
                     if val_bson.element_type() != ElementType::Null {
-                        Bson::String(
-                            val_bson.as_datetime().unwrap().try_to_rfc3339_string()?[..19]
-                                .to_string(),
-                        )
+                        Bson::String(val_bson.as_datetime().unwrap().try_to_rfc3339_string()?)
                     } else {
                         Bson::Null
                     },
