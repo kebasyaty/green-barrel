@@ -74,16 +74,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 } else {
                     Err(format!(
-                        "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                            Document (info file) not found.",
-                        model_name, field_name
+                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                        Method: `delete_file()` => Document (info file) not found."
                     ))?
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` > Field: `{}` ; Method: `delete_file()` => \
-                        Document not found.",
-                    model_name, field_name
+                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                    Method: `delete_file()` => Document not found."
                 ))?
             }
         }
