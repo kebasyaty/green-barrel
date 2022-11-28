@@ -194,11 +194,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         }
         // Check param `alert` in `hash` field.
         if !is_slug_update {
-            let alert = final_model_json
-                .get("hash")
-                .unwrap()
-                .get("alert")
-                .unwrap()
+            let alert = final_model_json["hash"]["alert"]
                 .as_str()
                 .unwrap()
                 .to_string();
@@ -270,14 +266,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 tmp
             };
-            let const_group = final_field.get("group").unwrap().as_i64().unwrap() as u8;
+            let const_group = final_field["group"].as_i64().unwrap() as u8;
             //
             let is_required = if let Some(required) = final_field.get("required") {
                 required.as_bool().unwrap()
             } else {
                 false
             };
-            let is_hide = final_field.get("is_hide").unwrap().as_bool().unwrap();
+            let is_hide = final_field["is_hide"].as_bool().unwrap();
             let field_type = field_type.as_str();
 
             // Field validation.
