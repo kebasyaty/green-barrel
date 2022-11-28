@@ -1,14 +1,15 @@
+mod app_state;
 mod models;
 mod settings;
 
 use green_barrel::*;
 //use mongodb::bson::doc;
-use std::error::Error;
+use mongodb::sync::Client;
+use std::{collections::HashMap, error::Error};
 
 // Migration
 fn run_migration() -> Result<(), Box<dyn Error>> {
     // Caching MongoDB clients.
-    // ---------------------------------------------------------------------------------------------
     {
         let mut client_store = MONGODB_CLIENT_STORE.write()?;
         client_store.insert(
@@ -22,7 +23,6 @@ fn run_migration() -> Result<(), Box<dyn Error>> {
     }
 
     // Monitor initialization.
-    // ---------------------------------------------------------------------------------------------
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
@@ -32,18 +32,25 @@ fn run_migration() -> Result<(), Box<dyn Error>> {
     monitor.migrat()?;
 
     // Run fixtures
-    // ---------------------------------------------------------------------------------------------
     models::City::run_fixture("cities")?;
 
     Ok(())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Run migration.
+    // This is required for all projects.
+    // =============================================================================================
+    let app_state = app_state::get_app_state()?;
+    let regex_map = get_regex_map()?;
+    let meta_map = HashMap::<String, Meta>::new();
+    let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     run_migration()?;
 
+    // YOUR CODE ...
+    // =============================================================================================
+
     // Convert Model
-    // *********************************************************************************************
+    // ---------------------------------------------------------------------------------------------
     // println!("Convert Model:\n");
     //println!("{}", models::User::json()?);
     //
@@ -55,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     */
 
     // Create model instance.
-    // *********************************************************************************************
+    // ---------------------------------------------------------------------------------------------
     let mut user = models::User::new()?;
     user.username.set("user_5");
     user.email.set("user_5_@noreply.net");

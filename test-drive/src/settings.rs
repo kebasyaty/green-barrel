@@ -1,5 +1,4 @@
-//! # Global service/sub-application settings.
-//!
+//! General settings for Models.
 
 // Project name.
 // Valid characters: _ a-z A-Z 0-9

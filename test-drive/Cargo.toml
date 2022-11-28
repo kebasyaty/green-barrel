@@ -8,11 +8,12 @@ version = "0.1.0"
 
 [dependencies]
 chrono = "0.4.22"
+confy = "0.5.1"
 green-barrel = {path = "../green-barrel"}
 lazy_static = "1.4.0"
 metamorphose = {path = "../metamorphose"}
 rand = "0.8.5"
-regex = "1.6.0"
+regex = "1.7.0"
 rust-argon2 = "1.0.0"
 serde_json = "1.0.87"
 validator = "0.16.0"
