@@ -34,8 +34,6 @@ pub trait Caching: Main + Converters {
     {
         // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get Metadata Store.
-        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
         let mut metadata = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
@@ -53,7 +51,9 @@ pub trait Caching: Main + Converters {
         metadata.option_i32_map = options_i32_map;
         metadata.option_i64_map = options_i64_map;
         metadata.option_f64_map = options_f64_map;
-        // Save structure `ModelCache` to store.
+        // Get Metadata Store.
+        let store = meta_store.lock().unwrap();
+        // Save the metadata to storage.
         store.insert(key, metadata);
         //
         Ok(())
