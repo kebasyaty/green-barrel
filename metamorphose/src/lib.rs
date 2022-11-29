@@ -97,15 +97,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             parameter `database`. Use the `&str` type."
                         )
                     }
-                } else if mnv.path.is_ident("db_client_name") {
-                    if let syn::Lit::Str(lit_str) = &mnv.lit {
-                        trans_meta.db_client_name = lit_str.value().trim().to_string();
-                    } else {
-                        panic!(
-                            "Model: `{model_name_str}` => Could not determine value for \
-                            parameter `db_client_name`. Use the `&str` type."
-                        )
-                    }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
                     if let syn::Lit::Int(lit_int) = &mnv.lit {
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
@@ -595,7 +586,6 @@ struct Meta {
     pub unique_project_key: String,
     pub service_name: String,
     pub database_name: String,
-    pub db_client_name: String,
     pub db_query_docs_limit: u32,
     pub collection_name: String, // Field type map
     pub fields_count: usize,
@@ -630,7 +620,6 @@ impl Default for Meta {
             unique_project_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
-            db_client_name: String::new(),
             db_query_docs_limit: 0_u32,
             collection_name: String::new(),
             fields_count: 0_usize,

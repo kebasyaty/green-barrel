@@ -41,8 +41,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // #############################################################################################
     let app_state = app_state::get_app_state()?;
-    let regex_map = get_regex_map()?;
-    let meta_map = get_meta_map()?;
+    let validators = get_validators()?;
+    let meta_store = get_meta_store()?;
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     run_migration()?;
 

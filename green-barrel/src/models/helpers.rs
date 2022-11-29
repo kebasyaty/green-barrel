@@ -3,7 +3,7 @@
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::sync::RwLock;
+use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, error::Error};
 
 /// Metadata ( model parameters )
@@ -15,7 +15,6 @@ pub struct Meta {
     pub unique_project_key: String,
     pub service_name: String,
     pub database_name: String,
-    pub db_client_name: String,
     pub db_query_docs_limit: u32,
     pub collection_name: String, // Field type map
     pub fields_count: usize,
@@ -50,7 +49,6 @@ impl Default for Meta {
             unique_project_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
-            db_client_name: String::new(),
             db_query_docs_limit: 0_u32,
             collection_name: String::new(),
             fields_count: 0_usize,
@@ -141,9 +139,9 @@ impl<'a> ControlArr<'a> {
     }
 }
 
-// Regular expressions for validation.
+// Regular expressions for data validation.
 // -------------------------------------------------------------------------------------------------
-pub fn get_regex_map() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
+pub fn get_validators() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
     let regex_is_color_code = RegexBuilder::new(
         r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
     )
@@ -164,8 +162,8 @@ pub fn get_regex_map() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
     Ok(regex_map)
 }
 
-//
+// Metadata storage for Models.
 // -------------------------------------------------------------------------------------------------
-pub fn get_meta_map() -> Result<RwLock<HashMap<String, Meta>>, Box<dyn Error>> {
-    Ok(RwLock::new(HashMap::<String, Meta>::new()))
+pub fn get_meta_store() -> Arc<Mutex<HashMap<String, Meta>>> {
+    Arc::new(Mutex::new(HashMap::<String, Meta>::new()))
 }
