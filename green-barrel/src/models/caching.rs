@@ -33,7 +33,7 @@ pub trait Caching: Main + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
-        let key: String = Self::key()?;
+        let key = Self::key()?;
         // Get metadata of Model.
         let mut meta = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
@@ -138,7 +138,7 @@ pub trait Caching: Main + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
-        let key: String = Self::key()?;
+        let key = Self::key()?;
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get meta of Model.
@@ -168,7 +168,7 @@ pub trait Caching: Main + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
-        let key: String = Self::key()?;
+        let key = Self::key()?;
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
@@ -207,7 +207,7 @@ pub trait Caching: Main + Converters {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the meta store.
-        let key: String = Self::key()?;
+        let key = Self::key()?;
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
