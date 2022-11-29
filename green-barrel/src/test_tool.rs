@@ -1,24 +1,23 @@
 //! Auxiliary tools for testing models.
 
 use mongodb::sync::Client;
-use std::error::Error;
+use std::sync::{Arc, Mutex};
+use std::{collections::HashMap, error::Error};
 
-use crate::{models::helpers::Meta, store::MONGODB_CLIENT_STORE};
+use crate::models::helpers::Meta;
 
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
 pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
-    metadata_list: Vec<Meta>,
+    meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+    client: &Client,
 ) -> Result<(), Box<dyn Error>> {
     // Name of the technical database for testing
     let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
-    //
-    let client_store = MONGODB_CLIENT_STORE.read()?;
     // Removing databases
     for meta in metadata_list.iter() {
-        let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
         let database_names: Vec<String> = client.list_database_names(None, None)?;
         //
         if database_names.contains(&db_green_tech) {

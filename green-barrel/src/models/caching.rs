@@ -23,7 +23,7 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
 pub trait Caching: Main + Converters {
-    /// Add metadata to cache.
+    /// Add meta to cache.
     // *********************************************************************************************
     fn caching(
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
@@ -35,26 +35,26 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key: String = Self::key()?;
         // Get metadata of Model.
-        let mut metadata = Self::generate_metadata()?;
+        let mut meta = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
         Self::injection(
-            metadata.project_name.as_str(),
-            metadata.unique_project_key.as_str(),
-            metadata.collection_name.as_str(),
-            &mut metadata.model_json,
-            &metadata.fields_name,
+            meta.project_name.as_str(),
+            meta.unique_project_key.as_str(),
+            meta.collection_name.as_str(),
+            &mut meta.model_json,
+            &meta.fields_name,
             client,
         )?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
-            Self::get_option_maps(&metadata.model_json, &metadata.field_type_map)?;
-        metadata.option_str_map = options_str_map;
-        metadata.option_i32_map = options_i32_map;
-        metadata.option_i64_map = options_i64_map;
-        metadata.option_f64_map = options_f64_map;
-        // Get Metadata Store.
+            Self::get_option_maps(&meta.model_json, &meta.field_type_map)?;
+        meta.option_str_map = options_str_map;
+        meta.option_i32_map = options_i32_map;
+        meta.option_i64_map = options_i64_map;
+        meta.option_f64_map = options_f64_map;
+        // Get meta Store.
         let mut store = meta_store.lock().unwrap();
-        // Save the metadata to storage.
-        store.insert(key, metadata);
+        // Save the meta to storage.
+        store.insert(key, meta);
         //
         Ok(())
     }
@@ -139,11 +139,11 @@ pub trait Caching: Main + Converters {
     {
         // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get Metadata Store.
+        // Get metadata store.
         let store = meta_store.lock().unwrap();
-        // Get metadata of Model.
-        if let Some(metadata) = store.get(&key) {
-            let instance = serde_json::from_value(metadata.model_json.clone())?;
+        // Get meta of Model.
+        if let Some(meta) = store.get(&key) {
+            let instance = serde_json::from_value(meta.model_json.clone())?;
             return Ok(instance);
         }
         //
@@ -169,11 +169,11 @@ pub trait Caching: Main + Converters {
     {
         // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get Metadata Store.
+        // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        if let Some(metadata) = store.get(&key) {
-            let json_line = serde_json::to_string(&metadata.model_json)?;
+        if let Some(meta) = store.get(&key) {
+            let json_line = serde_json::to_string(&meta.model_json)?;
             return Ok(json_line);
         }
         //
@@ -206,14 +206,14 @@ pub trait Caching: Main + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access the metadata store.
+        // Get a key to access the meta store.
         let key: String = Self::key()?;
-        // Get Metadata Store.
+        // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let metadata = store.get(&key);
-        let metadata = if metadata.is_some() {
-            metadata.unwrap()
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `json()` => \
@@ -229,7 +229,7 @@ pub trait Caching: Main + Converters {
                     "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `field_name` => \
                         The field is missing.",
-                    metadata.model_name
+                    meta.model_name
                 ))?
             }
         };
@@ -241,7 +241,7 @@ pub trait Caching: Main + Converters {
                     "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `title` => \
                         The field is missing.",
-                    metadata.model_name
+                    meta.model_name
                 ))?
             }
         };
@@ -253,20 +253,20 @@ pub trait Caching: Main + Converters {
                     "Model: {} > Method: `update_dyn_field()` > \
                         Parameter: `dyn_data` > Field: `is_delete` => \
                         The field is missing.",
-                    metadata.model_name
+                    meta.model_name
                 ))?
             }
         };
         // Define conditional constants.
         // Get field map and check the field name for belonging to the Model.
         let const_field = {
-            if let Some(field) = metadata.model_json.get(const_field_name) {
+            if let Some(field) = meta.model_json.get(const_field_name) {
                 field
             } else {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_field()` => \
                         There is no field named `{const_field_name}` in the model.",
-                    metadata.model_name,
+                    meta.model_name,
                 ))?
             }
         };
@@ -276,7 +276,7 @@ pub trait Caching: Main + Converters {
             Err(format!(
                 "Model: {} > Field: `{const_field_name}` ; Method: `update_dyn_field()` => \
                     Field `{const_field_type}` is not dynamic.",
-                metadata.model_name
+                meta.model_name
             ))?
         }
         //
@@ -284,15 +284,15 @@ pub trait Caching: Main + Converters {
         let coll = {
             let green_tech_keyword = format!(
                 "green_tech__{}__{}",
-                metadata.project_name, metadata.unique_project_key
+                meta.project_name, meta.unique_project_key
             );
             let db = client.database(&green_tech_keyword);
             db.collection::<Document>("dynamic_fields")
         };
         //
         let filter = doc! {
-            "database": metadata.database_name.clone(),
-            "collection": metadata.collection_name.clone()
+            "database": meta.database_name.clone(),
+            "collection": meta.collection_name.clone()
         };
         // Get the target array from the dynamic data collection.
         let mut obj_fields_doc = {
@@ -317,7 +317,7 @@ pub trait Caching: Main + Converters {
                         "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `&str` type.",
-                        metadata.model_name
+                        meta.model_name
                     ))?
                 }
             } else if const_field_type.contains("I32") {
@@ -327,7 +327,7 @@ pub trait Caching: Main + Converters {
                             "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{}` is not a `i32` type.",
-                            metadata.model_name, val
+                            meta.model_name, val
                         ))?
                     }
                     let val = i32::try_from(val)?;
@@ -340,7 +340,7 @@ pub trait Caching: Main + Converters {
                         "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i32` type.",
-                        metadata.model_name
+                        meta.model_name
                     ))?
                 }
             } else if const_field_type.contains("U32") {
@@ -350,7 +350,7 @@ pub trait Caching: Main + Converters {
                             "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{val}` is not a `u32` type.",
-                            metadata.model_name
+                            meta.model_name
                         ))?
                     }
                     target_arr_bson
@@ -362,7 +362,7 @@ pub trait Caching: Main + Converters {
                         "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `u32` type.",
-                        metadata.model_name
+                        meta.model_name
                     ))?
                 }
             } else if const_field_type.contains("I64") {
@@ -372,7 +372,7 @@ pub trait Caching: Main + Converters {
                             "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{val}` is not a `i64` type.",
-                            metadata.model_name
+                            meta.model_name
                         ))?
                     }
                     target_arr_bson
@@ -384,7 +384,7 @@ pub trait Caching: Main + Converters {
                         "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `i64` type.",
-                        metadata.model_name
+                        meta.model_name
                     ))?
                 }
             } else if const_field_type.contains("F64") {
@@ -394,7 +394,7 @@ pub trait Caching: Main + Converters {
                             "Model: {} > Method: `update_dyn_field()` > \
                                 Parameter: `dyn_data` > Field: `value` => \
                                 The value `{val}` is not a `f64` type.",
-                            metadata.model_name
+                            meta.model_name
                         ))?
                     }
                     target_arr_bson
@@ -406,7 +406,7 @@ pub trait Caching: Main + Converters {
                         "Model: {} > Method: `update_dyn_field()` > \
                             Parameter: `dyn_data` > Field: `value` => \
                             The value is not a `f64` type.",
-                        metadata.model_name
+                        meta.model_name
                     ))?
                 }
             } else {
@@ -416,14 +416,14 @@ pub trait Caching: Main + Converters {
                 Err(format!(
                     "Model: {} > Field: `{const_field_name}` ; Method: `update_dyn_field()` => \
                     Cannot add new value, similar value already exists.",
-                    metadata.model_name
+                    meta.model_name
                 ))?
             }
             if const_is_delete && !is_value_exist {
                 Err(format!(
                     "Model: {} > Field: `{const_field_name}` ; Method: `update_dyn_field()` => \
                         The value cannot be deleted, it is missing.",
-                    metadata.model_name
+                    meta.model_name
                 ))?
             }
         }
@@ -465,7 +465,7 @@ pub trait Caching: Main + Converters {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` => \
                                 Invalid data type.",
-                            metadata.model_name,
+                            meta.model_name,
                         ))?
                     }
                 }
@@ -497,7 +497,7 @@ pub trait Caching: Main + Converters {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_field()` => \
                         Invalid data type.",
-                    metadata.model_name,
+                    meta.model_name,
                 ))?
             }
         }
@@ -547,12 +547,12 @@ pub trait Caching: Main + Converters {
                 Err(format!(
                     "Model: {} > Method: `update_dyn_field()` => \
                         Invalid data type.",
-                    metadata.model_name,
+                    meta.model_name,
                 ))?
             };
             //
-            let db = client.database(metadata.database_name.as_str());
-            let coll = db.collection::<Document>(metadata.collection_name.as_str());
+            let db = client.database(meta.database_name.as_str());
+            let coll = db.collection::<Document>(meta.collection_name.as_str());
             let cursor = coll.find(None, None)?;
             // Iterate over all documents in the collection.
             for doc_from_db in cursor {
@@ -650,7 +650,7 @@ pub trait Caching: Main + Converters {
                         Err(format!(
                             "Model: {} > Method: `update_dyn_field()` => \
                                 Invalid data type.",
-                            metadata.model_name,
+                            meta.model_name,
                         ))?
                     };
                     //
@@ -666,7 +666,7 @@ pub trait Caching: Main + Converters {
                 }
             }
         }
-        // Update metadata and fields map to cache.
+        // Update meta and fields map to cache.
         Self::caching(meta_store, client)?;
         //
         Ok(())
