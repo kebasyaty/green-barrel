@@ -63,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create model instance.
     // *********************************************************************************************
-    let mut user = models::User::new()?;
+    let mut user = models::User::new(&meta_store)?;
     user.username.set("user_5");
     user.email.set("user_5_@noreply.net");
     user.password.set("12345678");
