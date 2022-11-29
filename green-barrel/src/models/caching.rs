@@ -159,8 +159,8 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::json(meta_store)?;
-    /// println!("{}", json_line);
+    /// let json_line = User::json(meta_store)?;
+    /// println!("{json_line}");
     /// ```
     ///
     fn json(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
