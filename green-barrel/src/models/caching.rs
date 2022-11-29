@@ -183,54 +183,6 @@ pub trait Caching: Main + Converters {
         ))?
     }
 
-    /// Get cached Model data.
-    // *********************************************************************************************
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let (model_cache, client_cache) = UserProfile::get_cache_data_for_query()?;
-    /// println!("{:?}", model_cache);
-    /// ```
-    ///
-    fn get_cache_data_for_query() -> Result<(ModelCache, Client), Box<dyn Error>>
-    where
-        Self: Serialize + DeserializeOwned + Sized,
-    {
-        // Get a key to access Model data in the cache.
-        let key: String = Self::key()?;
-        // Get read access from cache.
-        let mut model_store = MODEL_STORE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !model_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(model_store);
-            // Add metadata and widgects map to cache.
-            Self::caching()?;
-            // Reaccess.
-            model_store = MODEL_STORE.read()?;
-        }
-        // Get model_cache.
-        let model_cache = model_store.get(key.as_str());
-        if model_cache.is_none() {
-            let meta = Self::meta()?;
-            Err(format!(
-                "Model: `{}` > Method: `get_cache_data_for_query()` => \
-                    Failed to get data from cache.",
-                meta.model_name
-            ))?
-        }
-        //
-        let model_cache = model_cache.unwrap();
-        // Get model metadata from cache.
-        let meta = &model_cache.meta;
-        // Get MongoDB client for current model.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
-        //
-        Ok((model_cache.clone(), client.clone()))
-    }
-
     /// Update data for dynamic fields.
     /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/actix-greenpanel
     ///
