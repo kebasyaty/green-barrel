@@ -427,7 +427,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Generate metadata of Model.
             // -------------------------------------------------------------------------------------
-            fn generate_metadata() -> Result<(Meta, serde_json::Value), Box<dyn std::error::Error>>
+            fn generate_metadata() -> Result<Meta, Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
@@ -493,8 +493,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 }
                 meta.default_value_map = default_value_map;
+                meta.model_json = model_json;
                 //
-                Ok((meta, model_json))
+                Ok(meta)
             }
 
             /// Getter and Setter for field `hash`.
