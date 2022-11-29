@@ -52,7 +52,7 @@ pub trait Caching: Main + Converters {
         metadata.option_i64_map = options_i64_map;
         metadata.option_f64_map = options_f64_map;
         // Get Metadata Store.
-        let store = meta_store.lock().unwrap();
+        let mut store = meta_store.lock().unwrap();
         // Save the metadata to storage.
         store.insert(key, metadata);
         //
@@ -116,56 +116,13 @@ pub trait Caching: Main + Converters {
         ))
     }
 
-    /// Get metadata of Model.
-    // *********************************************************************************************
-    ///
-    /// # Example:
-    ///
-    /// ```
-    /// let metadata = ModelName::meta()?;
-    ///
-    /// println!("{:?}", metadata);
-    /// ```
-    ///
-    fn meta() -> Result<Meta, Box<dyn Error>>
-    where
-        Self: Serialize + DeserializeOwned + Sized,
-    {
-        // Get a key to access Model data in the cache.
-        let key: String = Self::key()?;
-        // Get read access from cache.
-        let mut model_store = MODEL_STORE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !model_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(model_store);
-            // Add metadata and widgects map to cache.
-            Self::caching()?;
-            // Reaccess.
-            model_store = MODEL_STORE.read()?;
-        }
-        // Get model_cache.
-        let model_cache = model_store.get(key.as_str());
-        if model_cache.is_none() {
-            let metadata = Self::generate_metadata()?;
-            Err(format!(
-                "Model: `{}` ; Method: `meta()` => \
-                    Failed to get data from cache.",
-                metadata.0.model_name
-            ))?
-        }
-        //
-        let meta = model_cache.unwrap().meta.clone();
-        Ok(meta)
-    }
-
     /// Get a new model instance with custom settings.
     // *********************************************************************************************
     ///
     /// # Example:
     ///
     /// ```
-    /// let user = User::new()?;
+    /// let user = User::new(meta_store)?;
     /// user.username.set("user");
     /// user.email.set("user_1_@noreply.net");
     /// user.password.set("12345678");
@@ -173,39 +130,27 @@ pub trait Caching: Main + Converters {
     /// user.is_staff.set(true);
     /// user.is_active.set(true);
     ///
-    /// println!("{:?}", user);
+    /// println!("{:#?}", user);
     /// ```
     ///
-    fn new() -> Result<Self, Box<dyn Error>>
+    fn new(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<Self, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access Model data in the cache.
+        // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get read access from cache.
-        let mut model_store = MODEL_STORE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !model_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(model_store);
-            // Add metadata and widgects map to cache.
-            Self::caching()?;
-            // Reaccess.
-            model_store = MODEL_STORE.read()?;
-        }
-        // Get model_cache.
-        let model_cache = model_store.get(key.as_str());
-        if model_cache.is_none() {
-            let meta = Self::meta()?;
-            Err(format!(
-                "Model: `{}` ; Method: `new()` => \
-                    Failed to get data from cache.",
-                meta.model_name
-            ))?
+        // Get Metadata Store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        if let Some(metadata) = store.get(&key) {
+            let instance = serde_json::from_value(metadata.model_json.clone())?;
+            return Ok(instance);
         }
         //
-        let instance = serde_json::from_value(model_cache.unwrap().model_json.clone())?;
-        Ok(instance)
+        Err(format!(
+            "Model key: `{key}` ; Method: `new()` => \
+             Failed to get data from cache.",
+        ))?
     }
 
     /// Get field attributes in Json modelat for page templates.
