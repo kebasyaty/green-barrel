@@ -2,7 +2,8 @@
 
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
+use std::sync::RwLock;
 use std::{collections::HashMap, error::Error};
 
 /// Metadata ( model parameters )
@@ -38,6 +39,7 @@ pub struct Meta {
     pub option_i32_map: HashMap<String, Vec<i32>>,
     pub option_i64_map: HashMap<String, Vec<i64>>,
     pub option_f64_map: HashMap<String, Vec<f64>>,
+    pub model_json: Value,
 }
 
 impl Default for Meta {
@@ -67,6 +69,7 @@ impl Default for Meta {
             option_i32_map: HashMap::new(),
             option_i64_map: HashMap::new(),
             option_f64_map: HashMap::new(),
+            model_json: json!(null),
         }
     }
 }
@@ -159,4 +162,10 @@ pub fn get_regex_map() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
     .collect();
 
     Ok(regex_map)
+}
+
+//
+// -------------------------------------------------------------------------------------------------
+pub fn get_meta_map() -> Result<RwLock<HashMap<String, Meta>>, Box<dyn Error>> {
+    Ok(RwLock::new(HashMap::<String, Meta>::new()))
 }

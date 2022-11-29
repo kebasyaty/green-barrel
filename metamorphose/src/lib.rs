@@ -618,6 +618,7 @@ struct Meta {
     pub option_i32_map: std::collections::HashMap<String, Vec<i32>>,
     pub option_i64_map: std::collections::HashMap<String, Vec<i64>>,
     pub option_f64_map: std::collections::HashMap<String, Vec<f64>>,
+    pub model_json: serde_json::Value,
 }
 
 impl Default for Meta {
@@ -647,6 +648,7 @@ impl Default for Meta {
             option_i32_map: std::collections::HashMap::new(),
             option_i64_map: std::collections::HashMap::new(),
             option_f64_map: std::collections::HashMap::new(),
+            model_json: serde_json::json!(null),
         }
     }
 }

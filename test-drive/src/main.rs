@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     let app_state = app_state::get_app_state()?;
     let regex_map = get_regex_map()?;
-    let meta_map = HashMap::<String, Meta>::new();
+    let meta_map = get_meta_map()?;
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     run_migration()?;
 

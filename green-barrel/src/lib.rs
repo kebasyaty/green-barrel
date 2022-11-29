@@ -16,7 +16,7 @@ pub use crate::{
         converters::Converters,
         db_query_api::{commons::QCommons, paladins::QPaladins},
         fixtures::Fixtures,
-        helpers::{get_regex_map, ControlArr, FileData, ImageData, Meta},
+        helpers::{get_meta_map, get_regex_map, ControlArr, FileData, ImageData, Meta},
         hooks::Hooks,
         output_data::{OutputData, OutputData2},
         validation::{AdditionalValidation, Validation},
