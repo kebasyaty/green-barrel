@@ -25,35 +25,36 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 pub trait Caching: Main + Converters {
     /// Add metadata to cache.
     // *********************************************************************************************
-    fn caching(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<(), Box<dyn Error>>
+    fn caching(
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access Model data in the cache.
+        // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get write access in cache.
-        let meta = meta_store.lock().unwrap();
-        // Create `ModelCache` default and add map of fields and metadata of model.
-        let mut meta = Self::generate_metadata()?;
+        // Get Metadata Store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let mut metadata = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
         Self::injection(
-            meta.project_name.as_str(),
-            meta.unique_project_key.as_str(),
-            meta.collection_name.as_str(),
+            metadata.project_name.as_str(),
+            metadata.unique_project_key.as_str(),
+            metadata.collection_name.as_str(),
+            &mut metadata.model_json,
+            &metadata.fields_name,
             client,
-            &mut model_json,
-            &meta.fields_name,
         )?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
-            Self::get_option_maps(&model_json, &meta.field_type_map)?;
-        meta.option_str_map = options_str_map;
-        meta.option_i32_map = options_i32_map;
-        meta.option_i64_map = options_i64_map;
-        meta.option_f64_map = options_f64_map;
-        // Init new ModelCache.
-        let new_model_cache = ModelCache { meta, model_json };
+            Self::get_option_maps(&metadata.model_json, &metadata.field_type_map)?;
+        metadata.option_str_map = options_str_map;
+        metadata.option_i32_map = options_i32_map;
+        metadata.option_i64_map = options_i64_map;
+        metadata.option_f64_map = options_f64_map;
         // Save structure `ModelCache` to store.
-        model_store.insert(key, new_model_cache);
+        store.insert(key, metadata);
         //
         Ok(())
     }

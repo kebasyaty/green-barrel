@@ -73,9 +73,9 @@ pub trait Main {
         project_name: &str,
         unique_project_key: &str,
         collection_name: &str,
-        client: &Client,
         model_json: &mut Value,
         fields_name: &Vec<String>,
+        client: &Client,
     ) -> Result<(), Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized,
