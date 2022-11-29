@@ -6,7 +6,7 @@ use mongodb::{
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::RwLock;
+use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::models::{
@@ -25,14 +25,14 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 pub trait Caching: Main + Converters {
     /// Add metadata to cache.
     // *********************************************************************************************
-    fn caching(meta_map: &RwLock<HashMap<String, Meta>>) -> Result<(), Box<dyn Error>>
+    fn caching(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access Model data in the cache.
         let key: String = Self::key()?;
         // Get write access in cache.
-        let mut model_store = meta_map.write()?;
+        let meta = meta_store.lock().unwrap();
         // Create `ModelCache` default and add map of fields and metadata of model.
         let mut meta = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.

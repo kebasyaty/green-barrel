@@ -36,7 +36,7 @@ pub trait Main {
 
     /// Generate metadata of Model.
     // ---------------------------------------------------------------------------------------------
-    fn generate_metadata() -> Result<(Meta, Value), Box<dyn Error>>
+    fn generate_metadata() -> Result<Meta, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized;
 
@@ -173,7 +173,7 @@ pub trait Main {
                         Err(format!(
                             "Model: {} > Method: `injection()` => \
                                 Invalid data type.",
-                            Self::generate_metadata()?.0.model_name,
+                            Self::generate_metadata()?.model_name,
                         ))?
                     }
                 }
