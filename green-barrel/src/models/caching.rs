@@ -159,40 +159,28 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = UserProfile::json()?;
+    /// let json_line = UserProfile::json(meta_store)?;
     /// println!("{}", json_line);
     /// ```
     ///
-    fn json() -> Result<String, Box<dyn Error>>
+    fn json(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access Model data in the cache.
+        // Get a key to access the metadata store.
         let key: String = Self::key()?;
-        // Get read access from cache.
-        let mut model_store = MODEL_STORE.read()?;
-        // Check if there is metadata for the Model in the cache.
-        if !model_store.contains_key(key.as_str()) {
-            // Unlock.
-            drop(model_store);
-            // Add metadata and widgects to cache.
-            Self::caching()?;
-            // Reaccess.
-            model_store = MODEL_STORE.read()?;
-        }
-        // Get model_cache.
-        let model_cache = model_store.get(key.as_str());
-        if model_cache.is_none() {
-            let meta = Self::meta()?;
-            Err(format!(
-                "Model: `{}` ; Method: `json()` => \
-                    Failed to get data from cache.",
-                meta.model_name
-            ))?
+        // Get Metadata Store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        if let Some(metadata) = store.get(&key) {
+            let json_line = serde_json::to_string(&metadata.model_json)?;
+            return Ok(json_line);
         }
         //
-        let json_line = serde_json::to_string(&model_cache.unwrap().model_json)?;
-        Ok(json_line)
+        Err(format!(
+            "Model key: `{key}` ; Method: `json()` => \
+             Failed to get data from cache.",
+        ))?
     }
 
     /// Get cached Model data.
