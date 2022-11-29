@@ -8,12 +8,10 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
-use crate::{
-    models::{
-        converters::Converters,
-        helpers::{ControlArr, Meta},
-        Main,
-    }
+use crate::models::{
+    converters::Converters,
+    helpers::{ControlArr, Meta},
+    Main,
 };
 
 type OptionsStrMap = HashMap<String, Vec<String>>;
@@ -26,7 +24,7 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 pub trait Caching: Main + Converters {
     /// Add metadata to cache.
     // *********************************************************************************************
-    fn caching() -> Result<(), Box<dyn Error>>
+    fn caching(meta_map: RwLock<HashMap<String, Meta>>) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

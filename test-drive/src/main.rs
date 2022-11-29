@@ -39,7 +39,7 @@ fn run_migration() -> Result<(), Box<dyn Error>> {
 
 fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
-    // =============================================================================================
+    // #############################################################################################
     let app_state = app_state::get_app_state()?;
     let regex_map = get_regex_map()?;
     let meta_map = get_meta_map()?;
@@ -47,10 +47,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     run_migration()?;
 
     // YOUR CODE ...
-    // =============================================================================================
+    // #############################################################################################
 
     // Convert Model
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     // println!("Convert Model:\n");
     //println!("{}", models::User::json()?);
     //
@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     */
 
     // Create model instance.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     let mut user = models::User::new()?;
     user.username.set("user_5");
     user.email.set("user_5_@noreply.net");
@@ -72,7 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     user.is_active.set(true);
 
     // Check Model.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
     let output_data = user.check(None)?;
     user = output_data.update()?;
@@ -97,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
 
     // Create document in database.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
     let output_data = user.save(None, None)?;
     user = output_data.update()?;
@@ -124,7 +124,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Update document in database.
-    // ---------------------------------------------------------------------------------------------
+    // *********************************************************************************************
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
         user.username.set("new_user_5");
@@ -158,6 +158,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Delete document in database.
+    // *********************************************************************************************
     println!("\n\nDelete document in database:\n");
     let output_data = user.delete(None)?;
     if !output_data.is_valid() {
