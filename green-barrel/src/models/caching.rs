@@ -51,7 +51,7 @@ pub trait Caching: Main + Converters {
         meta.option_i32_map = options_i32_map;
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
-        // Get meta Store.
+        // Get metadata store.
         let mut store = meta_store.lock().unwrap();
         // Save the meta to storage.
         store.insert(key, meta);
@@ -206,7 +206,7 @@ pub trait Caching: Main + Converters {
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access the meta store.
+        // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
         let store = meta_store.lock().unwrap();
