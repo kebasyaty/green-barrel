@@ -1252,8 +1252,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Create a new path and URL for the file.
                     {
-                        let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
-                        let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
+                        let media_root = &media_dir["media_root".into()];
+                        let media_url = &media_dir["media_url".into()];
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
@@ -1401,8 +1401,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let mut img_dir_path;
                     let img_dir_url;
                     {
-                        let media_root = final_field.get("media_root").unwrap().as_str().unwrap();
-                        let media_url = final_field.get("media_url").unwrap().as_str().unwrap();
+                        let media_root = &media_dir["media_root".into()];
+                        let media_url = &media_dir["media_url".into()];
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let new_img_name = format!("main.{extension}");
