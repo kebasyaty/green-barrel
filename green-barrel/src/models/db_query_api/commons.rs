@@ -7,14 +7,15 @@ use mongodb::{
         CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
         EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
+    sync::Client,
     Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
-use std::error::Error;
+use std::sync::{Arc, Mutex};
+use std::{collections::HashMap, error::Error};
 
-use crate::{
-    models::{caching::Caching, converters::Converters, output_data::OutputData, Main, Meta},
-    store::MONGODB_CLIENT_STORE,
+use crate::models::{
+    caching::Caching, converters::Converters, output_data::OutputData, Main, Meta,
 };
 
 /// Common query methods.
@@ -36,16 +37,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn aggregate(
         pipeline: Vec<Document>,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<AggregateOptions>,
     ) -> Result<Vec<Document>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -73,16 +85,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn count_documents(
         filter: Option<Document>,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<CountOptions>,
     ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -109,16 +132,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn delete_many(
         query: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -162,16 +196,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn delete_one(
         query: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -215,16 +260,27 @@ pub trait QCommons: Main + Caching + Converters {
     fn distinct(
         field_name: &str,
         filter: Option<Document>,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<DistinctOptions>,
     ) -> Result<Vec<Bson>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -246,15 +302,28 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn drop(options: Option<DropCollectionOptions>) -> Result<OutputData, Box<dyn Error>>
+    fn drop(
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+        options: Option<DropCollectionOptions>,
+    ) -> Result<OutputData, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -290,16 +359,27 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn estimated_document_count(
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<EstimatedDocumentCountOptions>,
     ) -> Result<u64, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -324,16 +404,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_many_to_doc_list(
         filter: Option<Document>,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOptions>,
     ) -> Result<Option<Vec<Document>>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection
         let coll = client
             .database(meta.database_name.as_str())
@@ -374,16 +465,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_many_to_json(
         filter: Option<Document>,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOptions>,
     ) -> Result<Option<String>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection
         let coll = client
             .database(meta.database_name.as_str())
@@ -429,16 +531,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_doc(
         filter: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -463,14 +576,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_json(
         filter: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -510,14 +636,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_instance(
         filter: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -559,16 +698,27 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_and_delete(
         filter: Document,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         //
@@ -594,15 +744,27 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", name);
     /// ```
     ///
-    fn collection_name() -> Result<String, Box<dyn Error>>
+    fn collection_name(
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
@@ -622,15 +784,27 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{:?}", name);
     /// ```
     ///
-    fn namespace() -> Result<Namespace, Box<dyn Error>>
+    fn namespace(
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<Namespace, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Access collection.
         let coll = client
             .database(meta.database_name.as_str())
