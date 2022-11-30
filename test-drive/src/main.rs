@@ -69,7 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
-    let output_data = user.check(None)?;
+    let output_data = user.check(&meta_store, &client, &validators, None)?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -94,7 +94,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create document in database.
     // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
-    let output_data = user.save(None, None)?;
+    let output_data = user.save(&meta_store, &client, &validators, None, None)?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -124,7 +124,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         user.username.set("new_user_5");
 
-        let output_data = user.save(None, None)?;
+        let output_data = user.save(&meta_store, &client, &validators, None, None)?;
         user = output_data.update()?;
 
         if output_data.is_valid() {

@@ -1954,6 +1954,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     // *********************************************************************************************
     fn save(
         &mut self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+        validators: &HashMap<String, Regex>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -1964,17 +1967,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut stop_step: u8 = 1;
         //
         for step in 1_u8..=2_u8 {
-            // Get metadata of Model.
-            let meta = Self::meta()?;
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(Some((true, step == 2)))?;
+            let mut verified_data =
+                self.check(meta_store, client, validators, Some((true, step == 2)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            // Get client of MongoDB.
-            let client_store = MONGODB_CLIENT_STORE.read()?;
-            let client = client_store.get(&meta.db_client_name).unwrap();
             //
             let is_update: bool = !self.hash().is_empty();
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = meta_store.lock().unwrap();
+            // Get metadata of Model.
+            let meta = store.get(&key);
+            let meta = if meta.is_some() {
+                meta.unwrap()
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `save()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
             //
             let coll = client
                 .database(meta.database_name.as_str())
@@ -2027,11 +2040,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
         //
-        let meta = Self::meta()?;
         Err(format!(
-            "Model: `{}` > Method: `save()` => \
-                !!!-Stub-!!!",
-            meta.model_name
+            "Model key: `{}` > Method: `save()` => \
+            !!!-Stub-!!!",
+            Self::key()?
         ))?
     }
 
