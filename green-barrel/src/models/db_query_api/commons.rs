@@ -31,7 +31,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let doc_list  = ModelName::aggregate(pipeline, None)?;
+    /// let doc_list  = ModelName::aggregate(pipeline, &meta_store, &client, None)?;
     /// println!("{:?}", doc_list);
     /// ```
     ///
@@ -79,14 +79,14 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let filter = doc!{};
-    /// let count  = ModelName::count_documents(Some(filter), None)?;
+    /// let count  = ModelName::count_documents(&meta_store, &client, Some(filter), None)?;
     /// println!("{}", count);
     /// ```
     ///
     fn count_documents(
-        filter: Option<Document>,
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
+        filter: Option<Document>,
         options: Option<CountOptions>,
     ) -> Result<u64, Box<dyn Error>>
     where
@@ -124,7 +124,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_many(query, None)?;
+    /// let output_data  = ModelName::delete_many(query, &meta_store, &client, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -188,7 +188,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_one(query, None)?;
+    /// let output_data  = ModelName::delete_one(query, &meta_store, &client, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -253,15 +253,15 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// let field_name = "";
     /// let filter = doc!{};
-    /// let output_data  = ModelName::distinct(field_name, Some(filter), None)?;
+    /// let output_data  = ModelName::distinct(field_name, &meta_store, &client, Some(filter), None)?;
     /// println!("{:?}", output_data);
     /// ```
     ///
     fn distinct(
         field_name: &str,
-        filter: Option<Document>,
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
+        filter: Option<Document>,
         options: Option<DistinctOptions>,
     ) -> Result<Vec<Bson>, Box<dyn Error>>
     where
@@ -296,7 +296,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let output_data  = ModelName::drop(None)?;
+    /// let output_data  = ModelName::drop(&meta_store, &client, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -354,7 +354,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let count  = ModelName::estimated_document_count(None)?;
+    /// let count  = ModelName::estimated_document_count(&meta_store, &client, None)?;
     /// println!("{}", count);
     /// ```
     ///
@@ -396,16 +396,16 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_doc_list(None, None)?;
+    /// let result = ModelName::find_many_to_doc_list(&meta_store, &client, None, None)?;
     /// if let Some(doc_list) = result {
     ///     println!("{:?}", doc_list);
     /// }
     /// ```
     ///
     fn find_many_to_doc_list(
-        filter: Option<Document>,
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
+        filter: Option<Document>,
         options: Option<FindOptions>,
     ) -> Result<Option<Vec<Document>>, Box<dyn Error>>
     where
@@ -457,16 +457,16 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json(None, None)?;
+    /// let result = ModelName::find_many_to_json(&meta_store, &client, None, None)?;
     /// if let Some(json_line) = result {
     ///     println!("{}", json_line);
     /// }
     /// ```
     ///
     fn find_many_to_json(
-        filter: Option<Document>,
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
+        filter: Option<Document>,
         options: Option<FindOptions>,
     ) -> Result<Option<String>, Box<dyn Error>>
     where
@@ -523,7 +523,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result = ModelName::find_one_to_doc(filter, None)?;
+    /// let result = ModelName::find_one_to_doc(filter, &meta_store, &client, None)?;
     /// if let Some(doc) = result {
     ///     println!("{:?}", doc);
     /// }
@@ -570,7 +570,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let json = ModelName::find_one_to_json(filter, None)?;
+    /// let json = ModelName::find_one_to_json(filter, &meta_store, &client, None)?;
     /// println!("{}", json);
     /// ```
     ///
@@ -628,7 +628,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_instance(filter, None)?;
+    /// let result  = ModelName::find_one_to_instance(filter, &meta_store, &client, None)?;
     /// if let Some(instance) = result {
     ///     println!("{:?}", instance);
     /// }
@@ -690,7 +690,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete(filter, None)?;
+    /// let result  = ModelName::find_one_and_delete(filter, &meta_store, &client, None)?;
     /// if let Some(doc) = result) {
     ///     println!("{:?}", doc);
     /// }
@@ -740,7 +740,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::name()?;
+    /// let name  = ModelName::name(&meta_store, &client)?;
     /// println!("{}", name);
     /// ```
     ///
@@ -780,7 +780,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::namespace()?;
+    /// let name  = ModelName::namespace(&meta_store, &client)?;
     /// println!("{:?}", name);
     /// ```
     ///
