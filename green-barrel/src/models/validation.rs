@@ -1,7 +1,7 @@
 //! Validating Model fields for save and update.
 
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, Bson},
+    bson::{doc, oid::ObjectId, Bson, Document},
     sync::Collection,
 };
 use regex::Regex;
