@@ -665,6 +665,8 @@ pub trait Caching: Main + Converters {
                 }
             }
         }
+        // Unlock
+        drop(store);
         // Update meta and fields map to cache.
         Self::caching(meta_store, client)?;
         //

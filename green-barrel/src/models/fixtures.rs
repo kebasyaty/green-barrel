@@ -97,7 +97,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             });
             serde_json::from_str::<Value>(json_str.as_str())?
         };
-        //
+        // Unlock
         drop(store);
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
