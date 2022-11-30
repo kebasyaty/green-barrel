@@ -54,7 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     /*
         println!(
             "Model instance:\n{:?}",
-            models::User::find_one_to_instance(doc! {"username": "user_1"}, None)?
+            models::User::find_one_to_instance(doc! {"username": "user_1"}, &meta_store, &client, None)?
         );
     */
 
