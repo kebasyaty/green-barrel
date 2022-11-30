@@ -38,7 +38,7 @@ use crate::models::{
 /// fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
 ///     // fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
-///     ModelName::run_fixture("cities", &meta_store, &client, &validators)?;
+///     ModelName::run_fixture("cities", &meta_store, &client, &validators, &media_dir)?;
 ///     Ok(())
 /// }
 /// ```
@@ -49,6 +49,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
+        media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
@@ -116,7 +117,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance.save(meta_store, client, validators, None, None)?;
+                let output_data =
+                    instance.save(meta_store, client, validators, media_dir, None, None)?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{}` > Method: `run_fixture()` => {}",

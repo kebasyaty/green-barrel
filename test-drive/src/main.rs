@@ -14,6 +14,7 @@ fn run_migration(
     meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
     client: &Client,
     validators: &HashMap<String, Regex>,
+    media_dir: &HashMap<String, String>,
 ) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
     models::User::caching(meta_store, client)?;
@@ -29,7 +30,7 @@ fn run_migration(
     monitor.migrat(meta_store, client)?;
 
     // Run fixtures
-    models::City::run_fixture("cities", meta_store, client, validators)?;
+    models::City::run_fixture("cities", meta_store, client, validators, media_dir)?;
 
     Ok(())
 }
@@ -42,7 +43,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let meta_store = get_meta_store();
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
-    run_migration(&meta_store, &client, &validators)?;
+    run_migration(&meta_store, &client, &validators, &media_dir)?;
 
     // YOUR CODE ...
     // #############################################################################################
