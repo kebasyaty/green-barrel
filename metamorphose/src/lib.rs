@@ -439,12 +439,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         DATABASE_NAME.trim().to_string(),
                         meta.unique_project_key);
                 }
-                // Add database client name.
-                if meta.db_client_name.is_empty() {
-                    meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
-                }
                 // Add a limit on the number of documents when querying the database.
-                if meta.db_query_docs_limit == 0_u32 {
+                if meta.db_query_docs_limit == 0 {
                     meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
                 }
                 // Add collection name.

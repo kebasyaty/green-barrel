@@ -26,6 +26,5 @@ pub mod default {
     // First character: a-z A-Z
     pub const DATABASE_NAME: &str = "service_name";
     //
-    pub const DB_CLIENT_NAME: &str = "default";
     pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 }
