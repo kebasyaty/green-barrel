@@ -11,7 +11,7 @@ use crate::models::helpers::Meta;
 pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
-    model_key_list: &Vec<String>,
+    model_key_list: Vec<String>,
     meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
     client: &Client,
 ) -> Result<(), Box<dyn Error>> {
@@ -20,7 +20,7 @@ pub fn del_test_db(
     // Name of the technical database for testing
     let db_green_tech = format!("green_tech__{}__{}", project_name, unique_project_key);
     // Removing databases
-    for model_key in model_key_list {
+    for model_key in model_key_list.iter() {
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(model_key) {
             meta
