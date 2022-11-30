@@ -24,7 +24,7 @@ fn run_migration(
         // For register models.
         model_key_list: vec![models::User::key()?, models::City::key()?],
     };
-    monitor.migrat()?;
+    monitor.migrat(meta_store, client)?;
 
     // Run fixtures
     models::City::run_fixture("cities")?;
