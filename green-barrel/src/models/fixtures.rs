@@ -71,7 +71,9 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 Failed to get data from cache.",
             ))?
         };
-        let field_type_map = &meta.field_type_map;
+        let model_name = meta.model_name.clone();
+        let model_json = meta.model_json.clone();
+        let field_type_map = meta.field_type_map.clone();
         // Get data from fixture file
         let json_val = {
             // Create path
@@ -80,27 +82,28 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{}` > Method: \
+                        "Model: `{model_name}` > Method: \
                             `run_fixture()` => File is missing - {fixture_path}",
-                        meta.model_name
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{}` > Method: \
-                            `run_fixture()` => Problem opening the file: {:?}",
-                        meta.model_name, error
+                        "Model: `{model_name}` > Method: \
+                            `run_fixture()` => Problem opening the file: {0:?}",
+                        error
                     ))
                     .unwrap()
                 }
             });
             serde_json::from_str::<Value>(json_str.as_str())?
         };
+        //
+        drop(store);
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
-                let mut model_json = meta.model_json.clone();
-                for (field_name, field_type) in field_type_map {
+                let mut model_json = model_json.clone();
+                for (field_name, field_type) in field_type_map.iter() {
                     if let Some(data) = fixture.get(field_name) {
                         let value_key = if field_type == "CheckBox" {
                             "checked"
@@ -120,17 +123,15 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                     instance.save(meta_store, client, validators, media_dir, None, None)?;
                 if !output_data.is_valid() {
                     Err(format!(
-                        "Model: `{}` > Method: `run_fixture()` => {}",
-                        meta.model_name,
+                        "Model: `{model_name}` > Method: `run_fixture()` => {}",
                         output_data.err_msg()
                     ))?
                 }
             }
         } else {
             Err(format!(
-                "Model: `{}` > Method: \
-                `run_fixture()` => Fixture does not contain an array of objects.",
-                meta.model_name
+                "Model: `{model_name}` > Method: \
+                `run_fixture()` => Fixture does not contain an array of objects."
             ))?
         }
 
