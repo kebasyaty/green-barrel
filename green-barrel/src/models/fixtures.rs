@@ -1,6 +1,7 @@
 //! To populate the database with pre-created data.
 
 use mongodb::sync::Client;
+use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::sync::{Arc, Mutex};
@@ -37,7 +38,7 @@ use crate::models::{
 /// fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
 ///     // fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
-///     ModelName::run_fixture("cities")?;
+///     ModelName::run_fixture("cities", &meta_store, &client, &validators)?;
 ///     Ok(())
 /// }
 /// ```
@@ -47,6 +48,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         fixture_name: &str,
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
+        validators: &HashMap<String, Regex>,
     ) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
@@ -114,7 +116,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance.save(None, None)?;
+                let output_data = instance.save(meta_store, client, validators, None, None)?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{}` > Method: `run_fixture()` => {}",
