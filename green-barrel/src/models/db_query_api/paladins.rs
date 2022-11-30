@@ -131,7 +131,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(&meta_store, &client, None)?;
+    /// let output_data = model_name.check(&meta_store, &client, &validators, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -1945,7 +1945,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.save(None, None)?;
+    /// let output_data = model_name.save(&meta_store, &client, &validators, None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -2053,7 +2053,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut user = User{...};
-    /// let output_data = user.delete(None)?;
+    /// let output_data = user.delete(&meta_store, &client, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -2232,7 +2232,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     /// let user = User {...};
     /// let password = "12345678";
-    /// assert!(user.create_password_hash(password, None)?);
+    /// assert!(user.create_password_hash(password, &meta_store, &client, None)?);
     /// ```
     ///
     fn verify_password(
@@ -2320,7 +2320,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
     /// let new_password = "UUbd+5KXw^756*uj";
-    /// let output_data = user.update_password(old_password, new_password, None)?;
+    /// let output_data = user.update_password(old_password, new_password, &meta_store, &client, None)?;
     /// if !output_data.is_valid()? {
     ///     println!("{}", output_data.err_msg()?);
     /// }
