@@ -5,6 +5,7 @@ mod settings;
 use green_barrel::*;
 //use mongodb::bson::doc;
 use mongodb::sync::Client;
+use regex::Regex;
 use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, error::Error};
 
@@ -12,6 +13,7 @@ use std::{collections::HashMap, error::Error};
 fn run_migration(
     meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
     client: &Client,
+    validators: &HashMap<String, Regex>,
 ) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
     models::User::caching(meta_store, client)?;
@@ -27,7 +29,7 @@ fn run_migration(
     monitor.migrat(meta_store, client)?;
 
     // Run fixtures
-    models::City::run_fixture("cities")?;
+    models::City::run_fixture("cities", meta_store, client, validators)?;
 
     Ok(())
 }
@@ -39,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let meta_store = get_meta_store()?;
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
-    run_migration(&meta_store, &client)?;
+    run_migration(&meta_store, &client, &validators)?;
 
     // YOUR CODE ...
     // #############################################################################################
