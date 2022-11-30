@@ -1,8 +1,10 @@
 //! To populate the database with pre-created data.
 
+use mongodb::sync::Client;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::{error::Error, fs, io::ErrorKind};
+use std::sync::{Arc, Mutex};
+use std::{collections::HashMap, error::Error, fs, io::ErrorKind};
 
 use crate::models::{
     caching::Caching,
@@ -41,7 +43,11 @@ use crate::models::{
 /// ```
 ///
 pub trait Fixtures: Caching + QPaladins + QCommons {
-    fn run_fixture(fixture_name: &str) -> Result<(), Box<dyn Error>>
+    fn run_fixture(
+        fixture_name: &str,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
@@ -49,9 +55,20 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if Self::estimated_document_count(None)? > 0 {
             return Ok(());
         }
-        // Get cached Model data.
-        let (model_cache, _) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `run_fixture()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         let field_type_map = &meta.field_type_map;
         // Get data from fixture file
         let json_val = {
@@ -80,7 +97,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
-                let mut model_json = model_cache.model_json.clone();
+                let mut model_json = meta.model_json.clone();
                 for (field_name, field_type) in field_type_map {
                     if let Some(data) = fixture.get(field_name) {
                         let value_key = if field_type == "CheckBox" {
@@ -109,7 +126,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         } else {
             Err(format!(
                 "Model: `{}` > Method: \
-                    `run_fixture()` => Fixture does not contain an array of objects.",
+                `run_fixture()` => Fixture does not contain an array of objects.",
                 meta.model_name
             ))?
         }
