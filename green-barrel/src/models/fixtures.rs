@@ -74,6 +74,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         let model_name = meta.model_name.clone();
         let model_json = meta.model_json.clone();
         let field_type_map = meta.field_type_map.clone();
+        // Unlock
+        drop(store);
         // Get data from fixture file
         let json_val = {
             // Create path
@@ -97,8 +99,6 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             });
             serde_json::from_str::<Value>(json_str.as_str())?
         };
-        // Unlock
-        drop(store);
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
