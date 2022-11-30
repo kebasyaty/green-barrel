@@ -12,7 +12,9 @@ pub struct AppState {
 impl Default for AppState {
     fn default() -> Self {
         Self {
+            // Root partition for storing files.
             media_root: String::from("./media"),
+            // Url address to the root section.
             media_url: String::from("/media"),
         }
     }

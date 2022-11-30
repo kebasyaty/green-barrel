@@ -38,7 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // #############################################################################################
     let app_state = app_state::get_app_state()?;
-    let meta_store = get_meta_store()?;
+    let meta_store = get_meta_store();
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
     run_migration(&meta_store, &client, &validators)?;
@@ -157,7 +157,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Delete document in database.
     // *********************************************************************************************
     println!("\n\nDelete document in database:\n");
-    let output_data = user.delete(None)?;
+    let output_data = user.delete(&meta_store, &client, None)?;
     if !output_data.is_valid() {
         output_data.print_err();
         // or
