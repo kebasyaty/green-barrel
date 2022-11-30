@@ -11,7 +11,7 @@ use mongodb::{
     Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error};
 
 use crate::models::{
@@ -37,7 +37,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn aggregate(
         pipeline: Vec<Document>,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<AggregateOptions>,
     ) -> Result<Vec<Document>, Box<dyn Error>>
@@ -47,7 +47,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -83,7 +83,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn count_documents(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
         options: Option<CountOptions>,
@@ -94,7 +94,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -130,7 +130,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn delete_many(
         query: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -140,7 +140,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -193,7 +193,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn delete_one(
         query: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -203,7 +203,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -255,7 +255,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn distinct(
         field_name: &str,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
         options: Option<DistinctOptions>,
@@ -266,7 +266,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -298,7 +298,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn drop(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DropCollectionOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -308,7 +308,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -353,7 +353,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn estimated_document_count(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<EstimatedDocumentCountOptions>,
     ) -> Result<u64, Box<dyn Error>>
@@ -363,7 +363,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -396,7 +396,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn find_many_to_doc_list(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
         options: Option<FindOptions>,
@@ -407,7 +407,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -456,7 +456,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn find_many_to_json(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
         options: Option<FindOptions>,
@@ -467,7 +467,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -522,7 +522,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_doc(
         filter: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
@@ -532,7 +532,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -566,7 +566,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_json(
         filter: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
@@ -576,7 +576,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -625,7 +625,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_to_instance(
         filter: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
@@ -635,7 +635,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -686,7 +686,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     fn find_one_and_delete(
         filter: Document,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
@@ -696,7 +696,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -732,7 +732,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn collection_name(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<String, Box<dyn Error>>
     where
@@ -741,7 +741,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -771,7 +771,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     ///
     fn namespace(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<Namespace, Box<dyn Error>>
     where
@@ -780,7 +780,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta

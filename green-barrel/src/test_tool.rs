@@ -1,7 +1,7 @@
 //! Auxiliary tools for testing models.
 
 use mongodb::sync::Client;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error};
 
 use crate::models::helpers::Meta;
@@ -12,11 +12,11 @@ pub fn del_test_db(
     project_name: &str,
     unique_project_key: &str,
     model_key_list: &Vec<String>,
-    meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+    meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
     client: &Client,
 ) -> Result<(), Box<dyn Error>> {
     // Get metadata store
-    let store = meta_store.lock().unwrap();
+    let store = meta_store.read().unwrap();
     // Name of the technical database for testing
     let db_green_tech = format!("green_tech__{}__{}", project_name, unique_project_key);
     // Removing databases

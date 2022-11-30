@@ -4,7 +4,7 @@ use mongodb::sync::Client;
 use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error, fs, io::ErrorKind};
 
 use crate::models::{
@@ -46,7 +46,7 @@ use crate::models::{
 pub trait Fixtures: Caching + QPaladins + QCommons {
     fn run_fixture(
         fixture_name: &str,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
@@ -61,7 +61,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta

@@ -6,12 +6,12 @@ use green_barrel::*;
 //use mongodb::bson::doc;
 use mongodb::sync::Client;
 use regex::Regex;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error};
 
 // Migration
 fn run_migration(
-    meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+    meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
     client: &Client,
     validators: &HashMap<String, Regex>,
     media_dir: &HashMap<String, String>,

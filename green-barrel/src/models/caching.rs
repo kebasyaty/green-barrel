@@ -6,7 +6,7 @@ use mongodb::{
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::models::{
@@ -26,7 +26,7 @@ pub trait Caching: Main + Converters {
     /// Add metadata to cache.
     // *********************************************************************************************
     fn caching(
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<(), Box<dyn Error>>
     where
@@ -52,7 +52,7 @@ pub trait Caching: Main + Converters {
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
         // Get metadata store.
-        let mut store = meta_store.lock().unwrap();
+        let mut store = meta_store.write().unwrap();
         // Save the meta to storage.
         store.insert(key, meta);
         //
@@ -133,14 +133,14 @@ pub trait Caching: Main + Converters {
     /// println!("{:#?}", user);
     /// ```
     ///
-    fn new(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<Self, Box<dyn Error>>
+    fn new(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<Self, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get meta of Model.
         if let Some(meta) = store.get(&key) {
             let instance = serde_json::from_value(meta.model_json.clone())?;
@@ -163,14 +163,14 @@ pub trait Caching: Main + Converters {
     /// println!("{json_line}");
     /// ```
     ///
-    fn json(meta_store: &Arc<Mutex<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
+    fn json(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         if let Some(meta) = store.get(&key) {
             let json_line = serde_json::to_string(&meta.model_json)?;
@@ -200,7 +200,7 @@ pub trait Caching: Main + Converters {
     // *********************************************************************************************
     fn update_dyn_field(
         dyn_data: Value,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<(), Box<dyn Error>>
     where
@@ -209,7 +209,7 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta

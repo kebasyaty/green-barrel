@@ -12,7 +12,7 @@ use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
@@ -139,7 +139,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     fn check(
         &mut self,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
@@ -152,7 +152,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -1954,7 +1954,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     // *********************************************************************************************
     fn save(
         &mut self,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
@@ -1982,7 +1982,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.lock().unwrap();
+            let store = meta_store.read().unwrap();
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta
@@ -2066,7 +2066,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     fn delete(
         &self,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -2076,7 +2076,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2242,7 +2242,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     fn verify_password(
         &self,
         password: &str,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<bool, Box<dyn Error>>
@@ -2252,7 +2252,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
+        let store = meta_store.read().unwrap();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2333,7 +2333,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         old_password: &str,
         new_password: &str,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
@@ -2350,7 +2350,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.lock().unwrap();
+            let store = meta_store.read().unwrap();
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta

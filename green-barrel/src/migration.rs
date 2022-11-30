@@ -15,7 +15,7 @@ use mongodb::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::models::helpers::{FileData, ImageData, Meta};
@@ -168,14 +168,13 @@ impl<'a> Monitor<'a> {
     /// Check the changes in the models and (if necessary) apply to the database.
     pub fn migrat(
         &self,
-        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<(), Box<dyn Error>> {
         // Run refresh models state.
         self.refresh(client)?;
         // Get metadata store.
-        let store = meta_store.lock().unwrap();
-        //
+        let store = meta_store.read().unwrap();
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(model_key) {
