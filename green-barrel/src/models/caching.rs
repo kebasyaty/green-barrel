@@ -216,7 +216,7 @@ pub trait Caching: Main + Converters {
             meta.unwrap()
         } else {
             Err(format!(
-                "Model key: `{key}` ; Method: `json()` => \
+                "Model key: `{key}` ; Method: `update_dyn_field()` => \
                 Failed to get data from cache.",
             ))?
         };

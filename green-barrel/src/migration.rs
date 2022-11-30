@@ -97,7 +97,7 @@ impl<'a> Monitor<'a> {
                 meta.unwrap()
             } else {
                 Err(format!(
-                    "Model key: `{model_key}` ; Method: `json()` => \
+                    "Model key: `{model_key}` ; Method: `refresh()` => \
                     Failed to get data from cache.",
                 ))?
             };
@@ -163,7 +163,7 @@ impl<'a> Monitor<'a> {
                 meta.unwrap()
             } else {
                 Err(format!(
-                    "Model key: `{model_key}` ; Method: `json()` => \
+                    "Model key: `{model_key}` ; Method: `napalm()` => \
                     Failed to get data from cache.",
                 ))?
             };
@@ -222,7 +222,7 @@ impl<'a> Monitor<'a> {
                 meta.unwrap()
             } else {
                 Err(format!(
-                    "Model key: `{model_key}` ; Method: `json()` => \
+                    "Model key: `{model_key}` ; Method: `migrat()` => \
                     Failed to get data from cache.",
                 ))?
             };
@@ -256,7 +256,6 @@ impl<'a> Monitor<'a> {
                 ))?;
             }
             //
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             let fields_name = &meta.fields_name;
             let ignore_fields = &meta.ignore_fields;
             // List field names without `hash` and ignored fields.
