@@ -63,8 +63,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new(&meta_store)?;
-    user.username.set("user_5");
-    user.email.set("user_5_@noreply.net");
+    user.username.set("user_1");
+    user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // *********************************************************************************************
     println!("\n\nUpdate document in database:\n");
     if output_data.is_valid() {
-        user.username.set("new_user_5");
+        user.username.set("new_user_1");
 
         let output_data = user.save(&meta_store, &client, &validators, &media_dir, None, None)?;
         user = output_data.update()?;
