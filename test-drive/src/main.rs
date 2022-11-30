@@ -36,9 +36,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // #############################################################################################
     let app_state = app_state::get_app_state()?;
-    let validators = get_validators()?;
     let meta_store = get_meta_store()?;
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
+    let validators = get_validators()?;
     run_migration(&meta_store, &client)?;
 
     // YOUR CODE ...

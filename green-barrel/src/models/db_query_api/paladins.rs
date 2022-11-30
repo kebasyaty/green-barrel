@@ -5,25 +5,24 @@ use mongodb::{
     bson::{doc, oid::ObjectId, ser::to_bson, spec::ElementType, Bson, Document},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
     results::InsertOneResult,
-    sync::Collection,
+    sync::{Client, Collection},
 };
 use rand::Rng;
+use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
+use std::sync::{Arc, Mutex};
+use std::{collections::HashMap, convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
-use crate::{
-    models::{
-        caching::Caching,
-        helpers::{FileData, ImageData, Meta},
-        hooks::Hooks,
-        output_data::{OutputData, OutputData2},
-        validation::{AdditionalValidation, Validation},
-        Main,
-    },
-    store::{MONGODB_CLIENT_STORE, REGEX_TOKEN_DATED_PATH},
+use crate::models::{
+    caching::Caching,
+    helpers::{FileData, ImageData, Meta},
+    hooks::Hooks,
+    output_data::{OutputData, OutputData2},
+    validation::{AdditionalValidation, Validation},
+    Main,
 };
 
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
@@ -132,25 +131,39 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(None)?;
+    /// let output_data = model_name.check(&meta_store, &client, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
     /// ```
     ///
-    fn check(&mut self, params: Option<(bool, bool)>) -> Result<OutputData2, Box<dyn Error>>
+    fn check(
+        &mut self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+        validators: &HashMap<String, Regex>,
+        params: Option<(bool, bool)>,
+    ) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        //
         let (is_save, is_slug_update) = params.unwrap_or((false, false));
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = Self::meta()?;
-        // Get client of MongoDB.
-        let client_store = MONGODB_CLIENT_STORE.read()?;
-        let client = client_store.get(&meta.db_client_name).unwrap();
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `check()` => \
+                Failed to get data from cache.",
+            ))?
+        };
         // Get model name.
-        let model_name: &str = meta.model_name.as_str();
+        let model_name = meta.model_name.as_str();
         // Get option maps for fields type `select`.
         let option_str_map = &meta.option_str_map;
         let option_i32_map = &meta.option_i32_map;
@@ -408,20 +421,22 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Validation in regular expression (email, password, etc...).
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
-                        is_err_symptom = true;
-                        if !is_hide {
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
-                        } else {
-                            Err(format!(
-                                "Model: `{model_name}` > Field: `{field_name}` ; \
+                    Self::regex_validation(field_type, curr_val, validators).unwrap_or_else(
+                        |err| {
+                            is_err_symptom = true;
+                            if !is_hide {
+                                *final_field.get_mut("error").unwrap() =
+                                    json!(Self::accumula_err(final_field, &err.to_string()));
+                            } else {
+                                Err(format!(
+                                    "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
-                                err
-                            ))
-                            .unwrap()
-                        }
-                    });
+                                    err
+                                ))
+                                .unwrap()
+                            }
+                        },
+                    );
                     // Insert result.
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
@@ -1211,7 +1226,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
+                    if is_slug_update
+                        || validators["is_token_dated_path"].is_match(file_data.path.as_str())
+                    {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1350,7 +1367,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
+                    if is_slug_update
+                        || validators["is_token_dated_path"].is_match(image_data.path.as_str())
+                    {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1903,9 +1922,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 meta.project_name.as_str(),
                 meta.unique_project_key.as_str(),
                 meta.collection_name.as_str(),
-                client,
                 &mut final_model_json,
                 &meta.fields_name,
+                client,
             )?;
         }
 
