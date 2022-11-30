@@ -8,8 +8,6 @@ use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_PASSWORD};
-
 /// Validating Model fields for save and update.
 // *************************************************************************************************
 pub trait Validation {
@@ -43,7 +41,11 @@ pub trait Validation {
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
+    fn regex_validation(
+        field_type: &str,
+        value: &str,
+        validators: &HashMap<String, Regex>,
+    ) -> Result<(), Box<dyn Error>> {
         match field_type {
             "InputEmail" => {
                 if !validator::validate_email(value) {
@@ -51,7 +53,7 @@ pub trait Validation {
                 }
             }
             "InputColor" => {
-                if !REGEX_IS_COLOR_CODE.is_match(value) {
+                if !validators["is_color_code"].is_match(value) {
                     Err("Invalid Color code.")?
                 }
             }
@@ -76,9 +78,9 @@ pub trait Validation {
                 }
             }
             "InputPassword" => {
-                if !REGEX_IS_PASSWORD.is_match(value) {
+                if !validators["is_password"].is_match(value) {
                     Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
-                            <br>Size 8-256 chars")?
+                        <br>Size 8-256 chars")?
                 }
             }
             _ => return Ok(()),
