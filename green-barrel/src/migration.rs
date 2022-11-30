@@ -15,7 +15,8 @@ use mongodb::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard};
+use std::sync::{Arc, Mutex};
+use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::models::helpers::{FileData, ImageData, Meta};
 
@@ -81,12 +82,25 @@ impl<'a> Monitor<'a> {
     /// }
     /// ```
     ///
-    fn refresh(&self) -> Result<(), Box<dyn Error>> {
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
+    fn refresh(
+        &self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<(), Box<dyn Error>> {
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         //
-        for meta in self.metadata_list.iter() {
-            let client = client_store.get(&meta.db_client_name).unwrap();
+        for model_key in self.model_key_list.iter() {
+            // Get metadata of Model.
+            let meta = store.get(model_key);
+            let meta = if meta.is_some() {
+                meta.unwrap()
+            } else {
+                Err(format!(
+                    "Model key: `{model_key}` ; Method: `json()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             // Collection for monitoring the state of Models.
@@ -134,12 +148,25 @@ impl<'a> Monitor<'a> {
     /// Reorganize databases state
     /// (full delete of orphaned collections and databases)
     // *********************************************************************************************
-    fn napalm(&self) -> Result<(), Box<dyn Error>> {
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
+    fn napalm(
+        &self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<(), Box<dyn Error>> {
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
         //
-        for meta in self.metadata_list.iter() {
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
+        for model_key in self.model_key_list.iter() {
+            // Get metadata of Model.
+            let meta = store.get(model_key);
+            let meta = if meta.is_some() {
+                meta.unwrap()
+            } else {
+                Err(format!(
+                    "Model key: `{model_key}` ; Method: `json()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
             let collection_models_name: &str = "monitor_models";
@@ -178,14 +205,27 @@ impl<'a> Monitor<'a> {
     /// Migrating Models -
     // *********************************************************************************************
     /// Check the changes in the models and (if necessary) apply to the database.
-    pub fn migrat(&self) -> Result<(), Box<dyn Error>> {
+    pub fn migrat(
+        &self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+    ) -> Result<(), Box<dyn Error>> {
         // Run refresh models state.
-        self.refresh()?;
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
-
-        // Get model metadata
-        for meta in self.metadata_list.iter() {
+        self.refresh(meta_store, client)?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        //
+        for model_key in self.model_key_list.iter() {
+            // Get metadata of Model.
+            let meta = store.get(model_key);
+            let meta = if meta.is_some() {
+                meta.unwrap()
+            } else {
+                Err(format!(
+                    "Model key: `{model_key}` ; Method: `json()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
             if !meta.is_add_docs {
                 continue;
             }
@@ -695,9 +735,9 @@ impl<'a> Monitor<'a> {
         }
 
         // Unlock.
-        drop(client_store);
+        // ???
         // Run reorganize databases state.
-        self.napalm()?;
+        self.napalm(meta_store, client)?;
         //
         Ok(())
     }
