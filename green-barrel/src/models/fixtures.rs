@@ -52,7 +52,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         Self: Serialize + DeserializeOwned + Sized,
     {
         // If the collection is not empty, exit the method
-        if Self::estimated_document_count(None)? > 0 {
+        if Self::estimated_document_count(meta_store, client, None)? > 0 {
             return Ok(());
         }
         // Get a key to access the metadata store.
