@@ -5,29 +5,24 @@ mod settings;
 use green_barrel::*;
 //use mongodb::bson::doc;
 use mongodb::sync::Client;
+use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, error::Error};
 
 // Migration
-fn run_migration() -> Result<(), Box<dyn Error>> {
-    // Caching MongoDB clients.
-    {
-        let mut client_store = MONGODB_CLIENT_STORE.write()?;
-        client_store.insert(
-            "default".to_string(),
-            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-        );
-        client_store.insert(
-            "default_2".to_string(),
-            mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-        );
-    }
+fn run_migration(
+    meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+    client: &Client,
+) -> Result<(), Box<dyn Error>> {
+    // Caching metadata.
+    models::User::caching(meta_store, client)?;
+    models::City::caching(meta_store, client)?;
 
     // Monitor initialization.
     let monitor = Monitor {
         project_name: settings::PROJECT_NAME,
         unique_project_key: settings::UNIQUE_PROJECT_KEY,
-        // Register models.
-        metadata_list: vec![models::User::meta()?, models::City::meta()?],
+        // For register models.
+        model_key_list: vec![models::User::key()?, models::City::key()?],
     };
     monitor.migrat()?;
 
@@ -44,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let validators = get_validators()?;
     let meta_store = get_meta_store()?;
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
-    run_migration()?;
+    run_migration(&meta_store, &client)?;
 
     // YOUR CODE ...
     // #############################################################################################

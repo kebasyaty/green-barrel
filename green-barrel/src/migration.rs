@@ -17,10 +17,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard};
 
-use crate::{
-    models::helpers::{FileData, ImageData, Meta},
-    store::MONGODB_CLIENT_STORE,
-};
+use crate::models::helpers::{FileData, ImageData, Meta};
 
 // MIGRATION
 // #################################################################################################
@@ -38,7 +35,7 @@ pub struct ModelState {
 pub struct Monitor<'a> {
     pub project_name: &'a str,
     pub unique_project_key: &'a str,
-    pub metadata_list: Vec<Meta>,
+    pub model_key_list: Vec<String>,
 }
 
 impl<'a> Monitor<'a> {

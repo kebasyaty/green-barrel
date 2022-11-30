@@ -23,7 +23,7 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
 pub trait Caching: Main + Converters {
-    /// Add meta to cache.
+    /// Add metadata to cache.
     // *********************************************************************************************
     fn caching(
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
