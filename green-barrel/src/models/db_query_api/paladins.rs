@@ -131,7 +131,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(&meta_store, &client, &validators, None)?;
+    /// let output_data = model_name.check(&meta_store, &client, &validators, &media_dir, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -142,6 +142,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
+        media_dir: &HashMap<String, String>,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
     where
@@ -1945,7 +1946,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.save(&meta_store, &client, &validators, None, None)?;
+    /// let output_data = model_name.save(&meta_store, &client, &validators, &media_dir, None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -1957,6 +1958,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
         client: &Client,
         validators: &HashMap<String, Regex>,
+        media_dir: &HashMap<String, String>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -1968,8 +1970,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data =
-                self.check(meta_store, client, validators, Some((true, step == 2)))?;
+            let mut verified_data = self.check(
+                meta_store,
+                client,
+                validators,
+                media_dir,
+                Some((true, step == 2)),
+            )?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();

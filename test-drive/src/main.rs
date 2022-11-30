@@ -38,6 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // #############################################################################################
     let app_state = app_state::get_app_state()?;
+    let media_dir = app_state::get_media_dir(app_state);
     let meta_store = get_meta_store();
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
@@ -71,7 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
-    let output_data = user.check(&meta_store, &client, &validators, None)?;
+    let output_data = user.check(&meta_store, &client, &validators, &media_dir, None)?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -96,7 +97,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create document in database.
     // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
-    let output_data = user.save(&meta_store, &client, &validators, None, None)?;
+    let output_data = user.save(&meta_store, &client, &validators, &media_dir, None, None)?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -126,7 +127,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         user.username.set("new_user_5");
 
-        let output_data = user.save(&meta_store, &client, &validators, None, None)?;
+        let output_data = user.save(&meta_store, &client, &validators, &media_dir, None, None)?;
         user = output_data.update()?;
 
         if output_data.is_valid() {
