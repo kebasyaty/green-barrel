@@ -211,9 +211,8 @@ pub trait Caching: Main + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `update_dyn_field()` => \

@@ -154,9 +154,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `check()` => \
@@ -1252,8 +1251,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Create a new path and URL for the file.
                     {
-                        let media_root = &media_dir["media_root".into()];
-                        let media_url = &media_dir["media_url".into()];
+                        let media_root = &media_dir["media_root"];
+                        let media_url = &media_dir["media_url"];
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
@@ -1401,8 +1400,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let mut img_dir_path;
                     let img_dir_url;
                     {
-                        let media_root = &media_dir["media_root".into()];
-                        let media_url = &media_dir["media_url".into()];
+                        let media_root = &media_dir["media_root"];
+                        let media_url = &media_dir["media_url"];
                         let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let new_img_name = format!("main.{extension}");
@@ -1985,9 +1984,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get metadata store.
             let store = meta_store.lock().unwrap();
             // Get metadata of Model.
-            let meta = store.get(&key);
-            let meta = if meta.is_some() {
-                meta.unwrap()
+            let meta = if let Some(meta) = store.get(&key) {
+                meta
             } else {
                 Err(format!(
                     "Model key: `{key}` ; Method: `save()` => \
@@ -2080,9 +2078,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `delete()` => \
@@ -2257,9 +2254,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `verify_password()` => \
@@ -2356,9 +2352,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get metadata store.
             let store = meta_store.lock().unwrap();
             // Get metadata of Model.
-            let meta = store.get(&key);
-            let meta = if meta.is_some() {
-                meta.unwrap()
+            let meta = if let Some(meta) = store.get(&key) {
+                meta
             } else {
                 Err(format!(
                     "Model key: `{key}` ; Method: `verify_password()` => \

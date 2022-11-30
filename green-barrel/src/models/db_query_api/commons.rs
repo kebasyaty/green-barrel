@@ -49,9 +49,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `aggregate()` => \
@@ -97,9 +96,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `count_documents()` => \
@@ -144,9 +142,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `delete_many()` => \
@@ -208,9 +205,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `delete_one()` => \
@@ -272,9 +268,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `distinct()` => \
@@ -315,9 +310,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `drop()` => \
@@ -371,9 +365,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `estimated_document_count()` => \
@@ -416,9 +409,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_many_to_doc_list()` => \
@@ -477,9 +469,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_many_to_json()` => \
@@ -543,9 +534,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_one_to_doc()` => \
@@ -588,9 +578,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_one_to_json()` => \
@@ -648,9 +637,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_one_to_instance()` => \
@@ -710,9 +698,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `find_one_and_delete()` => \
@@ -756,9 +743,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `collection_name()` => \
@@ -796,9 +782,8 @@ pub trait QCommons: Main + Caching + Converters {
         // Get metadata store.
         let store = meta_store.lock().unwrap();
         // Get metadata of Model.
-        let meta = store.get(&key);
-        let meta = if meta.is_some() {
-            meta.unwrap()
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
         } else {
             Err(format!(
                 "Model key: `{key}` ; Method: `namespace()` => \

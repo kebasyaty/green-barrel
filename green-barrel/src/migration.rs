@@ -178,9 +178,8 @@ impl<'a> Monitor<'a> {
         //
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model.
-            let meta = store.get(model_key);
-            let meta = if meta.is_some() {
-                meta.unwrap()
+            let meta = if let Some(meta) = store.get(model_key) {
+                meta
             } else {
                 Err(format!(
                     "Model key: `{model_key}` ; Method: `migrat()` => \
