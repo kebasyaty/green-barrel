@@ -2,6 +2,8 @@
 .directory
 .DS_Store
 
+AppState.toml
+
 /test-drive/media/*
 /test-drive/media/tmp/*
 /test-drive/media/default/*
