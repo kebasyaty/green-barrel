@@ -1972,7 +1972,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 self.check(meta_store, client, validators, Some((true, step == 2)))?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
-            //
             let is_update: bool = !self.hash().is_empty();
             // Get a key to access the metadata store.
             let key = Self::key()?;
@@ -2060,14 +2059,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     ///
     ///
-    fn delete(&self, options: Option<DeleteOptions>) -> Result<OutputData, Box<dyn Error>>
+    fn delete(
+        &self,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
+        options: Option<DeleteOptions>,
+    ) -> Result<OutputData, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = model_cache.meta;
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `delete()` => \
+                    Failed to get data from cache.",
+            ))?
+        };
         // Get permission to delete the document.
         let is_permission_delete: bool = meta.is_del_docs;
         // Error message for the client.
@@ -2080,7 +2094,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a logical result.
         let result_bool = if is_permission_delete {
             // Access collection.
-            let coll = client_cache
+            let coll = client
                 .database(meta.database_name.as_str())
                 .collection::<Document>(meta.collection_name.as_str());
             // Get Model hash  for ObjectId.
@@ -2224,17 +2238,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     fn verify_password(
         &self,
         password: &str,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<bool, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get cached Model data.
-        let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-        // Get Model metadata.
-        let meta: Meta = model_cache.meta;
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.lock().unwrap();
+        // Get metadata of Model.
+        let meta = store.get(&key);
+        let meta = if meta.is_some() {
+            meta.unwrap()
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `verify_password()` => \
+                    Failed to get data from cache.",
+            ))?
+        };
         // Access the collection.
-        let coll = client_cache
+        let coll = client
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Get hash-line of Model.
@@ -2304,25 +2330,36 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         old_password: &str,
         new_password: &str,
+        meta_store: &Arc<Mutex<HashMap<String, Meta>>>,
+        client: &Client,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        //
         let mut result_bool = false;
         let mut err_msg = String::new();
         // Validation current password.
-        if !self.verify_password(old_password, options_find_old)? {
+        if !self.verify_password(old_password, meta_store, client, options_find_old)? {
             err_msg = String::from("The old password does not match.");
         } else {
-            // Get cached Model data.
-            let (model_cache, client_cache) = Self::get_cache_data_for_query()?;
-            // Get Model metadata.
-            let meta: Meta = model_cache.meta;
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = meta_store.lock().unwrap();
+            // Get metadata of Model.
+            let meta = store.get(&key);
+            let meta = if meta.is_some() {
+                meta.unwrap()
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `verify_password()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
             // Access the collection.
-            let coll = client_cache
+            let coll = client
                 .database(meta.database_name.as_str())
                 .collection::<Document>(meta.collection_name.as_str());
             // Get hash-line of Model.
