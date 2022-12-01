@@ -58,24 +58,26 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if Self::estimated_document_count(meta_store, client, None)? > 0 {
             return Ok(());
         }
-        // Get a key to access the metadata store.
-        let key = Self::key()?;
-        // Get metadata store.
-        let store = meta_store.read().unwrap();
-        // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(&key) {
-            meta
-        } else {
-            Err(format!(
-                "Model key: `{key}` ; Method: `run_fixture()` => \
+        let (model_name, model_json, field_type_map) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = meta_store.read().unwrap();
+            // Get metadata of Model.
+            let meta = if let Some(meta) = store.get(&key) {
+                meta
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `run_fixture()` => \
                 Failed to get data from cache.",
-            ))?
+                ))?
+            };
+            (
+                meta.model_name.clone(),
+                meta.model_json.clone(),
+                meta.field_type_map.clone(),
+            )
         };
-        let model_name = meta.model_name.clone();
-        let model_json = meta.model_json.clone();
-        let field_type_map = meta.field_type_map.clone();
-        // Unlock
-        drop(store);
         // Get data from fixture file
         let json_val = {
             // Create path
