@@ -198,7 +198,7 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     let validators = get_validators()?;
     migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
 
-    // Testing
+    // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
     //
