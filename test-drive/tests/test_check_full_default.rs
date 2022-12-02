@@ -2,9 +2,10 @@ use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::sync::Client;
+use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, path::Path};
 
 mod settings {
@@ -193,7 +194,7 @@ fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     let app_state = app_state::get_app_state()?;
     let media_dir = app_state::get_media_dir(app_state);
-    let meta_store = get_meta_store();
+    let meta_store = Arc::new(get_meta_store());
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
     migration::run_migration(&meta_store, &client, &validators, &media_dir)?;

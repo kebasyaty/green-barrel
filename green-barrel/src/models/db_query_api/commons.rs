@@ -10,8 +10,10 @@ use mongodb::{
     sync::Client,
     Namespace,
 };
+
+use parking_lot::RwLock;
 use serde::{de::DeserializeOwned, ser::Serialize};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
 
 use crate::models::{
@@ -47,7 +49,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -94,7 +96,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -140,7 +142,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -203,7 +205,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -266,7 +268,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -308,7 +310,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -363,7 +365,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -407,7 +409,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -467,7 +469,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -532,7 +534,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -576,7 +578,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -635,7 +637,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -696,7 +698,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -741,7 +743,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -780,7 +782,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta

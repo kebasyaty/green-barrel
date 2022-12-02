@@ -12,6 +12,7 @@ confy = "0.5.1"
 green-barrel = {path = "../green-barrel"}
 lazy_static = "1.4.0"
 metamorphose = {path = "../metamorphose"}
+parking_lot = "0.12.1"
 rand = "0.8.5"
 regex = "1.7.0"
 rust-argon2 = "1.0.0"

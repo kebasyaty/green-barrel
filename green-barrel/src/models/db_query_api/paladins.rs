@@ -7,12 +7,13 @@ use mongodb::{
     results::InsertOneResult,
     sync::{Client, Collection},
 };
+use parking_lot::RwLock;
 use rand::Rng;
 use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
@@ -152,7 +153,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -1982,7 +1983,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.read().unwrap();
+            let store = meta_store.read();
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta
@@ -2076,7 +2077,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2252,7 +2253,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2350,7 +2351,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.read().unwrap();
+            let store = meta_store.read();
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta

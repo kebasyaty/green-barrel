@@ -1,10 +1,11 @@
 //! To populate the database with pre-created data.
 
 use mongodb::sync::Client;
+use parking_lot::RwLock;
 use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, io::ErrorKind};
 
 use crate::models::{
@@ -58,25 +59,18 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if Self::estimated_document_count(meta_store, client, None)? > 0 {
             return Ok(());
         }
-        let (model_name, model_json, field_type_map) = {
-            // Get a key to access the metadata store.
-            let key = Self::key()?;
-            // Get metadata store.
-            let store = meta_store.read().unwrap();
-            // Get metadata of Model.
-            let meta = if let Some(meta) = store.get(&key) {
-                meta
-            } else {
-                Err(format!(
-                    "Model key: `{key}` ; Method: `run_fixture()` => \
+        // Get a key to access the metadata store.
+        let key = Self::key()?;
+        // Get metadata store.
+        let store = meta_store.read();
+        // Get metadata of Model.
+        let meta = if let Some(meta) = store.get(&key) {
+            meta
+        } else {
+            Err(format!(
+                "Model key: `{key}` ; Method: `run_fixture()` => \
                 Failed to get data from cache.",
-                ))?
-            };
-            (
-                meta.model_name.clone(),
-                meta.model_json.clone(),
-                meta.field_type_map.clone(),
-            )
+            ))?
         };
         // Get data from fixture file
         let json_val = {
@@ -86,15 +80,16 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{model_name}` > Method: \
+                        "Model: `{}` > Method: \
                             `run_fixture()` => File is missing - {fixture_path}",
+                        meta.model_name
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{model_name}` > Method: \
-                            `run_fixture()` => Problem opening the file: {0:?}",
-                        error
+                        "Model: `{}` > Method: \
+                            `run_fixture()` => Problem opening the file: {:?}",
+                        meta.model_name, error
                     ))
                     .unwrap()
                 }
@@ -104,8 +99,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
-                let mut model_json = model_json.clone();
-                for (field_name, field_type) in field_type_map.iter() {
+                let mut model_json = meta.model_json.clone();
+                for (field_name, field_type) in meta.field_type_map.iter() {
                     if let Some(data) = fixture.get(field_name) {
                         let value_key = if field_type == "CheckBox" {
                             "checked"
@@ -125,15 +120,17 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                     instance.save(meta_store, client, validators, media_dir, None, None)?;
                 if !output_data.is_valid() {
                     Err(format!(
-                        "Model: `{model_name}` > Method: `run_fixture()` => {}",
+                        "Model: `{}` > Method: `run_fixture()` => {}",
+                        meta.model_name,
                         output_data.err_msg()
                     ))?
                 }
             }
         } else {
             Err(format!(
-                "Model: `{model_name}` > Method: \
-                `run_fixture()` => Fixture does not contain an array of objects."
+                "Model: `{}` > Method: \
+                `run_fixture()` => Fixture does not contain an array of objects.",
+                meta.model_name,
             ))?
         }
 

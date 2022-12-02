@@ -13,9 +13,10 @@ use mongodb::{
     sync::Client,
     sync::Database,
 };
+use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::models::helpers::{FileData, ImageData, Meta};
@@ -174,7 +175,7 @@ impl<'a> Monitor<'a> {
         // Run refresh models state.
         self.refresh(client)?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(model_key) {

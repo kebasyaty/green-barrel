@@ -1,9 +1,9 @@
 //! Collection of auxiliary Structures, Enumerations.
 
+use parking_lot::RwLock;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::sync::{Arc, RwLock};
 use std::{collections::HashMap, error::Error};
 
 /// Metadata ( model parameters )
@@ -164,6 +164,6 @@ pub fn get_validators() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
 
 // Metadata storage for Models.
 // -------------------------------------------------------------------------------------------------
-pub fn get_meta_store() -> Arc<RwLock<HashMap<String, Meta>>> {
-    Arc::new(RwLock::new(HashMap::<String, Meta>::new()))
+pub fn get_meta_store() -> RwLock<HashMap<String, Meta>> {
+    RwLock::new(HashMap::<String, Meta>::new())
 }

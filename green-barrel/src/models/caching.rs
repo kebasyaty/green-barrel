@@ -4,9 +4,11 @@ use mongodb::{
     bson::{doc, Bson, Document},
     sync::Client,
 };
+
+use parking_lot::RwLock;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::models::{
@@ -52,7 +54,12 @@ pub trait Caching: Main + Converters {
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
         // Get metadata store.
-        let mut store = meta_store.write().unwrap();
+        if meta_store.is_locked() {
+            unsafe {
+                meta_store.force_unlock_read();
+            }
+        }
+        let mut store = meta_store.write();
         // Save the meta to storage.
         store.insert(key, meta);
         //
@@ -140,7 +147,7 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get meta of Model.
         if let Some(meta) = store.get(&key) {
             let instance = serde_json::from_value(meta.model_json.clone())?;
@@ -170,7 +177,7 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         if let Some(meta) = store.get(&key) {
             let json_line = serde_json::to_string(&meta.model_json)?;
@@ -209,7 +216,7 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().unwrap();
+        let store = meta_store.read();
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -667,9 +674,7 @@ pub trait Caching: Main + Converters {
         }
         // Unlock
         drop(store);
-        // Update meta and fields map to cache.
-        Self::caching(meta_store, client)?;
-        //
-        Ok(())
+        // Update metadata in cache.
+        Self::caching(meta_store, client)
     }
 }
