@@ -39,8 +39,8 @@ fn run_migration(
 fn main() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // #############################################################################################
-    let app_state = app_state::get_app_state()?;
-    let media_dir = app_state::get_media_dir(app_state);
+    let _app_state = app_state::get_app_state()?;
+    let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let client = Client::with_uri_str("mongodb://localhost:27017/")?;
     let validators = get_validators()?;
