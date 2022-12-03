@@ -54,11 +54,6 @@ pub trait Caching: Main + Converters {
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
         // Get metadata store.
-        if meta_store.is_locked() {
-            unsafe {
-                meta_store.force_unlock_read();
-            }
-        }
         let mut store = meta_store.write();
         // Save the meta to storage.
         store.insert(key, meta);
@@ -674,6 +669,11 @@ pub trait Caching: Main + Converters {
         }
         // Unlock
         drop(store);
+        if meta_store.is_locked() {
+            unsafe {
+                meta_store.force_unlock_read();
+            }
+        }
         // Update metadata in cache.
         Self::caching(meta_store, client)
     }
