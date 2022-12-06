@@ -1,5 +1,7 @@
 //! Common query methods.
 
+use async_trait::async_trait;
+use futures::stream::StreamExt;
 use mongodb::{
     bson::{document::Document, Bson},
     options::AggregateOptions,
@@ -7,10 +9,8 @@ use mongodb::{
         CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
         EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
-    sync::Client,
-    Namespace,
+    Client, Namespace,
 };
-
 use parking_lot::RwLock;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use std::sync::Arc;
@@ -21,6 +21,7 @@ use crate::models::{
 };
 
 /// Common query methods.
+#[async_trait(?Send)]
 pub trait QCommons: Main + Caching + Converters {
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
@@ -37,7 +38,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{:?}", doc_list);
     /// ```
     ///
-    fn aggregate(
+    async fn aggregate(
         pipeline: Vec<Document>,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -65,9 +66,11 @@ pub trait QCommons: Main + Caching + Converters {
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
         Ok(coll
-            .aggregate(pipeline, options)?
+            .aggregate(pipeline, options)
+            .await?
             .map(|item| item.unwrap())
-            .collect())
+            .collect()
+            .await)
     }
 
     /// Gets the number of documents matching filter.
@@ -84,7 +87,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", count);
     /// ```
     ///
-    fn count_documents(
+    async fn count_documents(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
@@ -111,7 +114,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
-        Ok(coll.count_documents(filter, options)?)
+        Ok(coll.count_documents(filter, options).await?)
     }
 
     /// Deletes all documents stored in the collection matching query.
@@ -130,7 +133,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn delete_many(
+    async fn delete_many(
         query: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -169,7 +172,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .database(meta.database_name.as_str())
                 .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
-            deleted_count = coll.delete_many(query, options)?.deleted_count;
+            deleted_count = coll.delete_many(query, options).await?.deleted_count;
             true
         } else {
             false
@@ -193,7 +196,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn delete_one(
+    async fn delete_one(
         query: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -232,7 +235,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .database(meta.database_name.as_str())
                 .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
-            deleted_count = coll.delete_one(query, options)?.deleted_count;
+            deleted_count = coll.delete_one(query, options).await?.deleted_count;
             true
         } else {
             false
@@ -255,7 +258,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{:?}", output_data);
     /// ```
     ///
-    fn distinct(
+    async fn distinct(
         field_name: &str,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -283,7 +286,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
-        Ok(coll.distinct(field_name, filter, options)?)
+        Ok(coll.distinct(field_name, filter, options).await?)
     }
 
     /// Drops the collection, deleting all data and indexes stored in it.
@@ -299,7 +302,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn drop(
+    async fn drop(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DropCollectionOptions>,
@@ -335,7 +338,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .database(meta.database_name.as_str())
                 .collection::<Document>(meta.collection_name.as_str());
             // Execute query.
-            coll.drop(options).is_ok()
+            coll.drop(options).await.is_ok()
         } else {
             false
         };
@@ -354,7 +357,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", count);
     /// ```
     ///
-    fn estimated_document_count(
+    async fn estimated_document_count(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<EstimatedDocumentCountOptions>,
@@ -380,7 +383,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
-        Ok(coll.estimated_document_count(options)?)
+        Ok(coll.estimated_document_count(options).await?)
     }
 
     /// Finds the documents in the collection matching filter and
@@ -397,7 +400,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_many_to_doc_list(
+    async fn find_many_to_doc_list(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
@@ -436,7 +439,7 @@ pub trait QCommons: Main + Caching + Converters {
                 .build()
         };
         // Execute query.
-        let doc_list = Self::many_to_doc_list(filter, Some(options), coll)?;
+        let doc_list = Self::many_to_doc_list(filter, Some(options), coll).await?;
         if doc_list.is_empty() {
             return Ok(None);
         }
@@ -457,7 +460,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_many_to_json(
+    async fn find_many_to_json(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         filter: Option<Document>,
@@ -504,6 +507,7 @@ pub trait QCommons: Main + Caching + Converters {
             &meta.field_type_map,
             meta.model_name.as_str(),
         )
+        .await
     }
 
     /// Finds a single document in the collection matching filter and
@@ -522,7 +526,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_one_to_doc(
+    async fn find_one_to_doc(
         filter: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -549,7 +553,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
-        Ok(coll.find_one(filter, options)?)
+        Ok(coll.find_one(filter, options).await?)
     }
 
     /// Finds a single document in the collection matching filter and
@@ -566,7 +570,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// println!("{}", json);
     /// ```
     ///
-    fn find_one_to_json(
+    async fn find_one_to_json(
         filter: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -593,7 +597,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance in jsob-line format.
-        if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+        if let Ok(Some(db_doc)) = coll.find_one(filter, options).await {
             let mut model_json = meta.model_json.clone();
             Self::one_to_json_val(
                 db_doc,
@@ -625,7 +629,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_one_to_instance(
+    async fn find_one_to_instance(
         filter: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -652,7 +656,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Get document from database and convert to model instance.
-        if let Ok(Some(db_doc)) = coll.find_one(filter, options) {
+        if let Ok(Some(db_doc)) = coll.find_one(filter, options).await {
             let mut model_json = meta.model_json.clone();
             Self::one_to_json_val(
                 db_doc,
@@ -686,7 +690,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// }
     /// ```
     ///
-    fn find_one_and_delete(
+    async fn find_one_and_delete(
         filter: Document,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -719,7 +723,7 @@ pub trait QCommons: Main + Caching + Converters {
             .database(meta.database_name.as_str())
             .collection::<Document>(meta.collection_name.as_str());
         // Execute query.
-        Ok(coll.find_one_and_delete(filter, options)?)
+        Ok(coll.find_one_and_delete(filter, options).await?)
     }
 
     /// Gets the name of the Collection.
