@@ -166,16 +166,14 @@ mod app_state {
 
     #[derive(Serialize, Deserialize, Clone, Debug)]
     pub struct AppState {
-        media_root: String,
-        media_url: String,
+        pub media_root: String,
+        pub media_url: String,
     }
 
     impl Default for AppState {
         fn default() -> Self {
             Self {
-                // Root partition for storing files.
                 media_root: String::from("./media"),
-                // Url address to the root section.
                 media_url: String::from("/media"),
             }
         }
@@ -191,14 +189,15 @@ mod app_state {
         Ok(confy::load_path::<AppState>(path)?)
     }
 
-    pub fn get_media_dir(app_state: AppState) -> HashMap<String, String> {
-        [
+    pub fn get_media_dir() -> Result<HashMap<String, String>, Box<dyn Error>> {
+        let app_state = get_app_state()?;
+        Ok([
             ("media_root".into(), app_state.media_root),
             ("media_url".into(), app_state.media_url),
         ]
         .iter()
         .cloned()
-        .collect()
+        .collect())
     }
 }
 
@@ -208,10 +207,11 @@ mod app_state {
 fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // This is required for all projects.
     // =============================================================================================
-    let app_state = app_state::get_app_state()?;
-    let media_dir = app_state::get_media_dir(app_state);
+    let _app_state = app_state::get_app_state()?;
+    let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
-    let client = Client::with_uri_str("mongodb://localhost:27017/")?;
+    let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).expect("failed to connect");
     let validators = get_validators()?;
     migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
 
