@@ -523,7 +523,8 @@ mod app_state {
 // #################################################################################################
 #[test]
 fn test_save_param_required() -> Result<(), Box<dyn Error>> {
-    // This is required for all projects.
+    // THIS IS REQUIRED FOR ALL PROJECTS
+    // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
     let media_dir = app_state::get_media_dir()?;
