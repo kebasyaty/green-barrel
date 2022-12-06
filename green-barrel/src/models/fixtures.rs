@@ -1,6 +1,7 @@
 //! To populate the database with pre-created data.
 
-use mongodb::sync::Client;
+use async_trait::async_trait;
+use mongodb::Client;
 use parking_lot::RwLock;
 use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -44,6 +45,7 @@ use crate::models::{
 /// }
 /// ```
 ///
+#[async_trait(?Send)]
 pub trait Fixtures: Caching + QPaladins + QCommons {
     fn run_fixture(
         fixture_name: &str,
