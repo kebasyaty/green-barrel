@@ -1,5 +1,13 @@
 //! Methods that are called at different stages when accessing the database.
 
+use mongodb::sync::Client;
+use parking_lot::RwLock;
+use regex::Regex;
+use std::collections::HashMap;
+use std::sync::Arc;
+
+use crate::models::helpers::Meta;
+
 /// Hooks methods.
 pub trait Hooks {
     /// Called before a new document is created in the database.
@@ -22,7 +30,13 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_create(&self) {
+    fn pre_create(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         //
     }
     /// Called after a new document has been created in the database.
@@ -45,7 +59,13 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_create(&self) {
+    fn post_create(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         //
     }
     /// Called before updating an existing document in the database.
@@ -68,7 +88,13 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_update(&self) {
+    fn pre_update(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         //
     }
     /// Called after an existing document in the database is updated.
@@ -91,7 +117,13 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_update(&self) {
+    fn post_update(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         //
     }
     /// Called before deleting an existing document in the database.
@@ -114,7 +146,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_delete(&self) {
+    fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         //
     }
     /// Called after an existing document in the database has been deleted.
@@ -137,7 +169,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_delete(&self) {
+    fn post_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         //
     }
 }

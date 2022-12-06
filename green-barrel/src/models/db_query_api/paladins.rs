@@ -2014,14 +2014,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "$set": final_doc.clone(),
                     };
                     // Run hook.
-                    self.pre_update();
+                    self.pre_update(meta_store, client, validators, media_dir);
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())?;
                     // Run hook.
-                    self.post_update();
+                    self.post_update(meta_store, client, validators, media_dir);
                 } else {
                     // Run hook.
-                    self.pre_create();
+                    self.pre_create(meta_store, client, validators, media_dir);
                     // Create document.
                     let result: InsertOneResult =
                         coll.insert_one(final_doc.clone(), options_insert.clone())?;
@@ -2030,7 +2030,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Add hash-line to model instance.
                     self.set_hash(hash_line.clone());
                     // Run hook.
-                    self.post_create();
+                    self.post_create(meta_store, client, validators, media_dir);
                 }
                 // Mute document.
                 verified_data.set_doc(None);
@@ -2183,7 +2183,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Run hook.
-            self.pre_delete();
+            self.pre_delete(meta_store, client);
             // Execute query.
             coll.delete_one(query, options).is_ok()
         } else {
@@ -2191,7 +2191,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         };
         // Run hook.
         if result_bool && err_msg.is_empty() {
-            self.post_delete();
+            self.post_delete(meta_store, client);
         }
         //
         let deleted_count = u64::from(result_bool);

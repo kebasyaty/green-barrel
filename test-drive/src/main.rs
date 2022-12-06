@@ -3,7 +3,6 @@ mod models;
 mod settings;
 
 use green_barrel::*;
-//use mongodb::bson::doc;
 use mongodb::sync::Client;
 use parking_lot::RwLock;
 use regex::Regex;
@@ -37,12 +36,13 @@ fn run_migration(
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // This is required for all projects.
+    // THIS IS REQUIRED FOR ALL PROJECTS.
     // #############################################################################################
     let _app_state = app_state::get_app_state()?;
     let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
-    let client = Client::with_uri_str("mongodb://localhost:27017/")?;
+    let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).expect("failed to connect");
     let validators = get_validators()?;
     run_migration(&meta_store, &client, &validators, &media_dir)?;
 
@@ -55,10 +55,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     //println!("{}", models::User::json()?);
     //
     /*
-        println!(
-            "Model instance:\n{:?}",
-            models::User::find_one_to_instance(doc! {"username": "user_1"}, &meta_store, &client, None)?
-        );
+    println!(
+        "Model instance:\n{:?}",
+        models::User::find_one_to_instance(
+            mongodb::bson::doc! {"username": "user_1"},
+            &meta_store,
+            &client,
+            None
+        )?
+    );
     */
 
     // Create model instance.

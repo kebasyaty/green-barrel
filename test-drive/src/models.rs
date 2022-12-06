@@ -1,7 +1,11 @@
 use green_barrel::*;
 use metamorphose::Model;
+use mongodb::sync::Client;
+use parking_lot::RwLock;
+use regex::Regex;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
@@ -142,27 +146,51 @@ impl AdditionalValidation for User {
 }
 
 impl Hooks for User {
-    fn pre_create(&self) {
+    fn pre_create(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         println!("!!!Pre Create!!!");
     }
     //
-    fn post_create(&self) {
+    fn post_create(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         println!("!!!Post Create!!!");
     }
     //
-    fn pre_update(&self) {
+    fn pre_update(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         println!("!!!Pre Update!!!");
     }
     //
-    fn post_update(&self) {
+    fn post_update(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+        _validators: &HashMap<String, Regex>,
+        _media_dir: &HashMap<String, String>,
+    ) {
         println!("!!!Post Update!!!");
     }
     //
-    fn pre_delete(&self) {
+    fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         println!("!!!Pre Delet!!!");
     }
     //
-    fn post_delete(&self) {
+    fn post_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         println!("!!!Post Delet!!!");
     }
 }
