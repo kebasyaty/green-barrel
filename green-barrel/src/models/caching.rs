@@ -677,7 +677,7 @@ pub trait Caching: Main + Converters {
             }
         }
         // Update metadata in cache.
-        Self::caching(meta_store, client);
+        Self::caching(meta_store, client).await?;
 
         Ok(())
     }

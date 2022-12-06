@@ -1,11 +1,12 @@
 //! Query methods for a Model instance.
 
+use async_trait::async_trait;
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
     bson::{doc, oid::ObjectId, ser::to_bson, spec::ElementType, Bson, Document},
     options::{DeleteOptions, FindOneOptions, InsertOneOptions, UpdateOptions},
     results::InsertOneResult,
-    sync::{Client, Collection},
+    Client, Collection,
 };
 use parking_lot::RwLock;
 use rand::Rng;
@@ -26,10 +27,11 @@ use crate::models::{
     Main,
 };
 
+#[async_trait(?Send)]
 pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
     /// Deleting a file in the database and in the file system.
     // *********************************************************************************************
-    fn delete_file(
+    async fn delete_file(
         &self,
         coll: &Collection<Document>,
         model_name: &str,
@@ -42,7 +44,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if !hash.is_empty() {
             let object_id = ObjectId::parse_str(hash.as_str())?;
             let filter = doc! {"_id": object_id};
-            if let Some(document) = coll.find_one(filter.clone(), None)? {
+            if let Some(document) = coll.find_one(filter.clone(), None).await? {
                 // If `is_deleted=true` was passed incorrectly.
                 if document.is_null(field_name) {
                     return Ok(());
@@ -50,7 +52,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Delete the file information in the database.
                 let file_doc = doc! {field_name: Bson::Null};
                 let update = doc! { "$set": file_doc };
-                coll.update_one(filter, update, None)?;
+                coll.update_one(filter, update, None).await?;
                 // Delete the orphaned file.
                 if let Some(info_file) = document.get(field_name).unwrap().as_document() {
                     if let Some(file_default) = file_default {
@@ -91,7 +93,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
     /// Get file info from database.
     // *********************************************************************************************
-    fn db_get_file_info(
+    async fn db_get_file_info(
         &self,
         coll: &Collection<Document>,
         field_name: &str,
@@ -101,7 +103,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         if !hash.is_empty() {
             let object_id = ObjectId::parse_str(hash.as_str())?;
             let filter = doc! {"_id": object_id};
-            if let Some(document) = coll.find_one(filter, None)? {
+            if let Some(document) = coll.find_one(filter, None).await? {
                 if let Some(doc) = document.get(field_name).unwrap().as_document() {
                     let result = serde_json::to_value(doc)?;
                     return Ok(result);
@@ -138,7 +140,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn check(
+    async fn check(
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
