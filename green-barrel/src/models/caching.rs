@@ -1,6 +1,7 @@
 //! Caching inmodelation about Models for speed up work.
 
 use async_trait::async_trait;
+use futures::stream::TryStreamExt;
 use mongodb::{
     bson::{doc, Bson, Document},
     Client,
@@ -556,11 +557,10 @@ pub trait Caching: Main + Converters {
             //
             let db = client.database(meta.database_name.as_str());
             let coll = db.collection::<Document>(meta.collection_name.as_str());
-            let cursor = coll.find(None, None).await?;
+            let mut cursor = coll.find(None, None).await?;
             // Iterate over all documents in the collection.
-            for doc_from_db in cursor {
+            while let Some(mut doc_from_db) = cursor.try_next().await? {
                 let mut is_changed = false;
-                let mut doc_from_db = doc_from_db?;
                 //
                 // Skip documents if field value Null.
                 if doc_from_db.is_null(const_field_name) {
