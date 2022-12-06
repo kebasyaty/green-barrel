@@ -1,10 +1,10 @@
 //! Caching inmodelation about Models for speed up work.
 
+use async_trait::async_trait;
 use mongodb::{
     bson::{doc, Bson, Document},
-    sync::Client,
+    Client,
 };
-
 use parking_lot::RwLock;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
@@ -24,10 +24,11 @@ type OptionsF64Map = HashMap<String, Vec<f64>>;
 
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
+#[async_trait(?Send)]
 pub trait Caching: Main + Converters {
     /// Add metadata to cache.
     // *********************************************************************************************
-    fn caching(
+    async fn caching(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
     ) -> Result<(), Box<dyn Error>>
@@ -46,7 +47,8 @@ pub trait Caching: Main + Converters {
             &mut meta.model_json,
             &meta.fields_name,
             client,
-        )?;
+        )
+        .await?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
             Self::get_option_maps(&meta.model_json, &meta.field_type_map)?;
         meta.option_str_map = options_str_map;
@@ -200,7 +202,7 @@ pub trait Caching: Main + Converters {
     /// ```
     ///
     // *********************************************************************************************
-    fn update_dyn_field(
+    async fn update_dyn_field(
         dyn_data: Value,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -297,7 +299,7 @@ pub trait Caching: Main + Converters {
         };
         // Get the target array from the dynamic data collection.
         let mut obj_fields_doc = {
-            let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+            let curr_dyn_date_doc = coll.find_one(filter.clone(), None).await?.unwrap();
             curr_dyn_date_doc.get_document("fields").unwrap().clone()
         };
         let mut target_arr_bson = obj_fields_doc.get_array(const_field_name).unwrap().clone();
@@ -509,7 +511,7 @@ pub trait Caching: Main + Converters {
             let update = doc! {
                 "$set": { "fields": obj_fields_doc}
             };
-            coll.update_one(filter, update, None)?;
+            coll.update_one(filter, update, None).await?;
         }
 
         // Clean up orphaned (if any) data.
@@ -554,7 +556,7 @@ pub trait Caching: Main + Converters {
             //
             let db = client.database(meta.database_name.as_str());
             let coll = db.collection::<Document>(meta.collection_name.as_str());
-            let cursor = coll.find(None, None)?;
+            let cursor = coll.find(None, None).await?;
             // Iterate over all documents in the collection.
             for doc_from_db in cursor {
                 let mut is_changed = false;
@@ -663,7 +665,7 @@ pub trait Caching: Main + Converters {
                 if is_changed {
                     // Update the document in the database.
                     let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
-                    coll.update_one(query, doc_from_db, None)?;
+                    coll.update_one(query, doc_from_db, None).await?;
                 }
             }
         }
@@ -675,6 +677,8 @@ pub trait Caching: Main + Converters {
             }
         }
         // Update metadata in cache.
-        Self::caching(meta_store, client)
+        Self::caching(meta_store, client);
+
+        Ok(())
     }
 }
