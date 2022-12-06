@@ -1,15 +1,17 @@
 //! Helper methods for converting output data (use in the commons.rs module).
 
+use async_trait::async_trait;
+use futures::stream::TryStreamExt;
 use mongodb::{
     bson::{spec::ElementType, Bson, Document},
     options::FindOptions,
-    sync::Collection,
+    Collection,
 };
-
 use serde_json::Value;
 use std::{collections::HashMap, error::Error};
 
 /// Helper methods for converting output data (use in the commons.rs module).
+#[async_trait(?Send)]
 pub trait Converters {
     /// Get prepared document ( converting data types to model-friendly formats ).
     // ---------------------------------------------------------------------------------------------
@@ -118,15 +120,15 @@ pub trait Converters {
 
     /// Get prepared documents ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
-    fn many_to_doc_list(
+    async fn many_to_doc_list(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection<Document>,
     ) -> Result<Vec<Document>, Box<dyn Error>> {
         //
         let mut doc_list: Vec<Document> = Vec::new();
-        let mut cursor = collection.find(filter, find_options)?;
-        while let Some(Ok(doc)) = cursor.next() {
+        let mut cursor = collection.find(filter, find_options).await?;
+        while let Some(doc) = cursor.try_next().await? {
             doc_list.push(doc);
         }
 
@@ -135,7 +137,7 @@ pub trait Converters {
 
     /// Get json-line from document list ( missing fields type ).
     // ---------------------------------------------------------------------------------------------
-    fn many_to_json(
+    async fn many_to_json(
         filter: Option<Document>,
         find_options: Option<FindOptions>,
         collection: Collection<Document>,
@@ -145,8 +147,8 @@ pub trait Converters {
     ) -> Result<Option<String>, Box<dyn Error>> {
         //
         let mut doc_list: Vec<Bson> = Vec::new();
-        let mut cursor = collection.find(filter, find_options)?;
-        while let Some(Ok(doc)) = cursor.next() {
+        let mut cursor = collection.find(filter, find_options).await?;
+        while let Some(doc) = cursor.try_next().await? {
             let doc = Self::to_prepared_doc(doc, ignore_fields, field_type_map, model_name)?;
             doc_list.push(Bson::Document(doc));
         }
