@@ -2026,15 +2026,18 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "$set": final_doc.clone(),
                     };
                     // Run hook.
-                    self.pre_update(meta_store, client, validators, media_dir);
+                    self.pre_update(meta_store, client, validators, media_dir)
+                        .await;
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())
                         .await?;
                     // Run hook.
-                    self.post_update(meta_store, client, validators, media_dir);
+                    self.post_update(meta_store, client, validators, media_dir)
+                        .await;
                 } else {
                     // Run hook.
-                    self.pre_create(meta_store, client, validators, media_dir);
+                    self.pre_create(meta_store, client, validators, media_dir)
+                        .await;
                     // Create document.
                     let result: InsertOneResult = coll
                         .insert_one(final_doc.clone(), options_insert.clone())
@@ -2044,7 +2047,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Add hash-line to model instance.
                     self.set_hash(hash_line.clone());
                     // Run hook.
-                    self.post_create(meta_store, client, validators, media_dir);
+                    self.post_create(meta_store, client, validators, media_dir)
+                        .await;
                 }
                 // Mute document.
                 verified_data.set_doc(None);
@@ -2197,7 +2201,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Run hook.
-            self.pre_delete(meta_store, client);
+            self.pre_delete(meta_store, client).await;
             // Execute query.
             coll.delete_one(query, options).await.is_ok()
         } else {
@@ -2205,7 +2209,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         };
         // Run hook.
         if result_bool && err_msg.is_empty() {
-            self.post_delete(meta_store, client);
+            self.post_delete(meta_store, client).await;
         }
         //
         let deleted_count = u64::from(result_bool);
