@@ -15,7 +15,9 @@ version = "1.2.1-beta"
 doctest = false
 
 [dependencies]
+async-trait = "0.1.59"
 chrono = "0.4.23"
+futures = "0.3.25"
 image = "0.24.5"
 parking_lot = "0.12.1"
 rand = "0.8.5"
@@ -27,7 +29,7 @@ validator = "0.16.0"
 
 [dependencies.mongodb]
 default-features = false
-features = ["sync", "bson-chrono-0_4"]
+features = ["async-std-runtime", "bson-chrono-0_4"]
 version = "2.3.1"
 
 [dependencies.serde]

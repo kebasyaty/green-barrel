@@ -9,10 +9,11 @@ pub mod helpers;
 pub mod hooks;
 pub mod output_data;
 pub mod validation;
+use async_trait::async_trait;
 
 use mongodb::{
     bson::{doc, document::Document, oid::ObjectId},
-    sync::Client,
+    Client,
 };
 use serde_json::{json, value::Value};
 use std::error::Error;
@@ -21,6 +22,7 @@ use crate::models::helpers::Meta;
 
 /// Model options and field type map for Form.
 // *************************************************************************************************
+#[async_trait(?Send)]
 pub trait Main {
     /// Get model key
     /// ( to access model metadata in cache ).
@@ -69,7 +71,7 @@ pub trait Main {
 
     /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
-    fn injection(
+    async fn injection(
         project_name: &str,
         unique_project_key: &str,
         collection_name: &str,
@@ -91,7 +93,7 @@ pub trait Main {
             "collection": collection_name
         };
         // Get a document with values for dynamic fields type.
-        if let Some(doc) = collection.find_one(filter, None)? {
+        if let Some(doc) = collection.find_one(filter, None).await? {
             let dyn_values_doc = doc.get_document("fields")?;
             // Updating the `options` parameter for fields with a dynamic field type.
             for field_name in fields_name {
