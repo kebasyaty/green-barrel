@@ -1,14 +1,16 @@
 //! Methods that are called at different stages when accessing the database.
 
-use mongodb::sync::Client;
+use mongodb::Client;
 use parking_lot::RwLock;
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::Arc;
 
 use crate::models::helpers::Meta;
+use async_trait::async_trait;
 
 /// Hooks methods.
+#[async_trait(?Send)]
 pub trait Hooks {
     /// Called before a new document is created in the database.
     ///
@@ -30,7 +32,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_create(
+    async fn pre_create(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -59,7 +61,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_create(
+    async fn post_create(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -88,7 +90,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_update(
+    async fn pre_update(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -117,7 +119,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_update(
+    async fn post_update(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -146,7 +148,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         //
     }
     /// Called after an existing document in the database has been deleted.
@@ -169,7 +171,11 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn post_delete(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+    ) {
         //
     }
 }
