@@ -36,7 +36,8 @@ fn run_migration(
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // THIS IS REQUIRED FOR ALL PROJECTS.
+    // THIS IS REQUIRED FOR ALL PROJECTS
+    // Hint: This is done to be able to add data to streams.
     // #############################################################################################
     let _app_state = app_state::get_app_state()?;
     let media_dir = app_state::get_media_dir()?;
