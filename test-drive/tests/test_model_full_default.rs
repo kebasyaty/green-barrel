@@ -1,7 +1,7 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, sync::Client};
+use mongodb::{bson::doc, Client};
 use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -113,14 +113,14 @@ mod migration {
     }
 
     // Migration
-    pub fn run_migration(
+    pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client)?;
+        models::TestModel::caching(meta_store, client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -130,7 +130,8 @@ mod migration {
             get_model_key_list()?,
             meta_store,
             client,
-        )?;
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
@@ -139,7 +140,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client)?;
+        monitor.migrat(meta_store, client).await?;
 
         Ok(())
     }
@@ -187,8 +188,8 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[test]
-fn test_model_full_default() -> Result<(), Box<dyn Error>> {
+#[async_std::test]
+async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
@@ -196,9 +197,9 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-    let client = Client::with_uri_str(uri).expect("failed to connect");
+    let client = Client::with_uri_str(uri).await?;
     let validators = get_validators()?;
-    migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
+    migration::run_migration(&meta_store, &client, &validators, &media_dir).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -218,14 +219,14 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     // aggregate
     let pipeline = vec![doc! {}];
-    let result = TestModel::aggregate(pipeline, &meta_store, &client, None);
+    let result = TestModel::aggregate(pipeline, &meta_store, &client, None).await;
     assert!(result.is_err(), "aggregate() != is_err()");
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None)?;
+    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
     assert_eq!(result, 0, "count_documents() != 0");
     // delete_many
     let query = doc! {};
-    let result = TestModel::delete_many(query, &meta_store, &client, None)?;
+    let result = TestModel::delete_many(query, &meta_store, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 0,
@@ -233,38 +234,38 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     );
     // delete_one
     let query = doc! {};
-    let result = TestModel::delete_one(query, &meta_store, &client, None)?;
+    let result = TestModel::delete_one(query, &meta_store, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 0, "delete_one() != 0");
     // distinct
     let field_name = "checkbox";
     let filter = doc! {};
-    let result = TestModel::distinct(field_name, &meta_store, &client, Some(filter), None)?;
+    let result = TestModel::distinct(field_name, &meta_store, &client, Some(filter), None).await?;
     assert!(result.is_empty(), "distinct() != is_empty()");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None)?;
+    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
     assert_eq!(result, 0, "estimated_document_count != 0_i64");
     // find_many_to_doc_list
-    let result = TestModel::find_many_to_doc_list(&meta_store, &client, None, None)?;
+    let result = TestModel::find_many_to_doc_list(&meta_store, &client, None, None).await?;
     assert!(result.is_none(), "find_many_to_doc_list() != is_none()");
     // find_many_to_json
-    let result = TestModel::find_many_to_json(&meta_store, &client, None, None)?;
+    let result = TestModel::find_many_to_json(&meta_store, &client, None, None).await?;
     assert!(result.is_none(), "find_many_to_json() != is_none");
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_doc(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_doc(filter, &meta_store, &client, None).await?;
     assert!(result.is_none(), "find_one_to_doc() != is_none()");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_json(filter, &meta_store, &client, None).await?;
     assert!(result.is_empty(), "find_one_to_json() != is_empty()");
     // find_one_to_instance
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None).await?;
     assert!(result.is_none(), "find_one_to_instance() != is_none()");
     // find_one_and_delete
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None).await?;
     assert!(result.is_none(), "find_one_and_delete() != is_none()");
     // collection_name
     let result = TestModel::collection_name(&meta_store, &client)?;
@@ -282,7 +283,8 @@ fn test_model_full_default() -> Result<(), Box<dyn Error>> {
         migration::get_model_key_list()?,
         &meta_store,
         &client,
-    )?;
+    )
+    .await?;
 
     Ok(())
 }

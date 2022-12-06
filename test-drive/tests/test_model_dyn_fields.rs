@@ -3,7 +3,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use mongodb::{
     bson::{doc, Document},
-    sync::Client,
+    Client,
 };
 use parking_lot::RwLock;
 use regex::Regex;
@@ -65,14 +65,14 @@ mod migration {
     }
 
     // Migration
-    pub fn run_migration(
+    pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client)?;
+        models::TestModel::caching(meta_store, client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -82,7 +82,8 @@ mod migration {
             get_model_key_list()?,
             meta_store,
             client,
-        )?;
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
@@ -91,7 +92,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client)?;
+        monitor.migrat(meta_store, client).await?;
 
         Ok(())
     }
@@ -139,8 +140,8 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[test]
-fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
+#[async_std::test]
+async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
@@ -148,9 +149,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-    let client = Client::with_uri_str(uri).expect("failed to connect");
+    let client = Client::with_uri_str(uri).await?;
     let validators = get_validators()?;
-    migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
+    migration::run_migration(&meta_store, &client, &validators, &media_dir).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -199,7 +200,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "field_name not match"
     );
     //
@@ -213,7 +216,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_text_dyn, value = 1"
     );
     //
@@ -224,7 +229,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn, value = 2"
     );
     //
@@ -235,7 +242,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = 'Some text 1'"
     );
     //
@@ -246,7 +255,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = 'Some text 2'"
     );
     //
@@ -257,7 +268,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = 'Some text 3'"
     );
     //
@@ -268,7 +281,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = 'Some text 4'"
     );
     //
@@ -279,7 +294,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = 'Some text 5'"
     );
     //
@@ -290,7 +307,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = 'Some text 6'"
     );
     //
@@ -301,7 +320,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = 'Some text 7'"
     );
     //
@@ -312,7 +333,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &meta_store, &client).is_err(),
+        TestModel::update_dyn_field(dyn_data, &meta_store, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = 'Some text 8'"
     );
     //
@@ -322,7 +345,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     //
     // Get the target array from the dynamic data collection.
     let obj_fields_doc = {
-        let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+        let curr_dyn_date_doc = coll.find_one(filter.clone(), None).await?.unwrap();
         curr_dyn_date_doc.get_document("fields").unwrap().clone()
     };
     //

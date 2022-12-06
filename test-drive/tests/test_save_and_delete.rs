@@ -1,7 +1,7 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::sync::Client;
+use mongodb::Client;
 use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -448,14 +448,14 @@ mod migration {
     }
 
     // Migration
-    pub fn run_migration(
+    pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client)?;
+        models::TestModel::caching(meta_store, client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -465,7 +465,8 @@ mod migration {
             get_model_key_list()?,
             meta_store,
             client,
-        )?;
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
@@ -474,7 +475,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client)?;
+        monitor.migrat(meta_store, client).await?;
 
         Ok(())
     }
@@ -522,8 +523,8 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[test]
-fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
+#[async_std::test]
+async fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
@@ -531,9 +532,9 @@ fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
     let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-    let client = Client::with_uri_str(uri).expect("failed to connect");
+    let client = Client::with_uri_str(uri).await?;
     let validators = get_validators()?;
-    migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
+    migration::run_migration(&meta_store, &client, &validators, &media_dir).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -545,7 +546,9 @@ fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
 
     // Create document
     // ---------------------------------------------------------------------------------------------
-    let output_data = test_model.save(&meta_store, &client, &validators, &media_dir, None, None)?;
+    let output_data = test_model
+        .save(&meta_store, &client, &validators, &media_dir, None, None)
+        .await?;
     test_model = output_data.update()?;
     //
     assert!(
@@ -572,7 +575,7 @@ fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
 
     // Delete document
     // ---------------------------------------------------------------------------------------------
-    let output_data = test_model.delete(&meta_store, &client, None)?;
+    let output_data = test_model.delete(&meta_store, &client, None).await?;
     assert!(
         output_data.is_valid(),
         "Delete document - is_valid(): {}",
@@ -587,7 +590,8 @@ fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
         migration::get_model_key_list()?,
         &meta_store,
         &client,
-    )?;
+    )
+    .await?;
 
     Ok(())
 }

@@ -1,6 +1,7 @@
+use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::sync::Client;
+use mongodb::Client;
 use parking_lot::RwLock;
 use regex::Regex;
 use regex::RegexBuilder;
@@ -145,8 +146,9 @@ impl AdditionalValidation for User {
     }
 }
 
+#[async_trait(?Send)]
 impl Hooks for User {
-    fn pre_create(
+    async fn pre_create(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -156,7 +158,7 @@ impl Hooks for User {
         println!("!!!Pre Create!!!");
     }
     //
-    fn post_create(
+    async fn post_create(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -166,7 +168,7 @@ impl Hooks for User {
         println!("!!!Post Create!!!");
     }
     //
-    fn pre_update(
+    async fn pre_update(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -176,7 +178,7 @@ impl Hooks for User {
         println!("!!!Pre Update!!!");
     }
     //
-    fn post_update(
+    async fn post_update(
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
@@ -186,11 +188,15 @@ impl Hooks for User {
         println!("!!!Post Update!!!");
     }
     //
-    fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         println!("!!!Pre Delet!!!");
     }
     //
-    fn post_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn post_delete(
+        &self,
+        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+        _client: &Client,
+    ) {
         println!("!!!Post Delet!!!");
     }
 }

@@ -1,7 +1,7 @@
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, sync::Client};
+use mongodb::{bson::doc, Client};
 use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -129,14 +129,14 @@ mod migration {
     }
 
     // Migration
-    pub fn run_migration(
+    pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client)?;
+        models::TestModel::caching(meta_store, client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -146,7 +146,8 @@ mod migration {
             get_model_key_list()?,
             meta_store,
             client,
-        )?;
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
@@ -155,7 +156,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client)?;
+        monitor.migrat(meta_store, client).await?;
 
         Ok(())
     }
@@ -203,8 +204,8 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[test]
-fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
+#[async_std::test]
+async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
@@ -212,9 +213,9 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-    let client = Client::with_uri_str(uri).expect("failed to connect");
+    let client = Client::with_uri_str(uri).await?;
     let validators = get_validators()?;
-    migration::run_migration(&meta_store, &client, &validators, &media_dir)?;
+    migration::run_migration(&meta_store, &client, &validators, &media_dir).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -251,8 +252,9 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
         test_model.textarea.set("Some text");
 
-        let output_data =
-            test_model.save(&meta_store, &client, &validators, &media_dir, None, None)?;
+        let output_data = test_model
+            .save(&meta_store, &client, &validators, &media_dir, None, None)
+            .await?;
         test_model = output_data.update()?;
 
         assert!(
@@ -282,13 +284,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     }
 
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None)?;
+    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None)?;
+    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
     assert_eq!(result, 10, "estimated_document_count() != 10");
     // find_many_to_doc_list
-    let result = TestModel::find_many_to_doc_list(&meta_store, &client, None, None)?;
+    let result = TestModel::find_many_to_doc_list(&meta_store, &client, None, None).await?;
     assert!(result.is_some(), "find_many_to_doc_list() != is_some()");
     assert_eq!(
         result.unwrap().len(),
@@ -296,19 +298,19 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         "find_many_to_doc_list(): len() != 10"
     );
     // find_many_to_json
-    let result = TestModel::find_many_to_json(&meta_store, &client, None, None)?;
+    let result = TestModel::find_many_to_json(&meta_store, &client, None, None).await?;
     assert!(result.is_some(), "find_many_to_json() != is_some()");
     // find_one_to_doc
     let filter = doc! {"email": "x10@x.xx"};
-    let result = TestModel::find_one_to_doc(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_doc(filter, &meta_store, &client, None).await?;
     assert!(result.is_some(), "find_one_to_doc() != is_some()");
     // find_one_to_json
     let filter = doc! {"email": "x5@x.xx"};
-    let result = TestModel::find_one_to_json(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_json(filter, &meta_store, &client, None).await?;
     assert!(!result.is_empty(), "find_one_to_json() == is_empty()");
     // find_one_to_instance
     let filter = doc! {"email": "x1@x.xx"};
-    let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None).await?;
     assert!(result.is_some(), "find_one_to_instance() != is_some()");
     // collection_name
     let result = TestModel::collection_name(&meta_store, &client)?;
@@ -319,38 +321,38 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
     // find_one_and_delete
     let filter = doc! {"email": "x2@x.xx"};
-    let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None)?;
+    let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None).await?;
     assert!(result.is_some(), "find_one_and_delete() != is_some()");
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None)?;
+    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
     assert_eq!(result, 9, "count_documents() != 9");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None)?;
+    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
     assert_eq!(result, 9, "estimated_document_count() != 9");
     // delete_one
     let query = doc! {"email": "x3@x.xx"};
-    let result = TestModel::delete_one(query, &meta_store, &client, None)?;
+    let result = TestModel::delete_one(query, &meta_store, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 1, "delete_one() != 1");
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None)?;
+    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
     assert_eq!(result, 8, "count_documents() != 8");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None)?;
+    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
     assert_eq!(result, 8, "estimated_document_count() != 8");
     // delete_many
     let query = doc! {"email": {"$in": ["x4@x.xx", "x6@x.xx"]}};
-    let result = TestModel::delete_many(query, &meta_store, &client, None)?;
+    let result = TestModel::delete_many(query, &meta_store, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 2,
         "delete_many(): deleted_count() != 2"
     );
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None)?;
+    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
     assert_eq!(result, 6, "count_documents() != 6");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None)?;
+    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
     assert_eq!(result, 6, "estimated_document_count() != 6");
 
     // Delete test database
@@ -361,7 +363,8 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         migration::get_model_key_list()?,
         &meta_store,
         &client,
-    )?;
+    )
+    .await?;
 
     Ok(())
 }
