@@ -47,7 +47,7 @@ use crate::models::{
 ///
 #[async_trait(?Send)]
 pub trait Fixtures: Caching + QPaladins + QCommons {
-    fn run_fixture(
+    async fn run_fixture(
         fixture_name: &str,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -118,8 +118,9 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data =
-                    instance.save(meta_store, client, validators, media_dir, None, None)?;
+                let output_data = instance
+                    .save(meta_store, client, validators, media_dir, None, None)
+                    .await?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{}` > Method: `run_fixture()` => {}",

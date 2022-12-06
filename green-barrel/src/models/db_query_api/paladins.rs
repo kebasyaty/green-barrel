@@ -406,6 +406,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let is_unique = unique.as_bool().unwrap();
                         if field_type != "InputPassword" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .await
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
@@ -513,6 +514,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`.
                     if final_field.get("unique").unwrap().as_bool().unwrap() {
                         Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                            .await
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() =
@@ -657,13 +659,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let val_dt_bson = Bson::DateTime(val_dt.into());
                     // Validation of `unique`
                     if final_field["unique"].as_bool().unwrap() {
-                        Self::check_unique(hash, field_name, &val_dt_bson, &coll).unwrap_or_else(
-                            |err| {
+                        Self::check_unique(hash, field_name, &val_dt_bson, &coll)
+                            .await
+                            .unwrap_or_else(|err| {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() =
                                     json!(Self::accumula_err(final_field, &err.to_string()));
-                            },
-                        );
+                            });
                     }
                     // Insert result.
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
@@ -1194,7 +1196,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 field_name,
                                 Some(file_default),
                                 None,
-                            )?;
+                            )
+                            .await?;
                         } else {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
@@ -1204,7 +1207,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name).await?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if file_data.path.is_empty() {
@@ -1335,7 +1338,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 field_name,
                                 None,
                                 Some(image_default),
-                            )?;
+                            )
+                            .await?;
                         } else {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
@@ -1345,7 +1349,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Get the current information about file from database.
-                    let curr_file_info = self.db_get_file_info(&coll, field_name)?;
+                    let curr_file_info = self.db_get_file_info(&coll, field_name).await?;
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
                     if image_data.path.is_empty() {
@@ -1547,6 +1551,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let is_unique = unique.as_bool().unwrap();
                         if is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .await
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
@@ -1632,6 +1637,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let is_unique = unique.as_bool().unwrap();
                         if is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .await
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
@@ -1718,6 +1724,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let is_unique = unique.as_bool().unwrap();
                         if is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
+                                .await
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
@@ -1806,7 +1813,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let doc = {
                     let object_id = ObjectId::parse_str(hash)?;
                     let filter = doc! {"_id": object_id};
-                    coll.find_one(filter, None)?.unwrap()
+                    coll.find_one(filter, None).await?.unwrap()
                 };
                 let dt2 = doc.get("created_at").unwrap();
                 let dt_text2 =
@@ -1928,7 +1935,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 &mut final_model_json,
                 &meta.fields_name,
                 client,
-            )?;
+            )
+            .await?;
         }
 
         // Return result.
@@ -1955,7 +1963,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     ///
     // *********************************************************************************************
-    fn save(
+    async fn save(
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -1972,13 +1980,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(
-                meta_store,
-                client,
-                validators,
-                media_dir,
-                Some((true, step == 2)),
-            )?;
+            let mut verified_data = self
+                .check(
+                    meta_store,
+                    client,
+                    validators,
+                    media_dir,
+                    Some((true, step == 2)),
+                )
+                .await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();
@@ -2018,15 +2028,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Run hook.
                     self.pre_update(meta_store, client, validators, media_dir);
                     // Update doc.
-                    coll.update_one(query, update, options_update.clone())?;
+                    coll.update_one(query, update, options_update.clone())
+                        .await?;
                     // Run hook.
                     self.post_update(meta_store, client, validators, media_dir);
                 } else {
                     // Run hook.
                     self.pre_create(meta_store, client, validators, media_dir);
                     // Create document.
-                    let result: InsertOneResult =
-                        coll.insert_one(final_doc.clone(), options_insert.clone())?;
+                    let result: InsertOneResult = coll
+                        .insert_one(final_doc.clone(), options_insert.clone())
+                        .await?;
                     // Get hash-line.
                     hash_line = result.inserted_id.as_object_id().unwrap().to_hex();
                     // Add hash-line to model instance.
@@ -2067,7 +2079,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     ///
     ///
-    fn delete(
+    async fn delete(
         &self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
@@ -2117,7 +2129,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Create query.
             let query = doc! {"_id": object_id};
             // Removeve files
-            if let Some(document) = coll.find_one(query.clone(), None)? {
+            if let Some(document) = coll.find_one(query.clone(), None).await? {
                 let model_json = self.self_to_json_val()?;
                 //
                 for field_name in meta.fields_name.iter() {
@@ -2187,7 +2199,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Run hook.
             self.pre_delete(meta_store, client);
             // Execute query.
-            coll.delete_one(query, options).is_ok()
+            coll.delete_one(query, options).await.is_ok()
         } else {
             false
         };
@@ -2242,7 +2254,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// assert!(user.create_password_hash(password, &meta_store, &client, None)?);
     /// ```
     ///
-    fn verify_password(
+    async fn verify_password(
         &self,
         password: &str,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
@@ -2283,7 +2295,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Create a filter to search for a document.
         let filter = doc! {"_id": object_id};
         // An attempt to find the required document.
-        let doc = coll.find_one(filter, options)?;
+        let doc = coll.find_one(filter, options).await?;
         // We check that for the given `hash` a document is found in the database.
         if doc.is_none() {
             Err(format!(
@@ -2332,7 +2344,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// }
     /// ```
     ///
-    fn update_password(
+    async fn update_password(
         &self,
         old_password: &str,
         new_password: &str,
@@ -2347,7 +2359,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut result_bool = false;
         let mut err_msg = String::new();
         // Validation current password.
-        if !self.verify_password(old_password, meta_store, client, options_find_old)? {
+        if !self
+            .verify_password(old_password, meta_store, client, options_find_old)
+            .await?
+        {
             err_msg = String::from("The old password does not match.");
         } else {
             // Get a key to access the metadata store.
@@ -2380,7 +2395,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             };
             // Update password.
             result_bool = coll
-                .update_one(query, update, options_update)?
+                .update_one(query, update, options_update)
+                .await?
                 .modified_count
                 == 1;
             if !result_bool {
