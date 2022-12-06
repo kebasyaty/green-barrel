@@ -2,7 +2,7 @@
 //! your models (adding a field, deleting a model, etc.) into your database schema.
 
 use chrono::Utc;
-use futures::stream::{StreamExt, TryStreamExt};
+use futures::stream::TryStreamExt;
 use mongodb::{
     bson::{
         de::from_document,
