@@ -1,8 +1,9 @@
 //! Validating Model fields for save and update.
 
+use async_trait::async_trait;
 use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
-    sync::Collection,
+    Collection,
 };
 use regex::Regex;
 use serde_json::value::Value;
@@ -10,6 +11,7 @@ use std::{collections::HashMap, error::Error};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
+#[async_trait(?Send)]
 pub trait Validation {
     /// Validation of `minlength`.
     // ---------------------------------------------------------------------------------------------
@@ -90,7 +92,7 @@ pub trait Validation {
 
     /// Validation of `unique`.
     // ---------------------------------------------------------------------------------------------
-    fn check_unique(
+    async fn check_unique(
         hash: &str,
         field_name: &str,
         field_value_bson: &Bson,
@@ -108,7 +110,7 @@ pub trait Validation {
                 ]
             };
         }
-        let count = coll.count_documents(filter, None)?;
+        let count = coll.count_documents(filter, None).await?;
         if count > 0 {
             Err("Is not unique.")?
         }
