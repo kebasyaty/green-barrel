@@ -4,7 +4,7 @@ mod settings;
 
 use green_barrel::*;
 use mongodb::Client;
-use parking_lot::RwLock;
+use async_lock::RwLock;
 use regex::Regex;
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error};

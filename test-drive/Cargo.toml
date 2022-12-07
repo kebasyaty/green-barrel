@@ -7,13 +7,13 @@ name = "test-drive"
 version = "0.1.0"
 
 [dependencies]
+async-lock = "2.6.0"
 async-std = "1.12.0"
 async-trait = "0.1.59"
 chrono = "0.4.23"
 confy = "0.5.1"
 green-barrel = {path = "../green-barrel"}
 metamorphose = {path = "../metamorphose"}
-parking_lot = "0.12.1"
 rand = "0.8.5"
 regex = "1.7.0"
 rust-argon2 = "1.0.0"

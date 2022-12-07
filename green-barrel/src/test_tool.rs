@@ -1,7 +1,7 @@
 //! Auxiliary tools for testing models.
 
+use async_lock::RwLock;
 use mongodb::Client;
-use parking_lot::RwLock;
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
 
@@ -17,7 +17,7 @@ pub async fn del_test_db(
     client: &Client,
 ) -> Result<(), Box<dyn Error>> {
     // Get metadata store
-    let store = meta_store.read();
+    let store = meta_store.read().await;
     // Name of the technical database for testing
     let db_green_tech = format!("green_tech__{}__{}", project_name, unique_project_key);
     // Removing databases

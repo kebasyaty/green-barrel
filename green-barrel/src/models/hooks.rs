@@ -1,8 +1,8 @@
 //! Methods that are called at different stages when accessing the database.
 
+use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
-use parking_lot::RwLock;
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::Arc;

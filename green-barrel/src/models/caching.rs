@@ -1,12 +1,12 @@
 //! Caching inmodelation about Models for speed up work.
 
+use async_lock::RwLock;
 use async_trait::async_trait;
 use futures::stream::TryStreamExt;
 use mongodb::{
     bson::{doc, Bson, Document},
     Client,
 };
-use parking_lot::RwLock;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::sync::Arc;
@@ -57,7 +57,7 @@ pub trait Caching: Main + Converters {
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
         // Get metadata store.
-        let mut store = meta_store.write();
+        let mut store = meta_store.write().await;
         // Save the meta to storage.
         store.insert(key, meta);
         //
@@ -138,14 +138,14 @@ pub trait Caching: Main + Converters {
     /// println!("{:#?}", user);
     /// ```
     ///
-    fn new(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<Self, Box<dyn Error>>
+    async fn new(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<Self, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read();
+        let store = meta_store.read().await;
         // Get meta of Model.
         if let Some(meta) = store.get(&key) {
             let instance = serde_json::from_value(meta.model_json.clone())?;
@@ -168,14 +168,14 @@ pub trait Caching: Main + Converters {
     /// println!("{json_line}");
     /// ```
     ///
-    fn json(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
+    async fn json(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read();
+        let store = meta_store.read().await;
         // Get metadata of Model.
         if let Some(meta) = store.get(&key) {
             let json_line = serde_json::to_string(&meta.model_json)?;
@@ -214,7 +214,7 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read();
+        let store = meta_store.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -671,11 +671,6 @@ pub trait Caching: Main + Converters {
         }
         // Unlock
         drop(store);
-        if meta_store.is_locked() {
-            unsafe {
-                meta_store.force_unlock_read();
-            }
-        }
         // Update metadata in cache.
         Self::caching(meta_store, client).await?;
 

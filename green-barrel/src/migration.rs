@@ -1,6 +1,7 @@
 //! Migrations are green-barrel’s way of propagating changes you make to
 //! your models (adding a field, deleting a model, etc.) into your database schema.
 
+use async_lock::RwLock;
 use chrono::Utc;
 use futures::stream::TryStreamExt;
 use mongodb::{
@@ -13,7 +14,6 @@ use mongodb::{
     },
     Client, Database,
 };
-use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -174,7 +174,7 @@ impl<'a> Monitor<'a> {
         // Run refresh models state.
         self.refresh(client).await?;
         // Get metadata store.
-        let store = meta_store.read();
+        let store = meta_store.read().await;
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(model_key) {

@@ -1,8 +1,8 @@
 //! To populate the database with pre-created data.
 
+use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
-use parking_lot::RwLock;
 use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
@@ -64,7 +64,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read();
+        let store = meta_store.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta

@@ -15,11 +15,11 @@ version = "1.2.1-beta"
 doctest = false
 
 [dependencies]
+async-lock = "2.6.0"
 async-trait = "0.1.59"
 chrono = "0.4.23"
 futures = "0.3.25"
 image = "0.24.5"
-parking_lot = "0.12.1"
 rand = "0.8.5"
 regex = "1.7.0"
 rust-argon2 = "1.0.0"
@@ -43,3 +43,6 @@ features = [
   "macro-diagnostics",
 ]
 version = "1.2.2"
+
+[dev-dependencies]
+async-std = "1.12.0"

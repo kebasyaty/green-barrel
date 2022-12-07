@@ -1,6 +1,6 @@
 //! Collection of auxiliary Structures, Enumerations.
 
-use parking_lot::RwLock;
+use async_lock::RwLock;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
