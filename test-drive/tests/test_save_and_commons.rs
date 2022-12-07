@@ -227,7 +227,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         fs::copy("./media/default/no_file.odt", target_file.clone())?;
         fs::copy("./media/default/no_image.png", target_image.clone())?;
 
-        let mut test_model = TestModel::new(&meta_store)?;
+        let mut test_model = TestModel::new(&meta_store).await?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
@@ -313,10 +313,10 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None).await?;
     assert!(result.is_some(), "find_one_to_instance() != is_some()");
     // collection_name
-    let result = TestModel::collection_name(&meta_store, &client)?;
+    let result = TestModel::collection_name(&meta_store, &client).await?;
     assert!(!result.is_empty(), "collection_name() == is_empty()");
     // namespace
-    let result = TestModel::namespace(&meta_store, &client)?;
+    let result = TestModel::namespace(&meta_store, &client).await?;
     assert!(!result.db.is_empty(), "namespace(): db == is_empty()");
     assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
     // find_one_and_delete

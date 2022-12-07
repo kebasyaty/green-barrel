@@ -207,7 +207,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     //
     // No data
     // ---------------------------------------------------------------------------------------------
-    let mut test_model = TestModel::new(&meta_store)?;
+    let mut test_model = TestModel::new(&meta_store).await?;
     let output_data = test_model
         .check(&meta_store, &client, &validators, &media_dir, None)
         .await?;
@@ -247,7 +247,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_4.odt")?;
     fs::copy("./media/default/no_image.png", "./media/tmp/no_image_4.png")?;
 
-    let mut test_model = TestModel::new(&meta_store)?;
+    let mut test_model = TestModel::new(&meta_store).await?;
     test_model.checkbox.set(true);
     test_model.date.set("0000-01-01");
     test_model.datetime.set("2039-01-01T00:00");

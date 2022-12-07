@@ -207,7 +207,7 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     //
     // Positive
     // ---------------------------------------------------------------------------------------------
-    let mut test_model = TestModel::new(&meta_store)?;
+    let mut test_model = TestModel::new(&meta_store).await?;
     let output_data = test_model
         .save(&meta_store, &client, &validators, &media_dir, None, None)
         .await?;
@@ -244,7 +244,7 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_3.odt")?;
     fs::copy("./media/default/no_image.png", "./media/tmp/no_image_3.png")?;
 
-    let mut test_model = TestModel::new(&meta_store)?;
+    let mut test_model = TestModel::new(&meta_store).await?;
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");

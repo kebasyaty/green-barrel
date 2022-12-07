@@ -540,7 +540,7 @@ async fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
     // =============================================================================================
     type TestModel = models::TestModel;
     //
-    let mut test_model = TestModel::new(&meta_store)?;
+    let mut test_model = TestModel::new(&meta_store).await?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
 

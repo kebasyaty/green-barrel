@@ -208,10 +208,13 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // Module: green-barrel/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
     // new
-    assert!(TestModel::new(&meta_store).is_ok(), "new() != is_ok()");
+    assert!(
+        TestModel::new(&meta_store).await.is_ok(),
+        "new() != is_ok()"
+    );
     // to_json
     assert!(
-        !TestModel::json(&meta_store)?.is_empty(),
+        !TestModel::json(&meta_store).await?.is_empty(),
         "json() != is_empty()"
     );
     //
@@ -268,10 +271,10 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None).await?;
     assert!(result.is_none(), "find_one_and_delete() != is_none()");
     // collection_name
-    let result = TestModel::collection_name(&meta_store, &client)?;
+    let result = TestModel::collection_name(&meta_store, &client).await?;
     assert!(!result.is_empty(), "name() != is_empty()");
     // namespace
-    let result = TestModel::namespace(&meta_store, &client)?;
+    let result = TestModel::namespace(&meta_store, &client).await?;
     assert!(!result.db.is_empty(), "namespace() != is_empty()");
     assert!(!result.coll.is_empty(), "namespace() != is_empty()");
 
