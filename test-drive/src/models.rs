@@ -152,7 +152,6 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Pre Create!!!");
@@ -162,7 +161,6 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Post Create!!!");
@@ -172,7 +170,6 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Pre Update!!!");
@@ -182,7 +179,6 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Post Update!!!");

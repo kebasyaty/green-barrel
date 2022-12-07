@@ -5,7 +5,6 @@ mod settings;
 use async_lock::RwLock;
 use green_barrel::*;
 use mongodb::Client;
-use regex::Regex;
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
 
