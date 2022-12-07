@@ -3,7 +3,6 @@ use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
-use regex::Regex;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
