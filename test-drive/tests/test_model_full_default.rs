@@ -3,7 +3,6 @@ use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::{bson::doc, Client};
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, path::Path};

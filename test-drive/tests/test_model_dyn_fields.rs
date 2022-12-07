@@ -6,7 +6,6 @@ use mongodb::{
     bson::{doc, Document},
     Client,
 };
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
