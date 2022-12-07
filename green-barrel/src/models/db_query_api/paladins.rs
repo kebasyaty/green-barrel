@@ -144,7 +144,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -425,22 +424,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     // Validation in regular expression (email, password, etc...).
-                    Self::regex_validation(field_type, curr_val, validators).unwrap_or_else(
-                        |err| {
-                            is_err_symptom = true;
-                            if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, &err.to_string()));
-                            } else {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; \
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
+                        is_err_symptom = true;
+                        if !is_hide {
+                            *final_field.get_mut("error").unwrap() =
+                                json!(Self::accumula_err(final_field, &err.to_string()));
+                        } else {
+                            Err(format!(
+                                "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
-                                    err
-                                ))
-                                .unwrap()
-                            }
-                        },
-                    );
+                                err
+                            ))
+                            .unwrap()
+                        }
+                    });
                     // Insert result.
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
@@ -1233,7 +1230,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     if is_slug_update
-                        || validators["is_token_dated_path"].is_match(file_data.path.as_str())
+                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")?
+                            .is_match(file_data.path.as_str())
                     {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
@@ -1375,7 +1373,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     if is_slug_update
-                        || validators["is_token_dated_path"].is_match(image_data.path.as_str())
+                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")?
+                            .is_match(image_data.path.as_str())
                     {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
@@ -1967,7 +1966,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
@@ -1981,13 +1979,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
             let mut verified_data = self
-                .check(
-                    meta_store,
-                    client,
-                    validators,
-                    media_dir,
-                    Some((true, step == 2)),
-                )
+                .check(meta_store, client, media_dir, Some((true, step == 2)))
                 .await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
@@ -2026,18 +2018,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "$set": final_doc.clone(),
                     };
                     // Run hook.
-                    self.pre_update(meta_store, client, validators, media_dir)
-                        .await;
+                    self.pre_update(meta_store, client, media_dir).await;
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())
                         .await?;
                     // Run hook.
-                    self.post_update(meta_store, client, validators, media_dir)
-                        .await;
+                    self.post_update(meta_store, client, media_dir).await;
                 } else {
                     // Run hook.
-                    self.pre_create(meta_store, client, validators, media_dir)
-                        .await;
+                    self.pre_create(meta_store, client, media_dir).await;
                     // Create document.
                     let result: InsertOneResult = coll
                         .insert_one(final_doc.clone(), options_insert.clone())
@@ -2047,8 +2036,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Add hash-line to model instance.
                     self.set_hash(hash_line.clone());
                     // Run hook.
-                    self.post_create(meta_store, client, validators, media_dir)
-                        .await;
+                    self.post_create(meta_store, client, media_dir).await;
                 }
                 // Mute document.
                 verified_data.set_doc(None);

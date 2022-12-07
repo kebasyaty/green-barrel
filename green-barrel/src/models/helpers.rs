@@ -1,10 +1,9 @@
 //! Collection of auxiliary Structures, Enumerations.
 
 use async_lock::RwLock;
-use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{collections::HashMap, error::Error};
+use std::collections::HashMap;
 
 /// Metadata ( model parameters )
 // -------------------------------------------------------------------------------------------------
@@ -137,29 +136,6 @@ impl<'a> ControlArr<'a> {
             _ => panic!("Invalid data type."),
         }
     }
-}
-
-// Regular expressions for data validation.
-// -------------------------------------------------------------------------------------------------
-pub fn get_validators() -> Result<HashMap<String, Regex>, Box<dyn Error>> {
-    let regex_is_color_code = RegexBuilder::new(
-        r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
-    )
-    .case_insensitive(true)
-    .build()?;
-    let regex_is_password = Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")?;
-    let regex_is_token_dated_path = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")?;
-
-    let regex_map = [
-        ("is_color_code".into(), regex_is_color_code),
-        ("is_password".into(), regex_is_password),
-        ("is_token_dated_path".into(), regex_is_token_dated_path),
-    ]
-    .iter()
-    .cloned()
-    .collect();
-
-    Ok(regex_map)
 }
 
 // Metadata storage for Models.

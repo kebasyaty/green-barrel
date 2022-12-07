@@ -3,7 +3,6 @@
 use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
-use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::sync::Arc;
@@ -51,7 +50,6 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         fixture_name: &str,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        validators: &HashMap<String, Regex>,
         media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>>
     where
@@ -119,7 +117,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
                 let output_data = instance
-                    .save(meta_store, client, validators, media_dir, None, None)
+                    .save(meta_store, client, media_dir, None, None)
                     .await?;
                 if !output_data.is_valid() {
                     Err(format!(

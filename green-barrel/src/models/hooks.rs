@@ -3,7 +3,6 @@
 use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
-use regex::Regex;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -36,7 +35,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         //
@@ -65,7 +63,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         //
@@ -94,7 +91,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         //
@@ -123,7 +119,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) {
         //

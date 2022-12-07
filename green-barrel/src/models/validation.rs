@@ -5,7 +5,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
     Collection,
 };
-use regex::Regex;
+use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
@@ -43,11 +43,7 @@ pub trait Validation {
 
     /// Validation in regular expression (email, password, etc...).
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(
-        field_type: &str,
-        value: &str,
-        validators: &HashMap<String, Regex>,
-    ) -> Result<(), Box<dyn Error>> {
+    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
             "InputEmail" => {
                 if !validator::validate_email(value) {
@@ -55,7 +51,13 @@ pub trait Validation {
                 }
             }
             "InputColor" => {
-                if !validators["is_color_code"].is_match(value) {
+                if !RegexBuilder::new(
+                    r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
+                )
+                .case_insensitive(true)
+                .build()?
+                .is_match(value)
+                {
                     Err("Invalid Color code.")?
                 }
             }
@@ -80,7 +82,7 @@ pub trait Validation {
                 }
             }
             "InputPassword" => {
-                if !validators["is_password"].is_match(value) {
+                if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")?.is_match(value) {
                     Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
                         <br>Size 8-256 chars")?
                 }
