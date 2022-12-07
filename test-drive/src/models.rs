@@ -1,8 +1,8 @@
+use async_lock::RwLock;
 use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
-use parking_lot::RwLock;
 use regex::Regex;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};

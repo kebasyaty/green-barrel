@@ -2,9 +2,9 @@ mod app_state;
 mod models;
 mod settings;
 
+use async_lock::RwLock;
 use green_barrel::*;
 use mongodb::Client;
-use async_lock::RwLock;
 use regex::Regex;
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
@@ -70,7 +70,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Create model instance.
     // *********************************************************************************************
-    let mut user = models::User::new(&meta_store)?;
+    let mut user = models::User::new(&meta_store).await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
