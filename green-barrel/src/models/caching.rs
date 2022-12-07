@@ -168,10 +168,9 @@ pub trait Caching: Main + Converters {
     /// println!("{json_line}");
     /// ```
     ///
-    async fn json(meta_store: &Arc<RwLock<HashMap<String, Meta>>>) -> Result<String, Box<dyn Error>>
-    where
-        Self: Serialize + DeserializeOwned + Sized,
-    {
+    async fn json(
+        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
+    ) -> Result<String, Box<dyn Error>> {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
