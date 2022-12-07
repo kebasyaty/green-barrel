@@ -132,7 +132,6 @@ mod migration {
     pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        _validators: &HashMap<String, Regex>,
         _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
@@ -214,8 +213,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    let validators = get_validators()?;
-    migration::run_migration(&meta_store, &client, &validators, &media_dir).await?;
+    migration::run_migration(&meta_store, &client, &media_dir).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -253,7 +251,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.textarea.set("Some text");
 
         let output_data = test_model
-            .save(&meta_store, &client, &validators, &media_dir, None, None)
+            .save(&meta_store, &client, &media_dir, None, None)
             .await?;
         test_model = output_data.update()?;
 
