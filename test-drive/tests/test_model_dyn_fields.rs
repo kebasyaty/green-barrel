@@ -1,3 +1,4 @@
+use async_lock::RwLock;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -5,7 +6,6 @@ use mongodb::{
     bson::{doc, Document},
     Client,
 };
-use parking_lot::RwLock;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
