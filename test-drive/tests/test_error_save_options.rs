@@ -201,40 +201,6 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
-    //
-    // Positive
-    // ---------------------------------------------------------------------------------------------
-    let mut test_model = TestModel::new(&meta_store).await?;
-    let output_data = test_model
-        .save(&meta_store, &client, &media_dir, None, None)
-        .await?;
-    test_model = output_data.update()?;
-
-    assert!(
-        output_data.is_valid(),
-        "is_valid(): {}",
-        output_data.err_msg()
-    );
-    assert!(
-        test_model.slug.get().is_some(),
-        "test_model.slug.get() != is_some()"
-    );
-    assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
-    assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
-    assert!(
-        output_data.created_at().is_some(),
-        "created_at() != is_some()"
-    );
-    assert!(
-        output_data.updated_at().is_some(),
-        "updated_at() != is_some()"
-    );
-    assert!(output_data.obj_id()?.is_some(), "obj_id() != is_some()");
-    assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
-    assert!(
-        output_data.json_for_admin()?.is_some(),
-        "json_for_admin() != is_some()"
-    );
 
     // Negative - In select type, there are no options to select
     // ---------------------------------------------------------------------------------------------
