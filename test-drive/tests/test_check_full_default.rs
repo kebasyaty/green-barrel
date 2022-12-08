@@ -201,7 +201,47 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
+    //
+    // No data
+    // ---------------------------------------------------------------------------------------------
+    let mut test_model = TestModel::new(&meta_store).await?;
 
+    let output_data = test_model
+        .check(&meta_store, &client, &media_dir, None)
+        .await?;
+    test_model = output_data.update()?;
+
+    assert!(
+        output_data.is_valid(),
+        "is_valid(): {}",
+        output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_none(),
+        "test_model.slug.get() != is_none()"
+    );
+    assert!(
+        output_data.get_doc().unwrap().is_empty(),
+        "get_doc() != is_empty()"
+    );
+    assert!(output_data.hash().is_empty(), "hash() != is_empty()");
+    assert!(
+        output_data.created_at().is_none(),
+        "created_at() != is_none()"
+    );
+    assert!(
+        output_data.updated_at().is_none(),
+        "updated_at() != is_none()"
+    );
+    assert!(output_data.obj_id()?.is_none(), "obj_id() != is_none()");
+    assert!(!output_data.json()?.is_empty(), "json() == is_empty()");
+    assert!(
+        output_data.json_for_admin()?.is_some(),
+        "json_for_admin() != is_some()"
+    );
+
+    // Add data
+    // ---------------------------------------------------------------------------------------------
     fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_4.odt")?;
     fs::copy("./media/default/no_image.png", "./media/tmp/no_image_4.png")?;
 
