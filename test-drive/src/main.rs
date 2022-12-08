@@ -33,7 +33,7 @@ async fn run_migration(
     Ok(())
 }
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.

@@ -520,7 +520,7 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[async_std::test]
+#[tokio::test]
 async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.

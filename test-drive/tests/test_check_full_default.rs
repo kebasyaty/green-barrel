@@ -186,7 +186,7 @@ mod app_state {
 
 // TEST
 // #################################################################################################
-#[async_std::test]
+#[tokio::test]
 async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
     // Hint: This is done to be able to add data to streams.

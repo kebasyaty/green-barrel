@@ -27,5 +27,5 @@ version = "1.0.148"
 
 [dependencies.mongodb]
 default-features = false
-features = ["async-std-runtime", "bson-chrono-0_4"]
+features = ["tokio-runtime", "bson-chrono-0_4"]
 version = "2.3.1"
