@@ -35,7 +35,7 @@ version = "2.3.1"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.148"
+version = "1.0.149"
 
 [dependencies.uuid]
 features = [
