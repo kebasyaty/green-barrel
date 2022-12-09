@@ -117,7 +117,7 @@ mod models {
                 file: InputFile {
                     required: true,
                     default: Some(FileData {
-                        path: "./media/default/no_file.odt".into(),
+                        path: "./resources/media/default/no_file.odt".into(),
                         url: "/media/default/no_file.odt".into(),
                         ..Default::default()
                     }),
@@ -126,7 +126,7 @@ mod models {
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
-                        path: "./media/default/no_image.png".into(),
+                        path: "./resources/media/default/no_image.png".into(),
                         url: "/media/default/no_image.png".into(),
                         ..Default::default()
                     }),
