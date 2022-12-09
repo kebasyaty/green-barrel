@@ -176,15 +176,17 @@ mod app_state {
 mod helpers {
     use super::*;
 
-    pub fn copy_file(source_path: &str) -> Result<String, Box<dyn Error>> {
-        let f_path = Path::new(source_path);
+    pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
+        let f_path = Path::new(file_path);
         if !f_path.is_file() {
-            Err(format!("File is missing - {source_path}"))?
+            Err(format!("File is missing - {file_path}"))?
         }
+        let dir_tmp = "./resources/media/tmp";
+        fs::create_dir_all(dir_tmp)?;
         let f_name = Uuid::new_v4().to_string();
         let ext = f_path.extension().unwrap().to_str().unwrap();
-        let f_tmp = format!("./resources/media/tmp/{f_name}.{ext}");
-        fs::copy(source_path, f_tmp.clone())?;
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
         Ok(f_tmp)
     }
 }
