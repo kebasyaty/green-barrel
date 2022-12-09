@@ -5,6 +5,7 @@ use std::{error::Error, fs, path::Path};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AppState {
+    pub app_name: String,
     pub media_root: String,
     pub media_url: String,
 }
@@ -12,8 +13,9 @@ pub struct AppState {
 impl Default for AppState {
     fn default() -> Self {
         Self {
-            media_root: String::from("./media"),
-            media_url: String::from("/media"),
+            app_name: "App Name".into(),
+            media_root: "./resources/media".into(), // the resources directory is recommended to be used as a standard
+            media_url: "/media".into(),
         }
     }
 }
