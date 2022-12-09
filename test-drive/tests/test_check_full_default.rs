@@ -176,6 +176,7 @@ mod app_state {
 mod helpers {
     use super::*;
 
+    // Create a temporary file for the test
     pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
         let f_path = Path::new(file_path);
         if !f_path.is_file() {
