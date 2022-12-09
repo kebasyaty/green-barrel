@@ -12,7 +12,6 @@ use std::{collections::HashMap, error::Error};
 async fn run_migration(
     meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
     client: &Client,
-    media_dir: &HashMap<String, String>,
 ) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
     models::User::caching(meta_store, client).await?;
@@ -28,7 +27,7 @@ async fn run_migration(
     monitor.migrat(meta_store, client).await?;
 
     // Run fixtures
-    models::City::run_fixture("cities", meta_store, client, media_dir).await?;
+    models::City::run_fixture("cities", meta_store, client).await?;
 
     Ok(())
 }
@@ -39,11 +38,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // #############################################################################################
     let _app_state = app_state::get_app_state()?;
-    let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    run_migration(&meta_store, &client, &media_dir).await?;
+    run_migration(&meta_store, &client).await?;
 
     // YOUR CODE ...
     // #############################################################################################
@@ -78,7 +76,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
-    let output_data = user.check(&meta_store, &client, &media_dir, None).await?;
+    let output_data = user.check(&meta_store, &client, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -103,9 +101,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create document in database.
     // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
-    let output_data = user
-        .save(&meta_store, &client, &media_dir, None, None)
-        .await?;
+    let output_data = user.save(&meta_store, &client, None, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -135,9 +131,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         user.username.set("new_user_1");
 
-        let output_data = user
-            .save(&meta_store, &client, &media_dir, None, None)
-            .await?;
+        let output_data = user.save(&meta_store, &client, None, None).await?;
         user = output_data.update()?;
 
         if output_data.is_valid() {

@@ -50,7 +50,6 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         fixture_name: &str,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
@@ -116,9 +115,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance
-                    .save(meta_store, client, media_dir, None, None)
-                    .await?;
+                let output_data = instance.save(meta_store, client, None, None).await?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{}` > Method: `run_fixture()` => {}",

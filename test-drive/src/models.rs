@@ -147,12 +147,7 @@ impl AdditionalValidation for User {
 
 #[async_trait(?Send)]
 impl Hooks for User {
-    async fn pre_create(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-        _media_dir: &HashMap<String, String>,
-    ) {
+    async fn pre_create(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         println!("!!!Pre Create!!!");
     }
     //
@@ -160,17 +155,11 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Post Create!!!");
     }
     //
-    async fn pre_update(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-        _media_dir: &HashMap<String, String>,
-    ) {
+    async fn pre_update(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         println!("!!!Pre Update!!!");
     }
     //
@@ -178,7 +167,6 @@ impl Hooks for User {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _media_dir: &HashMap<String, String>,
     ) {
         println!("!!!Post Update!!!");
     }

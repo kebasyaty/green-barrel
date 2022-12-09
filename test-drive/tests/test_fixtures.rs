@@ -450,7 +450,6 @@ mod migration {
     pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
         models::TestModel::caching(meta_store, client).await?;
@@ -476,7 +475,7 @@ mod migration {
         monitor.migrat(meta_store, client).await?;
 
         // Run fixtures
-        models::TestModel::run_fixture("test", meta_store, client, media_dir).await?;
+        models::TestModel::run_fixture("test", meta_store, client).await?;
 
         Ok(())
     }
@@ -509,17 +508,6 @@ mod app_state {
         }
         Ok(confy::load_path::<AppState>(path)?)
     }
-
-    pub fn get_media_dir() -> Result<HashMap<String, String>, Box<dyn Error>> {
-        let app_state = get_app_state()?;
-        Ok([
-            ("media_root".into(), app_state.media_root),
-            ("media_url".into(), app_state.media_url),
-        ]
-        .iter()
-        .cloned()
-        .collect())
-    }
 }
 
 // TEST
@@ -530,11 +518,10 @@ async fn test_fixtures() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
-    let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client, &media_dir).await?;
+    migration::run_migration(&meta_store, &client).await?;
 
     // YOUR CODE ...
     // =============================================================================================

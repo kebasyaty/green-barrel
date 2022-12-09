@@ -131,7 +131,6 @@ mod migration {
     pub async fn run_migration(
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        _media_dir: &HashMap<String, String>,
     ) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
         models::TestModel::caching(meta_store, client).await?;
@@ -187,17 +186,6 @@ mod app_state {
         }
         Ok(confy::load_path::<AppState>(path)?)
     }
-
-    pub fn get_media_dir() -> Result<HashMap<String, String>, Box<dyn Error>> {
-        let app_state = get_app_state()?;
-        Ok([
-            ("media_root".into(), app_state.media_root),
-            ("media_url".into(), app_state.media_url),
-        ]
-        .iter()
-        .cloned()
-        .collect())
-    }
 }
 
 // TEST
@@ -208,11 +196,10 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
-    let media_dir = app_state::get_media_dir()?;
     let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client, &media_dir).await?;
+    migration::run_migration(&meta_store, &client).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -221,9 +208,7 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     // No data
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new(&meta_store).await?;
-    let output_data = test_model
-        .save(&meta_store, &client, &media_dir, None, None)
-        .await?;
+    let output_data = test_model.save(&meta_store, &client, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(
@@ -283,9 +268,7 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
     test_model.textarea.set("Some text");
 
-    let output_data = test_model
-        .save(&meta_store, &client, &media_dir, None, None)
-        .await?;
+    let output_data = test_model.save(&meta_store, &client, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(

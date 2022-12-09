@@ -31,12 +31,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn pre_create(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-        _media_dir: &HashMap<String, String>,
-    ) {
+    async fn pre_create(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         //
     }
     /// Called after a new document has been created in the database.
@@ -63,7 +58,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _media_dir: &HashMap<String, String>,
     ) {
         //
     }
@@ -87,12 +81,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn pre_update(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-        _media_dir: &HashMap<String, String>,
-    ) {
+    async fn pre_update(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
         //
     }
     /// Called after an existing document in the database is updated.
@@ -119,7 +108,6 @@ pub trait Hooks {
         &self,
         _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         _client: &Client,
-        _media_dir: &HashMap<String, String>,
     ) {
         //
     }

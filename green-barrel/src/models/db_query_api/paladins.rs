@@ -144,7 +144,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        media_dir: &HashMap<String, String>,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
     where
@@ -1255,9 +1254,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Create a new path and URL for the file.
                     {
-                        let media_root = &media_dir["media_root"];
-                        let media_url = &media_dir["media_url"];
-                        let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
+                        let media_root = final_field["media_root"].as_str().unwrap();
+                        let media_url = final_field["media_url"].as_str().unwrap();
+                        let target_dir = final_field["target_dir"].as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
                         let extension = {
@@ -1406,9 +1405,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let mut img_dir_path;
                     let img_dir_url;
                     {
-                        let media_root = &media_dir["media_root"];
-                        let media_url = &media_dir["media_url"];
-                        let target_dir = final_field.get("target_dir").unwrap().as_str().unwrap();
+                        let media_root = final_field["media_root"].as_str().unwrap();
+                        let media_url = final_field["media_url"].as_str().unwrap();
+                        let target_dir = final_field["target_dir"].as_str().unwrap();
                         let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
@@ -1966,7 +1965,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &mut self,
         meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
-        media_dir: &HashMap<String, String>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -1979,7 +1977,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
             let mut verified_data = self
-                .check(meta_store, client, media_dir, Some((true, step == 2)))
+                .check(meta_store, client, Some((true, step == 2)))
                 .await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
@@ -2018,15 +2016,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "$set": final_doc.clone(),
                     };
                     // Run hook.
-                    self.pre_update(meta_store, client, media_dir).await;
+                    self.pre_update(meta_store, client).await;
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())
                         .await?;
                     // Run hook.
-                    self.post_update(meta_store, client, media_dir).await;
+                    self.post_update(meta_store, client).await;
                 } else {
                     // Run hook.
-                    self.pre_create(meta_store, client, media_dir).await;
+                    self.pre_create(meta_store, client).await;
                     // Create document.
                     let result: InsertOneResult = coll
                         .insert_one(final_doc.clone(), options_insert.clone())
@@ -2036,7 +2034,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Add hash-line to model instance.
                     self.set_hash(hash_line.clone());
                     // Run hook.
-                    self.post_create(meta_store, client, media_dir).await;
+                    self.post_create(meta_store, client).await;
                 }
                 // Mute document.
                 verified_data.set_doc(None);
