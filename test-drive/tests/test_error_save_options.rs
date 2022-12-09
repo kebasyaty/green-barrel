@@ -6,6 +6,7 @@ use mongodb::Client;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, path::Path};
+use uuid::Uuid;
 
 mod settings {
     pub const PROJECT_NAME: &str = "test_project_name";
@@ -174,6 +175,25 @@ mod app_state {
     }
 }
 
+mod helpers {
+    use super::*;
+
+    // Create a temporary file for the test
+    pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
+        let f_path = Path::new(file_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {file_path}"))?
+        }
+        let dir_tmp = "./resources/media/tmp";
+        fs::create_dir_all(dir_tmp)?;
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
+        Ok(f_tmp)
+    }
+}
+
 // TEST
 // #################################################################################################
 #[tokio::test]
@@ -225,15 +245,15 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
 
     // Negative - In select type, there are no options to select
     // ---------------------------------------------------------------------------------------------
-    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_3.odt")?;
-    fs::copy("./media/default/no_image.png", "./media/tmp/no_image_3.png")?;
+    let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
+    let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
     let mut test_model = TestModel::new(&meta_store).await?;
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
-    test_model.file.set("./media/tmp/no_file_3.odt");
-    test_model.image.set("./media/tmp/no_image_3.png");
+    test_model.file.set(f_path.as_str());
+    test_model.image.set(img_path.as_str());
     test_model.number_i32.set(0);
     test_model.radio_i32.set(0);
     test_model.range_i32.set(0);
