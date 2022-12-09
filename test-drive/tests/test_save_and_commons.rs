@@ -6,6 +6,7 @@ use mongodb::{bson::doc, Client};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, path::Path};
+use uuid::Uuid;
 
 mod settings {
     pub const PROJECT_NAME: &str = "test_project_name";
@@ -99,7 +100,7 @@ mod models {
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
-                        path: "./media/default/no_image.png".into(),
+                        path: "./resources/media/default/no_image.png".into(),
                         url: "/media/default/no_image.png".into(),
                         ..Default::default()
                     }),
@@ -190,6 +191,25 @@ mod app_state {
     }
 }
 
+mod helpers {
+    use super::*;
+
+    // Create a temporary file for the test
+    pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
+        let f_path = Path::new(file_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {file_path}"))?
+        }
+        let dir_tmp = "./resources/media/tmp";
+        fs::create_dir_all(dir_tmp)?;
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
+        Ok(f_tmp)
+    }
+}
+
 // TEST
 // #################################################################################################
 #[tokio::test]
@@ -208,17 +228,15 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     type TestModel = models::TestModel;
 
     for num in 1..=10 {
-        let target_file = format!("./media/tmp/no_file_2_{num}.odt");
-        let target_image = format!("./media/tmp/no_image_2_{num}.png");
-        fs::copy("./media/default/no_file.odt", target_file.clone())?;
-        fs::copy("./media/default/no_image.png", target_image.clone())?;
+        let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
+        let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
         let mut test_model = TestModel::new(&meta_store).await?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
-        test_model.file.set(target_file.as_str());
-        test_model.image.set(target_image.as_str());
+        test_model.file.set(f_path.as_str());
+        test_model.image.set(img_path.as_str());
         test_model.number_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
