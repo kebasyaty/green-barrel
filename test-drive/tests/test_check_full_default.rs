@@ -176,15 +176,16 @@ mod app_state {
 mod helpers {
     use super::*;
 
-    pub fn copy_file(source_path: &str) -> Result<(), Box<dyn Error>> {
+    pub fn copy_file(source_path: &str) -> Result<String, Box<dyn Error>> {
         let f_path = Path::new(source_path);
         if !f_path.is_file() {
             Err(format!("File is missing - {source_path}"))?
         }
         let f_name = Uuid::new_v4().to_string();
         let ext = f_path.extension().unwrap().to_str().unwrap();
-        fs::copy(source_path, format!("./resources/media/tmp/{f_name}.{ext}"))?;
-        Ok(())
+        let f_tmp = format!("./resources/media/tmp/{f_name}.{ext}");
+        fs::copy(source_path, f_tmp.clone())?;
+        Ok(f_tmp)
     }
 }
 
@@ -243,15 +244,15 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
 
     // Add data
     // ---------------------------------------------------------------------------------------------
-    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_4.odt")?;
-    fs::copy("./media/default/no_image.png", "./media/tmp/no_image_4.png")?;
+    let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
+    let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
     let mut test_model = TestModel::new(&meta_store).await?;
     test_model.checkbox.set(true);
     test_model.date.set("0000-01-01");
     test_model.datetime.set("2039-01-01T00:00");
-    test_model.file.set("./media/tmp/no_file_4.odt");
-    test_model.image.set("./media/tmp/no_image_4.png");
+    test_model.file.set(f_path.as_str());
+    test_model.image.set(img_path.as_str());
     test_model.number_i32.set(0);
     test_model.range_i32.set(0);
     test_model.number_u32.set(0);
