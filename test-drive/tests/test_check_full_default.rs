@@ -193,9 +193,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new(&meta_store).await?;
 
-    let output_data = test_model
-        .check(&meta_store, &client, &media_dir, None)
-        .await?;
+    let output_data = test_model.check(&meta_store, &client, None).await?;
     test_model = output_data.update()?;
 
     assert!(
