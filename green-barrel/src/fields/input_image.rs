@@ -14,6 +14,8 @@ pub struct InputImage {
     pub name: String, // The value is determined automatically.
     pub value: Option<ImageData>, // Sets the value of an element.
     pub default: Option<ImageData>, // Value by default
+    pub media_root: String, // Root partition for storing files.
+    pub media_url: String, // Url address to the root section.
     pub target_dir: String, // Directory for images inside media directory (inner path). Example: "images/avatars".
     pub accept: String,     // Example: "image/jpeg,image/png,image/gif"
     pub placeholder: String, // Displays prompt text.
@@ -41,6 +43,8 @@ impl Default for InputImage {
             name: String::new(),
             value: None,
             default: None,
+            media_root: String::from("./resources/media"),
+            media_url: String::from("/media"),
             target_dir: String::from("images"),
             accept: String::new(),
             placeholder: String::new(),
