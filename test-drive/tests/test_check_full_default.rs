@@ -6,6 +6,7 @@ use mongodb::Client;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::{collections::HashMap, error::Error, fs, path::Path};
+use uuid::Uuid;
 
 mod settings {
     pub const PROJECT_NAME: &str = "test_project_name";
@@ -169,6 +170,21 @@ mod app_state {
             confy::store_path(path, cfg)?;
         }
         Ok(confy::load_path::<AppState>(path)?)
+    }
+}
+
+mod helpers {
+    use super::*;
+
+    pub fn copy_file(source_path: &str) -> Result<(), Box<dyn Error>> {
+        let f_path = Path::new(source_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {source_path}"))?
+        }
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        fs::copy(source_path, format!("./resources/media/tmp/{f_name}.{ext}"))?;
+        Ok(())
     }
 }
 
