@@ -113,10 +113,7 @@ mod migration {
     }
 
     // Migration
-    pub async fn run_migration(
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
         models::TestModel::caching(client).await?;
 
@@ -203,7 +200,7 @@ async fn test_error_check_options() -> Result<(), Box<dyn Error>> {
     let _app_state = app_state::get_app_state()?;
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client).await?;
+    migration::run_migration(&client).await?;
 
     // YOUR CODE ...
     // =============================================================================================
