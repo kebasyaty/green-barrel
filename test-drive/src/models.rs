@@ -1,11 +1,9 @@
-use async_lock::RwLock;
 use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
@@ -147,39 +145,27 @@ impl AdditionalValidation for User {
 
 #[async_trait(?Send)]
 impl Hooks for User {
-    async fn pre_create(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_create(&self, _client: &Client) {
         println!("!!!Pre Create!!!");
     }
     //
-    async fn post_create(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_create(&self, _client: &Client) {
         println!("!!!Post Create!!!");
     }
     //
-    async fn pre_update(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_update(&self, _client: &Client) {
         println!("!!!Pre Update!!!");
     }
     //
-    async fn post_update(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_update(&self, _client: &Client) {
         println!("!!!Post Update!!!");
     }
     //
-    async fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_delete(&self, _client: &Client) {
         println!("!!!Pre Delet!!!");
     }
     //
-    async fn post_delete(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_delete(&self, _client: &Client) {
         println!("!!!Post Delet!!!");
     }
 }
