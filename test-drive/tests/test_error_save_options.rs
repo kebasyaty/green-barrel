@@ -113,10 +113,7 @@ mod migration {
     }
 
     // Migration
-    pub async fn run_migration(
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
         models::TestModel::caching(client).await?;
 
@@ -126,7 +123,6 @@ mod migration {
             settings::PROJECT_NAME,
             settings::UNIQUE_PROJECT_KEY,
             get_model_key_list()?,
-            meta_store,
             client,
         )
         .await?;
@@ -247,7 +243,7 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
     let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
-    let mut test_model = TestModel::new(&meta_store).await?;
+    let mut test_model = TestModel::new().await?;
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
