@@ -6,7 +6,7 @@ use mongodb::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::{collections::HashMap, error::Error, fs, path::Path};
+use std::{error::Error, fs, path::Path};
 
 mod settings {
     pub const PROJECT_NAME: &str = "test_project_name";
