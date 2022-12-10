@@ -51,9 +51,15 @@ pub trait Caching: Main + Converters {
         meta.option_i64_map = options_i64_map;
         meta.option_f64_map = options_f64_map;
         // Get metadata store.
-        let mut store = META_STORE.write().await;
-        // Save the meta to storage.
-        store.insert(key, meta);
+        loop {
+            if let Some(mut store) = META_STORE.try_write() {
+                // Save the meta to storage.
+                store.insert(key, meta);
+                break;
+            } else {
+                panic!("???-NO-???");
+            }
+        }
         //
         Ok(())
     }
