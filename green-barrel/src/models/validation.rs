@@ -5,9 +5,11 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
     Collection,
 };
-use regex::{Regex, RegexBuilder};
+use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
+
+use crate::meta_store::{REGEX_IS_COLOR_CODE, REGEX_IS_PASSWORD};
 
 /// Validating Model fields for save and update.
 // *************************************************************************************************
@@ -51,13 +53,7 @@ pub trait Validation {
                 }
             }
             "InputColor" => {
-                if !RegexBuilder::new(
-                    r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
-                )
-                .case_insensitive(true)
-                .build()?
-                .is_match(value)
-                {
+                if !REGEX_IS_COLOR_CODE.is_match(value) {
                     Err("Invalid Color code.")?
                 }
             }
@@ -82,7 +78,7 @@ pub trait Validation {
                 }
             }
             "InputPassword" => {
-                if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")?.is_match(value) {
+                if !REGEX_IS_PASSWORD.is_match(value) {
                     Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
                         <br>Size 8-256 chars")?
                 }

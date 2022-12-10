@@ -10,7 +10,6 @@ use mongodb::{
     Client, Collection,
 };
 use rand::Rng;
-use regex::Regex;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
@@ -18,13 +17,16 @@ use std::sync::Arc;
 use std::{collections::HashMap, convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
-use crate::models::{
-    caching::Caching,
-    helpers::{FileData, ImageData, Meta},
-    hooks::Hooks,
-    output_data::{OutputData, OutputData2},
-    validation::{AdditionalValidation, Validation},
-    Main,
+use crate::{
+    meta_store::REGEX_TOKEN_DATED_PATH,
+    models::{
+        caching::Caching,
+        helpers::{FileData, ImageData, Meta},
+        hooks::Hooks,
+        output_data::{OutputData, OutputData2},
+        validation::{AdditionalValidation, Validation},
+        Main,
+    },
 };
 
 #[async_trait(?Send)]
@@ -1228,10 +1230,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")?
-                            .is_match(file_data.path.as_str())
-                    {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1371,10 +1370,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")?
-                            .is_match(image_data.path.as_str())
-                    {
+                    if is_slug_update || REGEX_TOKEN_DATED_PATH.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
