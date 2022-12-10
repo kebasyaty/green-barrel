@@ -1,17 +1,17 @@
 //! To populate the database with pre-created data.
 
-use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
-use std::sync::Arc;
-use std::{collections::HashMap, error::Error, fs, io::ErrorKind};
+use std::{error::Error, fs, io::ErrorKind};
 
-use crate::models::{
-    caching::Caching,
-    db_query_api::{commons::QCommons, paladins::QPaladins},
-    Meta,
+use crate::{
+    meta_store::META_STORE,
+    models::{
+        caching::Caching,
+        db_query_api::{commons::QCommons, paladins::QPaladins},
+    },
 };
 
 /// To populate the database with pre-created data.
@@ -46,22 +46,18 @@ use crate::models::{
 ///
 #[async_trait(?Send)]
 pub trait Fixtures: Caching + QPaladins + QCommons {
-    async fn run_fixture(
-        fixture_name: &str,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>>
+    async fn run_fixture(fixture_name: &str, client: &Client) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // If the collection is not empty, exit the method
-        if Self::estimated_document_count(meta_store, client, None).await? > 0 {
+        if Self::estimated_document_count(client, None).await? > 0 {
             return Ok(());
         }
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().await;
+        let store = META_STORE.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -115,7 +111,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance.save(meta_store, client, None, None).await?;
+                let output_data = instance.save(client, None, None).await?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{}` > Method: `run_fixture()` => {}",

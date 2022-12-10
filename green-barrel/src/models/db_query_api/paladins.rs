@@ -1,6 +1,5 @@
 //! Query methods for a Model instance.
 
-use async_lock::RwLock;
 use async_trait::async_trait;
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
@@ -13,15 +12,14 @@ use rand::Rng;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::sync::Arc;
-use std::{collections::HashMap, convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
+use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    meta_store::REGEX_TOKEN_DATED_PATH,
+    meta_store::{META_STORE, REGEX_TOKEN_DATED_PATH},
     models::{
         caching::Caching,
-        helpers::{FileData, ImageData, Meta},
+        helpers::{FileData, ImageData},
         hooks::Hooks,
         output_data::{OutputData, OutputData2},
         validation::{AdditionalValidation, Validation},
@@ -136,7 +134,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(&meta_store, &client, &validators, &media_dir, None)?;
+    /// let output_data = model_name.check(& &client, &validators, &media_dir, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -144,7 +142,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     async fn check(
         &mut self,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -155,7 +152,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().await;
+        let store = META_STORE.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -1950,7 +1947,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.save(&meta_store, &client, &validators, &media_dir, None, None)?;
+    /// let output_data = model_name.save(& &client, &validators, &media_dir, None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -1959,7 +1956,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     // *********************************************************************************************
     async fn save(
         &mut self,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
@@ -1972,16 +1968,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data = self
-                .check(meta_store, client, Some((true, step == 2)))
-                .await?;
+            let mut verified_data = self.check(client, Some((true, step == 2))).await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.read().await;
+            let store = META_STORE.read().await;
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta
@@ -2012,15 +2006,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "$set": final_doc.clone(),
                     };
                     // Run hook.
-                    self.pre_update(meta_store, client).await;
+                    self.pre_update(client).await;
                     // Update doc.
                     coll.update_one(query, update, options_update.clone())
                         .await?;
                     // Run hook.
-                    self.post_update(meta_store, client).await;
+                    self.post_update(client).await;
                 } else {
                     // Run hook.
-                    self.pre_create(meta_store, client).await;
+                    self.pre_create(client).await;
                     // Create document.
                     let result: InsertOneResult = coll
                         .insert_one(final_doc.clone(), options_insert.clone())
@@ -2030,7 +2024,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Add hash-line to model instance.
                     self.set_hash(hash_line.clone());
                     // Run hook.
-                    self.post_create(meta_store, client).await;
+                    self.post_create(client).await;
                 }
                 // Mute document.
                 verified_data.set_doc(None);
@@ -2059,7 +2053,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut user = User{...};
-    /// let output_data = user.delete(&meta_store, &client, None)?;
+    /// let output_data = user.delete(& &client, None)?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -2067,7 +2061,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     async fn delete(
         &self,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -2077,7 +2070,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().await;
+        let store = META_STORE.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2183,7 +2176,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 ))?
             }
             // Run hook.
-            self.pre_delete(meta_store, client).await;
+            self.pre_delete(client).await;
             // Execute query.
             coll.delete_one(query, options).await.is_ok()
         } else {
@@ -2191,7 +2184,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         };
         // Run hook.
         if result_bool && err_msg.is_empty() {
-            self.post_delete(meta_store, client).await;
+            self.post_delete(client).await;
         }
         //
         let deleted_count = u64::from(result_bool);
@@ -2237,13 +2230,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     /// let user = User {...};
     /// let password = "12345678";
-    /// assert!(user.create_password_hash(password, &meta_store, &client, None)?);
+    /// assert!(user.create_password_hash(password, & &client, None)?);
     /// ```
     ///
     async fn verify_password(
         &self,
         password: &str,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options: Option<FindOneOptions>,
     ) -> Result<bool, Box<dyn Error>>
@@ -2253,7 +2245,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = meta_store.read().await;
+        let store = META_STORE.read().await;
         // Get metadata of Model.
         let meta = if let Some(meta) = store.get(&key) {
             meta
@@ -2324,7 +2316,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
     /// let new_password = "UUbd+5KXw^756*uj";
-    /// let output_data = user.update_password(old_password, new_password, &meta_store, &client, None)?;
+    /// let output_data = user.update_password(old_password, new_password, & &client, None)?;
     /// if !output_data.is_valid()? {
     ///     println!("{}", output_data.err_msg()?);
     /// }
@@ -2334,7 +2326,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         &self,
         old_password: &str,
         new_password: &str,
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
         client: &Client,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
@@ -2346,7 +2337,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut err_msg = String::new();
         // Validation current password.
         if !self
-            .verify_password(old_password, meta_store, client, options_find_old)
+            .verify_password(old_password, client, options_find_old)
             .await?
         {
             err_msg = String::from("The old password does not match.");
@@ -2354,7 +2345,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = meta_store.read().await;
+            let store = META_STORE.read().await;
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(&key) {
                 meta

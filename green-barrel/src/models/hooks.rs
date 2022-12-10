@@ -1,12 +1,7 @@
 //! Methods that are called at different stages when accessing the database.
 
-use async_lock::RwLock;
 use async_trait::async_trait;
 use mongodb::Client;
-use std::collections::HashMap;
-use std::sync::Arc;
-
-use crate::models::helpers::Meta;
 
 /// Hooks methods.
 #[async_trait(?Send)]
@@ -31,7 +26,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn pre_create(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_create(&self, _client: &Client) {
         //
     }
     /// Called after a new document has been created in the database.
@@ -54,11 +49,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn post_create(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_create(&self, _client: &Client) {
         //
     }
     /// Called before updating an existing document in the database.
@@ -81,7 +72,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn pre_update(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_update(&self, _client: &Client) {
         //
     }
     /// Called after an existing document in the database is updated.
@@ -104,11 +95,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn post_update(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_update(&self, _client: &Client) {
         //
     }
     /// Called before deleting an existing document in the database.
@@ -131,7 +118,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn pre_delete(&self, _meta_store: &Arc<RwLock<HashMap<String, Meta>>>, _client: &Client) {
+    async fn pre_delete(&self, _client: &Client) {
         //
     }
     /// Called after an existing document in the database has been deleted.
@@ -154,11 +141,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    async fn post_delete(
-        &self,
-        _meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        _client: &Client,
-    ) {
+    async fn post_delete(&self, _client: &Client) {
         //
     }
 }
