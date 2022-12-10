@@ -112,12 +112,9 @@ mod migration {
     }
 
     // Migration
-    pub async fn run_migration(
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client).await?;
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -125,7 +122,6 @@ mod migration {
             settings::PROJECT_NAME,
             settings::UNIQUE_PROJECT_KEY,
             get_model_key_list()?,
-            meta_store,
             client,
         )
         .await?;
@@ -137,7 +133,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client).await?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
@@ -182,10 +178,9 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
-    let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client).await?;
+    migration::run_migration(&client).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -194,28 +189,22 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // Module: green-barrel/src/models/caching.rs
     // ---------------------------------------------------------------------------------------------
     // new
-    assert!(
-        TestModel::new(&meta_store).await.is_ok(),
-        "new() != is_ok()"
-    );
+    assert!(TestModel::new().await.is_ok(), "new() != is_ok()");
     // to_json
-    assert!(
-        !TestModel::json(&meta_store).await?.is_empty(),
-        "json() != is_empty()"
-    );
+    assert!(!TestModel::json().await?.is_empty(), "json() != is_empty()");
     //
     // Module: green-barrel/src/models/db_query_api/commons.rs
     // ---------------------------------------------------------------------------------------------
     // aggregate
     let pipeline = vec![doc! {}];
-    let result = TestModel::aggregate(pipeline, &meta_store, &client, None).await;
+    let result = TestModel::aggregate(pipeline, &client, None).await;
     assert!(result.is_err(), "aggregate() != is_err()");
     // count_documents
-    let result = TestModel::count_documents(&meta_store, &client, None, None).await?;
+    let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 0, "count_documents() != 0");
     // delete_many
     let query = doc! {};
-    let result = TestModel::delete_many(query, &meta_store, &client, None).await?;
+    let result = TestModel::delete_many(query, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 0,
@@ -223,44 +212,44 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     );
     // delete_one
     let query = doc! {};
-    let result = TestModel::delete_one(query, &meta_store, &client, None).await?;
+    let result = TestModel::delete_one(query, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 0, "delete_one() != 0");
     // distinct
     let field_name = "checkbox";
     let filter = doc! {};
-    let result = TestModel::distinct(field_name, &meta_store, &client, Some(filter), None).await?;
+    let result = TestModel::distinct(field_name, &client, Some(filter), None).await?;
     assert!(result.is_empty(), "distinct() != is_empty()");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(&meta_store, &client, None).await?;
+    let result = TestModel::estimated_document_count(&client, None).await?;
     assert_eq!(result, 0, "estimated_document_count != 0_i64");
     // find_many_to_doc_list
-    let result = TestModel::find_many_to_doc_list(&meta_store, &client, None, None).await?;
+    let result = TestModel::find_many_to_doc_list(&client, None, None).await?;
     assert!(result.is_none(), "find_many_to_doc_list() != is_none()");
     // find_many_to_json
-    let result = TestModel::find_many_to_json(&meta_store, &client, None, None).await?;
+    let result = TestModel::find_many_to_json(&client, None, None).await?;
     assert!(result.is_none(), "find_many_to_json() != is_none");
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_doc(filter, &meta_store, &client, None).await?;
+    let result = TestModel::find_one_to_doc(filter, &client, None).await?;
     assert!(result.is_none(), "find_one_to_doc() != is_none()");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json(filter, &meta_store, &client, None).await?;
+    let result = TestModel::find_one_to_json(filter, &client, None).await?;
     assert!(result.is_empty(), "find_one_to_json() != is_empty()");
     // find_one_to_instance
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_instance(filter, &meta_store, &client, None).await?;
+    let result = TestModel::find_one_to_instance(filter, &client, None).await?;
     assert!(result.is_none(), "find_one_to_instance() != is_none()");
     // find_one_and_delete
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete(filter, &meta_store, &client, None).await?;
+    let result = TestModel::find_one_and_delete(filter, &client, None).await?;
     assert!(result.is_none(), "find_one_and_delete() != is_none()");
     // collection_name
-    let result = TestModel::collection_name(&meta_store, &client).await?;
+    let result = TestModel::collection_name(&client).await?;
     assert!(!result.is_empty(), "name() != is_empty()");
     // namespace
-    let result = TestModel::namespace(&meta_store, &client).await?;
+    let result = TestModel::namespace(&client).await?;
     assert!(!result.db.is_empty(), "namespace() != is_empty()");
     assert!(!result.coll.is_empty(), "namespace() != is_empty()");
 
@@ -270,7 +259,6 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
         settings::PROJECT_NAME,
         settings::UNIQUE_PROJECT_KEY,
         migration::get_model_key_list()?,
-        &meta_store,
         &client,
     )
     .await?;
