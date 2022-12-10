@@ -113,12 +113,9 @@ mod migration {
     }
 
     // Migration
-    pub async fn run_migration(
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client).await?;
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -126,7 +123,6 @@ mod migration {
             settings::PROJECT_NAME,
             settings::UNIQUE_PROJECT_KEY,
             get_model_key_list()?,
-            meta_store,
             client,
         )
         .await?;
@@ -138,7 +134,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client).await?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
@@ -202,10 +198,9 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
-    let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client).await?;
+    migration::run_migration(&client).await?;
 
     // YOUR CODE ...
     // =============================================================================================
@@ -213,9 +208,9 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     //
     // No data
     // ---------------------------------------------------------------------------------------------
-    let mut test_model = TestModel::new(&meta_store).await?;
+    let mut test_model = TestModel::new().await?;
 
-    let output_data = test_model.check(&meta_store, &client, None).await?;
+    let output_data = test_model.check(&client, None).await?;
     test_model = output_data.update()?;
 
     assert!(
@@ -252,7 +247,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
     let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
-    let mut test_model = TestModel::new(&meta_store).await?;
+    let mut test_model = TestModel::new().await?;
     test_model.checkbox.set(true);
     test_model.date.set("0000-01-01");
     test_model.datetime.set("2039-01-01T00:00");
@@ -277,7 +272,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
     test_model.textarea.set("Some text");
 
-    let output_data = test_model.check(&meta_store, &client, None).await?;
+    let output_data = test_model.check(&client, None).await?;
     test_model = output_data.update()?;
 
     assert!(
@@ -315,7 +310,6 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
         settings::PROJECT_NAME,
         settings::UNIQUE_PROJECT_KEY,
         migration::get_model_key_list()?,
-        &meta_store,
         &client,
     )
     .await?;
