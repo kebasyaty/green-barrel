@@ -1,6 +1,5 @@
 //! Collection of auxiliary Structures, Enumerations.
 
-use async_lock::RwLock;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -136,10 +135,4 @@ impl<'a> ControlArr<'a> {
             _ => panic!("Invalid data type."),
         }
     }
-}
-
-// Metadata storage for Models.
-// -------------------------------------------------------------------------------------------------
-pub fn get_meta_store() -> RwLock<HashMap<String, Meta>> {
-    RwLock::new(HashMap::<String, Meta>::new())
 }
