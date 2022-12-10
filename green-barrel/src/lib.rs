@@ -9,6 +9,7 @@ pub mod test_tool;
 
 pub use crate::{
     fields::*,
+    meta_store::META_STORE,
     migration::Monitor,
     models::{
         caching::Caching,
