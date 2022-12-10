@@ -2,20 +2,15 @@ mod app_state;
 mod models;
 mod settings;
 
-use async_lock::RwLock;
 use green_barrel::*;
 use mongodb::Client;
-use std::sync::Arc;
-use std::{collections::HashMap, error::Error};
+use std::error::Error;
 
 // Migration
-async fn run_migration(
-    meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-    client: &Client,
-) -> Result<(), Box<dyn Error>> {
+async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
-    models::User::caching(meta_store, client).await?;
-    models::City::caching(meta_store, client).await?;
+    models::User::caching(client).await?;
+    models::City::caching(client).await?;
 
     // Monitor initialization.
     let monitor = Monitor {
@@ -24,10 +19,10 @@ async fn run_migration(
         // For register models.
         model_key_list: vec![models::User::key()?, models::City::key()?],
     };
-    monitor.migrat(meta_store, client).await?;
+    monitor.migrat(client).await?;
 
     // Run fixtures
-    models::City::run_fixture("cities", meta_store, client).await?;
+    models::City::run_fixture("cities", client).await?;
 
     Ok(())
 }
@@ -38,10 +33,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // #############################################################################################
     let _app_state = app_state::get_app_state()?;
-    let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    run_migration(&meta_store, &client).await?;
+    run_migration(&client).await?;
 
     // YOUR CODE ...
     // #############################################################################################
@@ -56,7 +50,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "Model instance:\n{:?}",
         models::User::find_one_to_instance(
             mongodb::bson::doc! {"username": "user_1"},
-            &meta_store,
             &client,
             None
         )?
@@ -65,7 +58,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Create model instance.
     // *********************************************************************************************
-    let mut user = models::User::new(&meta_store).await?;
+    let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
     user.password.set("12345678");
@@ -76,7 +69,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
-    let output_data = user.check(&meta_store, &client, None).await?;
+    let output_data = user.check(&client, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -101,7 +94,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create document in database.
     // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
-    let output_data = user.save(&meta_store, &client, None, None).await?;
+    let output_data = user.save(&client, None, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -131,7 +124,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         user.username.set("new_user_1");
 
-        let output_data = user.save(&meta_store, &client, None, None).await?;
+        let output_data = user.save(&client, None, None).await?;
         user = output_data.update()?;
 
         if output_data.is_valid() {
@@ -162,7 +155,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Delete document in database.
     // *********************************************************************************************
     println!("\n\nDelete document in database:\n");
-    let output_data = user.delete(&meta_store, &client, None).await?;
+    let output_data = user.delete(&client, None).await?;
     if !output_data.is_valid() {
         output_data.print_err();
         // or
