@@ -138,7 +138,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // Get a key to access the metadata store.
     let key = TestModel::key()?;
     // Get metadata store.
-    let store = meta_store.read().await;
+    let store = META_STORE.read().await;
     // Get metadata of Model.
     let meta = if let Some(meta) = store.get(&key) {
         meta
