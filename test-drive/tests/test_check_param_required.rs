@@ -1,11 +1,9 @@
-use async_lock::RwLock;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
-use std::{collections::HashMap, error::Error, fs, path::Path};
+use std::{error::Error, fs, path::Path};
 
 mod settings {
     pub const PROJECT_NAME: &str = "test_project_name";
@@ -447,12 +445,9 @@ mod migration {
     }
 
     // Migration
-    pub async fn run_migration(
-        meta_store: &Arc<RwLock<HashMap<String, Meta>>>,
-        client: &Client,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
         // Caching metadata.
-        models::TestModel::caching(meta_store, client).await?;
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
@@ -460,7 +455,6 @@ mod migration {
             settings::PROJECT_NAME,
             settings::UNIQUE_PROJECT_KEY,
             get_model_key_list()?,
-            meta_store,
             client,
         )
         .await?;
@@ -472,7 +466,7 @@ mod migration {
             // Register models
             model_key_list: get_model_key_list()?,
         };
-        monitor.migrat(meta_store, client).await?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
@@ -517,20 +511,19 @@ async fn test_check_param_required() -> Result<(), Box<dyn Error>> {
     // Hint: This is done to be able to add data to streams.
     // =============================================================================================
     let _app_state = app_state::get_app_state()?;
-    let meta_store = Arc::new(get_meta_store());
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
-    migration::run_migration(&meta_store, &client).await?;
+    migration::run_migration(&client).await?;
 
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
     //
-    let mut test_model = TestModel::new(&meta_store).await?;
+    let mut test_model = TestModel::new().await?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
     //
-    let output_data = test_model.check(&meta_store, &client, None).await?;
+    let output_data = test_model.check(&client, None).await?;
     test_model = output_data.update()?;
     //
     assert!(
@@ -568,7 +561,6 @@ async fn test_check_param_required() -> Result<(), Box<dyn Error>> {
         settings::PROJECT_NAME,
         settings::UNIQUE_PROJECT_KEY,
         migration::get_model_key_list()?,
-        &meta_store,
         &client,
     )
     .await?;
