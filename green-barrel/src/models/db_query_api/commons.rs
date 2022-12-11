@@ -152,7 +152,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.is_del_doc.clone(),
+                    meta.is_del_doc,
                 )
             } else {
                 Err(format!(
@@ -220,7 +220,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.is_del_doc.clone(),
+                    meta.is_del_doc,
                 )
             } else {
                 Err(format!(
@@ -331,7 +331,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.is_del_doc.clone(),
+                    meta.is_del_doc,
                 )
             } else {
                 Err(format!(
@@ -436,7 +436,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.db_query_docs_limit.clone(),
+                    meta.db_query_docs_limit,
                 )
             } else {
                 Err(format!(
@@ -508,7 +508,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.db_query_docs_limit.clone(),
+                    meta.db_query_docs_limit,
                     meta.ignore_fields.clone(),
                     meta.field_type_map.clone(),
                     meta.model_name.clone(),
@@ -781,7 +781,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
-                    meta.is_del_doc.clone(),
+                    meta.is_del_doc,
                 )
             } else {
                 Err(format!(

@@ -183,9 +183,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.collection_name.clone(),
                     meta.field_type_map.clone(),
                     meta.database_name.clone(),
-                    meta.is_use_add_valid.clone(),
-                    meta.is_add_doc.clone(),
-                    meta.is_up_doc.clone(),
+                    meta.is_use_add_valid,
+                    meta.is_add_doc,
+                    meta.is_up_doc,
                     meta.app_name.clone(),
                     meta.unique_app_key.clone(),
                     meta.fields_name.clone(),
@@ -2015,7 +2015,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 if let Some(meta) = store.get(&key) {
                     (
                         meta.collection_name.clone(),
-                        meta.is_use_hash_slug.clone(),
+                        meta.is_use_hash_slug,
                         meta.database_name.clone(),
                     )
                 } else {
@@ -2119,7 +2119,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
                     meta.fields_name.clone(),
-                    meta.is_del_doc.clone(),
+                    meta.is_del_doc,
                 )
             } else {
                 Err(format!(
