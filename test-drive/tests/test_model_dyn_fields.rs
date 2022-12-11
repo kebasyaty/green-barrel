@@ -9,12 +9,12 @@ use serde_json::json;
 use std::{error::Error, fs, path::Path};
 
 mod settings {
-    pub const PROJECT_NAME: &str = "test_project_name";
+    pub const APP_NAME: &str = "test_project_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "d7UCc8YQ7lP595BB";
+    pub const UNIQUE_APP_KEY: &str = "d7UCc8YQ7lP595BB";
     //
     pub const SERVICE_NAME: &str = "test_service_name";
     pub const DATABASE_NAME: &str = "test_database_name";
@@ -23,9 +23,7 @@ mod settings {
 
 mod models {
     use super::*;
-    use settings::{
-        DATABASE_NAME, DB_QUERY_DOCS_LIMIT, PROJECT_NAME, SERVICE_NAME, UNIQUE_PROJECT_KEY,
-    };
+    use settings::{APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME, UNIQUE_APP_KEY};
 
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
@@ -68,8 +66,8 @@ mod migration {
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(
-            settings::PROJECT_NAME,
-            settings::UNIQUE_PROJECT_KEY,
+            settings::APP_NAME,
+            settings::UNIQUE_APP_KEY,
             get_model_key_list()?,
             client,
         )
@@ -77,8 +75,8 @@ mod migration {
 
         // Monitor initialization.
         let monitor = Monitor {
-            project_name: settings::PROJECT_NAME,
-            unique_project_key: settings::UNIQUE_PROJECT_KEY,
+            app_name: settings::APP_NAME,
+            unique_app_key: settings::UNIQUE_APP_KEY,
             // Register models
             model_key_list: get_model_key_list()?,
         };
@@ -138,22 +136,22 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // Get a key to access the metadata store.
     let key = TestModel::key()?;
     // Get metadata store.
-    let store = META_STORE.read().await;
+    let store = { META_STORE.lock().await.clone() };
     // Get metadata of Model.
     let meta = if let Some(meta) = store.get(&key) {
         meta
     } else {
         Err(format!(
             "Model key: `{key}` ; Method: `run_fixture()` => \
-                Failed to get data from cache.",
+            Failed to get data from cache.",
         ))?
     };
     // Get access to the technical base of the project.
     let coll = {
         let green_tech_keyword = format!(
             "green_tech__{}__{}",
-            meta.project_name.clone(),
-            meta.unique_project_key.clone()
+            meta.app_name.clone(),
+            meta.unique_app_key.clone()
         );
         let db = client.database(&green_tech_keyword);
         db.collection::<Document>("dynamic_fields")
@@ -1517,8 +1515,8 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
-        settings::PROJECT_NAME,
-        settings::UNIQUE_PROJECT_KEY,
+        settings::APP_NAME,
+        settings::UNIQUE_APP_KEY,
         migration::get_model_key_list()?,
         &client,
     )

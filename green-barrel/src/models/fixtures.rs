@@ -54,18 +54,24 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if Self::estimated_document_count(client, None).await? > 0 {
             return Ok(());
         }
-        // Get a key to access the metadata store.
-        let key = Self::key()?;
-        // Get metadata store.
-        let store = META_STORE.read().await;
-        // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(&key) {
-            meta
-        } else {
-            Err(format!(
-                "Model key: `{key}` ; Method: `run_fixture()` => \
-                Failed to get data from cache.",
-            ))?
+        let (model_name, model_json, field_type_map) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (
+                    meta.model_name.clone(),
+                    meta.model_json.clone(),
+                    meta.field_type_map.clone(),
+                )
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `run_fixture()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
         };
         // Get data from fixture file
         let json_val = {
@@ -75,16 +81,15 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{}` > Method: \
-                            `run_fixture()` => File is missing - {fixture_path}",
-                        meta.model_name
+                        "Model: `{model_name}` > Method: \
+                        `run_fixture()` => File is missing - {fixture_path}"
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{}` > Method: \
-                            `run_fixture()` => Problem opening the file: {:?}",
-                        meta.model_name, error
+                        "Model: `{model_name}` > Method: \
+                        `run_fixture()` => Problem opening the file: {0:?}",
+                        error
                     ))
                     .unwrap()
                 }
@@ -94,8 +99,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
-                let mut model_json = meta.model_json.clone();
-                for (field_name, field_type) in meta.field_type_map.iter() {
+                let mut model_json = model_json.clone();
+                for (field_name, field_type) in field_type_map.iter() {
                     if let Some(data) = fixture.get(field_name) {
                         let value_key = if field_type == "CheckBox" {
                             "checked"
@@ -114,17 +119,15 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 let output_data = instance.save(client, None, None).await?;
                 if !output_data.is_valid() {
                     Err(format!(
-                        "Model: `{}` > Method: `run_fixture()` => {}",
-                        meta.model_name,
+                        "Model: `{model_name}` > Method: `run_fixture()` => {0}",
                         output_data.err_msg()
                     ))?
                 }
             }
         } else {
             Err(format!(
-                "Model: `{}` > Method: \
-                `run_fixture()` => Fixture does not contain an array of objects.",
-                meta.model_name,
+                "Model: `{model_name}` > Method: \
+                `run_fixture()` => Fixture does not contain an array of objects."
             ))?
         }
 

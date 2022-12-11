@@ -8,15 +8,15 @@ use crate::meta_store::META_STORE;
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
 pub async fn del_test_db(
-    project_name: &str,
-    unique_project_key: &str,
+    app_name: &str,
+    unique_app_key: &str,
     model_key_list: Vec<String>,
     client: &Client,
 ) -> Result<(), Box<dyn Error>> {
     // Get metadata store
-    let store = META_STORE.read().await;
+    let store = { META_STORE.lock().await.clone() };
     // Name of the technical database for testing
-    let db_green_tech = format!("green_tech__{}__{}", project_name, unique_project_key);
+    let db_green_tech = format!("green_tech__{app_name}__{unique_app_key}");
     // Removing databases
     for model_key in model_key_list.iter() {
         // Get metadata of Model.

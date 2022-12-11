@@ -14,8 +14,8 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 
     // Monitor initialization.
     let monitor = Monitor {
-        project_name: settings::PROJECT_NAME,
-        unique_project_key: settings::UNIQUE_PROJECT_KEY,
+        app_name: settings::APP_NAME,
+        unique_app_key: settings::UNIQUE_APP_KEY,
         // For register models.
         model_key_list: vec![models::User::key()?, models::City::key()?],
     };

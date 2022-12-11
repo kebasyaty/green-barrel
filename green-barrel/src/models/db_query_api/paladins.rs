@@ -150,45 +150,70 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         Self: Serialize + DeserializeOwned + Sized,
     {
         let (is_save, is_slug_update) = params.unwrap_or((false, false));
-        // Get a key to access the metadata store.
-        let key = Self::key()?;
-        // Get metadata store.
-        let store = META_STORE.read().await;
-        // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(&key) {
-            meta
-        } else {
-            Err(format!(
-                "Model key: `{key}` ; Method: `check()` => \
-                Failed to get data from cache.",
-            ))?
+        let (
+            model_name,
+            option_str_map,
+            option_i32_map,
+            option_i64_map,
+            option_f64_map,
+            ignore_fields,
+            collection_name,
+            field_type_map,
+            database_name,
+            is_use_add_valid,
+            is_add_doc,
+            is_up_doc,
+            app_name,
+            unique_app_key,
+            fields_name,
+        ) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (
+                    meta.model_name.clone(),
+                    meta.option_str_map.clone(),
+                    meta.option_i32_map.clone(),
+                    meta.option_i64_map.clone(),
+                    meta.option_f64_map.clone(),
+                    meta.ignore_fields.clone(),
+                    meta.collection_name.clone(),
+                    meta.field_type_map.clone(),
+                    meta.database_name.clone(),
+                    meta.is_use_add_valid.clone(),
+                    meta.is_add_doc.clone(),
+                    meta.is_up_doc.clone(),
+                    meta.app_name.clone(),
+                    meta.unique_app_key.clone(),
+                    meta.fields_name.clone(),
+                )
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `check()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
         };
         // Get model name.
-        let model_name = meta.model_name.as_str();
-        // Get option maps for fields type `select`.
-        let option_str_map = &meta.option_str_map;
-        let option_i32_map = &meta.option_i32_map;
-        let option_i64_map = &meta.option_i64_map;
-        let option_f64_map = &meta.option_f64_map;
+        let model_name = model_name.as_str();
         // Determines the mode of accessing the database (insert or update).
         let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
         let mut is_err_symptom = false;
-        // Get a list of fields that should not be included in the document.
-        let ignore_fields = &meta.ignore_fields;
         // Access the collection.
         let coll = client
-            .database(&meta.database_name)
-            .collection::<Document>(&meta.collection_name);
+            .database(&database_name)
+            .collection::<Document>(&collection_name);
         // Get preliminary data from model instance and use for final result.
         let mut final_model_json = self.self_to_json_val()?;
         // Document for the final result.
         let mut final_doc = Document::new();
-        // Get Value json of current Model.
-        let field_type_map = &meta.field_type_map;
         // Apply additional validation.
-        if meta.is_use_add_valid {
+        if is_use_add_valid {
             let error_map = self.add_validation()?;
             if !error_map.is_empty() {
                 is_err_symptom = true;
@@ -216,7 +241,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 is_err_symptom = true;
             }
             if is_save {
-                if !is_update && !meta.is_add_docs {
+                if !is_update && !is_add_doc {
                     let msg = if !alert.is_empty() {
                         format!("{alert}<br>It is forbidden to perform saves!")
                     } else {
@@ -229,7 +254,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .get_mut("alert")
                         .unwrap() = json!(msg);
                 }
-                if is_update && !meta.is_up_docs {
+                if is_update && !is_up_doc {
                     let msg = if !alert.is_empty() {
                         format!("{alert}<br>It is forbidden to perform updates!")
                     } else {
@@ -245,7 +270,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
         // Loop over fields for validation.
-        for (field_name, field_type) in field_type_map {
+        for (field_name, field_type) in field_type_map.iter() {
             // Don't check the `hash` field.
             if field_name == "hash" {
                 continue;
@@ -1870,7 +1895,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
         // If the validation is negative, delete the orphaned files.
         if is_save && is_err_symptom && !is_update {
-            for field_name in meta.fields_name.iter() {
+            for field_name in fields_name.iter() {
                 let field = final_model_json.get(field_name).unwrap();
                 let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
@@ -1929,11 +1954,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Enrich the controller map with values for dynamic controllers.
         if is_save {
             Self::injection(
-                meta.project_name.as_str(),
-                meta.unique_project_key.as_str(),
-                meta.collection_name.as_str(),
+                app_name.as_str(),
+                unique_app_key.as_str(),
+                collection_name.as_str(),
                 &mut final_model_json,
-                &meta.fields_name,
+                &fields_name,
                 client,
             )
             .await?;
@@ -1945,7 +1970,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             is_valid: !is_err_symptom,
             final_doc: Some(final_doc),
             final_model_json,
-            fields_name: meta.fields_name.clone(),
+            fields_name: fields_name.clone(),
         })
     }
 
@@ -1981,25 +2006,31 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();
-            // Get a key to access the metadata store.
-            let key = Self::key()?;
-            // Get metadata store.
-            let store = META_STORE.read().await;
-            // Get metadata of Model.
-            let meta = if let Some(meta) = store.get(&key) {
-                meta
-            } else {
-                Err(format!(
-                    "Model key: `{key}` ; Method: `save()` => \
+            let (collection_name, is_use_hash_slug, database_name) = {
+                // Get a key to access the metadata store.
+                let key = Self::key()?;
+                // Get metadata store.
+                let store = META_STORE.lock().await;
+                // Get metadata of Model.
+                if let Some(meta) = store.get(&key) {
+                    (
+                        meta.collection_name.clone(),
+                        meta.is_use_hash_slug.clone(),
+                        meta.database_name.clone(),
+                    )
+                } else {
+                    Err(format!(
+                        "Model key: `{key}` ; Method: `save()` => \
                     Failed to get data from cache.",
-                ))?
+                    ))?
+                }
             };
             //
             let coll = client
-                .database(meta.database_name.as_str())
-                .collection::<Document>(meta.collection_name.as_str());
+                .database(database_name.as_str())
+                .collection::<Document>(collection_name.as_str());
             // Having fields with a controller of inputSlug type.
-            if !is_update && is_no_error && meta.is_use_hash_slug {
+            if !is_update && is_no_error && is_use_hash_slug {
                 stop_step = 2;
             }
             // Save to database.
@@ -2076,21 +2107,29 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access the metadata store.
-        let key = Self::key()?;
-        // Get metadata store.
-        let store = META_STORE.read().await;
-        // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(&key) {
-            meta
-        } else {
-            Err(format!(
-                "Model key: `{key}` ; Method: `delete()` => \
+        let (model_name, database_name, collection_name, fields_name, is_del_doc) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (
+                    meta.model_name.clone(),
+                    meta.database_name.clone(),
+                    meta.collection_name.clone(),
+                    meta.fields_name.clone(),
+                    meta.is_del_doc.clone(),
+                )
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `delete()` => \
                     Failed to get data from cache.",
-            ))?
+                ))?
+            }
         };
         // Get permission to delete the document.
-        let is_permission_delete: bool = meta.is_del_docs;
+        let is_permission_delete: bool = is_del_doc;
         // Error message for the client.
         // (Main use for admin panel.)
         let err_msg = if is_permission_delete {
@@ -2102,15 +2141,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let result_bool = if is_permission_delete {
             // Access collection.
             let coll = client
-                .database(meta.database_name.as_str())
-                .collection::<Document>(meta.collection_name.as_str());
+                .database(database_name.as_str())
+                .collection::<Document>(collection_name.as_str());
             // Get Model hash  for ObjectId.
             let hash = self.hash();
             if hash.is_empty() {
                 Err(format!(
-                    "Model: `{}` > Field: `hash` => \
-                        An empty `hash` field is not allowed when deleting.",
-                    meta.model_name
+                    "Model: `{model_name}` > Field: `hash` => \
+                    An empty `hash` field is not allowed when deleting."
                 ))?
             }
             let object_id = ObjectId::parse_str(hash.as_str())?;
@@ -2120,7 +2158,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if let Some(document) = coll.find_one(query.clone(), None).await? {
                 let model_json = self.self_to_json_val()?;
                 //
-                for field_name in meta.fields_name.iter() {
+                for field_name in fields_name.iter() {
                     if !document.is_null(field_name) {
                         let field = model_json.get(field_name).unwrap();
                         let field_type = field.get("field_type").unwrap().as_str().unwrap();
@@ -2145,9 +2183,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{field_name}` > \
-                                        Method: `delete()` => Document (info file) not found.",
-                                    meta.model_name
+                                    "Model: `{model_name}` > Field: `{field_name}` > \
+                                    Method: `delete()` => Document (info file) not found."
                                 ))?
                             }
                         } else if field_type == "InputImage" {
@@ -2170,9 +2207,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 }
                             } else {
                                 Err(format!(
-                                    "Model: `{}` > Field: `{field_name}` > \
-                                        Method: `delete()` => Document (info file) not found.",
-                                    meta.model_name
+                                    "Model: `{model_name}` > Field: `{field_name}` > \
+                                    Method: `delete()` => Document (info file) not found."
                                 ))?
                             }
                         }
@@ -2180,8 +2216,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             } else {
                 Err(format!(
-                    "Model: `{}` ; Method: `delete()` => Document not found.",
-                    meta.model_name
+                    "Model: `{model_name}` ; Method: `delete()` => Document not found."
                 ))?
             }
             // Run hook.
@@ -2251,30 +2286,35 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
-        // Get a key to access the metadata store.
-        let key = Self::key()?;
-        // Get metadata store.
-        let store = META_STORE.read().await;
-        // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(&key) {
-            meta
-        } else {
-            Err(format!(
-                "Model key: `{key}` ; Method: `verify_password()` => \
+        let (database_name, collection_name, model_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (
+                    meta.database_name.clone(),
+                    meta.collection_name.clone(),
+                    meta.model_name.clone(),
+                )
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `verify_password()` => \
                     Failed to get data from cache.",
-            ))?
+                ))?
+            }
         };
         // Access the collection.
         let coll = client
-            .database(meta.database_name.as_str())
-            .collection::<Document>(meta.collection_name.as_str());
+            .database(database_name.as_str())
+            .collection::<Document>(collection_name.as_str());
         // Get hash-line of Model.
         let hash = self.hash();
         if hash.is_empty() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` => \
-                    An empty `hash` field is not allowed when updating.",
-                meta.model_name
+                "Model: `{model_name}` ; Method: `verify_password` => \
+                An empty `hash` field is not allowed when updating."
             ))?
         }
         // Convert hash-line to ObjectId.
@@ -2286,9 +2326,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // We check that for the given `hash` a document is found in the database.
         if doc.is_none() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` => \
-                    There is no document in the database for the current `hash` value.",
-                meta.model_name
+                "Model: `{model_name}` ; Method: `verify_password` => \
+                There is no document in the database for the current `hash` value."
             ))?
         }
         //
@@ -2297,9 +2336,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let password_hash = doc.get("password");
         if password_hash.is_none() {
             Err(format!(
-                "Model: `{}` ; Method: `verify_password` => \
-                    The `password` field is missing.",
-                meta.model_name
+                "Model: `{model_name}` ; Method: `verify_password` => \
+                The `password` field is missing."
             ))?
         }
         // Get password hash or empty string.
@@ -2351,23 +2389,25 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         {
             err_msg = String::from("The old password does not match.");
         } else {
-            // Get a key to access the metadata store.
-            let key = Self::key()?;
-            // Get metadata store.
-            let store = META_STORE.read().await;
-            // Get metadata of Model.
-            let meta = if let Some(meta) = store.get(&key) {
-                meta
-            } else {
-                Err(format!(
-                    "Model key: `{key}` ; Method: `verify_password()` => \
-                    Failed to get data from cache.",
-                ))?
+            let (database_name, collection_name) = {
+                // Get a key to access the metadata store.
+                let key = Self::key()?;
+                // Get metadata store.
+                let store = META_STORE.lock().await;
+                // Get metadata of Model.
+                if let Some(meta) = store.get(&key) {
+                    (meta.database_name.clone(), meta.collection_name.clone())
+                } else {
+                    Err(format!(
+                        "Model key: `{key}` ; Method: `verify_password()` => \
+                        Failed to get data from cache.",
+                    ))?
+                }
             };
             // Access the collection.
             let coll = client
-                .database(meta.database_name.as_str())
-                .collection::<Document>(meta.collection_name.as_str());
+                .database(database_name.as_str())
+                .collection::<Document>(collection_name.as_str());
             // Get hash-line of Model.
             let hash = self.hash();
             // Convert hash-line to ObjectId.

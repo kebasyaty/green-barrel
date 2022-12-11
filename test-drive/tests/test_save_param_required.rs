@@ -6,12 +6,12 @@ use serde::{Deserialize, Serialize};
 use std::{error::Error, fs, path::Path};
 
 mod settings {
-    pub const PROJECT_NAME: &str = "test_project_name";
+    pub const APP_NAME: &str = "test_project_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "4c571936Hk318vAp";
+    pub const UNIQUE_APP_KEY: &str = "4c571936Hk318vAp";
     //
     pub const SERVICE_NAME: &str = "test_service_name";
     pub const DATABASE_NAME: &str = "test_database_name";
@@ -20,9 +20,8 @@ mod settings {
 
 mod models {
     use super::*;
-    use settings::{
-        DATABASE_NAME, DB_QUERY_DOCS_LIMIT, PROJECT_NAME, SERVICE_NAME, UNIQUE_PROJECT_KEY,
-    };
+    use settings::{APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME, UNIQUE_APP_KEY};
+
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
@@ -451,8 +450,8 @@ mod migration {
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(
-            settings::PROJECT_NAME,
-            settings::UNIQUE_PROJECT_KEY,
+            settings::APP_NAME,
+            settings::UNIQUE_APP_KEY,
             get_model_key_list()?,
             client,
         )
@@ -460,8 +459,8 @@ mod migration {
 
         // Monitor initialization.
         let monitor = Monitor {
-            project_name: settings::PROJECT_NAME,
-            unique_project_key: settings::UNIQUE_PROJECT_KEY,
+            app_name: settings::APP_NAME,
+            unique_app_key: settings::UNIQUE_APP_KEY,
             // Register models
             model_key_list: get_model_key_list()?,
         };
@@ -556,8 +555,8 @@ async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
-        settings::PROJECT_NAME,
-        settings::UNIQUE_PROJECT_KEY,
+        settings::APP_NAME,
+        settings::UNIQUE_APP_KEY,
         migration::get_model_key_list()?,
         &client,
     )

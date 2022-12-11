@@ -72,8 +72,8 @@ pub trait Main {
     /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
     async fn injection(
-        project_name: &str,
-        unique_project_key: &str,
+        app_name: &str,
+        unique_app_key: &str,
         collection_name: &str,
         model_json: &mut Value,
         fields_name: &Vec<String>,
@@ -83,7 +83,7 @@ pub trait Main {
         Self: serde::de::DeserializeOwned + Sized,
     {
         // Init the name of the project's technical database.
-        let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
+        let db_green_tech: String = format!("green_tech__{app_name}__{unique_app_key}");
         // Access to the collection with values for dynamic fields type.
         let collection = client
             .database(&db_green_tech)

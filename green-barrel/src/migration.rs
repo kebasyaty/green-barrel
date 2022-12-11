@@ -36,8 +36,8 @@ pub struct ModelState {
 
 /// For monitoring the state of models.
 pub struct Monitor<'a> {
-    pub project_name: &'a str,
-    pub unique_project_key: &'a str,
+    pub app_name: &'a str,
+    pub unique_app_key: &'a str,
     pub model_key_list: Vec<String>,
 }
 
@@ -45,12 +45,12 @@ impl<'a> Monitor<'a> {
     /// Get the name of the technical database for a project.
     // *********************************************************************************************
     pub fn green_tech_name(&self) -> Result<String, Box<dyn Error>> {
-        // PROJECT_NAME Validation.
+        // app_name Validation.
         // Valid characters: _ a-z A-Z 0-9
         // Max size: 20
         let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,20}$")?;
-        if !re.is_match(self.project_name) {
-            Err("PROJECT_NAME => \
+        if !re.is_match(self.app_name) {
+            Err("app_name => \
                     Valid characters: _ a-z A-Z 0-9 and \
                     Max size: 20 ; \
                     First character: a-z A-Z")?
@@ -61,7 +61,7 @@ impl<'a> Monitor<'a> {
         // Size: 16
         // Example: "7rzgacfqQB3B7q7T"
         let re = Regex::new(r"^[a-zA-Z\d]{16}$")?;
-        if !re.is_match(self.unique_project_key) {
+        if !re.is_match(self.unique_app_key) {
             Err("UNIQUE_PROJECT_KEY => \
                     Valid characters: a-z A-Z 0-9 and \
                     Size: 16.")?
@@ -69,7 +69,7 @@ impl<'a> Monitor<'a> {
         //
         Ok(format!(
             "green_tech__{}__{}",
-            self.project_name, self.unique_project_key
+            self.app_name, self.unique_app_key
         ))
     }
 
@@ -171,7 +171,7 @@ impl<'a> Monitor<'a> {
         // Run refresh models state.
         self.refresh(client).await?;
         // Get metadata store.
-        let store = META_STORE.read().await;
+        let store = { META_STORE.lock().await.clone() };
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model.
             let meta = if let Some(meta) = store.get(model_key) {
@@ -182,7 +182,7 @@ impl<'a> Monitor<'a> {
                     Failed to get data from cache.",
                 ))?
             };
-            if !meta.is_add_docs {
+            if !meta.is_add_doc {
                 continue;
             }
             // Service_name validation.
