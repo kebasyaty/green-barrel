@@ -2,7 +2,6 @@
 
 use async_lock::RwLock;
 use lazy_static::lazy_static;
-use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 
 use crate::models::helpers::Meta;
