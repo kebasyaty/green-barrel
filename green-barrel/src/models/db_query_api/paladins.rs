@@ -1,6 +1,7 @@
 //! Query methods for a Model instance.
 
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
     bson::{doc, oid::ObjectId, ser::to_bson, spec::ElementType, Bson, Document},
@@ -578,19 +579,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let val_dt = {
                         let (val, err_msg) = if field_type == "InputDate" {
                             (
-                                format!("{curr_val}T00:00"),
-                                "Incorrect date format.<br>Example: 1970-02-28",
+                                format!("{curr_val}T00:00+00:00"),
+                                "Incorrect date format.\
+                                <br>Example: 1970-02-28",
                             )
                         } else {
                             (
                                 curr_val.to_string(),
-                                "Incorrect date and time format.<br>Example: 1970-02-28T00:00",
+                                "Incorrect date and time format.\
+                                <br>Example: 1970-01-01T00:00+02:00",
                             )
                         };
-                        if let Ok(ndt) =
-                            chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
-                        {
-                            chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                        if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                            DateTime::<Utc>::from(dt)
                         } else {
                             is_err_symptom = true;
                             *final_field.get_mut("error").unwrap() =
@@ -605,20 +606,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let min_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
                                 (
-                                    format!("{min}T00:00"),
-                                    "Param min - Incorrect date format.<br>Example: 1970-02-28",
+                                    format!("{min}T00:00+00:00"),
+                                    "Param min - Incorrect date format.\
+                                    <br>Example: 1970-02-28",
                                 )
                             } else {
                                 (
                                     min.to_string(),
-                                    "Param min - Incorrect date and time format. \
-                                    Example: 1970-02-28T00:00",
+                                    "Param min - Incorrect date and time format.\
+                                    <br>Example: 1970-01-01T00:00+02:00",
                                 )
                             };
-                            if let Ok(ndt) =
-                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
-                            {
-                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                            if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                                DateTime::<Utc>::from(dt)
                             } else {
                                 Err(format!(
                                     "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -644,20 +644,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let max_dt = {
                             let (val, err_msg) = if field_type == "InputDate" {
                                 (
-                                    format!("{max}T00:00"),
-                                    "Param max - Incorrect date format.<br>Example: 1970-02-28",
+                                    format!("{max}T00:00+00:00"),
+                                    "Param max - Incorrect date format.\
+                                    <br>Example: 1970-02-28",
                                 )
                             } else {
                                 (
                                     max.to_string(),
                                     "Param max - Incorrect date and time format.<br>\
-                                    Example: 1970-02-28T00:00",
+                                    Example: 1970-01-01T00:00+02:00",
                                 )
                             };
-                            if let Ok(ndt) =
-                                chrono::NaiveDateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M")
-                            {
-                                chrono::DateTime::<chrono::Utc>::from_utc(ndt, chrono::Utc)
+                            if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                                DateTime::<Utc>::from(dt)
                             } else {
                                 Err(format!(
                                     "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -1283,7 +1282,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
+                        let date_slug = format!("{}-utc", Utc::now().format("%Y-%m-%d"));
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
@@ -1435,7 +1434,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-utc", chrono::Utc::now().format("%Y-%m-%d"));
+                        let date_slug = format!("{}-utc", Utc::now().format("%Y-%m-%d"));
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
                         loop {
@@ -1831,8 +1830,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Insert or update fields for timestamps `created_at` and `updated_at`.
         // -------------------------------------------------------------------------------------
         if !is_err_symptom {
-            let dt: chrono::DateTime<chrono::Utc> = chrono::Utc::now();
-            let dt_text: String = dt.to_rfc3339()[..19].into();
+            let dt = Utc::now();
+            let dt_text = dt.format("%Y-%m-%dT%H:%M%z").to_string();
             if is_update {
                 // Get the `created_at` value from the database.
                 let doc = {
@@ -1841,8 +1840,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     coll.find_one(filter, None).await?.unwrap()
                 };
                 let dt2 = doc.get("created_at").unwrap();
-                let dt_text2 =
-                    dt2.as_datetime().unwrap().try_to_rfc3339_string()?[..19].to_string();
+                let dt_text2 = dt2
+                    .as_datetime()
+                    .unwrap()
+                    .to_chrono()
+                    .format("%Y-%m-%dT%H:%M%z")
+                    .to_string();
                 //
                 *final_model_json
                     .get_mut("created_at")
@@ -1862,8 +1865,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     self.set_updated_at(dt_text);
                 } else {
                     let dt = doc.get("updated_at").unwrap();
-                    let dt_text =
-                        dt.as_datetime().unwrap().try_to_rfc3339_string()?[..19].to_string();
+                    let dt_text = dt
+                        .as_datetime()
+                        .unwrap()
+                        .to_chrono()
+                        .format("%Y-%m-%dT%H:%M%z")
+                        .to_string();
                     if is_save {
                         final_doc.insert("updated_at", dt);
                     }
