@@ -19,6 +19,7 @@ pub mod input_phone;
 pub mod input_text;
 pub mod input_url;
 pub mod text_area;
+pub mod time_zone;
 // file
 pub mod input_email;
 pub mod input_file;
