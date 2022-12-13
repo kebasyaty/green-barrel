@@ -24,7 +24,7 @@ pub trait Converters {
         //
         let mut accumula_doc = Document::new();
         for (field_name, field_type) in field_type_map {
-            if ignore_fields.contains(field_name) {
+            if ignore_fields.contains(field_name) || field_name == "tz" {
                 continue;
             }
             if field_name == "hash" {
@@ -115,7 +115,7 @@ pub trait Converters {
         .into_relaxed_extjson();
         //
         for field_name in fields_name {
-            if !ignore_fields.contains(field_name) {
+            if !ignore_fields.contains(field_name) && field_name != "tz" {
                 let val_json = doc_json.get(field_name).unwrap().clone();
                 if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("value") {
                     *val = val_json;

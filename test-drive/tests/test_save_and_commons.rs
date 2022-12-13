@@ -1,3 +1,4 @@
+use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -217,6 +218,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
+    let tz = Local::now().format("%z").to_string();
 
     for num in 1..=10 {
         let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
@@ -246,6 +248,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.ipv4.set("192.168.50.1");
         test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
         test_model.textarea.set("Some text");
+        test_model.tz.set(tz.as_str());
 
         let output_data = test_model.save(&client, None, None).await?;
         test_model = output_data.update()?;
