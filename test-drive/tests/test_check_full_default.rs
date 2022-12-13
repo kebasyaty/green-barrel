@@ -246,7 +246,7 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     let mut test_model = TestModel::new().await?;
     test_model.checkbox.set(true);
     test_model.date.set("0000-01-01");
-    test_model.datetime.set("2039-01-01T00:00+02:00");
+    test_model.datetime.set("2039-01-01T00:00");
     test_model.file.set(f_path.as_str());
     test_model.image.set(img_path.as_str());
     test_model.number_i32.set(0);

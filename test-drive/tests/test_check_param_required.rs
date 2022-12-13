@@ -105,9 +105,9 @@ mod models {
                 },
                 datetime: InputDateTime {
                     required: true,
-                    default: Some("1970-02-28T00:00+02:00".to_string()),
-                    min: "1970-01-01T00:00+02:00".into(),
-                    max: "1970-03-01T00:00+02:00".into(),
+                    default: Some("1970-02-28T00:00".to_string()),
+                    min: "1970-01-01T00:00".into(),
+                    max: "1970-03-01T00:00".into(),
                     ..Default::default()
                 },
                 file: InputFile {

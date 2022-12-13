@@ -18,7 +18,7 @@ pub const DATABASE_NAME: &str = "app_name";
 // Size: 16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key (This is not an advertisement): https://randompasswordgen.com/
-pub const UNIQUE_APP_KEY: &str = "9yFK06gQ002qzhr9";
+pub const UNIQUE_APP_KEY: &str = "9yFK07gQ002qzhr9";
 
 // Default settings.
 pub mod default {

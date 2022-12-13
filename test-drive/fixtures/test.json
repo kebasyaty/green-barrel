@@ -2,7 +2,7 @@
     {
         "checkbox": true,
         "date": "1970-02-28",
-        "datetime": "1970-02-28T00:00+02:00",
+        "datetime": "1970-02-28T00:00",
         "file": null,
         "image": null,
         "number_i32": 0,
@@ -67,7 +67,7 @@
     {
         "checkbox": true,
         "date": "1970-02-28",
-        "datetime": "1970-02-28T00:00+02:00",
+        "datetime": "1970-02-28T00:00",
         "file": null,
         "image": null,
         "number_i32": 0,

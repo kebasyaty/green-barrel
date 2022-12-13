@@ -11,7 +11,7 @@ pub struct TimeZone {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
-    pub default: String, // Value by default.
+    pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub minlength: usize, // The minimum number of characters allowed in the text.
@@ -38,7 +38,7 @@ impl Default for TimeZone {
             input_type: String::from("hidden"), // "hidden | text"
             name: String::new(),
             value: None,
-            default: String::from("+0000"), // Utc
+            default: Some(String::from("+0000")), // Utc
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0,

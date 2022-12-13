@@ -224,9 +224,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             json!(Self::accumula_err(final_field, err_msg));
                     } else {
                         Err(format!(
-                            "Model: `{}` ;  Method: `add_validation()` => \
-                                The model has no field `{}`.",
-                            model_name, field_name
+                            "Model: `{model_name}` ;  Method: `add_validation()` => \
+                                The model has no field `{field_name}`."
                         ))?
                     }
                 }
@@ -270,10 +269,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             }
         }
+        // Get time zone.
+        let tz = if let Some(tz) = final_model_json["tz"].get("value") {
+            tz.as_str().unwrap().to_string()
+        } else if let Some(tz) = final_model_json["tz"].get("default") {
+            tz.as_str().unwrap().to_string()
+        } else {
+            Err(format!(
+                "Model: `{model_name}` > Field: `tz` ;  Method: `check()` => \
+                 The value of the time zone is undefined!."
+            ))?
+        };
         // Loop over fields for validation.
         for (field_name, field_type) in field_type_map.iter() {
             // Don't check the `hash` field.
-            if field_name == "hash" {
+            if field_name == "hash" || field_name == "tz" {
                 continue;
             }
             // Get values for validation.
@@ -585,9 +595,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             )
                         } else {
                             (
-                                curr_val.to_string(),
+                                format!("{curr_val}{tz}"),
                                 "Incorrect date and time format.\
-                                <br>Example: 1970-01-01T00:00+02:00",
+                                <br>Example: 1970-01-01T00:00",
                             )
                         };
                         if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
@@ -608,13 +618,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 (
                                     format!("{min}T00:00+00:00"),
                                     "Param min - Incorrect date format.\
-                                    <br>Example: 1970-02-28",
+                                    Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    min.to_string(),
+                                    format!("{curr_val}{tz}"),
                                     "Param min - Incorrect date and time format.\
-                                    <br>Example: 1970-01-01T00:00+02:00",
+                                    Example: 1970-01-01T00:00",
                                 )
                             };
                             if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
@@ -646,13 +656,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 (
                                     format!("{max}T00:00+00:00"),
                                     "Param max - Incorrect date format.\
-                                    <br>Example: 1970-02-28",
+                                    Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    max.to_string(),
-                                    "Param max - Incorrect date and time format.<br>\
-                                    Example: 1970-01-01T00:00+02:00",
+                                    format!("{curr_val}{tz}"),
+                                    "Param max - Incorrect date and time format.\
+                                    Example: 1970-01-01T00:00",
                                 )
                             };
                             if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
