@@ -1,3 +1,4 @@
+use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -516,10 +517,12 @@ async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
+    let tz = Local::now().format("%z").to_string();
     //
     let mut test_model = TestModel::new().await?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
+    test_model.tz.set(tz.as_str());
 
     // Create document
     // ---------------------------------------------------------------------------------------------
