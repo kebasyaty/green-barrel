@@ -1857,7 +1857,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // -------------------------------------------------------------------------------------
         if !is_err_symptom {
             let dt = Utc::now();
-            let dt_text = dt.format("%Y-%m-%dT%H:%M%z").to_string();
+            let dt_text = dt.format("%Y-%m-%dT%H:%M:%S%z").to_string();
             if is_update {
                 // Get the `created_at` value from the database.
                 let doc = {
@@ -1870,7 +1870,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     .as_datetime()
                     .unwrap()
                     .to_chrono()
-                    .format("%Y-%m-%dT%H:%M%z")
+                    .format("%Y-%m-%dT%H:%M:%S%z")
                     .to_string();
                 //
                 *final_model_json
@@ -1895,7 +1895,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         .as_datetime()
                         .unwrap()
                         .to_chrono()
-                        .format("%Y-%m-%dT%H:%M%z")
+                        .format("%Y-%m-%dT%H:%M:%S%z")
                         .to_string();
                     if is_save {
                         final_doc.insert("updated_at", dt);
