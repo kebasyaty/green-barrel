@@ -270,15 +270,31 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
         // Get time zone.
-        let tz = if let Some(tz) = final_model_json["tz"].get("value") {
-            tz.as_str().unwrap().to_string()
-        } else if let Some(tz) = final_model_json["tz"].get("default") {
-            tz.as_str().unwrap().to_string()
-        } else {
-            Err(format!(
-                "Model: `{model_name}` > Field: `tz` ;  Method: `check()` => \
-                 The value of the time zone is undefined!."
-            ))?
+        let tz = {
+            let mut tmp = String::new();
+            if let Some(tz) = final_model_json["tz"].get("value") {
+                if let Some(tz) = tz.as_str() {
+                    if !tz.is_empty() {
+                        tmp = tz.to_string()
+                    }
+                }
+            }
+            if tmp.is_empty() {
+                if let Some(tz) = final_model_json["tz"].get("default") {
+                    if let Some(tz) = tz.as_str() {
+                        if !tz.is_empty() {
+                            tmp = tz.to_string()
+                        }
+                    }
+                }
+            }
+            if tmp.is_empty() {
+                Err(format!(
+                    "Model: `{model_name}` > Field: `tz` ;  Method: `check()` => \
+                    The value of the time zone is undefined!."
+                ))?
+            }
+            tmp
         };
         // Loop over fields for validation.
         for (field_name, field_type) in field_type_map.iter() {
