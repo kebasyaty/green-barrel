@@ -57,7 +57,11 @@ pub trait Converters {
                     field_name,
                     if val_bson.element_type() != ElementType::Null {
                         Bson::String(
-                            val_bson.as_datetime().unwrap().try_to_rfc3339_string()?[..10]
+                            val_bson
+                                .as_datetime()
+                                .unwrap()
+                                .to_chrono()
+                                .format("%Y-%m-%d")
                                 .to_string(),
                         )
                     } else {
@@ -69,7 +73,14 @@ pub trait Converters {
                 accumula_doc.insert(
                     field_name,
                     if val_bson.element_type() != ElementType::Null {
-                        Bson::String(val_bson.as_datetime().unwrap().try_to_rfc3339_string()?)
+                        Bson::String(
+                            val_bson
+                                .as_datetime()
+                                .unwrap()
+                                .to_chrono()
+                                .format("%Y-%m-%dT%H:%M:%S%z")
+                                .to_string(),
+                        )
                     } else {
                         Bson::Null
                     },
