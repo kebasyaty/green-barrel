@@ -83,7 +83,7 @@ $ sudo apt update
 
 ## Usage:
 
-**An example will be added soon.**
+[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/green-barrel/examples/basic "Basic Example")
 
 ## Changelog
 
