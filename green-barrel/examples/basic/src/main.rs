@@ -2,8 +2,8 @@ mod migration;
 mod models;
 mod settings;
 
-use green_barrel::*;
 use chrono::Local;
+use green_barrel::*;
 use std::error::Error;
 
 #[tokio::main]
