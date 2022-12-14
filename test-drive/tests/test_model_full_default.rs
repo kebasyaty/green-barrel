@@ -6,16 +6,27 @@ use serde::{Deserialize, Serialize};
 use std::{error::Error, fs, path::Path};
 
 mod settings {
-    pub const APP_NAME: &str = "test_project_name";
+    // Project name.
+    // Valid characters: _ a-z A-Z 0-9
+    // Hint: PROJECT_NAM it is recommended not to change.
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const APP_NAME: &str = "test_app_name";
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const DATABASE_NAME: &str = "test_app_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
     pub const UNIQUE_APP_KEY: &str = "dNTFT8173D6i3255";
     //
-    pub const SERVICE_NAME: &str = "test_service_name";
-    pub const DATABASE_NAME: &str = "test_database_name";
     pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 30
+    // First character: a-z A-Z
+    pub const SERVICE_NAME: &str = "test_service_name";
 }
 
 mod models {
