@@ -87,10 +87,10 @@ $ sudo apt update
 
 ```toml
 [dependencies]
-green-barrel = "1.2.1-beta"
-metamorphose = "1.2.1-beta"
-regex = "1.6.0"
-serde_json = "1.0.85"
+green-barrel = "1.3.0-beta"
+metamorphose = "1.3.0-beta"
+regex = "1.7.0"
+serde_json = "1.0.89"
 
 [dependencies.mongodb]
 default-features = false
@@ -99,7 +99,7 @@ version = "2.3.1"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.147"
+version = "1.0.149"
 ```
 
 #### src/settings.rs
