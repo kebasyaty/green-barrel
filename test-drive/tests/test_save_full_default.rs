@@ -218,12 +218,14 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
-    let tz = Local::now().format("%z").to_string();
+    // Specify the time zone (optional).
+    // By default Utc = +0000
+    let tz = Some(Local::now().format("%z").to_string());
     //
     // No data
     // ---------------------------------------------------------------------------------------------
     let mut test_model = TestModel::new().await?;
-    let output_data = test_model.save(&client, None, None).await?;
+    let output_data = test_model.save(&client, &tz, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(
@@ -282,9 +284,8 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     test_model.ipv4.set("192.168.50.1");
     test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
     test_model.textarea.set("Some text");
-    test_model.tz.set(tz.as_str());
 
-    let output_data = test_model.save(&client, None, None).await?;
+    let output_data = test_model.save(&client, &tz, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(

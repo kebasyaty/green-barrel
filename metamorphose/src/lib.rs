@@ -210,8 +210,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         panic!(
                             "Model: `{model_name_str}` => The field named `updated_at` is reserved."
                         )
-                    } else if field_name == "tz" {
-                        panic!("Model: `{model_name_str}` => The field named `tz` is reserved.")
                     }
                 }
             }
@@ -237,13 +235,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_updated_at_field = new_updated_at_field.named.first().unwrap().to_owned();
             fields.push(new_updated_at_field);
-            // Add new field `tz`.
-            let new_tz_field: syn::FieldsNamed = parse2(quote! {
-                {pub tz: TimeZone}
-            })
-            .unwrap_or_else(|err| panic!("{}", err.to_string()));
-            let new_tz_field = new_tz_field.named.first().unwrap().to_owned();
-            fields.push(new_tz_field);
 
             // Get the number of fields.
             trans_meta.fields_count = fields.len();
@@ -707,7 +698,6 @@ fn get_field_info<'a>(
         "SelectF64MultDyn" => ("Vec<f64>", "select"),
         "HiddenHash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
-        "TimeZone" => ("String", "text"),
         _ => Err(format!(
             "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \
             Invalid field type."

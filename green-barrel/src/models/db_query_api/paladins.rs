@@ -135,8 +135,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
+    /// use chrono::Local;
+    /// let tz = Some(Local::now().format("%z").to_string()); // or None
+    ///
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(& &client, &validators, &media_dir, None)?;
+    /// let output_data = model_name.check(&client, tz, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -145,12 +148,21 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     async fn check(
         &mut self,
         client: &Client,
+        tz: &Option<String>,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
+        // Get locks.
         let (is_save, is_slug_update) = params.unwrap_or((false, false));
+        // Get time zone.
+        let tz = if let Some(tz) = tz {
+            tz.clone()
+        } else {
+            "+0000".into()
+        };
+        // Get metadata.
         let (
             model_name,
             option_str_map,
@@ -269,37 +281,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
             }
         }
-        // Get time zone.
-        let tz = {
-            let mut tmp = String::new();
-            if let Some(tz) = final_model_json["tz"].get("value") {
-                if let Some(tz) = tz.as_str() {
-                    if !tz.is_empty() {
-                        tmp = tz.to_string()
-                    }
-                }
-            }
-            if tmp.is_empty() {
-                if let Some(tz) = final_model_json["tz"].get("default") {
-                    if let Some(tz) = tz.as_str() {
-                        if !tz.is_empty() {
-                            tmp = tz.to_string()
-                        }
-                    }
-                }
-            }
-            if tmp.is_empty() {
-                Err(format!(
-                    "Model: `{model_name}` > Field: `tz` ;  Method: `check()` => \
-                    The value of the time zone is undefined!."
-                ))?
-            }
-            tmp
-        };
         // Loop over fields for validation.
         for (field_name, field_type) in field_type_map.iter() {
             // Don't check the `hash` field.
-            if field_name == "hash" || field_name == "tz" {
+            if field_name == "hash" {
                 continue;
             }
             // Get values for validation.
@@ -2013,8 +1998,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
+    /// use chrono::Local;
+    /// let tz = Some(Local::now().format("%z").to_string()); // or None
+    ///
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.save(& &client, &validators, &media_dir, None, None)?;
+    /// let output_data = model_name.save(&client, tz, None, None)?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -2024,6 +2012,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     async fn save(
         &mut self,
         client: &Client,
+        tz: &Option<String>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -2035,7 +2024,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(client, Some((true, step == 2))).await?;
+            let mut verified_data = self.check(client, tz, Some((true, step == 2))).await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();
