@@ -8,8 +8,7 @@ use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
 use crate::settings::{
-    default::{DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
-    APP_NAME, DATABASE_NAME, UNIQUE_APP_KEY,
+    service_name::SERVICE_NAME, APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, UNIQUE_APP_KEY,
 };
 
 #[Model(

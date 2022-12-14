@@ -18,14 +18,14 @@ pub const DATABASE_NAME: &str = "app_name";
 // Size: 16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key (This is not an advertisement): https://randompasswordgen.com/
-pub const UNIQUE_APP_KEY: &str = "9yFK08gQ002qzhr9";
+pub const UNIQUE_APP_KEY: &str = "9yFK09gQ002qzhr9";
+//
+pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 
-// Default settings.
-pub mod default {
+// Service Name
+pub mod service_name {
     // Valid characters: _ a-z A-Z 0-9
     // Max size: 30
     // First character: a-z A-Z
     pub const SERVICE_NAME: &str = "service_name";
-    //
-    pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 }
