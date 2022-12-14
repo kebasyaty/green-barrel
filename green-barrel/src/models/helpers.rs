@@ -1,7 +1,7 @@
 //! Collection of auxiliary Structures, Enumerations.
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 
 /// Metadata ( model parameters )
@@ -9,18 +9,17 @@ use std::collections::HashMap;
 #[derive(Deserialize, Clone, Debug)]
 pub struct Meta {
     pub model_name: String,
-    pub project_name: String,
-    pub unique_project_key: String,
+    pub app_name: String,
+    pub unique_app_key: String,
     pub service_name: String,
     pub database_name: String,
-    pub db_client_name: String,
     pub db_query_docs_limit: u32,
     pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
-    pub is_add_docs: bool,
-    pub is_up_docs: bool,
-    pub is_del_docs: bool,
+    pub is_add_doc: bool,
+    pub is_up_doc: bool,
+    pub is_del_doc: bool,
     pub is_use_add_valid: bool,
     pub is_use_hooks: bool,
     pub is_use_hash_slug: bool,
@@ -37,24 +36,24 @@ pub struct Meta {
     pub option_i32_map: HashMap<String, Vec<i32>>,
     pub option_i64_map: HashMap<String, Vec<i64>>,
     pub option_f64_map: HashMap<String, Vec<f64>>,
+    pub model_json: Value,
 }
 
 impl Default for Meta {
     fn default() -> Self {
         Self {
             model_name: String::new(),
-            project_name: String::new(),
-            unique_project_key: String::new(),
+            app_name: String::new(),
+            unique_app_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
-            db_client_name: String::new(),
             db_query_docs_limit: 0_u32,
             collection_name: String::new(),
             fields_count: 0_usize,
             fields_name: Vec::new(),
-            is_add_docs: true,
-            is_up_docs: true,
-            is_del_docs: true,
+            is_add_doc: true,
+            is_up_doc: true,
+            is_del_doc: true,
             is_use_add_valid: false,
             is_use_hooks: false,
             is_use_hash_slug: false,
@@ -66,6 +65,7 @@ impl Default for Meta {
             option_i32_map: HashMap::new(),
             option_i64_map: HashMap::new(),
             option_f64_map: HashMap::new(),
+            model_json: json!(null),
         }
     }
 }

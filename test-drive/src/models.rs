@@ -1,13 +1,14 @@
+use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
+use mongodb::Client;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
 use crate::settings::{
-    default::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
-    PROJECT_NAME, UNIQUE_PROJECT_KEY,
+    service_name::SERVICE_NAME, APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, UNIQUE_APP_KEY,
 };
 
 #[Model(
@@ -141,28 +142,29 @@ impl AdditionalValidation for User {
     }
 }
 
+#[async_trait(?Send)]
 impl Hooks for User {
-    fn pre_create(&self) {
+    async fn pre_create(&self, _client: &Client) {
         println!("!!!Pre Create!!!");
     }
     //
-    fn post_create(&self) {
+    async fn post_create(&self, _client: &Client) {
         println!("!!!Post Create!!!");
     }
     //
-    fn pre_update(&self) {
+    async fn pre_update(&self, _client: &Client) {
         println!("!!!Pre Update!!!");
     }
     //
-    fn post_update(&self) {
+    async fn post_update(&self, _client: &Client) {
         println!("!!!Post Update!!!");
     }
     //
-    fn pre_delete(&self) {
+    async fn pre_delete(&self, _client: &Client) {
         println!("!!!Pre Delet!!!");
     }
     //
-    fn post_delete(&self) {
+    async fn post_delete(&self, _client: &Client) {
         println!("!!!Post Delet!!!");
     }
 }

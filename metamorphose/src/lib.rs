@@ -97,15 +97,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             parameter `database`. Use the `&str` type."
                         )
                     }
-                } else if mnv.path.is_ident("db_client_name") {
-                    if let syn::Lit::Str(lit_str) = &mnv.lit {
-                        trans_meta.db_client_name = lit_str.value().trim().to_string();
-                    } else {
-                        panic!(
-                            "Model: `{model_name_str}` => Could not determine value for \
-                            parameter `db_client_name`. Use the `&str` type."
-                        )
-                    }
                 } else if mnv.path.is_ident("db_query_docs_limit") {
                     if let syn::Lit::Int(lit_int) = &mnv.lit {
                         trans_meta.db_query_docs_limit = lit_int.base10_parse::<u32>().unwrap();
@@ -117,7 +108,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("is_add_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        trans_meta.is_add_docs = lit_bool.value;
+                        trans_meta.is_add_doc = lit_bool.value;
                     } else {
                         panic!(
                             "Model: `{model_name_str}` => Could not determine value for \
@@ -126,7 +117,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("is_up_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        trans_meta.is_up_docs = lit_bool.value;
+                        trans_meta.is_up_doc = lit_bool.value;
                     } else {
                         panic!(
                             "Model: `{model_name_str}` => Could not determine value for \
@@ -135,7 +126,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 } else if mnv.path.is_ident("is_del_doc") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        trans_meta.is_del_docs = lit_bool.value;
+                        trans_meta.is_del_doc = lit_bool.value;
                     } else {
                         panic!(
                             "Model: `{model_name_str}` => Could not determine value for \
@@ -334,7 +325,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     "{}__{}__{}",
                     SERVICE_NAME.trim(),
                     re.replace_all(stringify!(#model_name_ident), "_$upper_chr"),
-                    UNIQUE_PROJECT_KEY.trim().to_string()
+                    UNIQUE_APP_KEY.trim().to_string()
                 )
                 .to_lowercase())
             }
@@ -427,7 +418,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Generate metadata of Model.
             // -------------------------------------------------------------------------------------
-            fn generate_metadata() -> Result<(Meta, serde_json::Value), Box<dyn std::error::Error>>
+            fn generate_metadata() -> Result<Meta, Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
@@ -435,25 +426,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 let mut meta = serde_json::from_str::<Meta>(&#trans_meta_json)?;
                 let service_name: String = SERVICE_NAME.trim().to_string();
                 // Add project name.
-                meta.project_name = PROJECT_NAME.trim().to_string();
+                meta.app_name = APP_NAME.trim().to_string();
                 // Add unique project key.
-                meta.unique_project_key = UNIQUE_PROJECT_KEY.trim().to_string();
+                meta.unique_app_key = UNIQUE_APP_KEY.trim().to_string();
                 // Add service name.
                 meta.service_name = service_name.clone();
                 // Add database name.
                 if meta.database_name.is_empty() {
                     meta.database_name = format!(
                         "{}__{}__{}",
-                        meta.project_name,
+                        meta.app_name,
                         DATABASE_NAME.trim().to_string(),
-                        meta.unique_project_key);
-                }
-                // Add database client name.
-                if meta.db_client_name.is_empty() {
-                    meta.db_client_name = DB_CLIENT_NAME.trim().to_string();
+                        meta.unique_app_key);
                 }
                 // Add a limit on the number of documents when querying the database.
-                if meta.db_query_docs_limit == 0_u32 {
+                if meta.db_query_docs_limit == 0 {
                     meta.db_query_docs_limit = DB_QUERY_DOCS_LIMIT;
                 }
                 // Add collection name.
@@ -493,8 +480,9 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     }
                 }
                 meta.default_value_map = default_value_map;
+                meta.model_json = model_json;
                 //
-                Ok((meta, model_json))
+                Ok(meta)
             }
 
             /// Getter and Setter for field `hash`.
@@ -590,18 +578,17 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 #[derive(Serialize)]
 struct Meta {
     pub model_name: String,
-    pub project_name: String,
-    pub unique_project_key: String,
+    pub app_name: String,
+    pub unique_app_key: String,
     pub service_name: String,
     pub database_name: String,
-    pub db_client_name: String,
     pub db_query_docs_limit: u32,
     pub collection_name: String, // Field type map
     pub fields_count: usize,
     pub fields_name: Vec<String>,
-    pub is_add_docs: bool,
-    pub is_up_docs: bool,
-    pub is_del_docs: bool,
+    pub is_add_doc: bool,
+    pub is_up_doc: bool,
+    pub is_del_doc: bool,
     pub is_use_add_valid: bool,
     pub is_use_hooks: bool,
     pub is_use_hash_slug: bool,
@@ -618,24 +605,24 @@ struct Meta {
     pub option_i32_map: std::collections::HashMap<String, Vec<i32>>,
     pub option_i64_map: std::collections::HashMap<String, Vec<i64>>,
     pub option_f64_map: std::collections::HashMap<String, Vec<f64>>,
+    pub model_json: serde_json::Value,
 }
 
 impl Default for Meta {
     fn default() -> Self {
         Meta {
             model_name: String::new(),
-            project_name: String::new(),
-            unique_project_key: String::new(),
+            app_name: String::new(),
+            unique_app_key: String::new(),
             service_name: String::new(),
             database_name: String::new(),
-            db_client_name: String::new(),
             db_query_docs_limit: 0_u32,
             collection_name: String::new(),
             fields_count: 0_usize,
             fields_name: Vec::new(),
-            is_add_docs: true,
-            is_up_docs: true,
-            is_del_docs: true,
+            is_add_doc: true,
+            is_up_doc: true,
+            is_del_doc: true,
             is_use_add_valid: false,
             is_use_hooks: false,
             is_use_hash_slug: false,
@@ -647,6 +634,7 @@ impl Default for Meta {
             option_i32_map: std::collections::HashMap::new(),
             option_i64_map: std::collections::HashMap::new(),
             option_f64_map: std::collections::HashMap::new(),
+            model_json: serde_json::json!(null),
         }
     }
 }

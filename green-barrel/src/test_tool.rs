@@ -1,31 +1,42 @@
 //! Auxiliary tools for testing models.
 
-use mongodb::sync::Client;
+use mongodb::Client;
 use std::error::Error;
 
-use crate::{models::helpers::Meta, store::MONGODB_CLIENT_STORE};
+use crate::meta_store::META_STORE;
 
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
-pub fn del_test_db(
-    project_name: &str,
-    unique_project_key: &str,
-    metadata_list: Vec<Meta>,
+pub async fn del_test_db(
+    app_name: &str,
+    unique_app_key: &str,
+    model_key_list: Vec<String>,
+    client: &Client,
 ) -> Result<(), Box<dyn Error>> {
+    // Get metadata store
+    let store = { META_STORE.lock().await.clone() };
     // Name of the technical database for testing
-    let db_green_tech: String = format!("green_tech__{}__{}", project_name, unique_project_key);
-    //
-    let client_store = MONGODB_CLIENT_STORE.read()?;
+    let db_green_tech = format!("green_tech__{app_name}__{unique_app_key}");
     // Removing databases
-    for meta in metadata_list.iter() {
-        let client: &Client = client_store.get(meta.db_client_name.as_str()).unwrap();
-        let database_names: Vec<String> = client.list_database_names(None, None)?;
-        //
+    for model_key in model_key_list.iter() {
+        // Get metadata of Model.
+        let meta = if let Some(meta) = store.get(model_key) {
+            meta
+        } else {
+            Err(format!(
+                "Model key: `{model_key}` ; Method: `json()` => \
+                Failed to get data from cache.",
+            ))?
+        };
+        let database_names: Vec<String> = client.list_database_names(None, None).await?;
         if database_names.contains(&db_green_tech) {
-            client.database(db_green_tech.as_str()).drop(None)?;
+            client.database(db_green_tech.as_str()).drop(None).await?;
         }
         if database_names.contains(&meta.database_name) {
-            client.database(meta.database_name.as_str()).drop(None)?;
+            client
+                .database(meta.database_name.as_str())
+                .drop(None)
+                .await?;
         }
     }
     //

@@ -1,6 +1,10 @@
 //! Methods that are called at different stages when accessing the database.
 
+use async_trait::async_trait;
+use mongodb::Client;
+
 /// Hooks methods.
+#[async_trait(?Send)]
 pub trait Hooks {
     /// Called before a new document is created in the database.
     ///
@@ -22,7 +26,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_create(&self) {
+    async fn pre_create(&self, _client: &Client) {
         //
     }
     /// Called after a new document has been created in the database.
@@ -45,7 +49,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_create(&self) {
+    async fn post_create(&self, _client: &Client) {
         //
     }
     /// Called before updating an existing document in the database.
@@ -68,7 +72,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_update(&self) {
+    async fn pre_update(&self, _client: &Client) {
         //
     }
     /// Called after an existing document in the database is updated.
@@ -91,7 +95,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_update(&self) {
+    async fn post_update(&self, _client: &Client) {
         //
     }
     /// Called before deleting an existing document in the database.
@@ -114,7 +118,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn pre_delete(&self) {
+    async fn pre_delete(&self, _client: &Client) {
         //
     }
     /// Called after an existing document in the database has been deleted.
@@ -137,7 +141,7 @@ pub trait Hooks {
     /// }
     /// ```
     ///
-    fn post_delete(&self) {
+    async fn post_delete(&self, _client: &Client) {
         //
     }
 }

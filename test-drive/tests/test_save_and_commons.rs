@@ -1,29 +1,40 @@
+use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::bson::doc;
+use mongodb::{bson::doc, Client};
 use serde::{Deserialize, Serialize};
-use std::{error::Error, fs};
+use std::{error::Error, fs, path::Path};
+use uuid::Uuid;
 
-mod data_test {
-    use super::*;
-
-    // Test application settings
-    // =============================================================================================
-    pub const PROJECT_NAME: &str = "test_project_name";
+mod settings {
+    // Project name.
+    // Valid characters: _ a-z A-Z 0-9
+    // Hint: PROJECT_NAM it is recommended not to change.
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const APP_NAME: &str = "test_app_name";
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const DATABASE_NAME: &str = "test_app_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "SkC1UDJ3Z4ucCMW8";
+    pub const UNIQUE_APP_KEY: &str = "SkC1UDJ3Z4ucCMW8";
     //
+    pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 30
+    // First character: a-z A-Z
     pub const SERVICE_NAME: &str = "test_service_name";
-    pub const DATABASE_NAME: &str = "test_database_name";
-    pub const DB_CLIENT_NAME: &str = "default";
-    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+}
 
-    // Models
-    // =============================================================================================
+mod models {
+    use super::*;
+    use settings::{APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME, UNIQUE_APP_KEY};
+
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
@@ -97,7 +108,7 @@ mod data_test {
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
-                        path: "./media/default/no_image.png".into(),
+                        path: "./resources/media/default/no_image.png".into(),
                         url: "/media/default/no_image.png".into(),
                         ..Default::default()
                     }),
@@ -114,67 +125,124 @@ mod data_test {
             }
         }
     }
+}
 
-    // Test migration
-    // =============================================================================================
+mod migration {
+    use super::*;
+
     // Get metadata list
-    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
-        let metadata_list = vec![TestModel::meta()?];
-        Ok(metadata_list)
+    pub fn get_model_key_list() -> Result<Vec<String>, Box<dyn Error>> {
+        let model_key_list = vec![models::TestModel::key()?];
+        Ok(model_key_list)
     }
 
     // Migration
-    pub fn run_migration() -> Result<(), Box<dyn Error>> {
-        // Caching MongoDB clients.
-        {
-            let mut client_store = MONGODB_CLIENT_STORE.write()?;
-            client_store.insert(
-                "default".to_string(),
-                mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-            );
-        }
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
+        // Caching metadata.
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, get_metadata_list()?)?;
+        del_test_db(
+            settings::APP_NAME,
+            settings::UNIQUE_APP_KEY,
+            get_model_key_list()?,
+            client,
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
-            project_name: PROJECT_NAME,
-            unique_project_key: UNIQUE_PROJECT_KEY,
+            app_name: settings::APP_NAME,
+            unique_app_key: settings::UNIQUE_APP_KEY,
             // Register models
-            metadata_list: get_metadata_list()?,
+            model_key_list: get_model_key_list()?,
         };
-        monitor.migrat()?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
 }
 
+mod app_state {
+    use super::*;
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    pub struct AppState {
+        pub app_name: String,
+        pub media_root: String,
+        pub media_url: String,
+    }
+
+    impl Default for AppState {
+        fn default() -> Self {
+            Self {
+                app_name: "App Name".into(),
+                media_root: "./resources/media".into(), // the resources directory is recommended to be used as a standard
+                media_url: "/media".into(),
+            }
+        }
+    }
+
+    pub fn get_app_state() -> Result<AppState, Box<dyn Error>> {
+        let path = Path::new("./AppState.toml");
+        if !path.is_file() {
+            fs::File::create(path)?;
+            let cfg = AppState::default();
+            confy::store_path(path, cfg)?;
+        }
+        Ok(confy::load_path::<AppState>(path)?)
+    }
+}
+
+mod helpers {
+    use super::*;
+
+    // Create a temporary file for the test
+    pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
+        let f_path = Path::new(file_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {file_path}"))?
+        }
+        let dir_tmp = "./resources/media/tmp";
+        fs::create_dir_all(dir_tmp)?;
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
+        Ok(f_tmp)
+    }
+}
+
 // TEST
 // #################################################################################################
-#[test]
-fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
-    // Run migration
+#[tokio::test]
+async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
+    // THIS IS REQUIRED FOR ALL PROJECTS
+    // Hint: This is done to be able to add data to streams.
     // =============================================================================================
-    data_test::run_migration()?;
+    let _app_state = app_state::get_app_state()?;
+    let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).await?;
+    migration::run_migration(&client).await?;
 
-    // Testing
+    // YOUR CODE ...
     // =============================================================================================
-    type TestModel = data_test::TestModel;
+    type TestModel = models::TestModel;
+    // Specify the time zone (optional).
+    // By default Utc = +0000
+    let tz = Some(Local::now().format("%z").to_string());
 
     for num in 1..=10 {
-        let target_file = format!("./media/tmp/no_file_2_{num}.odt");
-        let target_image = format!("./media/tmp/no_image_2_{num}.png");
-        fs::copy("./media/default/no_file.odt", target_file.clone())?;
-        fs::copy("./media/default/no_image.png", target_image.clone())?;
+        let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
+        let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
-        let mut test_model = TestModel::new()?;
+        let mut test_model = TestModel::new().await?;
         test_model.checkbox.set(true);
         test_model.date.set("1900-01-31");
         test_model.datetime.set("1900-01-31T00:00");
-        test_model.file.set(target_file.as_str());
-        test_model.image.set(target_image.as_str());
+        test_model.file.set(f_path.as_str());
+        test_model.image.set(img_path.as_str());
         test_model.number_i32.set(0);
         test_model.range_i32.set(0);
         test_model.number_u32.set(0);
@@ -194,7 +262,7 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
         test_model.textarea.set("Some text");
 
-        let output_data = test_model.save(None, None)?;
+        let output_data = test_model.save(&client, &tz, None, None).await?;
         test_model = output_data.update()?;
 
         assert!(
@@ -206,7 +274,6 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
             test_model.slug.get().is_some(),
             "test_model.slug.get() != is_some()"
         );
-        //
         assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
         assert!(
             output_data.created_at().is_some(),
@@ -225,13 +292,13 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     }
 
     // count_documents
-    let result = TestModel::count_documents(None, None)?;
+    let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(None)?;
+    let result = TestModel::estimated_document_count(&client, None).await?;
     assert_eq!(result, 10, "estimated_document_count() != 10");
     // find_many_to_doc_list
-    let result = TestModel::find_many_to_doc_list(None, None)?;
+    let result = TestModel::find_many_to_doc_list(&client, None, None).await?;
     assert!(result.is_some(), "find_many_to_doc_list() != is_some()");
     assert_eq!(
         result.unwrap().len(),
@@ -239,70 +306,72 @@ fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         "find_many_to_doc_list(): len() != 10"
     );
     // find_many_to_json
-    let result = TestModel::find_many_to_json(None, None)?;
+    let result = TestModel::find_many_to_json(&client, None, None).await?;
     assert!(result.is_some(), "find_many_to_json() != is_some()");
     // find_one_to_doc
     let filter = doc! {"email": "x10@x.xx"};
-    let result = TestModel::find_one_to_doc(filter, None)?;
+    let result = TestModel::find_one_to_doc(filter, &client, None).await?;
     assert!(result.is_some(), "find_one_to_doc() != is_some()");
     // find_one_to_json
     let filter = doc! {"email": "x5@x.xx"};
-    let result = TestModel::find_one_to_json(filter, None)?;
+    let result = TestModel::find_one_to_json(filter, &client, None).await?;
     assert!(!result.is_empty(), "find_one_to_json() == is_empty()");
     // find_one_to_instance
     let filter = doc! {"email": "x1@x.xx"};
-    let result = TestModel::find_one_to_instance(filter, None)?;
+    let result = TestModel::find_one_to_instance(filter, &client, None).await?;
     assert!(result.is_some(), "find_one_to_instance() != is_some()");
     // collection_name
-    let result = TestModel::collection_name()?;
+    let result = TestModel::collection_name(&client).await?;
     assert!(!result.is_empty(), "collection_name() == is_empty()");
     // namespace
-    let result = TestModel::namespace()?;
+    let result = TestModel::namespace(&client).await?;
     assert!(!result.db.is_empty(), "namespace(): db == is_empty()");
     assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
     // find_one_and_delete
     let filter = doc! {"email": "x2@x.xx"};
-    let result = TestModel::find_one_and_delete(filter, None)?;
+    let result = TestModel::find_one_and_delete(filter, &client, None).await?;
     assert!(result.is_some(), "find_one_and_delete() != is_some()");
     // count_documents
-    let result = TestModel::count_documents(None, None)?;
+    let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 9, "count_documents() != 9");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(None)?;
+    let result = TestModel::estimated_document_count(&client, None).await?;
     assert_eq!(result, 9, "estimated_document_count() != 9");
     // delete_one
     let query = doc! {"email": "x3@x.xx"};
-    let result = TestModel::delete_one(query, None)?;
+    let result = TestModel::delete_one(query, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 1, "delete_one() != 1");
     // count_documents
-    let result = TestModel::count_documents(None, None)?;
+    let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 8, "count_documents() != 8");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(None)?;
+    let result = TestModel::estimated_document_count(&client, None).await?;
     assert_eq!(result, 8, "estimated_document_count() != 8");
     // delete_many
     let query = doc! {"email": {"$in": ["x4@x.xx", "x6@x.xx"]}};
-    let result = TestModel::delete_many(query, None)?;
+    let result = TestModel::delete_many(query, &client, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 2,
         "delete_many(): deleted_count() != 2"
     );
     // count_documents
-    let result = TestModel::count_documents(None, None)?;
+    let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 6, "count_documents() != 6");
     // estimated_document_count
-    let result = TestModel::estimated_document_count(None)?;
+    let result = TestModel::estimated_document_count(&client, None).await?;
     assert_eq!(result, 6, "estimated_document_count() != 6");
 
     // Delete test database
     // =============================================================================================
     del_test_db(
-        data_test::PROJECT_NAME,
-        data_test::UNIQUE_PROJECT_KEY,
-        data_test::get_metadata_list()?,
-    )?;
+        settings::APP_NAME,
+        settings::UNIQUE_APP_KEY,
+        migration::get_model_key_list()?,
+        &client,
+    )
+    .await?;
 
     Ok(())
 }

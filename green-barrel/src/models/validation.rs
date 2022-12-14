@@ -1,17 +1,17 @@
 //! Validating Model fields for save and update.
 
+use async_trait::async_trait;
 use mongodb::{
-    bson::{doc, document::Document, oid::ObjectId, Bson},
-    sync::Collection,
+    bson::{doc, oid::ObjectId, Bson, Document},
+    Collection,
 };
-use regex::Regex;
+use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::store::{REGEX_IS_COLOR_CODE, REGEX_IS_PASSWORD};
-
 /// Validating Model fields for save and update.
 // *************************************************************************************************
+#[async_trait(?Send)]
 pub trait Validation {
     /// Validation of `minlength`.
     // ---------------------------------------------------------------------------------------------
@@ -51,7 +51,14 @@ pub trait Validation {
                 }
             }
             "InputColor" => {
-                if !REGEX_IS_COLOR_CODE.is_match(value) {
+                if !RegexBuilder::new(
+                    r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
+                )
+                .case_insensitive(true)
+                .build()
+                .unwrap()
+                .is_match(value)
+                {
                     Err("Invalid Color code.")?
                 }
             }
@@ -76,9 +83,12 @@ pub trait Validation {
                 }
             }
             "InputPassword" => {
-                if !REGEX_IS_PASSWORD.is_match(value) {
+                if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")
+                    .unwrap()
+                    .is_match(value)
+                {
                     Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
-                            <br>Size 8-256 chars")?
+                        <br>Size 8-256 chars")?
                 }
             }
             _ => return Ok(()),
@@ -88,7 +98,7 @@ pub trait Validation {
 
     /// Validation of `unique`.
     // ---------------------------------------------------------------------------------------------
-    fn check_unique(
+    async fn check_unique(
         hash: &str,
         field_name: &str,
         field_value_bson: &Bson,
@@ -106,7 +116,7 @@ pub trait Validation {
                 ]
             };
         }
-        let count = coll.count_documents(filter, None)?;
+        let count = coll.count_documents(filter, None).await?;
         if count > 0 {
             Err("Is not unique.")?
         }

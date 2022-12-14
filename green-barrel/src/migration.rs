@@ -2,6 +2,7 @@
 //! your models (adding a field, deleting a model, etc.) into your database schema.
 
 use chrono::Utc;
+use futures::stream::TryStreamExt;
 use mongodb::{
     bson::{
         de::from_document,
@@ -10,16 +11,15 @@ use mongodb::{
         ser::{to_bson, to_document},
         Bson,
     },
-    sync::Client,
-    sync::Database,
+    Client, Database,
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, error::Error, path::Path, sync::RwLockReadGuard};
+use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::{
-    models::helpers::{FileData, ImageData, Meta},
-    store::MONGODB_CLIENT_STORE,
+    meta_store::META_STORE,
+    models::helpers::{FileData, ImageData},
 };
 
 // MIGRATION
@@ -36,21 +36,21 @@ pub struct ModelState {
 
 /// For monitoring the state of models.
 pub struct Monitor<'a> {
-    pub project_name: &'a str,
-    pub unique_project_key: &'a str,
-    pub metadata_list: Vec<Meta>,
+    pub app_name: &'a str,
+    pub unique_app_key: &'a str,
+    pub model_key_list: Vec<String>,
 }
 
 impl<'a> Monitor<'a> {
     /// Get the name of the technical database for a project.
     // *********************************************************************************************
     pub fn green_tech_name(&self) -> Result<String, Box<dyn Error>> {
-        // PROJECT_NAME Validation.
+        // app_name Validation.
         // Valid characters: _ a-z A-Z 0-9
         // Max size: 20
         let re = Regex::new(r"^[a-zA-Z][_a-zA-Z\d]{1,20}$")?;
-        if !re.is_match(self.project_name) {
-            Err("PROJECT_NAME => \
+        if !re.is_match(self.app_name) {
+            Err("app_name => \
                     Valid characters: _ a-z A-Z 0-9 and \
                     Max size: 20 ; \
                     First character: a-z A-Z")?
@@ -61,7 +61,7 @@ impl<'a> Monitor<'a> {
         // Size: 16
         // Example: "7rzgacfqQB3B7q7T"
         let re = Regex::new(r"^[a-zA-Z\d]{16}$")?;
-        if !re.is_match(self.unique_project_key) {
+        if !re.is_match(self.unique_app_key) {
             Err("UNIQUE_PROJECT_KEY => \
                     Valid characters: a-z A-Z 0-9 and \
                     Size: 16.")?
@@ -69,7 +69,7 @@ impl<'a> Monitor<'a> {
         //
         Ok(format!(
             "green_tech__{}__{}",
-            self.project_name, self.unique_project_key
+            self.app_name, self.unique_app_key
         ))
     }
 
@@ -84,50 +84,43 @@ impl<'a> Monitor<'a> {
     /// }
     /// ```
     ///
-    fn refresh(&self) -> Result<(), Box<dyn Error>> {
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
-        //
-        for meta in self.metadata_list.iter() {
-            let client = client_store.get(&meta.db_client_name).unwrap();
-            // Get the name of the technical database for a project.
-            let db_green_tech: String = self.green_tech_name()?;
-            // Collection for monitoring the state of Models.
-            let collection_models_name: &str = "monitor_models";
-            // Used to store selection items, for
-            // Fields type like selectTextDyn, selectTextMultDyn, etc.
-            let collection_dyn_fields_type: &str = "dynamic_fields";
-            //Get a list of databases.
-            let database_names: Vec<String> = client.list_database_names(None, None)?;
-            // Create a technical database for the project if it doesn't exist.
-            if !database_names.contains(&db_green_tech) {
-                // Create a collection for models.
-                client
-                    .database(&db_green_tech)
-                    .create_collection(collection_models_name, None)?;
-                // Create a collection for fields types of `select`.
-                // (selectTextDyn, selectTextMultDyn, etc.)
-                client
-                    .database(&db_green_tech)
-                    .create_collection(collection_dyn_fields_type, None)?;
-            } else {
-                // Reset models state information.
-                let green_tech_db = client.database(&db_green_tech);
-                let collection_models =
-                    green_tech_db.collection::<Document>(collection_models_name);
-                let cursor = collection_models.find(None, None)?;
-
-                for result in cursor {
-                    let document = result?;
-                    let mut model_state = from_document::<ModelState>(document)?;
-                    model_state.status = false;
-                    let query = doc! {
-                        "database": &model_state.database,
-                        "collection": &model_state.collection
-                    };
-                    let update = doc! {"$set": to_document(&model_state)?};
-                    collection_models.update_one(query, update, None)?;
-                }
+    async fn refresh(&self, client: &Client) -> Result<(), Box<dyn Error>> {
+        // Get the name of the technical database for a project.
+        let db_green_tech: String = self.green_tech_name()?;
+        // Collection for monitoring the state of Models.
+        let collection_models_name: &str = "monitor_models";
+        // Used to store selection items, for
+        // Fields type like selectTextDyn, selectTextMultDyn, etc.
+        let collection_dyn_fields_type: &str = "dynamic_fields";
+        //Get a list of databases.
+        let database_names = client.list_database_names(None, None).await?;
+        // Create a technical database for the project if it doesn't exist.
+        if !database_names.contains(&db_green_tech) {
+            // Create a collection for models.
+            client
+                .database(&db_green_tech)
+                .create_collection(collection_models_name, None)
+                .await?;
+            // Create a collection for fields types of `select`.
+            // (selectTextDyn, selectTextMultDyn, etc.)
+            client
+                .database(&db_green_tech)
+                .create_collection(collection_dyn_fields_type, None)
+                .await?;
+        } else {
+            // Reset models state information.
+            let green_tech_db = client.database(&db_green_tech);
+            let collection_models = green_tech_db.collection::<Document>(collection_models_name);
+            let mut cursor = collection_models.find(None, None).await?;
+            while let Some(doc) = cursor.try_next().await? {
+                let mut model_state = from_document::<ModelState>(doc)?;
+                model_state.status = false;
+                let query = doc! {
+                    "database": &model_state.database,
+                    "collection": &model_state.collection
+                };
+                let update = doc! {"$set": to_document(&model_state)?};
+                collection_models.update_one(query, update, None).await?;
             }
         }
         //
@@ -137,41 +130,34 @@ impl<'a> Monitor<'a> {
     /// Reorganize databases state
     /// (full delete of orphaned collections and databases)
     // *********************************************************************************************
-    fn napalm(&self) -> Result<(), Box<dyn Error>> {
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
-        //
-        for meta in self.metadata_list.iter() {
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
-            // Get the name of the technical database for a project.
-            let db_green_tech: String = self.green_tech_name()?;
-            let collection_models_name: &str = "monitor_models";
-            let collection_dyn_fields_type: &str = "dynamic_fields";
-            let green_tech_db: Database = client.database(&db_green_tech);
-            let collection_models = green_tech_db.collection::<Document>(collection_models_name);
-            let collection_dyn_fields =
-                green_tech_db.collection::<Document>(collection_dyn_fields_type);
-            // Delete orphaned Collections.
-            let cursor = collection_models.find(None, None)?;
-            let results: Vec<Result<Document, mongodb::error::Error>> = cursor.collect();
-            for result in results {
-                let document = result?;
-                let model_state: ModelState = from_document(document)?;
-                if !model_state.status {
-                    // Delete Collection (left without a model).
-                    client
-                        .database(&model_state.database)
-                        .collection::<Document>(&model_state.collection)
-                        .drop(None)?;
-                    // Delete a document with a record about the state of
-                    // the model from the technical base.
-                    let query: Document = doc! {
-                        "database": &model_state.database,
-                        "collection": &model_state.collection
-                    };
-                    collection_models.delete_one(query.clone(), None)?;
-                    collection_dyn_fields.delete_one(query, None)?;
-                }
+    async fn napalm(&self, client: &Client) -> Result<(), Box<dyn Error>> {
+        // Get the name of the technical database for a project.
+        let db_green_tech: String = self.green_tech_name()?;
+        let collection_models_name: &str = "monitor_models";
+        let collection_dyn_fields_type: &str = "dynamic_fields";
+        let green_tech_db: Database = client.database(&db_green_tech);
+        let collection_models = green_tech_db.collection::<Document>(collection_models_name);
+        let collection_dyn_fields =
+            green_tech_db.collection::<Document>(collection_dyn_fields_type);
+        // Delete orphaned Collections.
+        let mut cursor = collection_models.find(None, None).await?;
+        while let Some(doc) = cursor.try_next().await? {
+            let model_state: ModelState = from_document(doc)?;
+            if !model_state.status {
+                // Delete Collection (left without a model).
+                client
+                    .database(&model_state.database)
+                    .collection::<Document>(&model_state.collection)
+                    .drop(None)
+                    .await?;
+                // Delete a document with a record about the state of
+                // the model from the technical base.
+                let query: Document = doc! {
+                    "database": &model_state.database,
+                    "collection": &model_state.collection
+                };
+                collection_models.delete_one(query.clone(), None).await?;
+                collection_dyn_fields.delete_one(query, None).await?;
             }
         }
         //
@@ -181,15 +167,22 @@ impl<'a> Monitor<'a> {
     /// Migrating Models -
     // *********************************************************************************************
     /// Check the changes in the models and (if necessary) apply to the database.
-    pub fn migrat(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn migrat(&self, client: &Client) -> Result<(), Box<dyn Error>> {
         // Run refresh models state.
-        self.refresh()?;
-        // Get cache MongoDB clients.
-        let client_store: RwLockReadGuard<HashMap<String, Client>> = MONGODB_CLIENT_STORE.read()?;
-
-        // Get model metadata
-        for meta in self.metadata_list.iter() {
-            if !meta.is_add_docs {
+        self.refresh(client).await?;
+        // Get metadata store.
+        let store = { META_STORE.lock().await.clone() };
+        for model_key in self.model_key_list.iter() {
+            // Get metadata of Model.
+            let meta = if let Some(meta) = store.get(model_key) {
+                meta
+            } else {
+                Err(format!(
+                    "Model key: `{model_key}` ; Method: `migrat()` => \
+                    Failed to get data from cache.",
+                ))?
+            };
+            if !meta.is_add_doc {
                 continue;
             }
             // Service_name validation.
@@ -219,7 +212,6 @@ impl<'a> Monitor<'a> {
                 ))?;
             }
             //
-            let client: &Client = client_store.get(&meta.db_client_name).unwrap();
             let fields_name = &meta.fields_name;
             let ignore_fields = &meta.ignore_fields;
             // List field names without `hash` and ignored fields.
@@ -229,7 +221,7 @@ impl<'a> Monitor<'a> {
                 .collect::<Vec<&String>>();
             // Get the name of the technical database for a project.
             let db_green_tech: String = self.green_tech_name()?;
-            let database_names: Vec<String> = client.list_database_names(None, None)?;
+            let database_names: Vec<String> = client.list_database_names(None, None).await?;
             // Map of default values and value types from `value (default)` attribute -
             // <field_name, (field_type, value)>
             let default_value_map: HashMap<String, serde_json::Value> =
@@ -257,7 +249,8 @@ impl<'a> Monitor<'a> {
             let model: Option<Document> = client
                 .database(&db_green_tech)
                 .collection("monitor_models")
-                .find_one(filter, None)?;
+                .find_one(filter, None)
+                .await?;
             if let Some(model) = model {
                 // Get a list of fields from the technical database,
                 // from the `monitor_models` collection for current Model.
@@ -295,9 +288,9 @@ impl<'a> Monitor<'a> {
                     let db: Database = client.database(&meta.database_name);
                     let collection = db.collection::<Document>(&meta.collection_name);
                     // Get cursor to all documents of the current Model.
-                    let mut cursor = collection.find(None, None)?;
+                    let mut cursor = collection.find(None, None).await?;
                     // Iterate through all documents in a current (model) collection.
-                    while let Some(Ok(doc_from_db)) = cursor.next() {
+                    while let Some(doc_from_db) = cursor.try_next().await? {
                         // Create temporary blank document.
                         let mut tmp_doc = Document::new();
                         // Loop over all fields of the model.
@@ -565,7 +558,9 @@ impl<'a> Monitor<'a> {
                         }
                         // Save updated document.
                         let query = doc! {"_id": doc_from_db.get_object_id("_id")?};
-                        collection.update_one(query, doc! {"$set": tmp_doc}, None)?;
+                        collection
+                            .update_one(query, doc! {"$set": tmp_doc}, None)
+                            .await?;
                     }
                 }
             } else {
@@ -579,10 +574,11 @@ impl<'a> Monitor<'a> {
             // If there is no collection for the current Model, create it.
             if !database_names.contains(&meta.database_name)
                 || !db
-                    .list_collection_names(None)?
+                    .list_collection_names(None)
+                    .await?
                     .contains(&meta.collection_name)
             {
-                db.create_collection(&meta.collection_name, None)?;
+                db.create_collection(&meta.collection_name, None).await?;
             }
 
             // Get the technical database `db_green_tech` for the current model.
@@ -594,7 +590,8 @@ impl<'a> Monitor<'a> {
             // Check if there is a technical database of the project, if not, causes panic.
             if !database_names.contains(&db_green_tech)
                 || !db
-                    .list_collection_names(None)?
+                    .list_collection_names(None)
+                    .await?
                     .contains(&"monitor_models".to_owned())
             {
                 Err("In the `refresh()` method, \
@@ -614,12 +611,14 @@ impl<'a> Monitor<'a> {
                     "status": true
                 };
                 // Check if there is model state in the database.
-                if collection.count_documents(filter.clone(), None)? == 0 {
+                if collection.count_documents(filter.clone(), None).await? == 0 {
                     // Add model state information.
-                    collection.insert_one(doc, None)?;
+                    collection.insert_one(doc, None).await?;
                 } else {
                     // Full update model state information.
-                    collection.update_one(filter, doc! {"$set": doc}, None)?;
+                    collection
+                        .update_one(filter, doc! {"$set": doc}, None)
+                        .await?;
                 }
             }
 
@@ -628,7 +627,8 @@ impl<'a> Monitor<'a> {
             // Check if there is a technical database of the project, if not, causes panic.
             if !database_names.contains(&db_green_tech)
                 || !db
-                    .list_collection_names(None)?
+                    .list_collection_names(None)
+                    .await?
                     .contains(&"dynamic_fields".to_owned())
             {
                 Err("In the `refresh()` method, \
@@ -642,7 +642,7 @@ impl<'a> Monitor<'a> {
             };
             // Check if there is a document in the database for
             // storing the values of dynamic fields type of model.
-            if collection.count_documents(filter.clone(), None)? == 0 {
+            if collection.count_documents(filter.clone(), None).await? == 0 {
                 // Init new document.
                 let mut new_doc = doc! {
                     "database": &meta.database_name,
@@ -658,10 +658,10 @@ impl<'a> Monitor<'a> {
                 }
                 // Insert new document.
                 new_doc.insert("fields".to_string(), fields_doc);
-                collection.insert_one(new_doc, None)?;
+                collection.insert_one(new_doc, None).await?;
             } else {
                 // Get an existing document.
-                let mut exist_doc = collection.find_one(filter.clone(), None)?.unwrap();
+                let mut exist_doc = collection.find_one(filter.clone(), None).await?.unwrap();
                 // Get a document with `dynamic_fields` fields.
                 let fields_doc = exist_doc.get_document_mut("fields")?;
                 // Get a list of fields from the technical database,
@@ -693,14 +693,13 @@ impl<'a> Monitor<'a> {
                     }
                 }
                 // Full update existing document.
-                collection.update_one(filter, doc! {"$set":exist_doc}, None)?;
+                collection
+                    .update_one(filter, doc! {"$set":exist_doc}, None)
+                    .await?;
             }
         }
-
-        // Unlock.
-        drop(client_store);
         // Run reorganize databases state.
-        self.napalm()?;
+        self.napalm(client).await?;
         //
         Ok(())
     }

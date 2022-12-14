@@ -1,13 +1,17 @@
 //! To populate the database with pre-created data.
 
+use async_trait::async_trait;
+use mongodb::Client;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::Value;
 use std::{error::Error, fs, io::ErrorKind};
 
-use crate::models::{
-    caching::Caching,
-    db_query_api::{commons::QCommons, paladins::QPaladins},
-    Meta,
+use crate::{
+    meta_store::META_STORE,
+    models::{
+        caching::Caching,
+        db_query_api::{commons::QCommons, paladins::QPaladins},
+    },
 };
 
 /// To populate the database with pre-created data.
@@ -35,24 +39,40 @@ use crate::models::{
 /// fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
 ///     // fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
-///     ModelName::run_fixture("cities")?;
+///     ModelName::run_fixture("cities", &meta_store, &client, &validators, &media_dir)?;
 ///     Ok(())
 /// }
 /// ```
 ///
+#[async_trait(?Send)]
 pub trait Fixtures: Caching + QPaladins + QCommons {
-    fn run_fixture(fixture_name: &str) -> Result<(), Box<dyn Error>>
+    async fn run_fixture(fixture_name: &str, client: &Client) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
         // If the collection is not empty, exit the method
-        if Self::estimated_document_count(None)? > 0 {
+        if Self::estimated_document_count(client, None).await? > 0 {
             return Ok(());
         }
-        // Get cached Model data.
-        let (model_cache, _) = Self::get_cache_data_for_query()?;
-        let meta: Meta = model_cache.meta;
-        let field_type_map = &meta.field_type_map;
+        let (model_name, model_json, field_type_map) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (
+                    meta.model_name.clone(),
+                    meta.model_json.clone(),
+                    meta.field_type_map.clone(),
+                )
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `run_fixture()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
         // Get data from fixture file
         let json_val = {
             // Create path
@@ -61,16 +81,15 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
                     Err(format!(
-                        "Model: `{}` > Method: \
-                            `run_fixture()` => File is missing - {fixture_path}",
-                        meta.model_name
+                        "Model: `{model_name}` > Method: \
+                        `run_fixture()` => File is missing - {fixture_path}"
                     ))
                     .unwrap()
                 } else {
                     Err(format!(
-                        "Model: `{}` > Method: \
-                            `run_fixture()` => Problem opening the file: {:?}",
-                        meta.model_name, error
+                        "Model: `{model_name}` > Method: \
+                        `run_fixture()` => Problem opening the file: {0:?}",
+                        error
                     ))
                     .unwrap()
                 }
@@ -80,8 +99,8 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         // Get an array of fixtures
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
-                let mut model_json = model_cache.model_json.clone();
-                for (field_name, field_type) in field_type_map {
+                let mut model_json = model_json.clone();
+                for (field_name, field_type) in field_type_map.iter() {
                     if let Some(data) = fixture.get(field_name) {
                         let value_key = if field_type == "CheckBox" {
                             "checked"
@@ -97,20 +116,18 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance.save(None, None)?;
+                let output_data = instance.save(client, &None, None, None).await?;
                 if !output_data.is_valid() {
                     Err(format!(
-                        "Model: `{}` > Method: `run_fixture()` => {}",
-                        meta.model_name,
+                        "Model: `{model_name}` > Method: `run_fixture()` => {0}",
                         output_data.err_msg()
                     ))?
                 }
             }
         } else {
             Err(format!(
-                "Model: `{}` > Method: \
-                    `run_fixture()` => Fixture does not contain an array of objects.",
-                meta.model_name
+                "Model: `{model_name}` > Method: \
+                `run_fixture()` => Fixture does not contain an array of objects."
             ))?
         }
 

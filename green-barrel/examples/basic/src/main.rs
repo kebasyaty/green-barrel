@@ -1,32 +1,10 @@
-mod app_state;
+mod migration;
 mod models;
 mod settings;
 
 use chrono::Local;
 use green_barrel::*;
-use mongodb::Client;
 use std::error::Error;
-
-// Migration
-async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
-    // Caching metadata.
-    models::User::caching(client).await?;
-    models::City::caching(client).await?;
-
-    // Monitor initialization.
-    let monitor = Monitor {
-        app_name: settings::APP_NAME,
-        unique_app_key: settings::UNIQUE_APP_KEY,
-        // For register models.
-        model_key_list: vec![models::User::key()?, models::City::key()?],
-    };
-    monitor.migrat(client).await?;
-
-    // Run fixtures
-    models::City::run_fixture("cities", client).await?;
-
-    Ok(())
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -45,38 +23,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // By default Utc = +0000
     let tz = Some(Local::now().format("%z").to_string());
 
-    // Convert Model
-    // *********************************************************************************************
-    // println!("Convert Model:\n");
-    //println!("{}", models::User::json()?);
-    //
-    /*
-    println!(
-        "Model instance:\n{:?}",
-        models::User::find_one_to_instance(
-            mongodb::bson::doc! {"username": "user_1"},
-            &client,
-            None
-        )?
-    );
-    */
-
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
-    user.password.set("12345678");
-    user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
-    user.is_staff.set(true);
-    user.is_active.set(true);
 
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
     let output_data = user.check(&client, &tz, None).await?;
     user = output_data.update()?;
-
+    //
     if output_data.is_valid() {
         println!("Hash: {:?}", user.hash.get());
         println!("Hash: {}", output_data.hash());
@@ -90,7 +48,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Object Id: {:?}", output_data.obj_id()?);
 
         //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
@@ -117,7 +74,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Slug: {}", user.slug.get().unwrap());
 
         //println!("Json:\n{}", output_data.json()?);
-        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
@@ -147,7 +103,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             println!("Slug: {}", user.slug.get().unwrap())
 
             //println!("Json:\n{}", output_data.json()?);
-            //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
         } else {
             // Printing errors to the console ( for development ).
             output_data.print_err();

@@ -1,30 +1,41 @@
-use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::bson::{doc, Document};
+use mongodb::{
+    bson::{doc, Document},
+    Client,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::error::Error;
+use std::{error::Error, fs, path::Path};
 
-mod data_test {
-    use super::*;
-
-    // Test application settings
-    // =============================================================================================
-    pub const PROJECT_NAME: &str = "test_project_name";
+mod settings {
+    // Project name.
+    // Valid characters: _ a-z A-Z 0-9
+    // Hint: PROJECT_NAM it is recommended not to change.
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const APP_NAME: &str = "test_app_name";
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const DATABASE_NAME: &str = "test_app_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "d7UCc8YQ7lP595BB";
+    pub const UNIQUE_APP_KEY: &str = "d7UCc8YQ7lP595BB";
     //
+    pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 30
+    // First character: a-z A-Z
     pub const SERVICE_NAME: &str = "test_service_name";
-    pub const DATABASE_NAME: &str = "test_database_name";
-    pub const DB_CLIENT_NAME: &str = "default";
-    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+}
 
-    // Models
-    // =============================================================================================
+mod models {
+    use super::*;
+    use settings::{APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME, UNIQUE_APP_KEY};
+
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
@@ -47,66 +58,113 @@ mod data_test {
             }
         }
     }
+}
 
-    // Test migration
-    // =============================================================================================
+mod migration {
+    use super::*;
+
     // Get metadata list
-    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
-        let metadata_list = vec![TestModel::meta()?];
-        Ok(metadata_list)
+    pub fn get_model_key_list() -> Result<Vec<String>, Box<dyn Error>> {
+        let model_key_list = vec![models::TestModel::key()?];
+        Ok(model_key_list)
     }
 
     // Migration
-    pub fn run_migration() -> Result<(), Box<dyn Error>> {
-        // Caching MongoDB clients.
-        {
-            let mut client_store = MONGODB_CLIENT_STORE.write()?;
-            client_store.insert(
-                "default".to_string(),
-                mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-            );
-        }
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
+        // Caching metadata.
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, get_metadata_list()?)?;
+        del_test_db(
+            settings::APP_NAME,
+            settings::UNIQUE_APP_KEY,
+            get_model_key_list()?,
+            client,
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
-            project_name: PROJECT_NAME,
-            unique_project_key: UNIQUE_PROJECT_KEY,
+            app_name: settings::APP_NAME,
+            unique_app_key: settings::UNIQUE_APP_KEY,
             // Register models
-            metadata_list: get_metadata_list()?,
+            model_key_list: get_model_key_list()?,
         };
-        monitor.migrat()?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
 }
 
+mod app_state {
+    use super::*;
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    pub struct AppState {
+        pub app_name: String,
+        pub media_root: String,
+        pub media_url: String,
+    }
+
+    impl Default for AppState {
+        fn default() -> Self {
+            Self {
+                app_name: "App Name".into(),
+                media_root: "./resources/media".into(), // the resources directory is recommended to be used as a standard
+                media_url: "/media".into(),
+            }
+        }
+    }
+
+    pub fn get_app_state() -> Result<AppState, Box<dyn Error>> {
+        let path = Path::new("./AppState.toml");
+        if !path.is_file() {
+            fs::File::create(path)?;
+            let cfg = AppState::default();
+            confy::store_path(path, cfg)?;
+        }
+        Ok(confy::load_path::<AppState>(path)?)
+    }
+}
+
 // TEST
 // #################################################################################################
-#[test]
-fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
-    // Run migration
+#[tokio::test]
+async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
+    // THIS IS REQUIRED FOR ALL PROJECTS
+    // Hint: This is done to be able to add data to streams.
     // =============================================================================================
-    data_test::run_migration()?;
+    let _app_state = app_state::get_app_state()?;
+    let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).await?;
+    migration::run_migration(&client).await?;
 
-    // Testing
+    // YOUR CODE ...
     // =============================================================================================
-    type TestModel = data_test::TestModel;
-    // Get cached Model data.
-    let (model_cache, client_cache) = TestModel::get_cache_data_for_query()?;
-    // Get Model metadata.
-    let meta: Meta = model_cache.meta;
+    type TestModel = models::TestModel;
+
+    // Get a key to access the metadata store.
+    let key = TestModel::key()?;
+    // Get metadata store.
+    let store = { META_STORE.lock().await.clone() };
+    // Get metadata of Model.
+    let meta = if let Some(meta) = store.get(&key) {
+        meta
+    } else {
+        Err(format!(
+            "Model key: `{key}` ; Method: `run_fixture()` => \
+            Failed to get data from cache.",
+        ))?
+    };
     // Get access to the technical base of the project.
     let coll = {
         let green_tech_keyword = format!(
             "green_tech__{}__{}",
-            meta.project_name.clone(),
-            meta.unique_project_key.clone()
+            meta.app_name.clone(),
+            meta.unique_app_key.clone()
         );
-        let db = client_cache.database(&green_tech_keyword);
+        let db = client.database(&green_tech_keyword);
         db.collection::<Document>("dynamic_fields")
     };
     //
@@ -129,7 +187,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "field_name not match"
     );
     //
@@ -143,7 +203,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_dyn, value = 1"
     );
     //
@@ -154,7 +216,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn, value = 2"
     );
     //
@@ -165,7 +229,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = 'Some text 1'"
     );
     //
@@ -176,7 +242,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = 'Some text 2'"
     );
     //
@@ -187,7 +255,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = 'Some text 3'"
     );
     //
@@ -198,7 +268,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = 'Some text 4'"
     );
     //
@@ -209,7 +281,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = 'Some text 5'"
     );
     //
@@ -220,7 +294,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = 'Some text 6'"
     );
     //
@@ -231,7 +307,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = 'Some text 7'"
     );
     //
@@ -242,7 +320,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = 'Some text 8'"
     );
     //
@@ -252,7 +332,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     //
     // Get the target array from the dynamic data collection.
     let obj_fields_doc = {
-        let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+        let curr_dyn_date_doc = coll.find_one(filter.clone(), None).await?.unwrap();
         curr_dyn_date_doc.get_document("fields").unwrap().clone()
     };
     //
@@ -340,7 +420,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -351,7 +431,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -362,7 +442,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -373,7 +453,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -390,7 +470,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -401,7 +481,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -412,7 +492,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -423,7 +503,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -436,7 +516,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -447,7 +527,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -458,7 +538,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -469,7 +549,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -482,7 +562,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -493,7 +573,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -504,7 +584,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -515,7 +595,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -528,7 +608,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -539,7 +619,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -550,7 +630,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -561,7 +641,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
     //
@@ -571,7 +651,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     //
     // Get the target array from the dynamic data collection.
     let obj_fields_doc = {
-        let curr_dyn_date_doc = coll.find_one(filter.clone(), None)?.unwrap();
+        let curr_dyn_date_doc = coll.find_one(filter.clone(), None).await?.unwrap();
         curr_dyn_date_doc.get_document("fields").unwrap().clone()
     };
     //
@@ -659,7 +739,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -670,7 +752,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -681,7 +765,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -692,7 +778,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -709,7 +797,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -720,7 +810,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -731,7 +823,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -742,7 +836,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -755,7 +851,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -766,7 +864,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -777,7 +877,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -788,7 +890,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -801,7 +905,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -812,7 +918,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -823,7 +931,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -834,7 +944,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -847,7 +959,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -858,7 +972,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -869,7 +985,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -880,7 +998,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
     //
@@ -898,7 +1018,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -909,7 +1029,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -920,7 +1040,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -931,7 +1051,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -948,7 +1068,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -959,7 +1079,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -970,7 +1090,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -981,7 +1101,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -994,7 +1114,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -1005,7 +1125,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -1016,7 +1136,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -1027,7 +1147,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -1040,7 +1160,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -1051,7 +1171,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -1062,7 +1182,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -1073,7 +1193,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -1086,7 +1206,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -1097,7 +1217,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -1108,7 +1228,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -1119,7 +1239,7 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_ok(),
+        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
     //
@@ -1138,7 +1258,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -1149,7 +1271,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -1160,7 +1284,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -1171,7 +1297,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -1188,7 +1316,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -1199,7 +1329,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -1210,7 +1342,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -1221,7 +1355,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -1234,7 +1370,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -1245,7 +1383,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -1256,7 +1396,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -1267,7 +1409,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -1280,7 +1424,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -1291,7 +1437,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -1302,7 +1450,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -1313,7 +1463,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -1326,7 +1478,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -1337,7 +1491,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -1348,7 +1504,9 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -1359,17 +1517,21 @@ fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data).is_err(),
+        TestModel::update_dyn_field(dyn_data, &client)
+            .await
+            .is_err(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
 
     // Delete test database
     // =============================================================================================
     del_test_db(
-        data_test::PROJECT_NAME,
-        data_test::UNIQUE_PROJECT_KEY,
-        data_test::get_metadata_list()?,
-    )?;
+        settings::APP_NAME,
+        settings::UNIQUE_APP_KEY,
+        migration::get_model_key_list()?,
+        &client,
+    )
+    .await?;
 
     Ok(())
 }

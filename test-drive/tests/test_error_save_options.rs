@@ -1,27 +1,39 @@
-use green_barrel::test_tool::del_test_db;
+use chrono::Local;
 use green_barrel::*;
 use metamorphose::Model;
+use mongodb::Client;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, fs};
-mod data_test {
-    use super::*;
+use std::{error::Error, fs, path::Path};
+use uuid::Uuid;
 
-    // Test application settings
-    // =============================================================================================
-    pub const PROJECT_NAME: &str = "test_project_name";
+mod settings {
+    // Project name.
+    // Valid characters: _ a-z A-Z 0-9
+    // Hint: PROJECT_NAM it is recommended not to change.
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const APP_NAME: &str = "test_app_name";
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 20
+    // First character: a-z A-Z
+    pub const DATABASE_NAME: &str = "test_app_name";
     // The unique key for this test.
     // To generate a key (This is not an advertisement): https://randompasswordgen.com/
     // Valid characters: a-z A-Z 0-9
     // Size: 16
-    pub const UNIQUE_PROJECT_KEY: &str = "8G4eTyC91RJPRPL2";
+    pub const UNIQUE_APP_KEY: &str = "8G4eTyC91RJPRPL2";
     //
+    pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+    // Valid characters: _ a-z A-Z 0-9
+    // Max size: 30
+    // First character: a-z A-Z
     pub const SERVICE_NAME: &str = "test_service_name";
-    pub const DATABASE_NAME: &str = "test_database_name";
-    pub const DB_CLIENT_NAME: &str = "default";
-    const DB_QUERY_DOCS_LIMIT: u32 = 1000;
+}
 
-    // Models
-    // =============================================================================================
+mod models {
+    use super::*;
+    use settings::{APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME, UNIQUE_APP_KEY};
+
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
@@ -96,59 +108,118 @@ mod data_test {
             }
         }
     }
+}
 
-    // Test migration
-    // =============================================================================================
+mod migration {
+    use super::*;
+
     // Get metadata list
-    pub fn get_metadata_list() -> Result<Vec<Meta>, Box<dyn Error>> {
-        let metadata_list = vec![TestModel::meta()?];
-        Ok(metadata_list)
+    pub fn get_model_key_list() -> Result<Vec<String>, Box<dyn Error>> {
+        let model_key_list = vec![models::TestModel::key()?];
+        Ok(model_key_list)
     }
 
     // Migration
-    pub fn run_migration() -> Result<(), Box<dyn Error>> {
-        // Caching MongoDB clients.
-        {
-            let mut client_store = MONGODB_CLIENT_STORE.write()?;
-            client_store.insert(
-                "default".to_string(),
-                mongodb::sync::Client::with_uri_str("mongodb://localhost:27017")?,
-            );
-        }
+    pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
+        // Caching metadata.
+        models::TestModel::caching(client).await?;
 
         // Remove test databases
         // ( Test databases may remain in case of errors )
-        del_test_db(PROJECT_NAME, UNIQUE_PROJECT_KEY, get_metadata_list()?)?;
+        del_test_db(
+            settings::APP_NAME,
+            settings::UNIQUE_APP_KEY,
+            get_model_key_list()?,
+            client,
+        )
+        .await?;
 
         // Monitor initialization.
         let monitor = Monitor {
-            project_name: PROJECT_NAME,
-            unique_project_key: UNIQUE_PROJECT_KEY,
+            app_name: settings::APP_NAME,
+            unique_app_key: settings::UNIQUE_APP_KEY,
             // Register models
-            metadata_list: get_metadata_list()?,
+            model_key_list: get_model_key_list()?,
         };
-        monitor.migrat()?;
+        monitor.migrat(client).await?;
 
         Ok(())
     }
 }
 
+mod app_state {
+    use super::*;
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    pub struct AppState {
+        pub app_name: String,
+        pub media_root: String,
+        pub media_url: String,
+    }
+
+    impl Default for AppState {
+        fn default() -> Self {
+            Self {
+                app_name: "App Name".into(),
+                media_root: "./resources/media".into(), // the resources directory is recommended to be used as a standard
+                media_url: "/media".into(),
+            }
+        }
+    }
+
+    pub fn get_app_state() -> Result<AppState, Box<dyn Error>> {
+        let path = Path::new("./AppState.toml");
+        if !path.is_file() {
+            fs::File::create(path)?;
+            let cfg = AppState::default();
+            confy::store_path(path, cfg)?;
+        }
+        Ok(confy::load_path::<AppState>(path)?)
+    }
+}
+
+mod helpers {
+    use super::*;
+
+    // Create a temporary file for the test
+    pub fn copy_file(file_path: &str) -> Result<String, Box<dyn Error>> {
+        let f_path = Path::new(file_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {file_path}"))?
+        }
+        let dir_tmp = "./resources/media/tmp";
+        fs::create_dir_all(dir_tmp)?;
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
+        Ok(f_tmp)
+    }
+}
+
 // TEST
 // #################################################################################################
-#[test]
-fn test_error_save_options() -> Result<(), Box<dyn Error>> {
-    // Run migration
+#[tokio::test]
+async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
+    // THIS IS REQUIRED FOR ALL PROJECTS
+    // Hint: This is done to be able to add data to streams.
     // =============================================================================================
-    data_test::run_migration()?;
+    let _app_state = app_state::get_app_state()?;
+    let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).await?;
+    migration::run_migration(&client).await?;
 
-    // Testing
+    // YOUR CODE ...
     // =============================================================================================
-    type TestModel = data_test::TestModel;
+    type TestModel = models::TestModel;
+    // Specify the time zone (optional).
+    // By default Utc = +0000
+    let tz = Some(Local::now().format("%z").to_string());
     //
     // Positive
     // ---------------------------------------------------------------------------------------------
-    let mut test_model = TestModel::new()?;
-    let output_data = test_model.save(None, None)?;
+    let mut test_model = TestModel::new().await?;
+    let output_data = test_model.save(&client, &tz, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(
@@ -179,15 +250,15 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
 
     // Negative - In select type, there are no options to select
     // ---------------------------------------------------------------------------------------------
-    fs::copy("./media/default/no_file.odt", "./media/tmp/no_file_3.odt")?;
-    fs::copy("./media/default/no_image.png", "./media/tmp/no_image_3.png")?;
+    let f_path = helpers::copy_file("./resources/media/default/no_file.odt")?;
+    let img_path = helpers::copy_file("./resources/media/default/no_image.png")?;
 
-    let mut test_model = TestModel::new()?;
+    let mut test_model = TestModel::new().await?;
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
-    test_model.file.set("./media/tmp/no_file_3.odt");
-    test_model.image.set("./media/tmp/no_image_3.png");
+    test_model.file.set(f_path.as_str());
+    test_model.image.set(img_path.as_str());
     test_model.number_i32.set(0);
     test_model.radio_i32.set(0);
     test_model.range_i32.set(0);
@@ -236,7 +307,7 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
     test_model.textarea.set("Some text");
 
-    let output_data = test_model.save(None, None)?;
+    let output_data = test_model.save(&client, &tz, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(!output_data.is_valid(), "is_valid() != false");
@@ -267,10 +338,12 @@ fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
-        data_test::PROJECT_NAME,
-        data_test::UNIQUE_PROJECT_KEY,
-        data_test::get_metadata_list()?,
-    )?;
+        settings::APP_NAME,
+        settings::UNIQUE_APP_KEY,
+        migration::get_model_key_list()?,
+        &client,
+    )
+    .await?;
 
     Ok(())
 }

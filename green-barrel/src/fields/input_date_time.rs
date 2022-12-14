@@ -10,8 +10,8 @@ pub struct InputDateTime {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Sets the value of an element.
-    pub default: Option<String>, // Value by default
+    pub value: Option<String>, // Sets the value of an element. Example: 1970-01-01T00:00+02:00
+    pub default: Option<String>, // Value by default Example: 1970-01-01T00:00+02:00
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub required: bool,  // Mandatory field.

@@ -43,7 +43,7 @@ impl Default for InputImage {
             name: String::new(),
             value: None,
             default: None,
-            media_root: String::from("./media"),
+            media_root: String::from("./resources/media"),
             media_url: String::from("/media"),
             target_dir: String::from("images"),
             accept: String::new(),
