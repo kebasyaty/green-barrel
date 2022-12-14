@@ -90,15 +90,15 @@ $ sudo apt update
 
 **_( all parameters are optional )_**
 
-| Parameter: | Default: | Description: |
-| :------------------ | :----------- | :--------------------------------------------------------------------------------------------------- | |
-| db_query_docs_limit | 1000 | limiting query results. |
-| is_add_doc | true | Create documents in the database. **false** - Alternatively, use it to validate data from web forms. |
-| is_up_doc | true | Update documents in the database. |
-| is_del_doc | true | Delete documents from the database. |
-| ignore_fields | empty string | Fields that are not included in the database (separated by commas). |
-| is_use_add_valid | false | Allows additional validation - **impl AdditionalValidation for ModelName**. |
-| is_use_hooks | false | Allows hooks methods - **impl Hooks for ModelName**. |
+| Parameter:          | Default:     | Description:                                                                                         |
+| :------------------ | :----------- | :--------------------------------------------------------------------------------------------------- |
+| db_query_docs_limit | 1000         | limiting query results.                                                                              |
+| is_add_doc          | true         | Create documents in the database. **false** - Alternatively, use it to validate data from web forms. |
+| is_up_doc           | true         | Update documents in the database.                                                                    |
+| is_del_doc          | true         | Delete documents from the database.                                                                  |
+| ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                  |
+| is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
+| is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 
 ## Field types
 
