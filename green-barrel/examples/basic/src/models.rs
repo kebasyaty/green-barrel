@@ -1,10 +1,6 @@
-use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::Client;
-use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, error::Error};
 
 // Get settings of service/sub-application.
 use crate::settings::{

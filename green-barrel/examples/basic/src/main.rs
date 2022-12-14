@@ -1,20 +1,23 @@
+mod app_state;
 mod migration;
 mod models;
 mod settings;
 
 use chrono::Local;
 use green_barrel::*;
+use mongodb::Client;
 use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // THIS IS REQUIRED FOR ALL PROJECTS
-    // Hint: This is done to be able to add data to streams.
     // #############################################################################################
-    let _app_state = app_state::get_app_state()?;
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
+    // Hint: Use to add to streams.
     let client = Client::with_uri_str(uri).await?;
-    run_migration(&client).await?;
+    let _app_state = app_state::get_app_state()?;
+    //
+    migration::run_migration(&client).await?;
 
     // YOUR CODE ...
     // #############################################################################################
