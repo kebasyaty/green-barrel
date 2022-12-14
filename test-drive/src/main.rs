@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // YOUR CODE ...
     // #############################################################################################
-
+    //
     // Specify the time zone (optional).
     // By default Utc = +0000
     let tz = Some(Local::now().format("%z").to_string());
@@ -88,13 +88,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Object Id: {:?}", user.hash.obj_id()?);
         println!("Object Id: {:?}", output_data.obj_id()?);
+
+        //println!("Json:\n{}", output_data.json()?);
+        //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
     }
-
-    //println!("Json:\n{}", output_data.json()?);
-    //println!("Json for admin:\n{:?}", output_data.json_for_admin()?);
 
     // Create document in database.
     // *********************************************************************************************

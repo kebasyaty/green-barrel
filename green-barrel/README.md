@@ -78,7 +78,9 @@ $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/ap
 $ sudo apt update
 ```
 
-## Example Usage:
+## Usage:
+
+**An example will be added soon.**
 
 ## Model parameters
 
@@ -167,6 +169,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel
 
 ## Changelog
 
+- **v1.3.0-beta** _Transition to asynchronous code._
 - **v1.2.0-beta** _Updated dependency mongodb to version 2._
 - **v1.1.14-beta** _Rename Model parameters: **is_add_docs**, **is_up_docs**, **is_del_docs** to **is_add_doc**, **is_up_doc**, **is_del_doc**._
 - **v1.1.9-beta** _Tests updated and **README.md** file updated._
