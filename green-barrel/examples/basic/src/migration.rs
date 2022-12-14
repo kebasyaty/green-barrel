@@ -1,9 +1,9 @@
 use crate::{models, settings};
-use green_barrel::{Caching, Monitor};
+use green_barrel::{Caching, Main, Monitor};
 use mongodb::Client;
 use std::error::Error;
 
-async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
+pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
     models::User::caching(client).await?;
 

@@ -1,4 +1,4 @@
-//! General settings for Models.
+//! Settings for Models.
 
 // Project name.
 // Valid characters: _ a-z A-Z 0-9

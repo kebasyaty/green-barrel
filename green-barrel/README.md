@@ -23,7 +23,7 @@
 
 ## Requirements
 
-- [mongodb](https://crates.io/crates/mongodb/1.2.5 "mongodb")
+- [mongodb](https://crates.io/crates/mongodb "mongodb")
 - [serde](https://crates.io/crates/serde "serde")
 - [chrono](https://crates.io/crates/chrono "chrono")
 - [image](https://crates.io/crates/image "image")
@@ -35,6 +35,10 @@
 - [slug](https://crates.io/crates/slug "slug")
 - [validator](https://crates.io/crates/validator "validator")
 - [uuid](https://crates.io/crates/uuid "uuid")
+- [async-lock](https://crates.io/crates/async-lock "async-lock")
+- [async-trait](https://crates.io/crates/async-trait "async-trait")
+- [futures](https://crates.io/crates/futures "futures")
+- [tokio](https://crates.io/crates/tokio "tokio")
 - [metamorphose](https://crates.io/crates/metamorphose "metamorphose")
 
 ## Install mongodb (if not installed)
@@ -80,7 +84,7 @@ $ sudo apt update
 
 ## Usage:
 
-**An example will be added soon.**
+[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/green-barrel/examples/basic "Basic Example")
 
 ## Model parameters
 
@@ -99,11 +103,11 @@ $ sudo apt update
 
 ## Field types
 
-See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/fields/index.html "fields").
+See documentation -[fields](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/fields/index.html "fields").
 
 ## Methods for Developers
 
-[Main](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/trait.Main.html "Main")
+[Main](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -112,22 +116,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -136,7 +140,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -154,7 +158,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -163,7 +167,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.0-beta/green_barrel
 - verify_password()
 - update_password()
 
-[Fixtures](https://docs.rs/green-barrel/1.3.0-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
+[Fixtures](https://docs.rs/green-barrel/1.3.1-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
 
 - run_fixture()
 
