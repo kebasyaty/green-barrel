@@ -2,6 +2,8 @@
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
+use std::{error::Error, fs, path::Path};
+use uuid::Uuid;
 
 use crate::models::helpers::FileData;
 
@@ -64,10 +66,33 @@ impl InputFile {
     pub fn get(&self) -> Option<FileData> {
         self.value.clone()
     }
-    pub fn set(&mut self, value: &str) {
+    pub fn set(&mut self, file_path: &str, media_root: Option<&str>) {
+        let file_path = Self::copy_file_to_tmp(file_path, media_root).unwrap();
         self.value = Some(FileData {
-            path: value.into(),
+            path: file_path,
             ..Default::default()
         });
+    }
+    // Copy file to media_root}/tmp directory
+    pub fn copy_file_to_tmp(
+        file_path: &str,
+        media_root: Option<&str>,
+    ) -> Result<String, Box<dyn Error>> {
+        let media_root = if let Some(media_root) = media_root {
+            media_root.to_string()
+        } else {
+            "./resources/media".to_string()
+        };
+        let f_path = Path::new(file_path);
+        if !f_path.is_file() {
+            Err(format!("File is missing - {file_path}"))?
+        }
+        let dir_tmp = format!("{media_root}/tmp");
+        fs::create_dir_all(dir_tmp.clone())?;
+        let f_name = Uuid::new_v4().to_string();
+        let ext = f_path.extension().unwrap().to_str().unwrap();
+        let f_tmp = format!("{dir_tmp}/{f_name}.{ext}");
+        fs::copy(file_path, f_tmp.clone())?;
+        Ok(f_tmp)
     }
 }
