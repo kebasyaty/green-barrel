@@ -70,10 +70,10 @@ impl InputImage {
     pub fn get(&self) -> Option<ImageData> {
         self.value.clone()
     }
-    pub fn set(&mut self, file_path: &str, media_root: Option<&str>) {
-        let file_path = Self::copy_file_to_tmp(file_path, media_root).unwrap();
+    pub fn set(&mut self, image_path: &str, media_root: Option<&str>) {
+        let image_path = Self::copy_file_to_tmp(image_path, media_root).unwrap();
         self.value = Some(ImageData {
-            path: file_path,
+            path: image_path,
             ..Default::default()
         });
     }
