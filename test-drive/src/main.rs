@@ -1,4 +1,3 @@
-mod app_state;
 mod models;
 mod settings;
 
@@ -30,19 +29,12 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // THIS IS REQUIRED FOR ALL PROJECTS
-    // Hint: This is done to be able to add data to streams.
-    // #############################################################################################
-    let _app_state = app_state::get_app_state()?;
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
     run_migration(&client).await?;
 
-    // YOUR CODE ...
-    // #############################################################################################
-    //
     // Specify the time zone (optional).
-    // By default Utc = +0000
+    // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string());
 
     // Convert Model

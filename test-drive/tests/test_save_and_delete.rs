@@ -4,7 +4,7 @@ use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, fs, path::Path};
+use std::error::Error;
 
 mod settings {
     // Project name.
@@ -482,54 +482,19 @@ mod migration {
     }
 }
 
-mod app_state {
-    use super::*;
-
-    #[derive(Serialize, Deserialize, Clone, Debug)]
-    pub struct AppState {
-        pub app_name: String,
-        pub media_root: String,
-        pub media_url: String,
-    }
-
-    impl Default for AppState {
-        fn default() -> Self {
-            Self {
-                app_name: "App Name".into(),
-                media_root: "./resources/media".into(), // the resources directory is recommended to be used as a standard
-                media_url: "/media".into(),
-            }
-        }
-    }
-
-    pub fn get_app_state() -> Result<AppState, Box<dyn Error>> {
-        let path = Path::new("./AppState.toml");
-        if !path.is_file() {
-            fs::File::create(path)?;
-            let cfg = AppState::default();
-            confy::store_path(path, cfg)?;
-        }
-        Ok(confy::load_path::<AppState>(path)?)
-    }
-}
-
 // TEST
 // #################################################################################################
 #[tokio::test]
 async fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
-    // THIS IS REQUIRED FOR ALL PROJECTS
-    // Hint: This is done to be able to add data to streams.
-    // =============================================================================================
-    let _app_state = app_state::get_app_state()?;
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
+    //
     migration::run_migration(&client).await?;
 
-    // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
     // Specify the time zone (optional).
-    // By default Utc = +0000
+    // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string());
     //
     let mut test_model = TestModel::new().await?;
