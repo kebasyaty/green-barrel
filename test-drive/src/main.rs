@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     run_migration(&client).await?;
 
     // Specify the time zone (optional).
-    // By default Utc = +0000
+    // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string());
 
     // Convert Model
