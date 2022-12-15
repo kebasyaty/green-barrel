@@ -4,7 +4,6 @@ use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
-// Get settings of service/sub-application.
 use crate::settings::{
     accounts::SERVICE_NAME, APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, UNIQUE_APP_KEY,
 };

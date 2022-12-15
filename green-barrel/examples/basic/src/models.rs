@@ -2,7 +2,6 @@ use green_barrel::*;
 use metamorphose::Model;
 use serde::{Deserialize, Serialize};
 
-// Get settings of service/sub-application.
 use crate::settings::{
     accounts::SERVICE_NAME, APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, UNIQUE_APP_KEY,
 };
