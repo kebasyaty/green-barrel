@@ -1,4 +1,3 @@
-mod app_state;
 mod migration;
 mod models;
 mod settings;
@@ -10,20 +9,13 @@ use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // THIS IS REQUIRED FOR ALL PROJECTS
-    // #############################################################################################
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-    // Hint: Use to add to streams.
     let client = Client::with_uri_str(uri).await?;
-    let _app_state = app_state::get_app_state()?;
     //
     migration::run_migration(&client).await?;
 
-    // YOUR CODE ...
-    // #############################################################################################
-    //
     // Specify the time zone (optional).
-    // By default Utc = +0000
+    // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string());
 
     // Create model instance.
@@ -122,7 +114,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if !output_data.is_valid() {
         output_data.print_err();
         // or
-        println!("ERROR: {}", output_data.err_msg());
+        //println!("ERROR: {}", output_data.err_msg());
     }
 
     Ok(())
