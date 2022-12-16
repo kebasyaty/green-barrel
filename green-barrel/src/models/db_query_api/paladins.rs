@@ -604,21 +604,19 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                             Ok(dt) => DateTime::<Utc>::from(dt),
                             Err(error) => {
-                                let err_type = error.kind();
-                                if err_type == ParseErrorKind::TooLong
-                                    || err_type == ParseErrorKind::BadFormat
-                                {
+                                if error.kind() == ParseErrorKind::OutOfRange {
+                                    is_err_symptom = true;
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(
+                                            final_field,
+                                            "Non-existent date or time!"
+                                        ));
+                                    continue;
+                                } else {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(final_field, err_msg));
                                     continue;
-                                } else {
-                                    Err(format!(
-                                        "Model: `{model_name}` > Field: `{field_name}` ; \
-                                        Method: `check()` => {:?}",
-                                        error
-                                    ))
-                                    .unwrap()
                                 }
                             }
                         }
@@ -644,20 +642,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                                 Ok(dt) => DateTime::<Utc>::from(dt),
                                 Err(error) => {
-                                    let err_type = error.kind();
-                                    if err_type == ParseErrorKind::TooLong
-                                        || err_type == ParseErrorKind::BadFormat
-                                    {
+                                    if error.kind() == ParseErrorKind::OutOfRange {
                                         Err(format!(
-                                            "Model: `{model_name}` > Field: `{field_name}` ; \
-                                            Method: `check()` => {err_msg}"
+                                            "Model: `{model_name}` > Field: `{field_name}` > \
+                                            Param: `min` ; Method: `check()` => \
+                                            Non-existent date or time!"
                                         ))
                                         .unwrap()
                                     } else {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
-                                            Method: `check()` => {:?}",
-                                            error
+                                            Method: `check()` => {err_msg}"
                                         ))
                                         .unwrap()
                                     }
@@ -695,20 +690,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                                 Ok(dt) => DateTime::<Utc>::from(dt),
                                 Err(error) => {
-                                    let err_type = error.kind();
-                                    if err_type == ParseErrorKind::TooLong
-                                        || err_type == ParseErrorKind::BadFormat
-                                    {
+                                    if error.kind() == ParseErrorKind::OutOfRange {
                                         Err(format!(
-                                            "Model: `{model_name}` > Field: `{field_name}` ; \
-                                            Method: `check()` => {err_msg}"
+                                            "Model: `{model_name}` > Field: `{field_name}` > \
+                                            Param: `max` ; Method: `check()` => \
+                                            Non-existent date or time!"
                                         ))
                                         .unwrap()
                                     } else {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
-                                             Method: `check()` => {:?}",
-                                            error
+                                            Method: `check()` => {err_msg}"
                                         ))
                                         .unwrap()
                                     }
