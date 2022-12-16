@@ -4,7 +4,7 @@ mod settings;
 
 use chrono::Local;
 use green_barrel::*;
-use mongodb::{bson::doc, Client};
+use mongodb::Client;
 use std::error::Error;
 
 #[tokio::main]
@@ -18,26 +18,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string()); // or None
 
-    // Create user
+    // Create User
     // *********************************************************************************************
     let mut user = models::User::new().await?;
     user.username.set("user_1");
-    user.avatar.set("./some_files/avatar.png", None);
-    user.resume.set("./some_files/resume.pdf", None);
+    user.date.set("1970-02-28");
+    user.datetime.set("1970-02-28T00:00");
 
-    // Add document in database
+    // Save User
     // *********************************************************************************************
-    println!("\n\nCreate document in database:\n");
     let output_data = user.save(&client, &tz, None, None).await?;
-    //user = output_data.update()?;
+    user = output_data.update()?;
 
     if output_data.is_valid() {
-        let filter = doc! {"username": "user_1"};
-        if let Some(user_doc) = models::User::find_one_to_doc(filter, &client, None).await? {
-            println!("{:#?}", user_doc);
-        } else {
-            panic!("The document is missing!");
-        }
+        println!("Date: {}", user.date.get().unwrap());
+        println!("Date and Time: {}", user.datetime.get().unwrap());
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
