@@ -1,7 +1,7 @@
 //! Query methods for a Model instance.
 
 use async_trait::async_trait;
-use chrono::{DateTime, Utc};
+use chrono::{format::ParseErrorKind, DateTime, Utc};
 use image::imageops::FilterType::{Nearest, Triangle};
 use mongodb::{
     bson::{doc, oid::ObjectId, ser::to_bson, spec::ElementType, Bson, Document},
@@ -601,13 +601,26 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 <br>Example: 1970-01-01T00:00",
                             )
                         };
-                        if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
-                            DateTime::<Utc>::from(dt)
-                        } else {
-                            is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, err_msg));
-                            continue;
+                        match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                            Ok(dt) => DateTime::<Utc>::from(dt),
+                            Err(error) => {
+                                let err_type = error.kind();
+                                if err_type == ParseErrorKind::TooLong
+                                    || err_type == ParseErrorKind::BadFormat
+                                {
+                                    is_err_symptom = true;
+                                    *final_field.get_mut("error").unwrap() =
+                                        json!(Self::accumula_err(final_field, err_msg));
+                                    continue;
+                                } else {
+                                    Err(format!(
+                                        "Model: `{model_name}` > Field: `{field_name}` ; \
+                                        Method: `check()` => {:?}",
+                                        error
+                                    ))
+                                    .unwrap()
+                                }
+                            }
                         }
                     };
                     // Compare with `min`.
@@ -628,14 +641,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Example: 1970-01-01T00:00",
                                 )
                             };
-                            if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
-                                DateTime::<Utc>::from(dt)
-                            } else {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; \
-                                    Method: `check()` => {err_msg}"
-                                ))
-                                .unwrap()
+                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                                Ok(dt) => DateTime::<Utc>::from(dt),
+                                Err(error) => {
+                                    let err_type = error.kind();
+                                    if err_type == ParseErrorKind::TooLong
+                                        || err_type == ParseErrorKind::BadFormat
+                                    {
+                                        Err(format!(
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                            Method: `check()` => {err_msg}"
+                                        ))
+                                        .unwrap()
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                            Method: `check()` => {:?}",
+                                            error
+                                        ))
+                                        .unwrap()
+                                    }
+                                }
                             }
                         };
                         // Match dates.
@@ -666,14 +692,27 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Example: 1970-01-01T00:00",
                                 )
                             };
-                            if let Ok(dt) = DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
-                                DateTime::<Utc>::from(dt)
-                            } else {
-                                Err(format!(
-                                    "Model: `{model_name}` > Field: `{field_name}` ; \
-                                    Method: `check()` => {err_msg}"
-                                ))
-                                .unwrap()
+                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
+                                Ok(dt) => DateTime::<Utc>::from(dt),
+                                Err(error) => {
+                                    let err_type = error.kind();
+                                    if err_type == ParseErrorKind::TooLong
+                                        || err_type == ParseErrorKind::BadFormat
+                                    {
+                                        Err(format!(
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                            Method: `check()` => {err_msg}"
+                                        ))
+                                        .unwrap()
+                                    } else {
+                                        Err(format!(
+                                            "Model: `{model_name}` > Field: `{field_name}` ; \
+                                             Method: `check()` => {:?}",
+                                            error
+                                        ))
+                                        .unwrap()
+                                    }
+                                }
                             }
                         };
                         // Match dates.
