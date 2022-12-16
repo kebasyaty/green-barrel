@@ -4,7 +4,7 @@ mod settings;
 
 use chrono::Local;
 use green_barrel::*;
-use mongodb::Client;
+use mongodb::{bson::doc, Client};
 use std::error::Error;
 
 #[tokio::main]
@@ -28,11 +28,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Save User
     // *********************************************************************************************
     let output_data = user.save(&client, &tz, None, None).await?;
-    user = output_data.update()?;
+    //user = output_data.update()?;
 
     if output_data.is_valid() {
-        println!("Date: {}", user.date.get().unwrap());
-        println!("Date and Time: {}", user.datetime.get().unwrap());
+        let filter = doc! {"username": "user_1"};
+        if let Some(user) = models::User::find_one_to_doc(filter, &client, None).await? {
+            println!("{:#?}", user);
+        } else {
+            panic!("Document is missing!");
+        }
     } else {
         // Printing errors to the console ( for development ).
         output_data.print_err();
