@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.avatar.set("./some_files/avatar.png", None);
-    user.resume.set("./some_files/resume.odt", None);
+    user.resume.set("./some_files/resume.pdf", None);
 
     // Add document in database
     // *********************************************************************************************
