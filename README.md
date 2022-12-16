@@ -104,7 +104,7 @@ $ sudo apt update
 
 See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/fields/index.html "fields").
 
-## Methods for Developers - Road map
+## Road map - Methods for Developers
 
 [Main](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/trait.Main.html "Main")
 
