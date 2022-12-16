@@ -16,7 +16,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Specify the time zone (optional).
     // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string());
+    let tz = Some(Local::now().format("%z").to_string()); // or None
 
     // Create model instance.
     // *********************************************************************************************
