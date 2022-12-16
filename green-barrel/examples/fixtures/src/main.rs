@@ -17,6 +17,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // *********************************************************************************************
     if let Some(city_list) = models::City::find_many_to_doc_list(&client, None, None).await? {
         println!("{:#?}", city_list);
+    } else {
+        panic!("The document is missing!");
     }
 
     Ok(())
