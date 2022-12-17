@@ -23,9 +23,7 @@ use crate::{
 #[async_trait(?Send)]
 pub trait QCommons: Main + Caching + Converters {
     /// Runs an aggregation operation.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
-    /// See the documentation https://docs.mongodb.com/manual/aggregation/ for more information on aggregations.
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.aggregate
     ///
     /// # Example:
     ///
@@ -74,8 +72,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the number of documents matching filter.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.count_documents
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.count_documents
     ///
     /// # Example:
     ///
@@ -119,8 +116,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Deletes all documents stored in the collection matching query.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_many
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.delete_many
     ///
     /// # Example:
     ///
@@ -187,8 +183,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Deletes up to one document found matching query.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.delete_one
     ///
     /// # Example:
     ///
@@ -255,8 +250,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds the distinct values of the field specified by field_name across the collection.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.distinct
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.distinct
     ///
     /// # Example:
     ///
@@ -302,8 +296,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Drops the collection, deleting all data and indexes stored in it.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.drop
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.drop
     ///
     /// # Example:
     ///
@@ -364,8 +357,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Estimates the number of documents in the collection using collection metadata.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.estimated_document_count
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.estimated_document_count
     ///
     /// # Example:
     ///
@@ -452,7 +444,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
-            if options.limit == Some(0_i64) {
+            if options.limit == Some(0) {
                 options.limit = Some(db_query_docs_limit as i64);
             }
             options
@@ -527,7 +519,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
-            if options.limit == Some(0_i64) {
+            if options.limit == Some(0) {
                 options.limit = Some(db_query_docs_limit as i64);
             }
             options
