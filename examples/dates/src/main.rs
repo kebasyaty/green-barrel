@@ -31,6 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //user = output_data.update()?;
 
     if output_data.is_valid() {
+        // Get doc
         let filter = doc! {"username": "user_1"};
         if let Some(user) = models::User::find_one_to_doc(&client, filter, None).await? {
             println!("{:#?}", user);
