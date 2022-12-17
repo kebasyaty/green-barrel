@@ -174,6 +174,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.10-beta/green_barre
 
 ## Changelog
 
+- **v1.3.10-beta** _Main changes - Added methods for indexing._
 - **v1.3.6-beta** _Fixed checking of dates._
 - **v1.3.5-beta** _Improved dates checking._
 - **v1.3.2-beta** _Fixed basic example and updated readme file._
