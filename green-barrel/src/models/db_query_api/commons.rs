@@ -118,14 +118,14 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let options = IndexOptions::builder()
+    /// let username_idx_options = IndexOptions::builder()
     ///     .unique(true)
     ///     .name("usernameIdx".to_string())
     ///     .build();
-    /// let indexes = IndexModel::builder()
+    /// let indexes = [IndexModel::builder()
     ///     .keys(doc! { "username": 1 })
-    ///     .options(options)
-    ///     .build();
+    ///     .options(username_idx_options)
+    ///     .build()];
     /// let result = ModelName::create_indexes(&client, indexes, None).await;
     /// assert!(result.is_ok());
     /// ```

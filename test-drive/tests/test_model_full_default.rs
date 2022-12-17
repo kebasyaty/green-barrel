@@ -177,7 +177,7 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     assert_eq!(result, 0, "count_documents() != 0");
     // delete_many
     let query = doc! {};
-    let result = TestModel::delete_many(query, &client, None).await?;
+    let result = TestModel::delete_many(&client, query, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 0,
@@ -185,13 +185,13 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     );
     // delete_one
     let query = doc! {};
-    let result = TestModel::delete_one(query, &client, None).await?;
+    let result = TestModel::delete_one(&client, query, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 0, "delete_one() != 0");
     // distinct
     let field_name = "checkbox";
     let filter = doc! {};
-    let result = TestModel::distinct(field_name, &client, Some(filter), None).await?;
+    let result = TestModel::distinct(&client, field_name, Some(filter), None).await?;
     assert!(result.is_empty(), "distinct() != is_empty()");
     // estimated_document_count
     let result = TestModel::estimated_document_count(&client, None).await?;
@@ -204,19 +204,19 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     assert!(result.is_none(), "find_many_to_json() != is_none");
     // find_one_to_doc
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_doc(filter, &client, None).await?;
+    let result = TestModel::find_one_to_doc(&client, filter, None).await?;
     assert!(result.is_none(), "find_one_to_doc() != is_none()");
     // find_one_to_json
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_json(filter, &client, None).await?;
+    let result = TestModel::find_one_to_json(&client, filter, None).await?;
     assert!(result.is_empty(), "find_one_to_json() != is_empty()");
     // find_one_to_instance
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_to_instance(filter, &client, None).await?;
+    let result = TestModel::find_one_to_instance(&client, filter, None).await?;
     assert!(result.is_none(), "find_one_to_instance() != is_none()");
     // find_one_and_delete
     let filter = doc! {"username": "user_1"};
-    let result = TestModel::find_one_and_delete(filter, &client, None).await?;
+    let result = TestModel::find_one_and_delete(&client, filter, None).await?;
     assert!(result.is_none(), "find_one_and_delete() != is_none()");
     // collection_name
     let result = TestModel::collection_name(&client).await?;
