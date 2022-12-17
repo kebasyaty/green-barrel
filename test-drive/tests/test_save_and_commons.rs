@@ -243,7 +243,8 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         .keys(doc! { "username": 1 })
         .options(options)
         .build();
-    let result = TestModel::create_index(&client, index, None).await?;
+    let result = TestModel::create_index(&client, index, None).await;
+    assert!(result.is_ok(), "create_index() != is_ok()");
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");
