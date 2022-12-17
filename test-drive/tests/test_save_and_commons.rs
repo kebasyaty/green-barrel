@@ -240,7 +240,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     // Create index
     let options = IndexOptions::builder().unique(true).build();
     let index = IndexModel::builder()
-        .keys(doc! { "username": 1 })
+        .keys(doc! { "email": 1 })
         .options(options)
         .build();
     let result = TestModel::create_index(&client, index, None).await;
