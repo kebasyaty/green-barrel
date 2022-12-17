@@ -2,7 +2,7 @@ use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, Client};
+use mongodb::{bson::doc, options::IndexOptions, Client, IndexModel};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -104,6 +104,10 @@ mod models {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
+                email: InputEmail {
+                    unique: true,
+                    ..Default::default()
+                },
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
@@ -233,6 +237,13 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         );
     }
 
+    // Create index
+    let options = IndexOptions::builder().unique(true).build();
+    let index = IndexModel::builder()
+        .keys(doc! { "username": 1 })
+        .options(options)
+        .build();
+    let result = TestModel::create_index(&client, index, None).await?;
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");

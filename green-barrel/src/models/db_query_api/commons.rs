@@ -34,7 +34,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///     .keys(doc! { "username": 1 })
     ///     .options(options)
     ///     .build();
-    /// let result  = ModelName::create_index(&client, index, None)?;
+    /// let result  = ModelName::create_index(&client, index, None).await?;
     /// println!("{:?}", result;
     /// ```
     ///
@@ -77,7 +77,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let doc_list  = ModelName::aggregate(pipeline, &client, None)?;
+    /// let doc_list  = ModelName::aggregate(pipeline, &client, None).await?;
     /// println!("{:?}", doc_list);
     /// ```
     ///
@@ -126,7 +126,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let filter = doc!{};
-    /// let count  = ModelName::count_documents &client, Some(filter), None)?;
+    /// let count  = ModelName::count_documents &client, Some(filter), None).await?;
     /// println!("{}", count);
     /// ```
     ///
@@ -170,7 +170,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_many(query, &client, None)?;
+    /// let output_data  = ModelName::delete_many(query, &client, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -237,7 +237,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_one(query, &client, None)?;
+    /// let output_data  = ModelName::delete_one(query, &client, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -305,7 +305,7 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// let field_name = "";
     /// let filter = doc!{};
-    /// let output_data  = ModelName::distinct(field_name, &client, Some(filter), None)?;
+    /// let output_data  = ModelName::distinct(field_name, &client, Some(filter), None).await?;
     /// println!("{:?}", output_data);
     /// ```
     ///
@@ -347,7 +347,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let output_data  = ModelName::drop &client, None)?;
+    /// let output_data  = ModelName::drop &client, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -408,7 +408,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let count  = ModelName::estimated_document_count &client, None)?;
+    /// let count  = ModelName::estimated_document_count &client, None).await?;
     /// println!("{}", count);
     /// ```
     ///
@@ -449,7 +449,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_doc_list &client, None, None)?;
+    /// let result = ModelName::find_many_to_doc_list &client, None, None).await?;
     /// if let Some(doc_list) = result {
     ///     println!("{:?}", doc_list);
     /// }
@@ -513,7 +513,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json &client, None, None)?;
+    /// let result = ModelName::find_many_to_json &client, None, None).await?;
     /// if let Some(json_line) = result {
     ///     println!("{}", json_line);
     /// }
@@ -593,7 +593,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result = ModelName::find_one_to_doc(filter, &client, None)?;
+    /// let result = ModelName::find_one_to_doc(filter, &client, None).await?;
     /// if let Some(doc) = result {
     ///     println!("{:?}", doc);
     /// }
@@ -639,7 +639,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let json = ModelName::find_one_to_json(filter, &client, None)?;
+    /// let json = ModelName::find_one_to_json(filter, &client, None).await?;
     /// println!("{}", json);
     /// ```
     ///
@@ -712,7 +712,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_instance(filter, &client, None)?;
+    /// let result  = ModelName::find_one_to_instance(filter, &client, None).await?;
     /// if let Some(instance) = result {
     ///     println!("{:?}", instance);
     /// }
@@ -789,7 +789,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete(filter, &client, None)?;
+    /// let result  = ModelName::find_one_and_delete(filter, &client, None).await?;
     /// if let Some(doc) = result) {
     ///     println!("{:?}", doc);
     /// }
@@ -842,7 +842,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::name &client)?;
+    /// let name  = ModelName::name &client).await?;
     /// println!("{}", name);
     /// ```
     ///
@@ -879,7 +879,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::namespace &client)?;
+    /// let name  = ModelName::namespace &client).await?;
     /// println!("{:?}", name);
     /// ```
     ///
