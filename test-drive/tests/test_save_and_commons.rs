@@ -262,7 +262,10 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         .options(email_idx_options)
         .build()];
     let result = TestModel::create_indexes(&client, indexes, None).await;
-    assert!(result.is_ok(), "create_index() != is_ok()");
+    assert!(result.is_ok(), "create_indexes() != is_ok()");
+    // Drop indexes
+    let result = TestModel::drop_indexes(&client, None).await;
+    assert!(result.is_ok(), "create_indexes() != is_ok()");
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");
