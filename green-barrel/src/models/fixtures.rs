@@ -38,15 +38,15 @@ use crate::{
 /// // Run fixtures
 /// fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
-///     // fixture_name - Name of the fixture file in the ./fixtures directory, no extension (.json).
-///     ModelName::run_fixture("cities", &meta_store, &client, &validators, &media_dir)?;
+///     let fixture_name = "cities";
+///     ModelName::run_fixture(&client, fixture_name).await?;
 ///     Ok(())
 /// }
 /// ```
 ///
 #[async_trait(?Send)]
 pub trait Fixtures: Caching + QPaladins + QCommons {
-    async fn run_fixture(fixture_name: &str, client: &Client) -> Result<(), Box<dyn Error>>
+    async fn run_fixture(client: &Client, fixture_name: &str) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
