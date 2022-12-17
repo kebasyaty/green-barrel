@@ -6,8 +6,8 @@ use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{
         AggregateOptions, CountOptions, CreateIndexOptions, DeleteOptions, DistinctOptions,
-        DropCollectionOptions, EstimatedDocumentCountOptions, FindOneAndDeleteOptions,
-        FindOneOptions, FindOptions,
+        DropCollectionOptions, DropIndexOptions, EstimatedDocumentCountOptions,
+        FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
     results::CreateIndexResult,
     Client, IndexModel, Namespace,
@@ -34,8 +34,8 @@ pub trait QCommons: Main + Caching + Converters {
     ///     .keys(doc! { "username": 1 })
     ///     .options(options)
     ///     .build();
-    /// let result  = ModelName::create_index(&client, index, None).await?;
-    /// println!("{:?}", result;
+    /// let result = ModelName::create_index(&client, index, None).await;
+    /// assert!(result.is_ok());
     /// ```
     ///
     async fn create_index(
@@ -65,6 +65,47 @@ pub trait QCommons: Main + Caching + Converters {
             .database(&database_name)
             .collection::<Document>(&collection_name)
             .create_index(index, options)
+            .await?)
+    }
+
+    /// Creates the given index on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_index
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let name = "username";
+    /// let result = ModelName::drop_index(&client, name, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn drop_index(
+        client: &Client,
+        name: impl AsRef<str>,
+        options: impl Into<Option<DropIndexOptions>>,
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `create_index()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .drop_index(name, options)
             .await?)
     }
 
