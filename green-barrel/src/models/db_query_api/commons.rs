@@ -160,6 +160,45 @@ pub trait QCommons: Main + Caching + Converters {
             .await?)
     }
 
+    /// Drops all indexes associated with this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.drop_indexes
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let result = ModelName::drop_indexes(&client, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn drop_indexes(
+        client: &Client,
+        options: impl Into<Option<DropIndexOptions>>,
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `drop_indexes()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .drop_indexes(options)
+            .await?)
+    }
+
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.aggregate
     ///
