@@ -77,10 +77,10 @@ mod migration {
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(
+            client,
             settings::APP_NAME,
             settings::UNIQUE_APP_KEY,
             get_model_key_list()?,
-            client,
         )
         .await?;
 
@@ -152,7 +152,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "field_name not match"
@@ -168,7 +168,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_dyn, value = 1"
@@ -181,7 +181,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_mult_dyn, value = 2"
@@ -194,7 +194,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_dyn, value = 'Some text 1'"
@@ -207,7 +207,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_mult_dyn, value = 'Some text 2'"
@@ -220,7 +220,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_dyn, value = 'Some text 3'"
@@ -233,7 +233,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_mult_dyn, value = 'Some text 4'"
@@ -246,7 +246,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_dyn, value = 'Some text 5'"
@@ -259,7 +259,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_mult_dyn, value = 'Some text 6'"
@@ -272,7 +272,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_dyn, value = 'Some text 7'"
@@ -285,7 +285,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_mult_dyn, value = 'Some text 8'"
@@ -385,7 +385,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -396,7 +396,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -407,7 +407,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -418,7 +418,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -435,7 +435,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -446,7 +446,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -457,7 +457,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -468,7 +468,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -481,7 +481,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -492,7 +492,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -503,7 +503,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -514,7 +514,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -527,7 +527,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -538,7 +538,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -549,7 +549,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -560,7 +560,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -573,7 +573,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -584,7 +584,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -595,7 +595,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -606,7 +606,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
     //
@@ -704,7 +704,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_dyn -> title == 150 characters"
@@ -717,7 +717,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_dyn -> title == 150 characters"
@@ -730,7 +730,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
@@ -743,7 +743,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
@@ -762,7 +762,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_dyn, value = i32::MIN"
@@ -775,7 +775,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_dyn, value = i32::MAX"
@@ -788,7 +788,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_mult_dyn, value = i32::MIN"
@@ -801,7 +801,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_mult_dyn, value = i32::MAX"
@@ -816,7 +816,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_dyn, value = u32::MIN"
@@ -829,7 +829,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_dyn, value = u32::MAX"
@@ -842,7 +842,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_mult_dyn, value = u32::MIN"
@@ -855,7 +855,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_mult_dyn, value = u32::MAX"
@@ -870,7 +870,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_dyn, value = i64::MIN"
@@ -883,7 +883,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_dyn, value = i64::MAX"
@@ -896,7 +896,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_mult_dyn, value = i64::MIN"
@@ -909,7 +909,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_mult_dyn, value = i64::MAX"
@@ -924,7 +924,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_dyn, value = f64::MIN"
@@ -937,7 +937,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_dyn, value = f64::MAX"
@@ -950,7 +950,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_mult_dyn, value = f64::MIN"
@@ -963,7 +963,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": false,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_mult_dyn, value = f64::MAX"
@@ -983,7 +983,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -994,7 +994,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_dyn -> title == 150 characters"
     );
     //
@@ -1005,7 +1005,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -1016,7 +1016,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_text_mult_dyn -> title == 150 characters"
     );
     //
@@ -1033,7 +1033,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_dyn, value = i32::MIN"
     );
     //
@@ -1044,7 +1044,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_dyn, value = i32::MAX"
     );
     //
@@ -1055,7 +1055,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MIN"
     );
     //
@@ -1066,7 +1066,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i32_mult_dyn, value = i32::MAX"
     );
     //
@@ -1079,7 +1079,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_dyn, value = u32::MIN"
     );
     //
@@ -1090,7 +1090,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_dyn, value = u32::MAX"
     );
     //
@@ -1101,7 +1101,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MIN"
     );
     //
@@ -1112,7 +1112,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_u32_mult_dyn, value = u32::MAX"
     );
     //
@@ -1125,7 +1125,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_dyn, value = i64::MIN"
     );
     //
@@ -1136,7 +1136,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_dyn, value = i64::MAX"
     );
     //
@@ -1147,7 +1147,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MIN"
     );
     //
@@ -1158,7 +1158,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_i64_mult_dyn, value = i64::MAX"
     );
     //
@@ -1171,7 +1171,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_dyn, value = f64::MIN"
     );
     //
@@ -1182,7 +1182,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_dyn, value = f64::MAX"
     );
     //
@@ -1193,7 +1193,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MIN"
     );
     //
@@ -1204,7 +1204,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client).await.is_ok(),
+        TestModel::update_dyn_field(&client, dyn_data).await.is_ok(),
         "select_f64_mult_dyn, value = f64::MAX"
     );
     //
@@ -1223,7 +1223,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_dyn -> title == 150 characters"
@@ -1236,7 +1236,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_dyn -> title == 150 characters"
@@ -1249,7 +1249,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
@@ -1262,7 +1262,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_text_mult_dyn -> title == 150 characters"
@@ -1281,7 +1281,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_dyn, value = i32::MIN"
@@ -1294,7 +1294,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_dyn, value = i32::MAX"
@@ -1307,7 +1307,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_mult_dyn, value = i32::MIN"
@@ -1320,7 +1320,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i32_mult_dyn, value = i32::MAX"
@@ -1335,7 +1335,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_dyn, value = u32::MIN"
@@ -1348,7 +1348,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_dyn, value = u32::MAX"
@@ -1361,7 +1361,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_mult_dyn, value = u32::MIN"
@@ -1374,7 +1374,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_u32_mult_dyn, value = u32::MAX"
@@ -1389,7 +1389,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_dyn, value = i64::MIN"
@@ -1402,7 +1402,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_dyn, value = i64::MAX"
@@ -1415,7 +1415,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_mult_dyn, value = i64::MIN"
@@ -1428,7 +1428,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_i64_mult_dyn, value = i64::MAX"
@@ -1443,7 +1443,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_dyn, value = f64::MIN"
@@ -1456,7 +1456,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_dyn, value = f64::MAX"
@@ -1469,7 +1469,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_mult_dyn, value = f64::MIN"
@@ -1482,7 +1482,7 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
         "is_delete": true,
     });
     assert!(
-        TestModel::update_dyn_field(dyn_data, &client)
+        TestModel::update_dyn_field(&client, dyn_data)
             .await
             .is_err(),
         "select_f64_mult_dyn, value = f64::MAX"
@@ -1491,10 +1491,10 @@ async fn test_model_dyn_fields() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
+        &client,
         settings::APP_NAME,
         settings::UNIQUE_APP_KEY,
         migration::get_model_key_list()?,
-        &client,
     )
     .await?;
 
