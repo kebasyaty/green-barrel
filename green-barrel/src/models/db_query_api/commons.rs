@@ -3,13 +3,14 @@
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mongodb::{
-    bson::{document::Document, Bson},
-    options::AggregateOptions,
+    bson::{doc, document::Document, Bson},
     options::{
-        CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
-        EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
+        AggregateOptions, CountOptions, CreateIndexOptions, DeleteOptions, DistinctOptions,
+        DropCollectionOptions, EstimatedDocumentCountOptions, FindOneAndDeleteOptions,
+        FindOneOptions, FindOptions,
     },
-    Client, Namespace,
+    results::CreateIndexResult,
+    Client, IndexModel, Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
 use std::error::Error;
@@ -22,6 +23,51 @@ use crate::{
 /// Common query methods.
 #[async_trait(?Send)]
 pub trait QCommons: Main + Caching + Converters {
+    /// Creates the given index on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_index
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let options = IndexOptions::builder().unique(true).build();
+    /// let index = IndexModel::builder()
+    ///     .keys(doc! { "username": 1 })
+    ///     .options(options)
+    ///     .build();
+    /// let result  = ModelName::create_index(&client, index, None)?;
+    /// println!("{:?}", result;
+    /// ```
+    ///
+    async fn create_index(
+        client: &Client,
+        index: IndexModel,
+        options: impl Into<Option<CreateIndexOptions>>,
+    ) -> Result<CreateIndexResult, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .create_index(index, options)
+            .await?)
+    }
+
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.aggregate
     ///
