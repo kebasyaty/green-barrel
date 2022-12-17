@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     migration::run_migration(&client).await?;
 
-    // Get Cities from database
+    // Get Cities
     // *********************************************************************************************
     if let Some(city_list) = models::City::find_many_to_doc_list(&client, None, None).await? {
         println!("{:#?}", city_list);

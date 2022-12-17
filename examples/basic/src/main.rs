@@ -18,15 +18,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // ( For convert to Utc )
     let tz = Some(Local::now().format("%z").to_string()); // or None
 
-    // Create model instance.
+    // Create User
     // *********************************************************************************************
     let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
 
-    // Check Model.
+    // Check User
     // *********************************************************************************************
-    println!("\n\nCheck Modell:\n");
+    println!("\n\nCheck User:\n");
     let output_data = user.check(&client, &tz, None).await?;
     user = output_data.update()?;
     //
@@ -48,9 +48,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         output_data.print_err();
     }
 
-    // Create document in database.
+    // Save User
     // *********************************************************************************************
-    println!("\n\nCreate document in database:\n");
+    println!("\n\nSave User:\n");
     let output_data = user.save(&client, &tz, None, None).await?;
     user = output_data.update()?;
 
@@ -74,9 +74,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         output_data.print_err();
     }
 
-    // Update document in database.
+    // Update User
     // *********************************************************************************************
-    println!("\n\nUpdate document in database:\n");
+    println!("\n\nUpdate User:\n");
     if output_data.is_valid() {
         user.username.set("new_user_1");
 
@@ -107,9 +107,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         output_data.print_err();
     }
 
-    // Delete document in database.
+    // Delete User
     // *********************************************************************************************
-    println!("\n\nDelete document in database:\n");
+    println!("\n\nDelete User:\n");
     let output_data = user.delete(&client, None).await?;
     if !output_data.is_valid() {
         output_data.print_err();
