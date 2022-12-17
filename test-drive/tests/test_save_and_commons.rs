@@ -238,7 +238,10 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     }
 
     // Create index
-    let options = IndexOptions::builder().unique(true).build();
+    let options = IndexOptions::builder()
+        .unique(true)
+        .name("emailIdx".to_string())
+        .build();
     let index = IndexModel::builder()
         .keys(doc! { "email": 1 })
         .options(options)
@@ -246,7 +249,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     let result = TestModel::create_index(&client, index, None).await;
     assert!(result.is_ok(), "create_index() != is_ok()");
     // Drop index
-    let name = "email";
+    let name = "emailIdx";
     let result = TestModel::drop_index(&client, name, None).await;
     assert!(result.is_ok(), "drop_index() != is_ok()");
     // count_documents
