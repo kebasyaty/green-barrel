@@ -34,12 +34,12 @@ pub trait Caching: Main + Converters {
         let mut meta = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
         Self::injection(
+            client,
             meta.app_name.as_str(),
             meta.unique_app_key.as_str(),
             meta.collection_name.as_str(),
             &mut meta.model_json,
             &meta.fields_name,
-            client,
         )
         .await?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =

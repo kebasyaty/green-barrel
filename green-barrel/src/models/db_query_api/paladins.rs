@@ -2004,12 +2004,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Enrich the controller map with values for dynamic controllers.
         if is_save {
             Self::injection(
+                client,
                 app_name.as_str(),
                 unique_app_key.as_str(),
                 collection_name.as_str(),
                 &mut final_model_json,
                 &fields_name,
-                client,
             )
             .await?;
         }

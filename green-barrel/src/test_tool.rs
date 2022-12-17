@@ -8,10 +8,10 @@ use crate::meta_store::META_STORE;
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
 pub async fn del_test_db(
+    client: &Client,
     app_name: &str,
     unique_app_key: &str,
     model_key_list: Vec<String>,
-    client: &Client,
 ) -> Result<(), Box<dyn Error>> {
     // Get metadata store
     let store = { META_STORE.lock().await.clone() };
