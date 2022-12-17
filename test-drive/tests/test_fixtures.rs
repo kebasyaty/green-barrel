@@ -461,10 +461,10 @@ mod migration {
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(
+            client,
             settings::APP_NAME,
             settings::UNIQUE_APP_KEY,
             get_model_key_list()?,
-            client,
         )
         .await?;
 
@@ -478,7 +478,7 @@ mod migration {
         monitor.migrat(client).await?;
 
         // Run fixtures
-        models::TestModel::run_fixture("test", client).await?;
+        models::TestModel::run_fixture(client, "test").await?;
 
         Ok(())
     }
@@ -502,10 +502,10 @@ async fn test_fixtures() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
+        &client,
         settings::APP_NAME,
         settings::UNIQUE_APP_KEY,
         migration::get_model_key_list()?,
-        &client,
     )
     .await?;
 

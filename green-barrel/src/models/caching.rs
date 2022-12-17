@@ -34,12 +34,12 @@ pub trait Caching: Main + Converters {
         let mut meta = Self::generate_metadata()?;
         // Enrich the field map with values for dynamic fields.
         Self::injection(
+            client,
             meta.app_name.as_str(),
             meta.unique_app_key.as_str(),
             meta.collection_name.as_str(),
             &mut meta.model_json,
             &meta.fields_name,
-            client,
         )
         .await?;
         let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
@@ -180,21 +180,22 @@ pub trait Caching: Main + Converters {
     }
 
     /// Update data for dynamic fields.
-    /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/actix-greenpanel
+    /// A more convenient use of these types of fields is implemented in the Green Panel project:
+    /// https://github.com/kebasyaty/green-panel
     ///
     /// # Example:
     ///
     /// let dyn_data = json!({
     ///     "field_name": "field_name",
-    ///     "value": 5, // restrict with field attributes
+    ///     "value": 5,
     ///     "title": "Title",
     ///     "is_delete": false
     /// });
-    /// assert!(User::update_dyn_field(dyn_data, &client).is_ok());
+    /// assert!(User::update_dyn_field(&client, dyn_data).await.is_ok());
     /// ```
     ///
     // *********************************************************************************************
-    async fn update_dyn_field(dyn_data: Value, client: &Client) -> Result<(), Box<dyn Error>>
+    async fn update_dyn_field(client: &Client, dyn_data: Value) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {

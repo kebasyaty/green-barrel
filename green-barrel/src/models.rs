@@ -72,12 +72,12 @@ pub trait Main {
     /// Enrich field type map with values for dynamic fields type.
     // ---------------------------------------------------------------------------------------------
     async fn injection(
+        client: &Client,
         app_name: &str,
         unique_app_key: &str,
         collection_name: &str,
         model_json: &mut Value,
         fields_name: &Vec<String>,
-        client: &Client,
     ) -> Result<(), Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized,

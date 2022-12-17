@@ -29,21 +29,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
          "title": "Windows",
          "is_delete": false
     });
-    models::User::update_dyn_field(dyn_data, &client).await?;
+    models::User::update_dyn_field(&client, dyn_data).await?;
     let dyn_data = json! ({
          "field_name": "select_text_mult_dyn",
          "value": "linux",
          "title": "Linux",
          "is_delete": false
     });
-    models::User::update_dyn_field(dyn_data, &client).await?;
+    models::User::update_dyn_field(&client, dyn_data).await?;
     let dyn_data = json! ({
          "field_name": "select_text_mult_dyn",
          "value": "mac os",
          "title": "Mac OS",
          "is_delete": false
     });
-    models::User::update_dyn_field(dyn_data, &client).await?;
+    models::User::update_dyn_field(&client, dyn_data).await?;
 
     // Create User
     // *********************************************************************************************

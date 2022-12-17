@@ -462,10 +462,10 @@ mod migration {
         // Remove test databases
         // ( Test databases may remain in case of errors )
         del_test_db(
+            client,
             settings::APP_NAME,
             settings::UNIQUE_APP_KEY,
             get_model_key_list()?,
-            client,
         )
         .await?;
 
@@ -536,10 +536,10 @@ async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // Delete test database
     // =============================================================================================
     del_test_db(
+        &client,
         settings::APP_NAME,
         settings::UNIQUE_APP_KEY,
         migration::get_model_key_list()?,
-        &client,
     )
     .await?;
 

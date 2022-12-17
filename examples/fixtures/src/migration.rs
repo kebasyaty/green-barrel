@@ -17,7 +17,7 @@ pub async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
     monitor.migrat(client).await?;
 
     // Run fixtures
-    models::City::run_fixture("cities", client).await?;
+    models::City::run_fixture(client, "cities").await?;
 
     Ok(())
 }
