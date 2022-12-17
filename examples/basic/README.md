@@ -1,5 +1,4 @@
-# basic
-#### Basic Example
+# Basic Example
 
 ```shell
 // Run the current package
