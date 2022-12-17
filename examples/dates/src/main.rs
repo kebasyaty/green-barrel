@@ -32,7 +32,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if output_data.is_valid() {
         let filter = doc! {"username": "user_1"};
-        if let Some(user) = models::User::find_one_to_doc(filter, &client, None).await? {
+        if let Some(user) = models::User::find_one_to_doc(&client, filter, None).await? {
             println!("{:#?}", user);
         } else {
             panic!("Document is missing!");

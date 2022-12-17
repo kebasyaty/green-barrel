@@ -84,7 +84,7 @@ $ sudo apt update
 
 ## Usage:
 
-[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/green-barrel/examples/basic "Basic Example")
+[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
 
 ## Model parameters
 
@@ -100,13 +100,15 @@ $ sudo apt update
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 
-## Field types
+## Road map
 
-See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/fields/index.html "fields").
+#### Field types
 
-## Road map - Methods for Developers
+See documentation -[fields](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/fields/index.html "fields").
 
-[Main](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/trait.Main.html "Main")
+#### Methods for Developers
+
+[Main](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/trait.Main.html "Main")
 
 - hash()
 - set_hash()
@@ -115,22 +117,22 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel
 - created_at()
 - updated_at()
 
-[Caching](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/caching/trait.Caching.html "Caching")
+[Caching](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/caching/trait.Caching.html "Caching")
 
 - meta()
 - new()
 - json()
 - update_dyn_field()
 
-[Control](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/control/trait.Control.html "Control")
+[Control](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/control/trait.Control.html "Control")
 
 - custom_default()
 
-[AdditionalValidation](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[AdditionalValidation](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
 
 - add_validation()
 
-[Hooks](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
+[Hooks](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/hooks/trait.Hooks.html "Hooks")
 
 - pre_create()
 - post_create()
@@ -139,7 +141,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel
 - pre_delete()
 - post_delete()
 
-[QCommons](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
+[QCommons](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
 - aggregate()
 - count_documents()
@@ -157,7 +159,7 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel
 - collection_name()
 - namespace()
 
-[QPaladins](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
+[QPaladins](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/db_query_api/paladins/trait.QPaladins.html "QPaladins")
 
 - check()
 - save()
@@ -166,12 +168,13 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.6-beta/green_barrel
 - verify_password()
 - update_password()
 
-[Fixtures](https://docs.rs/green-barrel/1.3.6-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
+[Fixtures](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/fixtures/trait.Fixtures.html "Fixtures")
 
 - run_fixture()
 
 ## Changelog
 
+- **v1.3.10-beta** _Main changes - Added methods for indexing._
 - **v1.3.6-beta** _Fixed checking of dates._
 - **v1.3.5-beta** _Improved dates checking._
 - **v1.3.2-beta** _Fixed basic example and updated readme file._

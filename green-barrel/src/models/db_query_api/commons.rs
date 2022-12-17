@@ -3,13 +3,14 @@
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use mongodb::{
-    bson::{document::Document, Bson},
-    options::AggregateOptions,
+    bson::{doc, document::Document, Bson},
     options::{
-        CountOptions, DeleteOptions, DistinctOptions, DropCollectionOptions,
-        EstimatedDocumentCountOptions, FindOneAndDeleteOptions, FindOneOptions, FindOptions,
+        AggregateOptions, CountOptions, CreateIndexOptions, DeleteOptions, DistinctOptions,
+        DropCollectionOptions, DropIndexOptions, EstimatedDocumentCountOptions,
+        FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
-    Client, Namespace,
+    results::{CreateIndexResult, CreateIndexesResult},
+    Client, IndexModel, Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
 use std::error::Error;
@@ -22,10 +23,184 @@ use crate::{
 /// Common query methods.
 #[async_trait(?Send)]
 pub trait QCommons: Main + Caching + Converters {
+    /// Creates the given index on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_index
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let options = IndexOptions::builder()
+    ///     .unique(true)
+    ///     .name("usernameIdx".to_string())
+    ///     .build();
+    /// let index = IndexModel::builder()
+    ///     .keys(doc! { "username": 1 })
+    ///     .options(options)
+    ///     .build();
+    /// let result = ModelName::create_index(&client, index, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn create_index(
+        client: &Client,
+        index: IndexModel,
+        options: impl Into<Option<CreateIndexOptions>>,
+    ) -> Result<CreateIndexResult, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `create_index()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .create_index(index, options)
+            .await?)
+    }
+
+    /// Creates the given index on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_index
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let name = "usernameIdx";
+    /// let result = ModelName::drop_index(&client, name, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn drop_index(
+        client: &Client,
+        name: impl AsRef<str>,
+        options: impl Into<Option<DropIndexOptions>>,
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `drop_index()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .drop_index(name, options)
+            .await?)
+    }
+
+    /// Creates the given indexes on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_indexes
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let username_idx_options = IndexOptions::builder()
+    ///     .unique(true)
+    ///     .name("usernameIdx".to_string())
+    ///     .build();
+    /// let indexes = [IndexModel::builder()
+    ///     .keys(doc! { "username": 1 })
+    ///     .options(username_idx_options)
+    ///     .build()];
+    /// let result = ModelName::create_indexes(&client, indexes, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn create_indexes(
+        client: &Client,
+        indexes: impl IntoIterator<Item = IndexModel>,
+        options: impl Into<Option<CreateIndexOptions>>,
+    ) -> Result<CreateIndexesResult, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `create_indexes()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .create_indexes(indexes, options)
+            .await?)
+    }
+
+    /// Drops all indexes associated with this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.drop_indexes
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let result = ModelName::drop_indexes(&client, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn drop_indexes(
+        client: &Client,
+        options: impl Into<Option<DropIndexOptions>>,
+    ) -> Result<(), Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `drop_indexes()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .drop_indexes(options)
+            .await?)
+    }
+
     /// Runs an aggregation operation.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.aggregate
-    /// See the documentation https://docs.mongodb.com/manual/aggregation/ for more information on aggregations.
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.aggregate
     ///
     /// # Example:
     ///
@@ -33,13 +208,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let doc_list  = ModelName::aggregate(pipeline, &client, None)?;
+    /// let doc_list  = ModelName::aggregate(&client, pipeline, None).await?;
     /// println!("{:?}", doc_list);
     /// ```
     ///
     async fn aggregate(
-        pipeline: Vec<Document>,
         client: &Client,
+        pipeline: Vec<Document>,
         options: Option<AggregateOptions>,
     ) -> Result<Vec<Document>, Box<dyn Error>>
     where
@@ -74,8 +249,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the number of documents matching filter.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.count_documents
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.count_documents
     ///
     /// # Example:
     ///
@@ -83,7 +257,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let filter = doc!{};
-    /// let count  = ModelName::count_documents &client, Some(filter), None)?;
+    /// let count  = ModelName::count_documents &client, Some(filter), None).await?;
     /// println!("{}", count);
     /// ```
     ///
@@ -119,8 +293,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Deletes all documents stored in the collection matching query.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_many
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.delete_many
     ///
     /// # Example:
     ///
@@ -128,15 +301,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_many(query, &client, None)?;
+    /// let output_data  = ModelName::delete_many(&client, query, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
     async fn delete_many(
-        query: Document,
         client: &Client,
+        query: Document,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
@@ -187,8 +360,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Deletes up to one document found matching query.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.delete_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.delete_one
     ///
     /// # Example:
     ///
@@ -196,15 +368,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_one(query, &client, None)?;
+    /// let output_data  = ModelName::delete_one(&client, query, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
     async fn delete_one(
-        query: Document,
         client: &Client,
+        query: Document,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
@@ -255,8 +427,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Finds the distinct values of the field specified by field_name across the collection.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.distinct
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.distinct
     ///
     /// # Example:
     ///
@@ -265,13 +436,13 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// let field_name = "";
     /// let filter = doc!{};
-    /// let output_data  = ModelName::distinct(field_name, &client, Some(filter), None)?;
+    /// let output_data  = ModelName::distinct(&client, field_name, Some(filter), None).await?;
     /// println!("{:?}", output_data);
     /// ```
     ///
     async fn distinct(
-        field_name: &str,
         client: &Client,
+        field_name: &str,
         filter: Option<Document>,
         options: Option<DistinctOptions>,
     ) -> Result<Vec<Bson>, Box<dyn Error>>
@@ -302,13 +473,12 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Drops the collection, deleting all data and indexes stored in it.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.drop
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.drop
     ///
     /// # Example:
     ///
     /// ```
-    /// let output_data  = ModelName::drop &client, None)?;
+    /// let output_data  = ModelName::drop &client, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -364,13 +534,12 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Estimates the number of documents in the collection using collection metadata.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.estimated_document_count
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.estimated_document_count
     ///
     /// # Example:
     ///
     /// ```
-    /// let count  = ModelName::estimated_document_count &client, None)?;
+    /// let count  = ModelName::estimated_document_count &client, None).await?;
     /// println!("{}", count);
     /// ```
     ///
@@ -406,13 +575,12 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds the documents in the collection matching filter and
     /// return document list ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find
     ///
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_doc_list &client, None, None)?;
+    /// let result = ModelName::find_many_to_doc_list &client, None, None).await?;
     /// if let Some(doc_list) = result {
     ///     println!("{:?}", doc_list);
     /// }
@@ -452,7 +620,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
-            if options.limit == Some(0_i64) {
+            if options.limit == Some(0) {
                 options.limit = Some(db_query_docs_limit as i64);
             }
             options
@@ -471,13 +639,12 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds the documents in the collection matching filter and
     /// return in JSON format ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find
     ///
     /// # Example:
     ///
     /// ```
-    /// let result = ModelName::find_many_to_json &client, None, None)?;
+    /// let result = ModelName::find_many_to_json &client, None, None).await?;
     /// if let Some(json_line) = result {
     ///     println!("{}", json_line);
     /// }
@@ -527,7 +694,7 @@ pub trait QCommons: Main + Caching + Converters {
         // Apply parameter `db_query_docs_limit`.
         // (if necessary)
         let options = if let Some(mut options) = options {
-            if options.limit == Some(0_i64) {
+            if options.limit == Some(0) {
                 options.limit = Some(db_query_docs_limit as i64);
             }
             options
@@ -550,23 +717,22 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return in Doc format ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result = ModelName::find_one_to_doc(filter, &client, None)?;
+    /// let result = ModelName::find_one_to_doc(&client, filter, None).await?;
     /// if let Some(doc) = result {
     ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
     async fn find_one_to_doc(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where
@@ -597,21 +763,20 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return in JSON format.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let json = ModelName::find_one_to_json(filter, &client, None)?;
+    /// let json = ModelName::find_one_to_json(&client, filter, None).await?;
     /// println!("{}", json);
     /// ```
     ///
     async fn find_one_to_json(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
     where
@@ -671,23 +836,22 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return as model instance.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_instance(filter, &client, None)?;
+    /// let result  = ModelName::find_one_to_instance(&client, filter, None).await?;
     /// if let Some(instance) = result {
     ///     println!("{:?}", instance);
     /// }
     /// ```
     ///
     async fn find_one_to_instance(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
@@ -748,8 +912,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// Atomically finds up to one document in the collection matching filter and
     /// deletes it ( missing fields type ).
     /// Returns the deleted document (in Doc format).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one_and_delete
     ///
     /// # Example:
     ///
@@ -757,15 +920,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete(filter, &client, None)?;
+    /// let result  = ModelName::find_one_and_delete(&client, filter, None).await?;
     /// if let Some(doc) = result) {
     ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
     async fn find_one_and_delete(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where
@@ -805,13 +968,12 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the name of the Collection.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.name
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.name
     ///
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::name &client)?;
+    /// let name  = ModelName::name &client).await?;
     /// println!("{}", name);
     /// ```
     ///
@@ -843,13 +1005,12 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the namespace of the Collection.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.namespace
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.namespace
     ///
     /// # Example:
     ///
     /// ```
-    /// let name  = ModelName::namespace &client)?;
+    /// let name  = ModelName::namespace &client).await?;
     /// println!("{:?}", name);
     /// ```
     ///

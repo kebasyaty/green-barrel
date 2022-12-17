@@ -2,7 +2,7 @@ use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
-use mongodb::{bson::doc, Client};
+use mongodb::{bson::doc, options::IndexOptions, Client, IndexModel};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
@@ -104,6 +104,10 @@ mod models {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
+                email: InputEmail {
+                    unique: true,
+                    ..Default::default()
+                },
                 image: InputImage {
                     required: true,
                     default: Some(ImageData {
@@ -233,6 +237,35 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         );
     }
 
+    // Create index
+    let options = IndexOptions::builder()
+        .unique(true)
+        .name("emailIdx".to_string())
+        .build();
+    let index = IndexModel::builder()
+        .keys(doc! { "email": 1 })
+        .options(options)
+        .build();
+    let result = TestModel::create_index(&client, index, None).await;
+    assert!(result.is_ok(), "create_index() != is_ok()");
+    // Drop index
+    let name = "emailIdx";
+    let result = TestModel::drop_index(&client, name, None).await;
+    assert!(result.is_ok(), "drop_index() != is_ok()");
+    // Create index
+    let email_idx_options = IndexOptions::builder()
+        .unique(true)
+        .name("emailIdx".to_string())
+        .build();
+    let indexes = [IndexModel::builder()
+        .keys(doc! { "email": 1 })
+        .options(email_idx_options)
+        .build()];
+    let result = TestModel::create_indexes(&client, indexes, None).await;
+    assert!(result.is_ok(), "create_indexes() != is_ok()");
+    // Drop indexes
+    let result = TestModel::drop_indexes(&client, None).await;
+    assert!(result.is_ok(), "create_indexes() != is_ok()");
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
     assert_eq!(result, 10, "count_documents() != 10");
@@ -252,15 +285,15 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     assert!(result.is_some(), "find_many_to_json() != is_some()");
     // find_one_to_doc
     let filter = doc! {"email": "x10@x.xx"};
-    let result = TestModel::find_one_to_doc(filter, &client, None).await?;
+    let result = TestModel::find_one_to_doc(&client, filter, None).await?;
     assert!(result.is_some(), "find_one_to_doc() != is_some()");
     // find_one_to_json
     let filter = doc! {"email": "x5@x.xx"};
-    let result = TestModel::find_one_to_json(filter, &client, None).await?;
+    let result = TestModel::find_one_to_json(&client, filter, None).await?;
     assert!(!result.is_empty(), "find_one_to_json() == is_empty()");
     // find_one_to_instance
     let filter = doc! {"email": "x1@x.xx"};
-    let result = TestModel::find_one_to_instance(filter, &client, None).await?;
+    let result = TestModel::find_one_to_instance(&client, filter, None).await?;
     assert!(result.is_some(), "find_one_to_instance() != is_some()");
     // collection_name
     let result = TestModel::collection_name(&client).await?;
@@ -271,7 +304,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     assert!(!result.coll.is_empty(), "namespace(): coll == is_empty()");
     // find_one_and_delete
     let filter = doc! {"email": "x2@x.xx"};
-    let result = TestModel::find_one_and_delete(filter, &client, None).await?;
+    let result = TestModel::find_one_and_delete(&client, filter, None).await?;
     assert!(result.is_some(), "find_one_and_delete() != is_some()");
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
@@ -281,7 +314,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     assert_eq!(result, 9, "estimated_document_count() != 9");
     // delete_one
     let query = doc! {"email": "x3@x.xx"};
-    let result = TestModel::delete_one(query, &client, None).await?;
+    let result = TestModel::delete_one(&client, query, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(result.deleted_count()? == 1, "delete_one() != 1");
     // count_documents
@@ -292,7 +325,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
     assert_eq!(result, 8, "estimated_document_count() != 8");
     // delete_many
     let query = doc! {"email": {"$in": ["x4@x.xx", "x6@x.xx"]}};
-    let result = TestModel::delete_many(query, &client, None).await?;
+    let result = TestModel::delete_many(&client, query, None).await?;
     assert!(result.is_valid(), "is_valid(): {}", result.err_msg());
     assert!(
         result.deleted_count()? == 2,
