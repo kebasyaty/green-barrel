@@ -100,7 +100,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `create_index()` => \
+                    "Model key: `{key}` ; Method: `drop_index()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -148,7 +148,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `create_index()` => \
+                    "Model key: `{key}` ; Method: `create_indexes()` => \
                     Failed to get data from cache.",
                 ))?
             }
