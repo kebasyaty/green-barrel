@@ -398,8 +398,7 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds the documents in the collection matching filter and
     /// return document list ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find
     ///
     /// # Example:
     ///
@@ -463,8 +462,7 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds the documents in the collection matching filter and
     /// return in JSON format ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find
     ///
     /// # Example:
     ///
@@ -542,8 +540,7 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return in Doc format ( missing fields type ).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
@@ -589,8 +586,7 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return in JSON format.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
@@ -663,8 +659,7 @@ pub trait QCommons: Main + Caching + Converters {
 
     /// Finds a single document in the collection matching filter and
     /// return as model instance.
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one
     ///
     /// # Example:
     ///
@@ -740,8 +735,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// Atomically finds up to one document in the collection matching filter and
     /// deletes it ( missing fields type ).
     /// Returns the deleted document (in Doc format).
-    /// https://docs.rs/mongodb/1.2.5/mongodb/struct.Collection.html#method.find_one_and_delete
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.find_one_and_delete
     ///
     /// # Example:
     ///
@@ -797,8 +791,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the name of the Collection.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.name
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.name
     ///
     /// # Example:
     ///
@@ -835,8 +828,7 @@ pub trait QCommons: Main + Caching + Converters {
     }
 
     /// Gets the namespace of the Collection.
-    /// https://docs.rs/mongodb/1.1.1/mongodb/struct.Collection.html#method.namespace
-    // ---------------------------------------------------------------------------------------------
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.namespace
     ///
     /// # Example:
     ///
