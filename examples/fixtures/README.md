@@ -1,4 +1,4 @@
-###  Additional Validation
+###  Fixtures
 
 **For a general presentation, how to use fixtures**
 **Fixtures:** To populate the database with pre-created data.

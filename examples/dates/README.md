@@ -1,4 +1,4 @@
-###  Additional Validation
+###  Dates
 
 **For general presentation how to use date and time fields**
 
