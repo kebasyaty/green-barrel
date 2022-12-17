@@ -29,7 +29,10 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let options = IndexOptions::builder().unique(true).build();
+    /// let options = IndexOptions::builder()
+    ///     .unique(true)
+    ///     .name("usernameIdx".to_string())
+    ///     .build();
     /// let index = IndexModel::builder()
     ///     .keys(doc! { "username": 1 })
     ///     .options(options)
@@ -74,7 +77,7 @@ pub trait QCommons: Main + Caching + Converters {
     /// # Example:
     ///
     /// ```
-    /// let name = "username";
+    /// let name = "usernameIdx";
     /// let result = ModelName::drop_index(&client, name, None).await;
     /// assert!(result.is_ok());
     /// ```
