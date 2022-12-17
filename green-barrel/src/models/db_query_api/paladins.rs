@@ -139,7 +139,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// let tz = Some(Local::now().format("%z").to_string()); // or None
     ///
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.check(&client, tz, None)?;
+    /// let output_data = model_name.check(&client, &tz, None).await?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -2034,7 +2034,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// let tz = Some(Local::now().format("%z").to_string()); // or None
     ///
     /// let mut model_name = ModelName::new()?;
-    /// let output_data = model_name.save(&client, tz, None, None)?;
+    /// let output_data = model_name.save(&client, &tz, None, None).await?;
     /// if !output_data.is_valid() {
     ///     output_data.print_err();
     /// }
@@ -2147,7 +2147,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     /// ```
     /// let mut user = User{...};
-    /// let output_data = user.delete(& &client, None)?;
+    /// let output_data = user.delete(&client, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
@@ -2297,17 +2297,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// # Example:
     ///
     /// ```
-    /// let user = User {...};
-    /// let field_value = user.password;
-    /// println!("{}", user.create_password_hash(field_value)?);
+    /// let user = User::new().await?;
+    /// let password = user.password.get().unwrap();
+    /// println!("{}", user.create_password_hash(&password)?);
     /// ```
     ///
-    fn create_password_hash(field_value: &str) -> Result<String, Box<dyn Error>> {
+    fn create_password_hash(password: &str) -> Result<String, Box<dyn Error>> {
         const CHARSET: &[u8] =
             b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&+=*!~)(";
         const SALT_LEN: usize = 12;
         let mut rng = rand::thread_rng();
-        let password: &[u8] = field_value.as_bytes();
+        let password: &[u8] = password.as_bytes();
         let salt: String = (0..SALT_LEN)
             .map(|_| {
                 let idx = rng.gen_range(0..CHARSET.len());
@@ -2328,13 +2328,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// ```
     /// let user = User {...};
     /// let password = "12345678";
-    /// assert!(user.create_password_hash(password, & &client, None)?);
+    /// assert!(user.create_password_hash(&client, password, None).await?);
     /// ```
     ///
     async fn verify_password(
         &self,
-        password: &str,
         client: &Client,
+        password: &str,
         options: Option<FindOneOptions>,
     ) -> Result<bool, Box<dyn Error>>
     where
@@ -2417,7 +2417,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     /// // Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (
     /// // Size: 8-256
     /// let new_password = "UUbd+5KXw^756*uj";
-    /// let output_data = user.update_password(old_password, new_password, & &client, None)?;
+    /// let output_data = user.update_password(&client, old_password, new_password, None, None).await?;
     /// if !output_data.is_valid()? {
     ///     println!("{}", output_data.err_msg()?);
     /// }
@@ -2425,9 +2425,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     ///
     async fn update_password(
         &self,
+        client: &Client,
         old_password: &str,
         new_password: &str,
-        client: &Client,
         options_find_old: Option<FindOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
@@ -2438,7 +2438,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut err_msg = String::new();
         // Validation current password.
         if !self
-            .verify_password(old_password, client, options_find_old)
+            .verify_password(client, old_password, options_find_old)
             .await?
         {
             err_msg = String::from("The old password does not match.");
