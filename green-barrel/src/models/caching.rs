@@ -180,21 +180,22 @@ pub trait Caching: Main + Converters {
     }
 
     /// Update data for dynamic fields.
-    /// Hint: For more convenience, use the admin panel - https://github.com/kebasyaty/actix-greenpanel
+    /// A more convenient use of these types of fields is implemented in the Green Panel project:
+    /// https://github.com/kebasyaty/green-panel
     ///
     /// # Example:
     ///
     /// let dyn_data = json!({
     ///     "field_name": "field_name",
-    ///     "value": 5, // restrict with field attributes
+    ///     "value": 5,
     ///     "title": "Title",
     ///     "is_delete": false
     /// });
-    /// assert!(User::update_dyn_field(dyn_data, &client).is_ok());
+    /// assert!(User::update_dyn_field(&client, dyn_data).await.is_ok());
     /// ```
     ///
     // *********************************************************************************************
-    async fn update_dyn_field(dyn_data: Value, client: &Client) -> Result<(), Box<dyn Error>>
+    async fn update_dyn_field(client: &Client, dyn_data: Value) -> Result<(), Box<dyn Error>>
     where
         Self: Serialize + DeserializeOwned + Sized,
     {
