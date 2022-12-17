@@ -143,6 +143,10 @@ See documentation -[fields](https://docs.rs/green-barrel/1.3.10-beta/green_barre
 
 [QCommons](https://docs.rs/green-barrel/1.3.10-beta/green_barrel/models/db_query_api/commons/trait.QCommons.html "QCommons")
 
+- create_index()
+- drop_index()
+- create_indexes()
+- drop_indexes()
 - aggregate()
 - count_documents()
 - delete_many()
