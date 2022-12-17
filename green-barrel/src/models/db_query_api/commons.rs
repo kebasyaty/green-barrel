@@ -9,7 +9,7 @@ use mongodb::{
         DropCollectionOptions, DropIndexOptions, EstimatedDocumentCountOptions,
         FindOneAndDeleteOptions, FindOneOptions, FindOptions,
     },
-    results::CreateIndexResult,
+    results::{CreateIndexResult, CreateIndexesResult},
     Client, IndexModel, Namespace,
 };
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -112,6 +112,54 @@ pub trait QCommons: Main + Caching + Converters {
             .await?)
     }
 
+    /// Creates the given indexes on this collection.
+    /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.create_indexes
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// let options = IndexOptions::builder()
+    ///     .unique(true)
+    ///     .name("usernameIdx".to_string())
+    ///     .build();
+    /// let indexes = IndexModel::builder()
+    ///     .keys(doc! { "username": 1 })
+    ///     .options(options)
+    ///     .build();
+    /// let result = ModelName::create_indexes(&client, indexes, None).await;
+    /// assert!(result.is_ok());
+    /// ```
+    ///
+    async fn create_indexes(
+        client: &Client,
+        indexes: impl IntoIterator<Item = IndexModel>,
+        options: impl Into<Option<CreateIndexOptions>>,
+    ) -> Result<CreateIndexesResult, Box<dyn Error>>
+    where
+        Self: Serialize + DeserializeOwned + Sized,
+    {
+        let (database_name, collection_name) = {
+            // Get a key to access the metadata store.
+            let key = Self::key()?;
+            // Get metadata store.
+            let store = META_STORE.lock().await;
+            // Get metadata of Model.
+            if let Some(meta) = store.get(&key) {
+                (meta.database_name.clone(), meta.collection_name.clone())
+            } else {
+                Err(format!(
+                    "Model key: `{key}` ; Method: `create_index()` => \
+                    Failed to get data from cache.",
+                ))?
+            }
+        };
+        Ok(client
+            .database(&database_name)
+            .collection::<Document>(&collection_name)
+            .create_indexes(indexes, options)
+            .await?)
+    }
+
     /// Runs an aggregation operation.
     /// https://docs.rs/mongodb/latest/mongodb/struct.Collection.html#method.aggregate
     ///
@@ -121,13 +169,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let pipeline = vec![doc! {}];
-    /// let doc_list  = ModelName::aggregate(pipeline, &client, None).await?;
+    /// let doc_list  = ModelName::aggregate(&client, pipeline, None).await?;
     /// println!("{:?}", doc_list);
     /// ```
     ///
     async fn aggregate(
-        pipeline: Vec<Document>,
         client: &Client,
+        pipeline: Vec<Document>,
         options: Option<AggregateOptions>,
     ) -> Result<Vec<Document>, Box<dyn Error>>
     where
@@ -214,15 +262,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_many(query, &client, None).await?;
+    /// let output_data  = ModelName::delete_many(&client, query, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
     async fn delete_many(
-        query: Document,
         client: &Client,
+        query: Document,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
@@ -281,15 +329,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// use mongodb::bson::doc;
     ///
     /// let query = doc!{};
-    /// let output_data  = ModelName::delete_one(query, &client, None).await?;
+    /// let output_data  = ModelName::delete_one(&client, query, None).await?;
     /// if !output_data.is_valid() {
     ///     println!("{}", output_data.err_msg());
     /// }
     /// ```
     ///
     async fn delete_one(
-        query: Document,
         client: &Client,
+        query: Document,
         options: Option<DeleteOptions>,
     ) -> Result<OutputData, Box<dyn Error>>
     where
@@ -349,13 +397,13 @@ pub trait QCommons: Main + Caching + Converters {
     ///
     /// let field_name = "";
     /// let filter = doc!{};
-    /// let output_data  = ModelName::distinct(field_name, &client, Some(filter), None).await?;
+    /// let output_data  = ModelName::distinct(&client, field_name, Some(filter), None).await?;
     /// println!("{:?}", output_data);
     /// ```
     ///
     async fn distinct(
-        field_name: &str,
         client: &Client,
+        field_name: &str,
         filter: Option<Document>,
         options: Option<DistinctOptions>,
     ) -> Result<Vec<Bson>, Box<dyn Error>>
@@ -637,15 +685,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result = ModelName::find_one_to_doc(filter, &client, None).await?;
+    /// let result = ModelName::find_one_to_doc(&client, filter, None).await?;
     /// if let Some(doc) = result {
     ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
     async fn find_one_to_doc(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where
@@ -683,13 +731,13 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let json = ModelName::find_one_to_json(filter, &client, None).await?;
+    /// let json = ModelName::find_one_to_json(&client, filter, None).await?;
     /// println!("{}", json);
     /// ```
     ///
     async fn find_one_to_json(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<String, Box<dyn Error>>
     where
@@ -756,15 +804,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_to_instance(filter, &client, None).await?;
+    /// let result  = ModelName::find_one_to_instance(&client, filter, None).await?;
     /// if let Some(instance) = result {
     ///     println!("{:?}", instance);
     /// }
     /// ```
     ///
     async fn find_one_to_instance(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneOptions>,
     ) -> Result<Option<Self>, Box<dyn Error>>
     where
@@ -833,15 +881,15 @@ pub trait QCommons: Main + Caching + Converters {
     /// ```
     /// use mongodb::bson::doc;
     /// let filter = doc!{"username": "user_1"};
-    /// let result  = ModelName::find_one_and_delete(filter, &client, None).await?;
+    /// let result  = ModelName::find_one_and_delete(&client, filter, None).await?;
     /// if let Some(doc) = result) {
     ///     println!("{:?}", doc);
     /// }
     /// ```
     ///
     async fn find_one_and_delete(
-        filter: Document,
         client: &Client,
+        filter: Document,
         options: Option<FindOneAndDeleteOptions>,
     ) -> Result<Option<Document>, Box<dyn Error>>
     where

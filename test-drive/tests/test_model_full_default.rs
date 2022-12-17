@@ -170,7 +170,7 @@ async fn test_model_full_default() -> Result<(), Box<dyn Error>> {
     // ---------------------------------------------------------------------------------------------
     // aggregate
     let pipeline = vec![doc! {}];
-    let result = TestModel::aggregate(pipeline, &client, None).await;
+    let result = TestModel::aggregate(&client, pipeline, None).await;
     assert!(result.is_err(), "aggregate() != is_err()");
     // count_documents
     let result = TestModel::count_documents(&client, None, None).await?;
