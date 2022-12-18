@@ -32,6 +32,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     if output_data.is_valid() {
         println!("Hash: {:?}", user.hash.get());
+        // or
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {:?}", user.created_at.get());
@@ -41,6 +42,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Updated at: {:?}", output_data.updated_at());
 
         println!("Object Id: {:?}", user.hash.obj_id()?);
+        // or
         println!("Object Id: {:?}", output_data.obj_id()?);
 
         //println!("Json:\n{}", output_data.json()?);
@@ -57,6 +59,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if output_data.is_valid() {
         println!("Hash: {}", user.hash.get().unwrap());
+        // or
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {}", user.created_at.get().unwrap());
@@ -66,6 +69,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Updated at: {}", output_data.updated_at().unwrap());
 
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        // or
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
         println!("Slug: {}", user.slug.get().unwrap());
@@ -87,6 +91,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         if output_data.is_valid() {
             println!("Hash: {}", user.hash.get().unwrap());
+            // or
             println!("Hash: {}", output_data.hash());
 
             println!("Created at: {}", user.created_at.get().unwrap());
@@ -96,6 +101,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             println!("Updated at: {}", output_data.updated_at().unwrap());
 
             println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+            // or
             println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
             println!("Slug: {}", user.slug.get().unwrap())

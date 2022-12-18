@@ -36,14 +36,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     if output_data.is_valid() {
         println!("Hash: {:?}", user.hash.get());
+        // or
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {:?}", user.created_at.get());
         println!("Updated at: {:?}", user.updated_at.get());
+        // or
         println!("Created at: {:?}", output_data.created_at());
         println!("Updated at: {:?}", output_data.updated_at());
 
         println!("Object Id: {:?}", user.hash.obj_id()?);
+        // or
         println!("Object Id: {:?}", output_data.obj_id()?);
 
         //println!("Json:\n{}", output_data.json()?);
@@ -60,14 +63,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if output_data.is_valid() {
         println!("Hash: {}", user.hash.get().unwrap());
+        // or
         println!("Hash: {}", output_data.hash());
 
         println!("Created at: {}", user.created_at.get().unwrap());
         println!("Updated at: {}", user.updated_at.get().unwrap());
+        // or
         println!("Created at: {}", output_data.created_at().unwrap());
         println!("Updated at: {}", output_data.updated_at().unwrap());
 
         println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+        // or
         println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
         println!("Slug: {}", user.slug.get().unwrap());
@@ -89,14 +95,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         if output_data.is_valid() {
             println!("Hash: {}", user.hash.get().unwrap());
+            // or
             println!("Hash: {}", output_data.hash());
 
             println!("Created at: {}", user.created_at.get().unwrap());
             println!("Updated at: {}", user.updated_at.get().unwrap());
+            // or
             println!("Created at: {}", output_data.created_at().unwrap());
             println!("Updated at: {}", output_data.updated_at().unwrap());
 
             println!("Object Id: {:?}", user.hash.obj_id()?.unwrap());
+            // or
             println!("Object Id: {:?}", output_data.obj_id()?.unwrap());
 
             println!("Slug: {}", user.slug.get().unwrap())
