@@ -4,7 +4,7 @@
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate fields of type ForeignKey and ManyToMany, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
+**To simulate fields of type Many-to-One and Many-to-Many, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
 
 - Support for [GreenPanel](https://github.com/kebasyaty/green-panel "Green Panel") is temporarily unavailable.
 
