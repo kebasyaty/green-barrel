@@ -192,12 +192,12 @@ pub trait Validation {
 #[async_trait(?Send)]
 pub trait AdditionalValidation {
     // Default implementation as a stub.
-    async fn add_validation<'a>(
+    async fn add_validation(
         &self,
         _client: &Client,
-    ) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+    ) -> Result<HashMap<String, String>, Box<dyn Error>> {
         // error_map.insert("field_name", "Error message.")
-        let error_map: HashMap<&'a str, &'a str> = HashMap::new();
+        let error_map = HashMap::<String, String>::new();
         Ok(error_map)
     }
 }

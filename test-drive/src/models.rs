@@ -110,8 +110,12 @@ impl Control for User {
     }
 }
 
+#[async_trait(?Send)]
 impl AdditionalValidation for User {
-    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+    fn add_validation<'a>(
+        &self,
+        _client: &Client,
+    ) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
         let mut error_map = HashMap::<&'a str, &'a str>::new();
 
