@@ -1,4 +1,4 @@
-//! Validating Model fields for save and update.
+//! Helper methods to validate data before saving or updating to the database.
 
 use async_trait::async_trait;
 use mongodb::{
@@ -9,7 +9,7 @@ use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-/// Validating Model fields for save and update.
+/// Helper methods to validate data before saving or updating to the database.
 // *************************************************************************************************
 #[async_trait(?Send)]
 pub trait Validation {
