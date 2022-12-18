@@ -145,20 +145,23 @@ pub trait Validation {
 /// # Example:
 ///
 /// ```
+/// use async_trait::async_trait;
+///
 /// #[Model(
 ///     is_use_add_valid = true,
 /// )]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     Add your fields ...
+///     Your fields ...
 /// }
 ///
+/// #[async_trait(?Send)]
 /// impl AdditionalValidation for ModelName {
-///     fn add_validation<'a>(
+///     async fn add_validation(
 ///         &self,
-///     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+///     ) -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {
 ///         // Hint: error_map.insert("field_name", "Error message.")
-///         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
+///         let mut error_map: std::collections::HashMap<String, String> =
 ///             std::collections::HashMap::new();
 ///
 ///         // Get clean data
@@ -169,7 +172,7 @@ pub trait Validation {
 ///
 ///         // Fields validation
 ///         if hash.is_empty() && password != confirm_password {
-///             error_map.insert("confirm_password", "Password confirmation does not match.");
+///             error_map.insert("confirm_password".into(), "Password confirmation does not match.".into());
 ///         }
 ///         if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
 ///             .case_insensitive(true)
@@ -178,9 +181,9 @@ pub trait Validation {
 ///             .is_match(username.as_str())
 ///         {
 ///             error_map.insert(
-///                 "username",
+///                 "username".into(),
 ///                 "Invalid characters present.<br>\
-///                  Valid characters: a-z A-Z 0-9 _ @ + .",
+///                  Valid characters: a-z A-Z 0-9 _ @ + .".into(),
 ///             );
 ///         }
 ///
