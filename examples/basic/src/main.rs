@@ -36,6 +36,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Created at: {:?}", user.created_at.get());
         println!("Updated at: {:?}", user.updated_at.get());
+        // or
         println!("Created at: {:?}", output_data.created_at());
         println!("Updated at: {:?}", output_data.updated_at());
 
@@ -60,6 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         println!("Created at: {}", user.created_at.get().unwrap());
         println!("Updated at: {}", user.updated_at.get().unwrap());
+        // or
         println!("Created at: {}", output_data.created_at().unwrap());
         println!("Updated at: {}", output_data.updated_at().unwrap());
 
@@ -89,6 +91,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
             println!("Created at: {}", user.created_at.get().unwrap());
             println!("Updated at: {}", user.updated_at.get().unwrap());
+            // or
             println!("Created at: {}", output_data.created_at().unwrap());
             println!("Updated at: {}", output_data.updated_at().unwrap());
 
