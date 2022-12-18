@@ -25,7 +25,7 @@ pub struct InputImage {
     pub disabled: bool,     // Blocks access and modification of the element.
     pub readonly: bool,     // Specifies that the field cannot be modified by the user.
     pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: vec![("xs", 150),("sm", 300),("md", 600),("lg", 1200)] Hint: An Intel i7-4770 processor or better is recommended.
-    pub is_quality: bool,               // Create thumbnails - Fast or qualitatively?
+    pub is_quality: bool,               // Create thumbnails - Fast=false or qualitatively=true? Default = true.
     pub is_hide: bool,                  // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
