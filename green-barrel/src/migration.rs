@@ -1,5 +1,7 @@
-//! Migrations are green-barrel’s way of propagating changes you make to
-//! your models (adding a field, deleting a model, etc.) into your database schema.
+//! Migrations are Green Barrel’s way of
+//! propagating changes you make to
+//! your models (adding a field, deleting a model, etc.) into
+//! your database schema.
 
 use chrono::Utc;
 use futures::stream::TryStreamExt;
