@@ -1,3 +1,8 @@
+//! Migrations are Green Barrel’s way of
+//! propagating changes you make to
+//! your models (adding a field, deleting a model, etc.) into
+//! your database schema.
+
 use crate::{models, settings};
 use green_barrel::{Caching, Fixtures, Main, Monitor};
 use mongodb::Client;
