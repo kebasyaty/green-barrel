@@ -1,10 +1,10 @@
 use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
+use mongodb::Client;
 use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
-use mongodb::Client;
 
 use crate::settings::{
     accounts::SERVICE_NAME, APP_NAME, DATABASE_NAME, DB_QUERY_DOCS_LIMIT, UNIQUE_APP_KEY,
@@ -112,7 +112,10 @@ impl Control for User {
 
 #[async_trait(?Send)]
 impl AdditionalValidation for User {
-    async fn add_validation(&self) -> Result<HashMap<String, String>, Box<dyn Error>> {
+    async fn add_validation(
+        &self,
+        _client: &Client,
+    ) -> Result<HashMap<String, String>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
         let mut error_map = HashMap::<String, String>::new();
 
@@ -124,7 +127,10 @@ impl AdditionalValidation for User {
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
-            error_map.insert("confirm_password".into(), "Password confirmation does not match.".into());
+            error_map.insert(
+                "confirm_password".into(),
+                "Password confirmation does not match.".into(),
+            );
         }
         if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
             .case_insensitive(true)
@@ -135,7 +141,8 @@ impl AdditionalValidation for User {
             error_map.insert(
                 "username".into(),
                 "Invalid characters present.<br>\
-                 Valid characters: a-z A-Z 0-9 _ @ + .".into()
+                 Valid characters: a-z A-Z 0-9 _ @ + ."
+                    .into(),
             );
         }
 

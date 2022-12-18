@@ -32,6 +32,7 @@ impl Control for User {
                 }),
                 target_dir: "users/avatars".into(),
                 thumbnails: vec![("xs".into(), 150), ("sm".into(), 300)], // all sizes: "xs","sm","md","lg"
+                is_quality: false, // Create thumbnails - Fast=false or qualitatively=true? Default = true.
                 ..Default::default()
             },
             resume: InputFile {
