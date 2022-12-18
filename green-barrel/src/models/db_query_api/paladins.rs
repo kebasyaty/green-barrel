@@ -227,7 +227,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut final_doc = Document::new();
         // Apply additional validation.
         if is_use_add_valid {
-            let error_map = self.add_validation()?;
+            let error_map = self.add_validation(client).await?;
             if !error_map.is_empty() {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {

@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
-    Collection,
+    Client, Collection,
 };
 use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
@@ -189,9 +189,13 @@ pub trait Validation {
 /// }
 /// ```
 ///
+#[async_trait(?Send)]
 pub trait AdditionalValidation {
     // Default implementation as a stub.
-    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+    async fn add_validation<'a>(
+        &self,
+        _client: &Client,
+    ) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
         // error_map.insert("field_name", "Error message.")
         let error_map: HashMap<&'a str, &'a str> = HashMap::new();
         Ok(error_map)
