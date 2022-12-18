@@ -110,10 +110,14 @@ impl Control for User {
     }
 }
 
+#[async_trait(?Send)]
 impl AdditionalValidation for User {
-    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+    async fn add_validation(
+        &self,
+        _client: &Client,
+    ) -> Result<HashMap<String, String>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
-        let mut error_map = HashMap::<&'a str, &'a str>::new();
+        let mut error_map = HashMap::<String, String>::new();
 
         // Get clean data
         let hash = self.hash.get().unwrap_or_default();
@@ -123,7 +127,10 @@ impl AdditionalValidation for User {
 
         // Fields validation
         if hash.is_empty() && password != confirm_password {
-            error_map.insert("confirm_password", "Password confirmation does not match.");
+            error_map.insert(
+                "confirm_password".into(),
+                "Password confirmation does not match.".into(),
+            );
         }
         if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
             .case_insensitive(true)
@@ -132,9 +139,10 @@ impl AdditionalValidation for User {
             .is_match(username.as_str())
         {
             error_map.insert(
-                "username",
+                "username".into(),
                 "Invalid characters present.<br>\
-                 Valid characters: a-z A-Z 0-9 _ @ + .",
+                 Valid characters: a-z A-Z 0-9 _ @ + ."
+                    .into(),
             );
         }
 

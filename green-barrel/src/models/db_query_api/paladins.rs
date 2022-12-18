@@ -227,13 +227,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         let mut final_doc = Document::new();
         // Apply additional validation.
         if is_use_add_valid {
-            let error_map = self.add_validation()?;
+            let error_map = self.add_validation(client).await?;
             if !error_map.is_empty() {
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
-                    if let Some(final_field) = final_model_json.get_mut(field_name) {
+                    if let Some(final_field) = final_model_json.get_mut(field_name.clone()) {
                         *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, err_msg));
+                            json!(Self::accumula_err(final_field, &err_msg));
                     } else {
                         Err(format!(
                             "Model: `{model_name}` ;  Method: `add_validation()` => \

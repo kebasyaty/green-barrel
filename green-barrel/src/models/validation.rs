@@ -1,15 +1,15 @@
-//! Validating Model fields for save and update.
+//! Helper methods to validate data before saving or updating to the database.
 
 use async_trait::async_trait;
 use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
-    Collection,
+    Client, Collection,
 };
 use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-/// Validating Model fields for save and update.
+/// Helper methods to validate data before saving or updating to the database.
 // *************************************************************************************************
 #[async_trait(?Send)]
 pub trait Validation {
@@ -145,20 +145,23 @@ pub trait Validation {
 /// # Example:
 ///
 /// ```
+/// use async_trait::async_trait;
+///
 /// #[Model(
 ///     is_use_add_valid = true,
 /// )]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     Add your fields ...
+///     Your fields ...
 /// }
 ///
+/// #[async_trait(?Send)]
 /// impl AdditionalValidation for ModelName {
-///     fn add_validation<'a>(
+///     async fn add_validation(
 ///         &self,
-///     ) -> Result<std::collections::HashMap<&'a str, &'a str>, Box<dyn std::error::Error>> {
+///     ) -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {
 ///         // Hint: error_map.insert("field_name", "Error message.")
-///         let mut error_map: std::collections::HashMap<&'a str, &'a str> =
+///         let mut error_map: std::collections::HashMap<String, String> =
 ///             std::collections::HashMap::new();
 ///
 ///         // Get clean data
@@ -169,7 +172,7 @@ pub trait Validation {
 ///
 ///         // Fields validation
 ///         if hash.is_empty() && password != confirm_password {
-///             error_map.insert("confirm_password", "Password confirmation does not match.");
+///             error_map.insert("confirm_password".into(), "Password confirmation does not match.".into());
 ///         }
 ///         if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
 ///             .case_insensitive(true)
@@ -178,9 +181,9 @@ pub trait Validation {
 ///             .is_match(username.as_str())
 ///         {
 ///             error_map.insert(
-///                 "username",
+///                 "username".into(),
 ///                 "Invalid characters present.<br>\
-///                  Valid characters: a-z A-Z 0-9 _ @ + .",
+///                  Valid characters: a-z A-Z 0-9 _ @ + .".into(),
 ///             );
 ///         }
 ///
@@ -189,11 +192,15 @@ pub trait Validation {
 /// }
 /// ```
 ///
+#[async_trait(?Send)]
 pub trait AdditionalValidation {
     // Default implementation as a stub.
-    fn add_validation<'a>(&self) -> Result<HashMap<&'a str, &'a str>, Box<dyn Error>> {
+    async fn add_validation(
+        &self,
+        _client: &Client,
+    ) -> Result<HashMap<String, String>, Box<dyn Error>> {
         // error_map.insert("field_name", "Error message.")
-        let error_map: HashMap<&'a str, &'a str> = HashMap::new();
+        let error_map = HashMap::<String, String>::new();
         Ok(error_map)
     }
 }
