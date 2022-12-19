@@ -583,20 +583,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let val_dt = {
                         let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
                             (
-                                format!("{curr_val}T00:00"),
+                                format!("{curr_val}T00:00+0000"),
                                 "Non-existent date!",
                                 "Incorrect date format.\
                                 <br>Example: 1970-02-28",
                             )
                         } else {
                             (
-                                curr_val.to_string(),
+                                format!("{curr_val}+0000"),
                                 "Non-existent date or time!",
                                 "Incorrect date and time format.\
                                 <br>Example: 1970-01-01T00:00",
                             )
                         };
-                        match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M") {
+                        match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                             Ok(dt) => DateTime::<Utc>::from(dt),
                             Err(error) => {
                                 if error.kind() == ParseErrorKind::OutOfRange {
@@ -620,20 +620,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let min_dt = {
                             let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
                                 (
-                                    format!("{min}T00:00"),
+                                    format!("{min}T00:00+0000"),
                                     "Non-existent date!",
                                     "Param min - Incorrect date format.\
                                     Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    curr_val.to_string(),
+                                    format!("{curr_val}+0000"),
                                     "Non-existent date or time!",
                                     "Param min - Incorrect date and time format.\
                                     Example: 1970-01-01T00:00",
                                 )
                             };
-                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M") {
+                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                                 Ok(dt) => DateTime::<Utc>::from(dt),
                                 Err(error) => {
                                     if error.kind() == ParseErrorKind::OutOfRange {
@@ -669,20 +669,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let max_dt = {
                             let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
                                 (
-                                    format!("{max}T00:00"),
+                                    format!("{max}T00:00+0000"),
                                     "Non-existent date!",
                                     "Param max - Incorrect date format.\
                                     Example: 1970-02-28",
                                 )
                             } else {
                                 (
-                                    curr_val.to_string(),
+                                    format!("{curr_val}+0000"),
                                     "Non-existent date or time!",
                                     "Param max - Incorrect date and time format.\
                                     Example: 1970-01-01T00:00",
                                 )
                             };
-                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M") {
+                            match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
                                 Ok(dt) => DateTime::<Utc>::from(dt),
                                 Err(error) => {
                                     if error.kind() == ParseErrorKind::OutOfRange {
