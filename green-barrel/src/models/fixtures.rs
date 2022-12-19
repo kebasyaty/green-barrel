@@ -116,7 +116,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 }
                 // Get an instance of the model and save the data to the database
                 let mut instance = serde_json::from_value::<Self>(model_json)?;
-                let output_data = instance.save(client, &None, None, None).await?;
+                let output_data = instance.save(client, None, None).await?;
                 if !output_data.is_valid() {
                     Err(format!(
                         "Model: `{model_name}` > Method: `run_fixture()` => {0}",

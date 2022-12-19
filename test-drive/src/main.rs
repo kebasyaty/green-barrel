@@ -1,7 +1,6 @@
 mod models;
 mod settings;
 
-use chrono::Local;
 use green_barrel::*;
 use mongodb::Client;
 use std::error::Error;
@@ -33,10 +32,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::with_uri_str(uri).await?;
     run_migration(&client).await?;
 
-    // Specify the time zone (optional).
-    // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string());
-
     // Convert Model
     // *********************************************************************************************
     // println!("Convert Model:\n");
@@ -66,7 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Check Model.
     // *********************************************************************************************
     println!("\n\nCheck Modell:\n");
-    let output_data = user.check(&client, &tz, None).await?;
+    let output_data = user.check(&client, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -91,7 +86,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create document in database.
     // *********************************************************************************************
     println!("\n\nCreate document in database:\n");
-    let output_data = user.save(&client, &tz, None, None).await?;
+    let output_data = user.save(&client, None, None).await?;
     user = output_data.update()?;
 
     if output_data.is_valid() {
@@ -121,7 +116,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         user.username.set("new_user_1");
 
-        let output_data = user.save(&client, &tz, None, None).await?;
+        let output_data = user.save(&client, None, None).await?;
         user = output_data.update()?;
 
         if output_data.is_valid() {
