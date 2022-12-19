@@ -68,7 +68,24 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if field_type.contains("DateTime") {
+            } else if field_type == "InputDateTime" {
+                let val_bson = doc.get(field_name).unwrap();
+                accumula_doc.insert(
+                    field_name,
+                    if val_bson.element_type() != ElementType::Null {
+                        Bson::String(
+                            val_bson
+                                .as_datetime()
+                                .unwrap()
+                                .to_chrono()
+                                .format("%Y-%m-%dT%H:%M:%S")
+                                .to_string(),
+                        )
+                    } else {
+                        Bson::Null
+                    },
+                );
+            } else if field_type == "HiddenDateTime" {
                 let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
