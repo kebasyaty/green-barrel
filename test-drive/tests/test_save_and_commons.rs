@@ -1,4 +1,3 @@
-use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -178,9 +177,6 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
 
     // =============================================================================================
     type TestModel = models::TestModel;
-    // Specify the time zone (optional).
-    // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string());
 
     for num in 1..=10 {
         let mut test_model = TestModel::new().await?;
@@ -208,7 +204,7 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
         test_model.textarea.set("Some text");
 
-        let output_data = test_model.save(&client, &tz, None, None).await?;
+        let output_data = test_model.save(&client, None, None).await?;
         test_model = output_data.update()?;
 
         assert!(

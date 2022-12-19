@@ -148,7 +148,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     async fn check(
         &mut self,
         client: &Client,
-        tz: &Option<String>,
         params: Option<(bool, bool)>,
     ) -> Result<OutputData2, Box<dyn Error>>
     where
@@ -156,12 +155,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     {
         // Get locks.
         let (is_save, is_slug_update) = params.unwrap_or((false, false));
-        // Get time zone.
-        let tz = if let Some(tz) = tz {
-            tz.clone()
-        } else {
-            "+0000".into()
-        };
         // Get metadata.
         let (
             model_name,
@@ -586,6 +579,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
+                    let tz = "+00:00";
                     // Create a Date object for the current value.
                     let val_dt = {
                         let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
@@ -2044,7 +2038,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
     async fn save(
         &mut self,
         client: &Client,
-        tz: &Option<String>,
         options_insert: Option<InsertOneOptions>,
         options_update: Option<UpdateOptions>,
     ) -> Result<OutputData2, Box<dyn Error>>
@@ -2056,7 +2049,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         //
         for step in 1_u8..=2_u8 {
             // Get checked data from the `check()` method.
-            let mut verified_data = self.check(client, tz, Some((true, step == 2))).await?;
+            let mut verified_data = self.check(client, Some((true, step == 2))).await?;
             let is_no_error: bool = verified_data.is_valid();
             let final_doc = verified_data.get_doc().unwrap();
             let is_update: bool = !self.hash().is_empty();

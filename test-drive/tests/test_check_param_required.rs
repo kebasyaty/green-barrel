@@ -1,4 +1,3 @@
-use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -493,15 +492,12 @@ async fn test_check_param_required() -> Result<(), Box<dyn Error>> {
 
     // =============================================================================================
     type TestModel = models::TestModel;
-    // Specify the time zone (optional).
-    // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string());
     //
     let mut test_model = TestModel::new().await?;
     test_model.password.set("j2972K4R3uQeVFPF");
     test_model.email.set("jane32@enhanceronly.com");
     //
-    let output_data = test_model.check(&client, &tz, None).await?;
+    let output_data = test_model.check(&client, None).await?;
     test_model = output_data.update()?;
     //
     assert!(

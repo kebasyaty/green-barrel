@@ -1,4 +1,3 @@
-use chrono::Local;
 use green_barrel::test_tool::del_test_db;
 use green_barrel::*;
 use metamorphose::Model;
@@ -494,9 +493,6 @@ async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
     // YOUR CODE ...
     // =============================================================================================
     type TestModel = models::TestModel;
-    // Specify the time zone (optional).
-    // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string());
     //
     let mut test_model = TestModel::new().await?;
     test_model.password.set("j2972K4R3uQeVFPF");
@@ -504,7 +500,7 @@ async fn test_save_param_required() -> Result<(), Box<dyn Error>> {
 
     // Create document
     // ---------------------------------------------------------------------------------------------
-    let output_data = test_model.save(&client, &tz, None, None).await?;
+    let output_data = test_model.save(&client, None, None).await?;
     test_model = output_data.update()?;
 
     assert!(
