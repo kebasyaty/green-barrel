@@ -2,7 +2,6 @@ mod migration;
 mod models;
 mod settings;
 
-use chrono::Local;
 use green_barrel::*;
 use mongodb::{bson::doc, Client};
 use serde_json::json;
@@ -14,10 +13,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::with_uri_str(uri).await?;
     //
     migration::run_migration(&client).await?;
-
-    // Specify the time zone (optional).
-    // ( For convert to Utc )
-    let tz = Some(Local::now().format("%z").to_string()); // or None
 
     // Add items of selection for dynamic field
     // A more convenient use of these types of fields is implemented in the Green Panel project:
@@ -54,7 +49,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Save User
     // *********************************************************************************************
-    let output_data = user.save(&client, &tz, None, None).await?;
+    let output_data = user.save(&client, None, None).await?;
     //user = output_data.update()?;
 
     if output_data.is_valid() {
