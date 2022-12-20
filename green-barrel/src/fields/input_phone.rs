@@ -1,4 +1,4 @@
-//! InputPhone - Controller (field type)
+//! InputPhone - A field for entering a phone number.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

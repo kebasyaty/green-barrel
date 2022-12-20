@@ -1,4 +1,4 @@
-//! InputPassword - Controller (field type)
+//! InputPassword - Password field.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

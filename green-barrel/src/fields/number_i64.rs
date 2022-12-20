@@ -1,4 +1,4 @@
-//! NumberI64 - Controller (field type)
+//! NumberI64 - A field for entering integer 64-bit numbers.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

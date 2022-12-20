@@ -1,4 +1,4 @@
-//! InputIPv6 - Controller (field type)
+//! InputIPv6 - Field for entering IPv6 addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
