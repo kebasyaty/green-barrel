@@ -121,7 +121,7 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let user = User::new()?;
+    /// let user = User::new().await?;
     /// user.username.set("user");
     /// user.email.set("user_1_@noreply.net");
     /// user.password.set("12345678");
@@ -158,7 +158,7 @@ pub trait Caching: Main + Converters {
     /// # Example:
     ///
     /// ```
-    /// let json_line = User::json()?;
+    /// let json_line = User::json().await?;
     /// println!("{json_line}");
     /// ```
     ///

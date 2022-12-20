@@ -1,4 +1,5 @@
-//! HiddenDateTime - Controller (field type)
+//! HiddenDateTime - This type was created specifically for 
+//! the created_at and updated_at fields.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

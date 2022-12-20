@@ -4,7 +4,7 @@
 
 #### ORM-like API MongoDB for Rust
 
-**To simulate relationship Many-to-One and Many-to-Many, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
+**For simulate relationship Many-to-One and Many-to-Many, a simplified alternative (Types of selective fields with dynamic addition of elements) is used.**
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
