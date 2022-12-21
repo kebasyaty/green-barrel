@@ -39,7 +39,7 @@ impl Default for InputColor {
             input_type: String::from("color"),
             name: String::new(),
             value: None,
-            default: String::from("#000000"),
+            default: Some("#000000".into()),
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0,
