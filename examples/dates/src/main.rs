@@ -28,8 +28,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         // Get doc
         let filter = doc! {"username": "user_1"};
-        if let Some(user) = models::User::find_one_to_doc(&client, filter, None).await? {
-            println!("{:#?}", user);
+        if let Some(user) = models::User::find_one_to_instance(&client, filter, None).await? {
+            println!("Date: {}", user.date.get().unwrap());
+            println!("Date and Time: {}", user.datetime.get().unwrap());
+            println!("Created at: {}", user.created_at.get().unwrap());
+            println!("Updated at: {}", user.updated_at.get().unwrap());
         } else {
             panic!("Document is missing!");
         }
