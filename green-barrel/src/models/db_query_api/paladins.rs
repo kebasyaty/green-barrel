@@ -579,7 +579,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     //
                     let curr_val = const_value.as_str().unwrap();
-                    let tz = "Z";
+                    let tz = "+00:00";
                     // Create a Date object for the current value.
                     let curr_dt = {
                         let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
