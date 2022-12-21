@@ -1,4 +1,4 @@
-//! InputImage - Controller (field type)
+//! InputImage - Field for uploading images.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

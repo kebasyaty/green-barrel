@@ -1,4 +1,4 @@
-//! InputIP - Controller (field type)
+//! InputIP - Field for entering IP addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

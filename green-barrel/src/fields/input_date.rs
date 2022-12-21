@@ -1,4 +1,4 @@
-//! InputDate - Controller (field type)
+//! InputDate - A field for entering a date in the format **1970-01-01**.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -10,8 +10,8 @@ pub struct InputDate {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Sets the value of an element. Example: 1970-02-28
-    pub default: Option<String>, // Value by default Example: 1970-02-28
+    pub value: Option<String>, // Sets the value of an element. Example: 1970-01-01
+    pub default: Option<String>, // Value by default Example: 1970-01-01
     pub placeholder: String, // Displays prompt text.
     pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
     pub required: bool,  // Mandatory field.

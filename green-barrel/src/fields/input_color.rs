@@ -1,4 +1,5 @@
-//! InputColor - Controller (field type)
+//! InputColor - The default value is #000000 (black).
+//! The value must be in seven-character hexadecimal notation.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -38,7 +39,7 @@ impl Default for InputColor {
             input_type: String::from("color"),
             name: String::new(),
             value: None,
-            default: None,
+            default: Some("#000000".into()),
             placeholder: String::new(),
             pattern: String::new(),
             minlength: 0,

@@ -1,4 +1,4 @@
-//! SelectI32Dyn - Controller (field type)
+//! SelectI32Dyn -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

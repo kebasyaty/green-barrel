@@ -17,8 +17,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // *********************************************************************************************
     let mut user = models::User::new().await?;
     user.username.set("user_1");
-    user.date.set("1970-02-28");
-    user.datetime.set("1970-02-28T00:00");
+    user.select_text_mult
+        .set(vec!["windows", "linux", "mac os"]);
 
     // Save User
     // *********************************************************************************************
@@ -28,16 +28,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if output_data.is_valid() {
         // Get doc
         let filter = doc! {"username": "user_1"};
-        if let Some(user) = models::User::find_one_to_instance(&client, filter, None).await? {
-            println!("Date: {}", user.date.get().unwrap());
-            println!("Date and Time: {}", user.datetime.get().unwrap());
-            println!("Created at: {}", user.created_at.get().unwrap());
-            println!("Updated at: {}", user.updated_at.get().unwrap());
+        if let Some(doc) = models::User::find_one_to_doc(&client, filter, None).await? {
+            println!("{:#?}", doc);
         } else {
             panic!("Document is missing!");
         }
     } else {
-        // Printing errors to the console ( for development ).
+        // Printing errors to the console ( for development )
         output_data.print_err();
     }
 

@@ -1,4 +1,5 @@
-//! CheckBox - Controller (field type)
+//! CheckBox - Boolean field.
+//! The values are defined in the **checked** parameter.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

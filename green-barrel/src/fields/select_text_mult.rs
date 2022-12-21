@@ -1,4 +1,4 @@
-//! SelectTextMult - Controller (field type)
+//! SelectTextMult -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

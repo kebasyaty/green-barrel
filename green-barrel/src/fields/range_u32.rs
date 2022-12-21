@@ -1,4 +1,4 @@
-//! RangeU32 - Controller (field type)
+//! RangeU32 -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

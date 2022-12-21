@@ -1,4 +1,4 @@
-//! InputFile - Controller (field type)
+//! InputFile - File upload field.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-//! RadioU32 - Controller (field type)
+//! RadioU32 -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
