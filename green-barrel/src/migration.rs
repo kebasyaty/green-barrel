@@ -166,7 +166,7 @@ impl<'a> Monitor<'a> {
         Ok(())
     }
 
-    /// Migrating Models -
+    /// Migrating Models
     // *********************************************************************************************
     /// Check the changes in the models and (if necessary) apply to the database.
     pub async fn migrat(&self, client: &Client) -> Result<(), Box<dyn Error>> {
@@ -175,14 +175,19 @@ impl<'a> Monitor<'a> {
         // Get metadata store.
         let store = { META_STORE.lock().await.clone() };
         for model_key in self.model_key_list.iter() {
-            // Get metadata of Model.
-            let meta = if let Some(meta) = store.get(model_key) {
-                meta
-            } else {
-                Err(format!(
-                    "Model key: `{model_key}` ; Method: `migrat()` => \
+            // Get metadata of Model
+            let meta = {
+                // Get metadata store.
+                let store = META_STORE.lock().await;
+                // Get metadata of Model.
+                if let Some(meta) = store.get(model_key) {
+                    meta.clone()
+                } else {
+                    Err(format!(
+                        "Model key: `{model_key}` ; Method: `migrat()` => \
                     Failed to get data from cache.",
-                ))?
+                    ))?
+                }
             };
             if !meta.is_add_doc {
                 continue;

@@ -54,6 +54,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if Self::estimated_document_count(client, None).await? > 0 {
             return Ok(());
         }
+        // Get metadata of Model
         let (model_name, model_json, field_type_map) = {
             // Get a key to access the metadata store.
             let key = Self::key()?;
