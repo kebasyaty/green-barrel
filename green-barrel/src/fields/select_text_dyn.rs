@@ -1,4 +1,4 @@
-//! SelectTextDyn - Controller (field type)
+//! SelectTextDyn -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

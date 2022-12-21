@@ -1,4 +1,4 @@
-//! RadioText - Controller (field type)
+//! RadioText -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-//! TextArea - Controller (field type)
+//! TextArea -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
