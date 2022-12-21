@@ -172,8 +172,6 @@ impl<'a> Monitor<'a> {
     pub async fn migrat(&self, client: &Client) -> Result<(), Box<dyn Error>> {
         // Run refresh models state.
         self.refresh(client).await?;
-        // Get metadata store.
-        let store = { META_STORE.lock().await.clone() };
         for model_key in self.model_key_list.iter() {
             // Get metadata of Model
             let meta = {
