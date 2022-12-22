@@ -205,11 +205,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         };
         // Get model name.
         let model_name = model_name.as_str();
-        // Determines the mode of accessing the database (insert or update).
+        // Determines the mode of accessing the database (create or update).
         let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
         let mut is_err_symptom = false;
+        // To block the reuse of previously saved files and images in the media directory.
+        let regex_is_dated_path = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")?;
         // Access the collection.
         let coll = client
             .database(&database_name)
@@ -1289,11 +1291,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
-                            .unwrap()
-                            .is_match(file_data.path.as_str())
-                    {
+                    if is_slug_update || regex_is_dated_path.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1433,11 +1431,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
-                            .unwrap()
-                            .is_match(image_data.path.as_str())
-                    {
+                    if is_slug_update || regex_is_dated_path.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
