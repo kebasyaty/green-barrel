@@ -66,10 +66,11 @@ impl InputFile {
     pub fn get(&self) -> Option<FileData> {
         self.value.clone()
     }
-    pub fn set(&mut self, file_path: &str, media_root: Option<&str>) {
+    pub fn set(&mut self, file_path: &str, is_delete: bool, media_root: Option<&str>) {
         let file_path = Self::copy_file_to_tmp(file_path, media_root).unwrap();
         self.value = Some(FileData {
             path: file_path,
+            is_delete,
             ..Default::default()
         });
     }
