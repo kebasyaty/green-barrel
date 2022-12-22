@@ -205,11 +205,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         };
         // Get model name.
         let model_name = model_name.as_str();
-        // Determines the mode of accessing the database (insert or update).
+        // Determines the mode of accessing the database (create or update).
         let hash = &self.hash();
         let is_update: bool = !hash.is_empty();
         // User input error detection symptom.
         let mut is_err_symptom = false;
+        // To block the reuse of previously saved files and images in the media directory.
+        let regex_is_dated_path = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")?;
         // Access the collection.
         let coll = client
             .database(&database_name)
@@ -1289,11 +1291,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")
-                            .unwrap()
-                            .is_match(file_data.path.as_str())
-                    {
+                    if is_slug_update || regex_is_dated_path.is_match(file_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1319,7 +1317,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-utc", Utc::now().format("%Y-%m-%d"));
+                        let date_slug = format!("{}-barrel", Utc::now().format("%Y-%m-%d"));
                         let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
@@ -1433,11 +1431,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         }
                     }
                     //
-                    if is_slug_update
-                        || Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-utc(?:/|\\))")
-                            .unwrap()
-                            .is_match(image_data.path.as_str())
-                    {
+                    if is_slug_update || regex_is_dated_path.is_match(image_data.path.as_str()) {
                         *final_field.get_mut("value").unwrap() = curr_file_info;
                         continue;
                     }
@@ -1471,7 +1465,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-utc", Utc::now().format("%Y-%m-%d"));
+                        let date_slug = format!("{}-barrel", Utc::now().format("%Y-%m-%d"));
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
                         loop {

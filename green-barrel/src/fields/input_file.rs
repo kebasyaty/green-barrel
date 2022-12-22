@@ -1,6 +1,7 @@
 //! InputFile - File upload field.
 
 use core::fmt::Debug;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, fs, path::Path};
 use uuid::Uuid;
@@ -66,10 +67,20 @@ impl InputFile {
     pub fn get(&self) -> Option<FileData> {
         self.value.clone()
     }
-    pub fn set(&mut self, file_path: &str, media_root: Option<&str>) {
+    pub fn set(&mut self, file_path: &str, is_delete: bool, media_root: Option<&str>) {
+        if Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
+            .unwrap()
+            .is_match(file_path)
+        {
+            Err(format!(
+                "This file is not allowed to be reused - {file_path}"
+            ))
+            .unwrap()
+        }
         let file_path = Self::copy_file_to_tmp(file_path, media_root).unwrap();
         self.value = Some(FileData {
             path: file_path,
+            is_delete,
             ..Default::default()
         });
     }
