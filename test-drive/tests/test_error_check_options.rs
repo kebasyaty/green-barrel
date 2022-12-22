@@ -199,8 +199,8 @@ async fn test_error_check_options() -> Result<(), Box<dyn Error>> {
     test_model.checkbox.set(true);
     test_model.date.set("1900-01-31");
     test_model.datetime.set("1900-01-31T00:00");
-    test_model.file.set("./some_files/resume.pdf", None);
-    test_model.image.set("./some_files/avatar.png", None);
+    test_model.file.set("./some_files/resume.pdf", false, None);
+    test_model.image.set("./some_files/avatar.png", false, None);
     test_model.number_i32.set(0);
     test_model.radio_i32.set(0);
     test_model.range_i32.set(0);
