@@ -81,7 +81,11 @@ impl InputImage {
             ))
             .unwrap()
         }
-        let image_path = Self::copy_file_to_tmp(image_path, media_root).unwrap();
+        let image_path = if !image_path.is_empty() {
+            Self::copy_file_to_tmp(image_path, media_root).unwrap()
+        } else {
+            String::new()
+        };
         self.value = Some(ImageData {
             path: image_path,
             is_delete,

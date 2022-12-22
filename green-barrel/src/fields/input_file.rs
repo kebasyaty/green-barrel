@@ -77,7 +77,11 @@ impl InputFile {
             ))
             .unwrap()
         }
-        let file_path = Self::copy_file_to_tmp(file_path, media_root).unwrap();
+        let file_path = if !file_path.is_empty() {
+            Self::copy_file_to_tmp(file_path, media_root).unwrap()
+        } else {
+            String::new()
+        };
         self.value = Some(FileData {
             path: file_path,
             is_delete,
