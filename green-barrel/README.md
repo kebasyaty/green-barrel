@@ -15,8 +15,6 @@
 
 #### [MongoDB](https://www.mongodb.com/ "MongoDB") tested on version 4.4
 
-#### [MongoDB Rust Driver](https://crates.io/crates/mongodb/ "MongoDB Rust Driver") updated as a dependency to version 2.
-
 - Support for [GreenPanel](https://github.com/kebasyaty/green-panel "Green Panel") is temporarily unavailable.
 
 ## Requirements
