@@ -1,5 +1,5 @@
 //! # Macro
-//! ### For converting structure to green-barrel model.
+//! **For converting structure to green-barrel model.**
 //!
 //! ## Usage:
 //!
