@@ -1,5 +1,5 @@
 //! # Green Barrel
-//! ### ORM-like API MongoDB for Rust.
+//! **ORM-like API MongoDB for Rust.**
 //!
 //! ## Usage:
 //!
