@@ -1,4 +1,4 @@
-//! InputEmail - A field for entering Email addresses.
+//! A field for entering Email addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

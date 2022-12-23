@@ -1,4 +1,4 @@
-//! NumberU32 - A field for entering unsigned 32-bit integers.
+//! A field for entering unsigned 32-bit integers.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

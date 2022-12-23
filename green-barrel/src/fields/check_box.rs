@@ -1,4 +1,4 @@
-//! CheckBox - Boolean field.
+//! Boolean field.
 //! The values are defined in the **checked** parameter.
 
 use core::fmt::Debug;

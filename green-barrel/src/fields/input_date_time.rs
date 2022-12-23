@@ -1,4 +1,4 @@
-//! InputDateTime - A field for entering a date и времени in the format **1970-01-01T00:00**.
+//! A field for entering a date и времени in the format **1970-01-01T00:00**.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

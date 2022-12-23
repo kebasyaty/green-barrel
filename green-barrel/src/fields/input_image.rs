@@ -1,4 +1,4 @@
-//! InputImage - Field for uploading images.
+//! Field for uploading images.
 
 use core::fmt::Debug;
 use regex::Regex;

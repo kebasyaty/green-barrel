@@ -1,4 +1,4 @@
-//! InputText - A field for entering a text string.
+//! A field for entering a text string.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-//! InputUrl - Field for entering Url addresses.
+//! Field for entering **Url** addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

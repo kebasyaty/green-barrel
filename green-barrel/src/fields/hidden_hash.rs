@@ -1,4 +1,4 @@
-//! HiddenHash - This type was created specifically for the hash field.
+//! This type was created specifically for the hash field.
 
 use core::fmt::Debug;
 use mongodb::bson::oid::ObjectId;

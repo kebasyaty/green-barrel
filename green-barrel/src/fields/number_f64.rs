@@ -1,4 +1,4 @@
-//! NumberF64 - Field for entering float numbers.
+//! Field for entering float numbers.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
