@@ -1,4 +1,4 @@
-//! HiddenDateTime - This type was created specifically for
+//! This type was created specifically for
 //! the created_at and updated_at fields.
 
 use core::fmt::Debug;

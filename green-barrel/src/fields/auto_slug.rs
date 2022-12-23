@@ -1,4 +1,4 @@
-//! AutoSlug - Automatically creates a label from letters, numbers, and hyphens.
+//! Automatically creates a label from letters, numbers, and hyphens.
 //! Convenient to use for Url addresses.
 
 use core::fmt::Debug;

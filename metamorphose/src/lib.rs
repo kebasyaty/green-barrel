@@ -1,5 +1,24 @@
 //! # Macro
-//! For converting structure to green-barrel model.
+//! ### For converting structure to green-barrel model.
+//!
+//! ## Usage:
+//!
+//! [Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
+//!
+//! ## Model parameters
+//!
+//! **_( all parameters are optional )_**
+//!
+//! | Parameter:          | Default:     | Description:                                                                                         |
+//! | :------------------ | :----------- | :--------------------------------------------------------------------------------------------------- |
+//! | db_query_docs_limit | 1000         | limiting query results.                                                                              |
+//! | is_add_doc          | true         | Create documents in the database. **false** - Alternatively, use it to validate data from web forms. |
+//! | is_up_doc           | true         | Update documents in the database.                                                                    |
+//! | is_del_doc          | true         | Delete documents from the database.                                                                  |
+//! | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                  |
+//! | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
+//! | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
+//!
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -14,46 +33,7 @@ use syn::{
 /// Macro for converting Structure to green-barrel Model.
 /// The model can access the database.
 /// The model can create, update, and delete documents in collections.
-///
-/// # Example:
-///
-/// ```
-/// use mango_orm::*;
-/// use metamorphose::Model;
-/// use serde::{Deserialize, Serialize};
-///
-/// // Get settings of service/sub-application.
-/// use crate::settings::{
-///     default::{DATABASE_NAME, DB_CLIENT_NAME, DB_QUERY_DOCS_LIMIT, SERVICE_NAME},
-///     PROJECT_NAME, UNIQUE_PROJECT_KEY,
-/// };
-///
-/// #[Model(
-///     is_del_docs = false,
-///     ignore_fields = "confirm_password"
-/// )]
-/// #[derive(Serialize, Deserialize, Default, Debug)]
-/// pub struct User {
-///    pub username: InputText,
-///    pub slug: InputSlug,
-///    pub first_name: InputText,
-///    pub last_name: InputText,
-///    pub email: InputEmail,
-///    pub phone: InputPhone,
-///    pub password: InputPassword,
-///    pub confirm_password: InputPassword,
-///    pub is_active: CheckBox,
-/// }
-///
-/// impl Control for User {
-///     fn custom_default() -> Self {
-///         Self {
-///             ..Default::default()
-///         }
-///     }
-/// }
-/// ```
-///
+
 #[allow(non_snake_case)]
 #[proc_macro_attribute]
 pub fn Model(args: TokenStream, input: TokenStream) -> TokenStream {

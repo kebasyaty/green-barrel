@@ -59,6 +59,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Delete file and image
+    // Hint: If default files and images are defined, they will be used after deletion.
     // *********************************************************************************************
     println!("\n\nDelete file and image:\n");
     user.avatar.set("", true, None);

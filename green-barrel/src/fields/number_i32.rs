@@ -1,4 +1,4 @@
-//! NumberI32 - A field for entering integer 32-bit numbers.
+//! A field for entering integer 32-bit numbers.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

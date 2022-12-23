@@ -1,4 +1,4 @@
-//! SelectU32Mult -
+//! -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

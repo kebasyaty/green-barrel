@@ -1,4 +1,4 @@
-//! SelectF64Mult -
+//! -
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

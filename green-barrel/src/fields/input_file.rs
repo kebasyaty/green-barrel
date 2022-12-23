@@ -1,4 +1,4 @@
-//! InputFile - File upload field.
+//! File upload field.
 
 use core::fmt::Debug;
 use regex::Regex;

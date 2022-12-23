@@ -1,4 +1,4 @@
-//! InputIPv4 - Field for entering IPv4 addresses.
+//! Field for entering **IPv4** addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
