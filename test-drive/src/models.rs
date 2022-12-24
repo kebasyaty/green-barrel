@@ -176,18 +176,3 @@ impl Hooks for User {
         println!("!!!Post Delet!!!");
     }
 }
-
-#[Model()]
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct City {
-    pub city_name: InputText,
-    pub descriptione: TextArea,
-}
-
-impl Control for City {
-    fn custom_default() -> Self {
-        Self {
-            ..Default::default()
-        }
-    }
-}

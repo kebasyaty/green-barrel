@@ -9,19 +9,15 @@ use std::error::Error;
 async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
     models::User::caching(client).await?;
-    models::City::caching(client).await?;
 
     // Monitor initialization.
     let monitor = Monitor {
         app_name: settings::APP_NAME,
         unique_app_key: settings::UNIQUE_APP_KEY,
         // For register models.
-        model_key_list: vec![models::User::key()?, models::City::key()?],
+        model_key_list: vec![models::User::key()?],
     };
     monitor.migrat(client).await?;
-
-    // Run fixtures
-    models::City::run_fixture(client, "cities").await?;
 
     Ok(())
 }
