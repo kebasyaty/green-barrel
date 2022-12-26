@@ -96,7 +96,7 @@ $ sudo apt update
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 
-## Road map
+## Links to Documentation
 
 #### Field types
 
