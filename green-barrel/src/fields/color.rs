@@ -6,7 +6,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct InputColor {
+pub struct Color {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -31,12 +31,12 @@ pub struct InputColor {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for InputColor {
+impl Default for Color {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("InputColor"),
+            field_type: String::from("Color"),
             input_type: String::from("text"), // type=color - only seven-character hexadecimal notation. Example: #000000 (black).
             name: String::new(),
             value: None,
@@ -60,7 +60,7 @@ impl Default for InputColor {
     }
 }
 
-impl InputColor {
+impl Color {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }

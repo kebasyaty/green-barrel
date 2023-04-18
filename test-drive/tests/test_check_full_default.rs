@@ -89,7 +89,7 @@ mod models {
         //
         pub text: InputText,
         pub slug: Slug,
-        pub color: InputColor,
+        pub color: Color,
         pub email: InputEmail,
         pub password: InputPassword,
         pub phone: InputPhone,

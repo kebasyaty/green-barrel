@@ -50,7 +50,7 @@ pub trait Validation {
                     Err("Invalid email address.")?
                 }
             }
-            "InputColor" => {
+            "Color" => {
                 if !RegexBuilder::new(
                     r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
                 )

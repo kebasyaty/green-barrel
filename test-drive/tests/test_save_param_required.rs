@@ -89,7 +89,7 @@ mod models {
         //
         pub text: InputText,
         pub slug: Slug,
-        pub color: InputColor,
+        pub color: Color,
         pub email: InputEmail,
         pub password: InputPassword,
         pub phone: InputPhone,
@@ -390,7 +390,7 @@ mod models {
                     slug_sources: vec!["email".into(), "phone".into()],
                     ..Default::default()
                 },
-                color: InputColor {
+                color: Color {
                     required: true,
                     default: Some("#ffffff".to_string()),
                     ..Default::default()

@@ -7,7 +7,7 @@ pub mod hash;
 pub mod hidden_date_time;
 // text
 pub mod auto_slug;
-pub mod input_color;
+pub mod color;
 pub mod input_date;
 pub mod input_date_time;
 pub mod input_image;
@@ -59,8 +59,8 @@ pub mod select_u32_mult;
 pub mod select_u32_mult_dyn;
 
 pub use {
-    auto_slug::Slug, check_box::CheckBox, hash::Hash, hidden_date_time::HiddenDateTime,
-    input_color::InputColor, input_date::InputDate, input_date_time::InputDateTime,
+    auto_slug::Slug, check_box::CheckBox, color::Color, hash::Hash,
+    hidden_date_time::HiddenDateTime, input_date::InputDate, input_date_time::InputDateTime,
     input_email::InputEmail, input_file::InputFile, input_image::InputImage, input_ip::InputIP,
     input_ipv4::InputIPv4, input_ipv6::InputIPv6, input_password::InputPassword,
     input_phone::InputPhone, input_text::InputText, input_url::InputUrl, number_f64::NumberF64,
