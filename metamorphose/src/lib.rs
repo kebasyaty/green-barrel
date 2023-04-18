@@ -196,7 +196,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
-                {pub hash: HiddenHash}
+                {pub hash: Hash}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
@@ -676,7 +676,7 @@ fn get_field_info<'a>(
         "SelectF64Dyn" => ("f64", "select"),
         "SelectF64Mult" => ("Vec<f64>", "select"),
         "SelectF64MultDyn" => ("Vec<f64>", "select"),
-        "HiddenHash" => ("String", "text"),
+        "Hash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
         _ => Err(format!(
             "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \
