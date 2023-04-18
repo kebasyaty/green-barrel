@@ -88,7 +88,7 @@ mod models {
         pub select_f64_mult_dyn: SelectF64MultDyn,
         //
         pub text: InputText,
-        pub slug: AutoSlug,
+        pub slug: Slug,
         pub color: InputColor,
         pub email: InputEmail,
         pub password: InputPassword,
@@ -386,7 +386,7 @@ mod models {
                     default: Some("Some text".to_string()),
                     ..Default::default()
                 },
-                slug: AutoSlug {
+                slug: Slug {
                     slug_sources: vec!["email".into(), "phone".into()],
                     ..Default::default()
                 },

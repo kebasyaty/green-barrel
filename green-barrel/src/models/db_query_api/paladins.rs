@@ -312,7 +312,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 tmp
             };
-            let const_group = final_field["group"].as_i64().unwrap() as u8;
+            let const_group = final_field["group"].as_i64().unwrap();
             //
             let is_required = if let Some(required) = final_field.get("required") {
                 required.as_bool().unwrap()
@@ -489,7 +489,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of Slug type fields.
                 // *********************************************************************************
-                // "AutoSlug"
+                // "Slug"
                 2 => {
                     let mut slug = String::new();
                     let slug_sources = final_field

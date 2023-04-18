@@ -87,7 +87,7 @@ mod models {
         pub select_f64_mult_dyn: SelectF64MultDyn,
         //
         pub text: InputText,
-        pub slug: AutoSlug,
+        pub slug: Slug,
         pub color: InputColor,
         pub email: InputEmail,
         pub password: InputPassword,

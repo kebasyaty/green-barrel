@@ -59,7 +59,7 @@ pub mod select_u32_mult;
 pub mod select_u32_mult_dyn;
 
 pub use {
-    auto_slug::AutoSlug, check_box::CheckBox, hidden_date_time::HiddenDateTime,
+    auto_slug::Slug, check_box::CheckBox, hidden_date_time::HiddenDateTime,
     hidden_hash::HiddenHash, input_color::InputColor, input_date::InputDate,
     input_date_time::InputDateTime, input_email::InputEmail, input_file::InputFile,
     input_image::InputImage, input_ip::InputIP, input_ipv4::InputIPv4, input_ipv6::InputIPv6,

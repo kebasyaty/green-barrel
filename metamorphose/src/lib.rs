@@ -650,7 +650,7 @@ fn get_field_info<'a>(
         "RangeF64" => ("f64", "range"),
         "InputPhone" => ("String", "tel"),
         "InputText" => ("String", "text"),
-        "AutoSlug" => ("String", "text"),
+        "Slug" => ("String", "text"),
         "InputUrl" => ("String", "url"),
         "InputIP" => ("String", "text"),
         "InputIPv4" => ("String", "text"),

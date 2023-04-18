@@ -19,7 +19,7 @@ use crate::settings::{
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
     pub username: InputText,
-    pub slug: AutoSlug,
+    pub slug: Slug,
     pub first_name: InputText,
     pub last_name: InputText,
     pub email: InputEmail,
@@ -42,7 +42,7 @@ impl Control for User {
                 hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
                 ..Default::default()
             },
-            slug: AutoSlug {
+            slug: Slug {
                 label: "Slug".into(),
                 hint: "To create a human readable url".into(),
                 slug_sources: vec!["hash".into(), "username".into()],
