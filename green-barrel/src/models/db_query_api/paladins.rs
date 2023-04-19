@@ -556,7 +556,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of date type fields.
                 // *********************************************************************************
-                // "InputDate" | "DateTime" | "HiddenDateTime"
+                // "Date" | "DateTime" | "HiddenDateTime"
                 3 => {
                     // Don't check the `created_at`and updated_at fields.
                     if field_name == "created_at" || field_name == "updated_at" {
@@ -584,7 +584,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let tz = "+00:00";
                     // Create a Date object for the current value.
                     let curr_dt = {
-                        let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
+                        let (val, err_msg, err_msg_2) = if field_type == "Date" {
                             (
                                 format!("{curr_val}T00:00{tz}"),
                                 "Non-existent date!",
@@ -621,7 +621,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !min.is_empty() {
                         // Get the minimum date object.
                         let min_dt = {
-                            let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
+                            let (val, err_msg, err_msg_2) = if field_type == "Date" {
                                 (
                                     format!("{min}T00:00{tz}"),
                                     "Non-existent date!",
@@ -670,7 +670,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if !max.is_empty() {
                         // Get the maximum date object.
                         let max_dt = {
-                            let (val, err_msg, err_msg_2) = if field_type == "InputDate" {
+                            let (val, err_msg, err_msg_2) = if field_type == "Date" {
                                 (
                                     format!("{max}T00:00{tz}"),
                                     "Non-existent date!",

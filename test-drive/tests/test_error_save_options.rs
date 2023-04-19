@@ -37,7 +37,7 @@ mod models {
     pub struct TestModel {
         pub checkbox: CheckBox,
         //
-        pub date: InputDate,
+        pub date: Date,
         pub datetime: DateTime,
         //
         pub file: InputFile,

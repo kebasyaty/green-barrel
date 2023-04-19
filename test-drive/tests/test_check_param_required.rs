@@ -38,7 +38,7 @@ mod models {
     pub struct TestModel {
         pub checkbox: CheckBox,
         //
-        pub date: InputDate,
+        pub date: Date,
         pub datetime: DateTime,
         //
         pub file: InputFile,
@@ -107,7 +107,7 @@ mod models {
                     required: true,
                     ..Default::default()
                 },
-                date: InputDate {
+                date: Date {
                     required: true,
                     default: Some("1970-02-28".to_string()),
                     min: "1970-01-01".into(),

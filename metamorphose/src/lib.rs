@@ -629,7 +629,7 @@ fn get_field_info<'a>(
     let info: (&'a str, &'a str) = match field_type {
         "CheckBox" => ("bool", "checkbox"),
         "Color" => ("String", "color"),
-        "InputDate" => ("String", "date"),
+        "Date" => ("String", "date"),
         "DateTime" => ("String", "datetime"),
         "InputEmail" => ("String", "email"),
         "InputFile" => ("String", "file"),
