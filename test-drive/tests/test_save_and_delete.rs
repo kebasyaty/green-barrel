@@ -41,7 +41,7 @@ mod models {
         pub date: Date,
         pub datetime: DateTime,
         //
-        pub file: InputFile,
+        pub file: File,
         pub image: InputImage,
         //
         pub number_i32: NumberI32,
@@ -121,7 +121,7 @@ mod models {
                     max: "1970-03-01T00:00".into(),
                     ..Default::default()
                 },
-                file: InputFile {
+                file: File {
                     required: true,
                     default: Some(FileData {
                         path: "./resources/media/default/no_file.odt".into(),

@@ -41,7 +41,7 @@ mod models {
         pub date: Date,
         pub datetime: DateTime,
         //
-        pub file: InputFile,
+        pub file: File,
         pub image: InputImage,
         //
         pub number_i32: NumberI32,

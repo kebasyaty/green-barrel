@@ -1223,7 +1223,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
-                // "InputFile"
+                // "File"
                 8 => {
                     //
                     if !is_save {
@@ -1937,7 +1937,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 let field = final_model_json.get(field_name).unwrap();
                 let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
-                if field_type == "InputFile" {
+                if field_type == "File" {
                     let value = field.get("value").unwrap();
                     let default = field.get("default").unwrap();
                     if !value.is_null() {
@@ -2204,7 +2204,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let field = model_json.get(field_name).unwrap();
                         let field_type = field.get("field_type").unwrap().as_str().unwrap();
                         //
-                        if field_type == "InputFile" {
+                        if field_type == "File" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;

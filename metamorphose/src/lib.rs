@@ -632,7 +632,7 @@ fn get_field_info<'a>(
         "Date" => ("String", "date"),
         "DateTime" => ("String", "datetime"),
         "Email" => ("String", "email"),
-        "InputFile" => ("String", "file"),
+        "File" => ("String", "file"),
         "InputImage" => ("String", "file"),
         "NumberI32" => ("i32", "number"),
         "NumberU32" => ("u32", "number"),
