@@ -39,7 +39,7 @@ mod models {
         pub checkbox: CheckBox,
         //
         pub date: InputDate,
-        pub datetime: InputDateTime,
+        pub datetime: DateTime,
         //
         pub file: InputFile,
         pub image: InputImage,
@@ -114,7 +114,7 @@ mod models {
                     max: "1970-03-01".into(),
                     ..Default::default()
                 },
-                datetime: InputDateTime {
+                datetime: DateTime {
                     required: true,
                     default: Some("1970-02-28T00:00".to_string()),
                     min: "1970-01-01T00:00".into(),

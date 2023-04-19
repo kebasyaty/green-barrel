@@ -630,7 +630,7 @@ fn get_field_info<'a>(
         "CheckBox" => ("bool", "checkbox"),
         "Color" => ("String", "color"),
         "InputDate" => ("String", "date"),
-        "InputDateTime" => ("String", "datetime"),
+        "DateTime" => ("String", "datetime"),
         "InputEmail" => ("String", "email"),
         "InputFile" => ("String", "file"),
         "InputImage" => ("String", "file"),

@@ -39,7 +39,7 @@ mod models {
         pub checkbox: CheckBox,
         //
         pub date: InputDate,
-        pub datetime: InputDateTime,
+        pub datetime: DateTime,
         //
         pub file: InputFile,
         pub image: InputImage,

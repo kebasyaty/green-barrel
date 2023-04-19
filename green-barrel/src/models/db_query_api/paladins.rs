@@ -556,7 +556,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of date type fields.
                 // *********************************************************************************
-                // "InputDate" | "InputDateTime" | "HiddenDateTime"
+                // "InputDate" | "DateTime" | "HiddenDateTime"
                 3 => {
                     // Don't check the `created_at`and updated_at fields.
                     if field_name == "created_at" || field_name == "updated_at" {
