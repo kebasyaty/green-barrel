@@ -45,7 +45,7 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
-            "InputEmail" => {
+            "Email" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?
                 }

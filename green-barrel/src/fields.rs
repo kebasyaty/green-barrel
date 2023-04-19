@@ -20,7 +20,7 @@ pub mod input_text;
 pub mod input_url;
 pub mod text_area;
 // file
-pub mod input_email;
+pub mod email;
 pub mod input_file;
 // number
 pub mod number_f64;
@@ -60,7 +60,7 @@ pub mod select_u32_mult_dyn;
 
 pub use {
     auto_slug::Slug, check_box::CheckBox, color::Color, date::Date, date_time::DateTime,
-    hash::Hash, hidden_date_time::HiddenDateTime, input_email::InputEmail, input_file::InputFile,
+    email::Email, hash::Hash, hidden_date_time::HiddenDateTime, input_file::InputFile,
     input_image::InputImage, input_ip::InputIP, input_ipv4::InputIPv4, input_ipv6::InputIPv6,
     input_password::InputPassword, input_phone::InputPhone, input_text::InputText,
     input_url::InputUrl, number_f64::NumberF64, number_i32::NumberI32, number_i64::NumberI64,

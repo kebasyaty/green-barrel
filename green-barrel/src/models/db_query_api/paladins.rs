@@ -327,7 +327,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of Text type fields.
                 // *********************************************************************************
                 /*
-                "RadioText" | "Color" | "InputEmail" | "InputPassword" | "InputPhone"
+                "RadioText" | "Color" | "Email" | "InputPassword" | "InputPhone"
                 | "InputText" | "Hash" | "InputUrl" | "InputIP" | "InputIPv4"
                 | "InputIPv6" | "TextArea"
                 */

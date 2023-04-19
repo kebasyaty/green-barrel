@@ -90,7 +90,7 @@ mod models {
         pub text: InputText,
         pub slug: Slug,
         pub color: Color,
-        pub email: InputEmail,
+        pub email: Email,
         pub password: InputPassword,
         pub phone: InputPhone,
         pub url: InputUrl,
@@ -395,7 +395,7 @@ mod models {
                     default: Some("#ffffff".to_string()),
                     ..Default::default()
                 },
-                email: InputEmail {
+                email: Email {
                     required: true,
                     ..Default::default()
                 },

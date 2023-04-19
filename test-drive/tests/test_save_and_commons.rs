@@ -90,7 +90,7 @@ mod models {
         pub text: InputText,
         pub slug: Slug,
         pub color: Color,
-        pub email: InputEmail,
+        pub email: Email,
         pub password: InputPassword,
         pub phone: InputPhone,
         pub url: InputUrl,
@@ -103,7 +103,7 @@ mod models {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
-                email: InputEmail {
+                email: Email {
                     unique: true,
                     ..Default::default()
                 },

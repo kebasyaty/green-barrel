@@ -22,7 +22,7 @@ pub struct User {
     pub slug: Slug,
     pub first_name: InputText,
     pub last_name: InputText,
-    pub email: InputEmail,
+    pub email: Email,
     pub phone: InputPhone,
     pub password: InputPassword,
     pub confirm_password: InputPassword,
@@ -60,7 +60,7 @@ impl Control for User {
                 maxlength: 150,
                 ..Default::default()
             },
-            email: InputEmail {
+            email: Email {
                 label: "E-mail".into(),
                 placeholder: "Please enter your email".into(),
                 required: true,
