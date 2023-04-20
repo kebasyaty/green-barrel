@@ -55,7 +55,7 @@ mod models {
         pub radio_i64: RadioI64,
         pub range_i64: RangeI64,
         //
-        pub number_f64: NumberF64,
+        pub number_f64: F64,
         pub radio_f64: RadioF64,
         pub range_f64: RangeF64,
         //

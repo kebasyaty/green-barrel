@@ -56,7 +56,7 @@ mod models {
         pub radio_i64: RadioI64,
         pub range_i64: RangeI64,
         //
-        pub number_f64: NumberF64,
+        pub number_f64: F64,
         pub radio_f64: RadioF64,
         pub range_f64: RangeF64,
         //
@@ -217,7 +217,7 @@ mod models {
                     max: 1,
                     ..Default::default()
                 },
-                number_f64: NumberF64 {
+                number_f64: F64 {
                     required: true,
                     default: Some(0.0),
                     min: 0.0,

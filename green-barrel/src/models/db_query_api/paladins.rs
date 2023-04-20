@@ -1736,7 +1736,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "RadioF64" | "NumberF64" | "RangeF64"
+                // "RadioF64" | "F64" | "RangeF64"
                 12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
