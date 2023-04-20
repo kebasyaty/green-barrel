@@ -1363,7 +1363,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 //
-                // "InputImage"
+                // "Image"
                 9 => {
                     //
                     if !is_save {
@@ -1961,7 +1961,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap() = json!(null);
                         }
                     }
-                } else if field_type == "InputImage" {
+                } else if field_type == "Image" {
                     let value = field.get("value").unwrap();
                     let default = field.get("default").unwrap();
                     if !value.is_null() {
@@ -2228,7 +2228,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     Method: `delete()` => Document (info file) not found."
                                 ))?
                             }
-                        } else if field_type == "InputImage" {
+                        } else if field_type == "Image" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;

@@ -42,7 +42,7 @@ mod models {
         pub datetime: DateTime,
         //
         pub file: File,
-        pub image: InputImage,
+        pub image: Image,
         //
         pub number_i32: NumberI32,
         pub radio_i32: RadioI32,

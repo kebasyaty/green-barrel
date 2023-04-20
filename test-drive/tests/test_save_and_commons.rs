@@ -42,7 +42,7 @@ mod models {
         pub datetime: DateTime,
         //
         pub file: File,
-        pub image: InputImage,
+        pub image: Image,
         //
         pub number_i32: NumberI32,
         pub radio_i32: RadioI32,
@@ -107,7 +107,7 @@ mod models {
                     unique: true,
                     ..Default::default()
                 },
-                image: InputImage {
+                image: Image {
                     required: true,
                     default: Some(ImageData {
                         path: "./resources/media/default/no_image.png".into(),
