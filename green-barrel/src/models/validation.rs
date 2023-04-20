@@ -62,7 +62,7 @@ pub trait Validation {
                     Err("Invalid Color code.")?
                 }
             }
-            "InputUrl" => {
+            "Url" => {
                 if !validator::validate_url(value) {
                     Err("Invalid Url.")?
                 }

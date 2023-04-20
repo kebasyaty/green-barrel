@@ -93,7 +93,7 @@ mod models {
         pub email: Email,
         pub password: Password,
         pub phone: InputPhone,
-        pub url: InputUrl,
+        pub url: Url,
         pub ip: IP,
         pub textarea: TextArea,
     }

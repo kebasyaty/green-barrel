@@ -93,7 +93,7 @@ mod models {
         pub email: Email,
         pub password: Password,
         pub phone: InputPhone,
-        pub url: InputUrl,
+        pub url: Url,
         pub ip: IP,
         pub ipv4: IP,
         pub ipv6: IP,
@@ -408,7 +408,7 @@ mod models {
                     default: Some("+1 202-918-2132".to_string()),
                     ..Default::default()
                 },
-                url: InputUrl {
+                url: Url {
                     required: true,
                     default: Some("https://ru.wikipedia.org/wiki/URL".to_string()),
                     ..Default::default()
