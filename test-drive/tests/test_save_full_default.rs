@@ -92,7 +92,7 @@ mod models {
         pub color: Color,
         pub email: Email,
         pub password: Password,
-        pub phone: InputPhone,
+        pub phone: Phone,
         pub url: Url,
         pub ip: IP,
         pub ipv4: IP,

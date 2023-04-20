@@ -23,7 +23,7 @@ pub struct User {
     pub first_name: InputText,
     pub last_name: InputText,
     pub email: Email,
-    pub phone: InputPhone,
+    pub phone: Phone,
     pub password: Password,
     pub confirm_password: Password,
     pub is_staff: CheckBox,
@@ -69,7 +69,7 @@ impl Control for User {
                 hint: "Your actual E-mail".into(),
                 ..Default::default()
             },
-            phone: InputPhone {
+            phone: Phone {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,

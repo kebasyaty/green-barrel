@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct InputPhone {
+pub struct Phone {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -29,12 +29,12 @@ pub struct InputPhone {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for InputPhone {
+impl Default for Phone {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("InputPhone"),
+            field_type: String::from("Phone"),
             input_type: String::from("tel"),
             name: String::new(),
             value: None,
@@ -58,7 +58,7 @@ impl Default for InputPhone {
     }
 }
 
-impl InputPhone {
+impl Phone {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }
