@@ -18,10 +18,10 @@ use crate::settings::{
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: InputText,
+    pub username: Text,
     pub slug: Slug,
-    pub first_name: InputText,
-    pub last_name: InputText,
+    pub first_name: Text,
+    pub last_name: Text,
     pub email: Email,
     pub phone: Phone,
     pub password: Password,
@@ -33,7 +33,7 @@ pub struct User {
 impl Control for User {
     fn custom_default() -> Self {
         Self {
-            username: InputText {
+            username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
                 maxlength: 150,
@@ -48,13 +48,13 @@ impl Control for User {
                 slug_sources: vec!["hash".into(), "username".into()],
                 ..Default::default()
             },
-            first_name: InputText {
+            first_name: Text {
                 label: "First name".into(),
                 placeholder: "Enter your First name".into(),
                 maxlength: 150,
                 ..Default::default()
             },
-            last_name: InputText {
+            last_name: Text {
                 label: "Last name".into(),
                 placeholder: "Enter your Last name".into(),
                 maxlength: 150,

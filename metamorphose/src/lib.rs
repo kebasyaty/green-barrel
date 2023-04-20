@@ -649,7 +649,7 @@ fn get_field_info<'a>(
         "RangeI64" => ("i64", "range"),
         "RangeF64" => ("f64", "range"),
         "Phone" => ("String", "tel"),
-        "InputText" => ("String", "text"),
+        "Text" => ("String", "text"),
         "Slug" => ("String", "text"),
         "Url" => ("String", "url"),
         "IP" => ("String", "text"),
