@@ -36,7 +36,7 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: CheckBox,
+        pub checkbox: Bool,
         //
         pub date: Date,
         pub datetime: DateTime,
@@ -102,7 +102,7 @@ mod models {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
-                checkbox: CheckBox {
+                checkbox: Bool {
                     required: true,
                     ..Default::default()
                 },

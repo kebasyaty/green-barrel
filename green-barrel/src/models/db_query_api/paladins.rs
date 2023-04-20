@@ -1826,7 +1826,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
 
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                // "CheckBox"
+                // "Bool"
                 13 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )

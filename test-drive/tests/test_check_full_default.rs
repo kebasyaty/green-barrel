@@ -36,7 +36,7 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: CheckBox,
+        pub checkbox: Bool,
         //
         pub date: Date,
         pub datetime: DateTime,

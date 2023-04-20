@@ -1,7 +1,7 @@
 //! For control of fields on the server and client side.
 
 // bool
-pub mod check_box;
+pub mod bool;
 // hidden
 pub mod hash;
 pub mod hidden_date_time;
@@ -56,8 +56,8 @@ pub mod select_u32_mult;
 pub mod select_u32_mult_dyn;
 
 pub use {
-    crate::fields::image::Image, crate::fields::slug::Slug, check_box::CheckBox, color::Color,
-    date::Date, date_time::DateTime, email::Email, file::File, hash::Hash,
+    crate::fields::bool::Bool, crate::fields::image::Image, crate::fields::slug::Slug,
+    color::Color, date::Date, date_time::DateTime, email::Email, file::File, hash::Hash,
     hidden_date_time::HiddenDateTime, ip::IP, number_f64::F64, number_i32::I32, number_i64::I64,
     number_u32::U32, password::Password, phone::Phone, radio_f64::RadioF64, radio_i32::RadioI32,
     radio_i64::RadioI64, radio_text::RadioText, radio_u32::RadioU32, range_f64::RangeF64,

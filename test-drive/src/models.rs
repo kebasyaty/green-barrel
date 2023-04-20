@@ -26,8 +26,8 @@ pub struct User {
     pub phone: Phone,
     pub password: Password,
     pub confirm_password: Password,
-    pub is_staff: CheckBox,
-    pub is_active: CheckBox,
+    pub is_staff: Bool,
+    pub is_active: Bool,
 }
 
 impl Control for User {
@@ -93,13 +93,13 @@ impl Control for User {
                 minlength: 8,
                 ..Default::default()
             },
-            is_staff: CheckBox {
+            is_staff: Bool {
                 label: "is staff?".into(),
                 checked: Some(true),
                 hint: "User can access the admin site?".into(),
                 ..Default::default()
             },
-            is_active: CheckBox {
+            is_active: Bool {
                 label: "is active?".into(),
                 checked: Some(true),
                 hint: "Is this an active account?".into(),

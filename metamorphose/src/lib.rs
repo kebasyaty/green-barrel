@@ -627,7 +627,7 @@ fn get_field_info<'a>(
     field_type: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match field_type {
-        "CheckBox" => ("bool", "checkbox"),
+        "Bool" => ("bool", "checkbox"),
         "Color" => ("String", "color"),
         "Date" => ("String", "date"),
         "DateTime" => ("String", "datetime"),

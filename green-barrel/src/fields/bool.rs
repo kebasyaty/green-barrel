@@ -5,7 +5,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct CheckBox {
+pub struct Bool {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -25,12 +25,12 @@ pub struct CheckBox {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for CheckBox {
+impl Default for Bool {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("CheckBox"),
+            field_type: String::from("Bool"),
             input_type: String::from("checkbox"),
             name: String::new(),
             placeholder: String::new(),
@@ -49,7 +49,7 @@ impl Default for CheckBox {
     }
 }
 
-impl CheckBox {
+impl Bool {
     pub fn get(&self) -> Option<bool> {
         self.checked
     }
