@@ -348,17 +348,16 @@ impl<'a> Monitor<'a> {
                                 tmp_doc.insert(
                                     field_name.clone(),
                                     match field_type.as_str() {
-                                         "RadioText" | "InputColor"
-                                        | "InputEmail" | "InputPassword" | "InputPhone"
-                                        | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
-                                        | "InputIPv6" | "TextArea" | "SelectText" | "AutoSlug" => {
+                                         "RadioText" | "Color"
+                                        | "Email" | "Password" | "Phone"| "Text" 
+                                        | "Url" | "IP"  |"SelectText" | "Slug" => {
                                             if !default_value.is_null() {
                                                 Bson::String(default_value.as_str().unwrap().to_string())
                                             } else {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputDate" => {
+                                        "Date" => {
                                            if !default_value.is_null() {
                                                 let val = format!("{}T00:00",default_value.as_str().unwrap());
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( &val, "%Y-%m-%dT%H:%M")
@@ -377,7 +376,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputDateTime" | "HiddenDateTime" => {
+                                        "DateTime" | "HiddenDateTime" => {
                                             if !default_value.is_null() {
                                                 let val = default_value.as_str().unwrap();
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( val, "%Y-%m-%dT%H:%M")
@@ -396,7 +395,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioI32" | "NumberI32" | "RangeI32" | "SelectI32" => {
+                                        "RadioI32" | "I32" | "RangeI32" | "SelectI32" => {
                                             if !default_value.is_null() {
                                                 Bson::Int32(
                                                     i32::try_from(default_value.as_i64().unwrap())?
@@ -405,8 +404,8 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioU32" | "NumberU32" | "RangeU32"
-                                        | "SelectU32" | "RadioI64" | "NumberI64"
+                                        "RadioU32" | "U32" | "RangeU32"
+                                        | "SelectU32" | "RadioI64" | "I64"
                                         | "RangeI64" | "SelectI64" => {
                                             if !default_value.is_null() {
                                                 Bson::Int64(
@@ -416,7 +415,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioF64" | "NumberF64" | "RangeF64" 
+                                        "RadioF64" | "F64" | "RangeF64" 
                                         | "SelectF64" => {
                                             if !default_value.is_null() {
                                                 Bson::Double(
@@ -426,7 +425,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "CheckBox" => {
+                                        "Bool" => {
                                             if !default_value.is_null() {
                                                 Bson::Boolean(
                                                     default_value.as_bool().unwrap()
@@ -435,7 +434,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Boolean(false)
                                             }
                                         }
-                                        "InputFile" => {
+                                        "File" => {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<FileData>(default_value.clone())?;
                                                 // Define flags to check.
@@ -468,7 +467,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputImage" => {
+                                        "Image" => {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<ImageData>(default_value.clone())?;
                                                 // Define flags to check.
