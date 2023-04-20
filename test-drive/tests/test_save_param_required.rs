@@ -435,8 +435,8 @@ mod models {
                     default: Some("Some text".to_string()),
                     ..Default::default()
                 },
+                hash: Hash::default(),
                 /*
-                hash: HiddenHash::default(),
                 created_at: HiddenDateTime::default(),
                 updated_at: HiddenDateTime::default(),
                 */

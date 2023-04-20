@@ -436,7 +436,7 @@ mod models {
                     ..Default::default()
                 },
                 /*
-                hash: HiddenHash::default(),
+                hash: Hash::default(),
                 created_at: HiddenDateTime::default(),
                 updated_at: HiddenDateTime::default(),
                 */
