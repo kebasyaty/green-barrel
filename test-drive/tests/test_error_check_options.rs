@@ -91,7 +91,7 @@ mod models {
         pub slug: Slug,
         pub color: Color,
         pub email: Email,
-        pub password: InputPassword,
+        pub password: Password,
         pub phone: InputPhone,
         pub url: InputUrl,
         pub ip: IP,

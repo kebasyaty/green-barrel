@@ -82,7 +82,7 @@ pub trait Validation {
                     Err("Invalid IPv6 address.")?
                 }
             }
-            "InputPassword" => {
+            "Password" => {
                 if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")
                     .unwrap()
                     .is_match(value)

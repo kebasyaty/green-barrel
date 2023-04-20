@@ -638,7 +638,7 @@ fn get_field_info<'a>(
         "U32" => ("u32", "number"),
         "I64" => ("i64", "number"),
         "F64" => ("f64", "number"),
-        "InputPassword" => ("String", "password"),
+        "Password" => ("String", "password"),
         "RadioText" => ("String", "radio"),
         "RadioI32" => ("i32", "radio"),
         "RadioU32" => ("u32", "radio"),

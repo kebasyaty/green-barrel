@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct InputPassword {
+pub struct Password {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -27,18 +27,18 @@ pub struct InputPassword {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for InputPassword {
+impl Default for Password {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("InputPassword"),
+            field_type: String::from("Password"),
             input_type: String::from("password"),
             name: String::new(),
             value: None,
             placeholder: String::new(),
             pattern: String::new(),
-            minlength: 0,
+            minlength: 8,
             maxlength: 256,
             required: false,
             disabled: false,
@@ -54,7 +54,7 @@ impl Default for InputPassword {
     }
 }
 
-impl InputPassword {
+impl Password {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }

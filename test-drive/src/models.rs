@@ -24,8 +24,8 @@ pub struct User {
     pub last_name: InputText,
     pub email: Email,
     pub phone: InputPhone,
-    pub password: InputPassword,
-    pub confirm_password: InputPassword,
+    pub password: Password,
+    pub confirm_password: Password,
     pub is_staff: CheckBox,
     pub is_active: CheckBox,
 }
@@ -77,7 +77,7 @@ impl Control for User {
                 hint: "Your actual phone number".into(),
                 ..Default::default()
             },
-            password: InputPassword {
+            password: Password {
                 label: "Password".into(),
                 placeholder: "Enter your password".into(),
                 required: true,
@@ -86,7 +86,7 @@ impl Control for User {
                     .into(),
                 ..Default::default()
             },
-            confirm_password: InputPassword {
+            confirm_password: Password {
                 label: "Confirm password".into(),
                 placeholder: "Repeat your password".into(),
                 required: true,

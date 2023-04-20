@@ -327,12 +327,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of Text type fields.
                 // *********************************************************************************
                 /*
-                "RadioText" | "Color" | "Email" | "InputPassword" | "InputPhone"
+                "RadioText" | "Color" | "Email" | "Password" | "InputPhone"
                 | "InputText" | "Hash" | "InputUrl" | "IP"  | "TextArea"
                 */
                 1 => {
                     // When updating, we skip field password type.
-                    if is_update && field_type == "InputPassword" {
+                    if is_update && field_type == "Password" {
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
@@ -370,7 +370,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if field_type != "InputPassword" {
+                    let field_value_bson = if field_type != "Password" {
                         Bson::String(curr_val.to_string())
                     } else {
                         Bson::Null
@@ -433,7 +433,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Validation of `unique`.
                     if let Some(unique) = final_field.get("unique") {
                         let is_unique = unique.as_bool().unwrap();
-                        if field_type != "InputPassword" && is_unique {
+                        if field_type != "Password" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .await
                                 .unwrap_or_else(|err| {
@@ -471,7 +471,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Insert result.
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
-                            "InputPassword" => {
+                            "Password" => {
                                 if !curr_val.is_empty() && !is_update {
                                     // Generate password hash and add to result document.
                                     let password_hash: String =
