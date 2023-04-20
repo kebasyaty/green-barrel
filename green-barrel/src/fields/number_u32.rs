@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct NumberU32 {
+pub struct U32 {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -29,12 +29,12 @@ pub struct NumberU32 {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for NumberU32 {
+impl Default for U32 {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("NumberU32"),
+            field_type: String::from("U32"),
             input_type: String::from("number"),
             name: String::new(),
             value: None,
@@ -58,7 +58,7 @@ impl Default for NumberU32 {
     }
 }
 
-impl NumberU32 {
+impl U32 {
     pub fn get(&self) -> Option<u32> {
         self.value
     }

@@ -1565,7 +1565,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                // "RadioI32" | "NumberI32" | "RangeI32"
+                // "RadioI32" | "I32" | "RangeI32"
                 10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1651,7 +1651,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "RadioU32" | "NumberU32" | "RangeU32" | "RadioI64" | "NumberI64" | "RangeI64"
+                // "RadioU32" | "U32" | "RangeU32" | "RadioI64" | "I64" | "RangeI64"
                 11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
