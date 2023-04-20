@@ -97,7 +97,6 @@ mod models {
         pub ip: IP,
         pub ipv4: IP,
         pub ipv6: IP,
-        pub textarea: TextArea,
     }
 
     impl Control for TestModel {
@@ -244,7 +243,6 @@ async fn test_save_full_default() -> Result<(), Box<dyn Error>> {
     test_model.ip.set("192.168.123.132");
     test_model.ipv4.set("192.168.50.1");
     test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
-    test_model.textarea.set("Some text");
 
     let output_data = test_model.save(&client, None, None).await?;
     test_model = output_data.update()?;

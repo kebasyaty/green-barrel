@@ -95,7 +95,6 @@ mod models {
         pub phone: Phone,
         pub url: Url,
         pub ip: IP,
-        pub textarea: TextArea,
     }
 
     impl Control for TestModel {
@@ -215,7 +214,6 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.phone.set("+1 202-918-2132");
     test_model.url.set("https://ru.wikipedia.org/wiki/URL");
     test_model.ip.set("192.168.123.132");
-    test_model.textarea.set("Some text");
 
     let output_data = test_model.check(&client, None).await?;
     test_model = output_data.update()?;

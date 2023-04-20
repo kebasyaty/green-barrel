@@ -97,7 +97,6 @@ mod models {
         pub ip: IP,
         pub ipv4: IP,
         pub ipv6: IP,
-        pub textarea: TextArea,
     }
 
     impl Control for TestModel {
@@ -428,11 +427,6 @@ mod models {
                     field_type: "IPv6".into(),
                     required: true,
                     default: Some("1050:0:0:0:5:600:300c:326b".to_string()),
-                    ..Default::default()
-                },
-                textarea: TextArea {
-                    required: true,
-                    default: Some("Some text".to_string()),
                     ..Default::default()
                 },
                 hash: Hash::default(),

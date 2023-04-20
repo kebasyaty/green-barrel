@@ -653,7 +653,6 @@ fn get_field_info<'a>(
         "Slug" => ("String", "text"),
         "Url" => ("String", "url"),
         "IP" => ("String", "text"),
-        "TextArea" => ("String", "textarea"),
         "SelectText" => ("String", "select"),
         "SelectTextDyn" => ("String", "select"),
         "SelectTextMult" => ("Vec<String>", "select"),

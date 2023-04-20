@@ -95,7 +95,6 @@ mod models {
         pub phone: Phone,
         pub url: Url,
         pub ip: IP,
-        pub textarea: TextArea,
     }
 
     impl Control for TestModel {

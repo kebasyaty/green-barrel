@@ -15,7 +15,6 @@ pub mod password;
 pub mod phone;
 pub mod slug;
 pub mod text;
-pub mod text_area;
 pub mod url;
 // file
 pub mod email;
@@ -70,5 +69,5 @@ pub use {
     select_i64_mult_dyn::SelectI64MultDyn, select_text::SelectText, select_text_dyn::SelectTextDyn,
     select_text_mult::SelectTextMult, select_text_mult_dyn::SelectTextMultDyn,
     select_u32::SelectU32, select_u32_dyn::SelectU32Dyn, select_u32_mult::SelectU32Mult,
-    select_u32_mult_dyn::SelectU32MultDyn, text::Text, text_area::TextArea, url::Url,
+    select_u32_mult_dyn::SelectU32MultDyn, text::Text, url::Url,
 };
