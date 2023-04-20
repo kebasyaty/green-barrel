@@ -67,17 +67,17 @@ pub trait Validation {
                     Err("Invalid Url.")?
                 }
             }
-            "InputIP" => {
+            "IP" => {
                 if !validator::validate_ip(value) {
                     Err("Invalid IP address.")?
                 }
             }
-            "InputIPv4" => {
+            "IPv4" => {
                 if !validator::validate_ip_v4(value) {
                     Err("Invalid IPv4 address.")?
                 }
             }
-            "InputIPv6" => {
+            "IPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err("Invalid IPv6 address.")?
                 }

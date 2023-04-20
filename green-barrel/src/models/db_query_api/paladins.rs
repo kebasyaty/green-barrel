@@ -328,8 +328,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 /*
                 "RadioText" | "Color" | "Email" | "InputPassword" | "InputPhone"
-                | "InputText" | "Hash" | "InputUrl" | "InputIP" | "InputIPv4"
-                | "InputIPv6" | "TextArea"
+                | "InputText" | "Hash" | "InputUrl" | "IP"  | "TextArea"
                 */
                 1 => {
                     // When updating, we skip field password type.

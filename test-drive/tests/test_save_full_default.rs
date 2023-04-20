@@ -94,9 +94,9 @@ mod models {
         pub password: InputPassword,
         pub phone: InputPhone,
         pub url: InputUrl,
-        pub ip: InputIP,
-        pub ipv4: InputIPv4,
-        pub ipv6: InputIPv6,
+        pub ip: IP,
+        pub ipv4: IP,
+        pub ipv6: IP,
         pub textarea: TextArea,
     }
 
@@ -117,6 +117,18 @@ mod models {
                         ("lg".into(), 1200),
                     ],
                     is_quality: false,
+                    ..Default::default()
+                },
+                ipv4: IP {
+                    field_type: "IPv4".into(),
+                    required: true,
+                    default: Some("192.168.50.1".to_string()),
+                    ..Default::default()
+                },
+                ipv6: IP {
+                    field_type: "IPv6".into(),
+                    required: true,
+                    default: Some("1050:0:0:0:5:600:300c:326b".to_string()),
                     ..Default::default()
                 },
                 ..Default::default()

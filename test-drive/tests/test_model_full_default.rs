@@ -94,9 +94,7 @@ mod models {
         pub password: InputPassword,
         pub phone: InputPhone,
         pub url: InputUrl,
-        pub ip: InputIP,
-        pub ipv4: InputIPv4,
-        pub ipv6: InputIPv6,
+        pub ip: IP,
         pub textarea: TextArea,
     }
 

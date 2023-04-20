@@ -1,13 +1,13 @@
-//! Field for entering **IP** addresses.
+//! Field for entering **IP**|**IPv4**|**IPv6** addresses.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct InputIP {
+pub struct IP {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
-    pub field_type: String, // Field type.
+    pub field_type: String, // Field type - IP|IPv4|IPv6
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
@@ -29,12 +29,12 @@ pub struct InputIP {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for InputIP {
+impl Default for IP {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("InputIP"),
+            field_type: String::from("IP"), // IP|IPv4|IPv6
             input_type: String::from("text"),
             name: String::new(),
             value: None,
@@ -58,7 +58,7 @@ impl Default for InputIP {
     }
 }
 
-impl InputIP {
+impl IP {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }

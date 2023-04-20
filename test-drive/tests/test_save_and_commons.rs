@@ -94,9 +94,7 @@ mod models {
         pub password: InputPassword,
         pub phone: InputPhone,
         pub url: InputUrl,
-        pub ip: InputIP,
-        pub ipv4: InputIPv4,
-        pub ipv6: InputIPv6,
+        pub ip: IP,
         pub textarea: TextArea,
     }
 
@@ -200,8 +198,6 @@ async fn test_save_and_commons() -> Result<(), Box<dyn Error>> {
         test_model.phone.set("+1 202-918-2132");
         test_model.url.set("https://ru.wikipedia.org/wiki/URL");
         test_model.ip.set("192.168.123.132");
-        test_model.ipv4.set("192.168.50.1");
-        test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
         test_model.textarea.set("Some text");
 
         let output_data = test_model.save(&client, None, None).await?;
