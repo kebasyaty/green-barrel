@@ -327,7 +327,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Validation of Text type fields.
                 // *********************************************************************************
                 /*
-                "RadioText" | "Color" | "Email" | "Password" | "InputPhone"
+                "Color" | "Email" | "Password" | "Phone"
                 | "Text" | "Hash" | "Url" | "IP"
                 */
                 1 => {
@@ -1565,7 +1565,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                // "RadioI32" | "I32" | "RangeI32"
+                //  "I32"
                 10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1587,7 +1587,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get clean data.
                     let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
                     //
-                    if field_type == "RadioI32"
+                    if final_field["input_type"].as_str().unwrap() == "radio"
                         && !option_i32_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
@@ -1651,7 +1651,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "RadioU32" | "U32" | "RangeU32" | "RadioI64" | "I64" | "RangeI64"
+                // "U32" | "I64"
                 11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1673,7 +1673,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get clean data.
                     let curr_val = const_value.as_i64().unwrap();
                     //
-                    if (field_type == "RadioU32" || field_type == "RadioI64")
+                    if final_field["input_type"].as_str().unwrap() == "radio"
                         && !option_i64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
@@ -1736,7 +1736,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "RadioF64" | "F64" | "RangeF64"
+                // "F64"
                 12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1760,7 +1760,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // Get clean data.
                     let curr_val = const_value.as_f64().unwrap();
                     //
-                    if field_type == "RadioF64"
+                    if final_field["input_type"].as_str().unwrap() == "radio"
                         && !option_f64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;

@@ -45,22 +45,22 @@ mod models {
         pub image: Image,
         //
         pub number_i32: I32,
-        pub radio_i32: RadioI32,
-        pub range_i32: RangeI32,
+        pub radio_i32: I32,
+        pub range_i32: I32,
         //
         pub number_u32: U32,
-        pub radio_u32: RadioU32,
-        pub range_u32: RangeU32,
+        pub radio_u32: U32,
+        pub range_u32: U32,
         //
         pub number_i64: I64,
-        pub radio_i64: RadioI64,
-        pub range_i64: RangeI64,
+        pub radio_i64: I64,
+        pub range_i64: I64,
         //
         pub number_f64: F64,
-        pub radio_f64: RadioF64,
-        pub range_f64: RangeF64,
+        pub radio_f64: F64,
+        pub range_f64: F64,
         //
-        pub radio_text: RadioText,
+        pub radio_text: Text,
         //
         pub select_text: SelectText,
         pub select_text_dyn: SelectTextDyn,
@@ -100,6 +100,42 @@ mod models {
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
+                radio_text: Text {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                radio_i32: I32 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_i32: I32 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_u32: U32 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_u32: U32 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_i64: I64 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_i64: I64 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_f64: F64 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_f64: F64 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
                 ..Default::default()
             }
         }

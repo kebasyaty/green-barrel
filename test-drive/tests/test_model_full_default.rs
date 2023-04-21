@@ -45,22 +45,12 @@ mod models {
         pub image: Image,
         //
         pub number_i32: I32,
-        pub radio_i32: RadioI32,
-        pub range_i32: RangeI32,
         //
         pub number_u32: U32,
-        pub radio_u32: RadioU32,
-        pub range_u32: RangeU32,
         //
         pub number_i64: I64,
-        pub radio_i64: RadioI64,
-        pub range_i64: RangeI64,
         //
         pub number_f64: F64,
-        pub radio_f64: RadioF64,
-        pub range_f64: RangeF64,
-        //
-        pub radio_text: RadioText,
         //
         pub select_text: SelectText,
         pub select_text_dyn: SelectTextDyn,

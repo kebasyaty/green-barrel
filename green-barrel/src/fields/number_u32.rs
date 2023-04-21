@@ -1,4 +1,5 @@
 //! A field for entering unsigned 32-bit integers.
+//! For Html <input type="**number**|**radio**|**range**">.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -8,7 +9,7 @@ pub struct U32 {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
+    pub input_type: String, // For Html <input type="number|radio|range">
     pub name: String, // The value is determined automatically.
     pub value: Option<u32>, // Sets the value of an element.
     pub default: Option<u32>, // Value by default.
@@ -20,7 +21,8 @@ pub struct U32 {
     pub step: u32,  // Increment step for numeric fields.
     pub min: u32,   // The lower value for entering a number or date.
     pub max: u32,   // The top value for entering a number or date.
-    pub is_hide: bool, // Hide field from user.
+    pub options: Vec<(u32, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
+    pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -35,7 +37,7 @@ impl Default for U32 {
             id: String::new(),
             label: String::new(),
             field_type: String::from("U32"),
-            input_type: String::from("number"),
+            input_type: String::from("number"), // number|radio|range
             name: String::new(),
             value: None,
             default: None,
@@ -46,7 +48,8 @@ impl Default for U32 {
             readonly: false,
             step: 1,
             min: 0,
-            max: u32::MAX,
+            max: u32::MAX,       // For Html <input type="range" /> default = 100
+            options: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),

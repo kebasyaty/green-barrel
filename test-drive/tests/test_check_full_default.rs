@@ -45,22 +45,12 @@ mod models {
         pub image: Image,
         //
         pub number_i32: I32,
-        pub radio_i32: RadioI32,
-        pub range_i32: RangeI32,
         //
         pub number_u32: U32,
-        pub radio_u32: RadioU32,
-        pub range_u32: RangeU32,
         //
         pub number_i64: I64,
-        pub radio_i64: RadioI64,
-        pub range_i64: RangeI64,
         //
         pub number_f64: F64,
-        pub radio_f64: RadioF64,
-        pub range_f64: RangeF64,
-        //
-        pub radio_text: RadioText,
         //
         pub select_text: SelectText,
         pub select_text_dyn: SelectTextDyn,
@@ -200,13 +190,9 @@ async fn test_check_full_default() -> Result<(), Box<dyn Error>> {
     test_model.file.set("./some_files/resume.pdf", false, None);
     test_model.image.set("./some_files/avatar.png", false, None);
     test_model.number_i32.set(0);
-    test_model.range_i32.set(0);
     test_model.number_u32.set(0);
-    test_model.range_u32.set(0);
     test_model.number_i64.set(0);
-    test_model.range_i64.set(0);
     test_model.number_f64.set(0.0);
-    test_model.range_f64.set(0.0);
     test_model.text.set("Some text");
     test_model.color.set("#ffffff");
     test_model.email.set("jane32@enhanceronly.com");

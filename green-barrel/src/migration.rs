@@ -348,8 +348,7 @@ impl<'a> Monitor<'a> {
                                 tmp_doc.insert(
                                     field_name.clone(),
                                     match field_type.as_str() {
-                                         "RadioText" | "Color"
-                                        | "Email" | "Password" | "Phone"| "Text" 
+                                         "Color" | "Email" | "Password" | "Phone"| "Text" 
                                         | "Url" | "IP"  |"SelectText" | "Slug" => {
                                             if !default_value.is_null() {
                                                 Bson::String(default_value.as_str().unwrap().to_string())
@@ -395,7 +394,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioI32" | "I32" | "RangeI32" | "SelectI32" => {
+                                        "I32" | "SelectI32" => {
                                             if !default_value.is_null() {
                                                 Bson::Int32(
                                                     i32::try_from(default_value.as_i64().unwrap())?
@@ -404,9 +403,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioU32" | "U32" | "RangeU32"
-                                        | "SelectU32" | "RadioI64" | "I64"
-                                        | "RangeI64" | "SelectI64" => {
+                                        "U32" | "SelectU32" | "I64" | "SelectI64" => {
                                             if !default_value.is_null() {
                                                 Bson::Int64(
                                                     default_value.as_i64().unwrap()
@@ -415,8 +412,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioF64" | "F64" | "RangeF64" 
-                                        | "SelectF64" => {
+                                        "F64" | "SelectF64" => {
                                             if !default_value.is_null() {
                                                 Bson::Double(
                                                    default_value.as_f64().unwrap()

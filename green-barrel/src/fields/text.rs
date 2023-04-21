@@ -1,4 +1,5 @@
 //! A field for entering a **text**|**textarea(is_multiline=true)** string.
+//! For Html <input type="**text**|**radio**"> and **textarea**(multiline=true)
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -9,7 +10,7 @@ pub struct Text {
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
-    pub is_multiline: bool, // true - for textarea.
+    pub multiline: bool, // true - for textarea.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
     pub default: Option<String>, // Value by default.
@@ -21,7 +22,8 @@ pub struct Text {
     pub unique: bool,    // The unique value of a field in a collection.
     pub disabled: bool,  // Blocks access and modification of the element.
     pub readonly: bool,  // Specifies that the field cannot be modified by the user.
-    pub is_hide: bool,   // Hide field from user.
+    pub options: Vec<(String, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
+    pub is_hide: bool,                  // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -37,7 +39,7 @@ impl Default for Text {
             label: String::new(),
             field_type: String::from("Text"),
             input_type: String::from("text"),
-            is_multiline: false, // true - for textarea.
+            multiline: false, // true - for textarea.
             name: String::new(),
             value: None,
             default: None,
@@ -49,6 +51,7 @@ impl Default for Text {
             unique: false,
             disabled: false,
             readonly: false,
+            options: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
