@@ -349,7 +349,7 @@ impl<'a> Monitor<'a> {
                                     field_name.clone(),
                                     match field_type.as_str() {
                                          "Color" | "Email" | "Password" | "Phone"| "Text" 
-                                        | "Url" | "IP"  |"SelectText" | "Slug" => {
+                                        | "Url" | "IP"  |"ChoiceText" | "Slug" => {
                                             if !default_value.is_null() {
                                                 Bson::String(default_value.as_str().unwrap().to_string())
                                             } else {
@@ -394,7 +394,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "I32" | "SelectI32" => {
+                                        "I32" | "ChoiceI32" => {
                                             if !default_value.is_null() {
                                                 Bson::Int32(
                                                     i32::try_from(default_value.as_i64().unwrap())?
@@ -403,7 +403,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "U32" | "SelectU32" | "I64" | "SelectI64" => {
+                                        "U32" | "ChoiceU32" | "I64" | "ChoiceI64" => {
                                             if !default_value.is_null() {
                                                 Bson::Int64(
                                                     default_value.as_i64().unwrap()
@@ -412,7 +412,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "F64" | "SelectF64" => {
+                                        "F64" | "ChoiceF64" => {
                                             if !default_value.is_null() {
                                                 Bson::Double(
                                                    default_value.as_f64().unwrap()
