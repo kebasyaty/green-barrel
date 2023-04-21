@@ -730,9 +730,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         final_doc.insert(field_name, val_dt_bson);
                     }
                 }
-                // Validation of `select` type fields.
+                // Validation of `choice` type fields.
                 // *********************************************************************************
-                // "SelectText" | "SelectI32" | "SelectU32" | "SelectI64" | "SelectF64"
+                // "ChoiceText" | "ChoiceI32" | "ChoiceU32" | "ChoiceI64" | "ChoiceF64"
                 4 => {
                     //
                     if const_value.is_null() {
@@ -752,7 +752,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get selected items.
                     match field_type {
-                        "SelectText" => {
+                        "ChoiceText" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
                             if option_str_map.get(field_name).unwrap().contains(&val) {
@@ -771,7 +771,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectI32" => {
+                        "ChoiceI32" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
                             if option_i32_map.get(field_name).unwrap().contains(&val) {
@@ -790,7 +790,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectU32" | "SelectI64" => {
+                        "ChoiceU32" | "ChoiceI64" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
                             if option_i64_map.get(field_name).unwrap().contains(&val) {
@@ -809,7 +809,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectF64" => {
+                        "ChoiceF64" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
                             if option_f64_map.get(field_name).unwrap().contains(&val) {

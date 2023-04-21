@@ -61,27 +61,27 @@ mod models {
         //
         pub radio_text: Text,
         //
-        pub select_text: SelectText,
+        pub select_text: ChoiceText,
         pub select_text_dyn: SelectTextDyn,
         pub select_text_mult: SelectTextMult,
         pub select_text_mult_dyn: SelectTextMultDyn,
         //
-        pub select_i32: SelectI32,
+        pub select_i32: ChoiceI32,
         pub select_i32_dyn: SelectI32Dyn,
         pub select_i32_mult: SelectI32Mult,
         pub select_i32_mult_dyn: SelectI32MultDyn,
         //
-        pub select_u32: SelectU32,
+        pub select_u32: ChoiceU32,
         pub select_u32_dyn: SelectU32Dyn,
         pub select_u32_mult: SelectI32Mult,
         pub select_u32_mult_dyn: SelectU32MultDyn,
         //
-        pub select_i64: SelectI64,
+        pub select_i64: ChoiceI64,
         pub select_i64_dyn: SelectI64Dyn,
         pub select_i64_mult: SelectI64Mult,
         pub select_i64_mult_dyn: SelectI64MultDyn,
         //
-        pub select_f64: SelectF64,
+        pub select_f64: ChoiceF64,
         pub select_f64_dyn: SelectF64Dyn,
         pub select_f64_mult: SelectF64Mult,
         pub select_f64_mult_dyn: SelectF64MultDyn,
