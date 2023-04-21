@@ -357,7 +357,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_val = const_value.as_str().unwrap();
                     //
                     if field_type == "RadioText"
-                        && !option_str_map
+                        && !choice_str_map
                             .get(field_name)
                             .unwrap()
                             .contains(&curr_val.to_string())
@@ -365,7 +365,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                             final_field,
-                            "Value does not match possible options."
+                            "Value does not match possible choices."
                         ));
                         continue;
                     }
@@ -755,13 +755,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "ChoiceText" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
-                            if option_str_map.get(field_name).unwrap().contains(&val) {
+                            if choice_str_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -774,13 +774,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "ChoiceI32" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
-                            if option_i32_map.get(field_name).unwrap().contains(&val) {
+                            if choice_i32_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -793,13 +793,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "ChoiceU32" | "ChoiceI64" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
-                            if option_i64_map.get(field_name).unwrap().contains(&val) {
+                            if choice_i64_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -812,13 +812,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "ChoiceF64" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
-                            if option_f64_map.get(field_name).unwrap().contains(&val) {
+                            if choice_f64_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -858,13 +858,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "SelectTextDyn" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
-                            if option_str_map.get(field_name).unwrap().contains(&val) {
+                            if choice_str_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -877,13 +877,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "SelectI32Dyn" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
-                            if option_i32_map.get(field_name).unwrap().contains(&val) {
+                            if choice_i32_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -896,13 +896,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "SelectU32Dyn" | "SelectI64Dyn" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
-                            if option_i64_map.get(field_name).unwrap().contains(&val) {
+                            if choice_i64_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -915,13 +915,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         "SelectF64Dyn" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
-                            if option_f64_map.get(field_name).unwrap().contains(&val) {
+                            if choice_f64_map.get(field_name).unwrap().contains(&val) {
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
                                 *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible options."
+                                    "Value does not match possible choices."
                                 ));
                             }
                             if is_save {
@@ -965,15 +965,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_str().unwrap().into())
                                 .collect::<Vec<String>>();
-                            let options = option_str_map.get(field_name).unwrap();
+                            let choices = choice_str_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -993,15 +993,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| i32::try_from(item.as_i64().unwrap()).unwrap())
                                 .collect::<Vec<i32>>();
-                            let options = option_i32_map.get(field_name).unwrap();
+                            let choices = choice_i32_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1021,15 +1021,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_i64().unwrap())
                                 .collect::<Vec<i64>>();
-                            let options = option_i64_map.get(field_name).unwrap();
+                            let choices = choice_i64_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1049,15 +1049,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_f64().unwrap())
                                 .collect::<Vec<f64>>();
-                            let options = option_f64_map.get(field_name).unwrap();
+                            let choices = choice_f64_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1108,15 +1108,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_str().unwrap().into())
                                 .collect::<Vec<String>>();
-                            let options = option_str_map.get(field_name).unwrap();
+                            let choices = choice_str_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1136,15 +1136,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| i32::try_from(item.as_i64().unwrap()).unwrap())
                                 .collect::<Vec<i32>>();
-                            let options = option_i32_map.get(field_name).unwrap();
+                            let choices = choice_i32_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1164,15 +1164,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_i64().unwrap())
                                 .collect::<Vec<i64>>();
-                            let options = option_i64_map.get(field_name).unwrap();
+                            let choices = choice_i64_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1192,15 +1192,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .iter()
                                 .map(|item| item.as_f64().unwrap())
                                 .collect::<Vec<f64>>();
-                            let options = option_f64_map.get(field_name).unwrap();
+                            let choices = choice_f64_map.get(field_name).unwrap();
                             let mut flag = true;
                             for item in val.iter() {
-                                if !options.contains(item) {
+                                if !choices.contains(item) {
                                     is_err_symptom = true;
                                     *final_field.get_mut("error").unwrap() =
                                         json!(Self::accumula_err(
                                             final_field,
-                                            "Value does not match possible options."
+                                            "Value does not match possible choices."
                                         ));
                                     flag = false;
                                     break;
@@ -1588,12 +1588,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_val = i32::try_from(const_value.as_i64().unwrap())?;
                     //
                     if final_field["input_type"].as_str().unwrap() == "radio"
-                        && !option_i32_map.get(field_name).unwrap().contains(&curr_val)
+                        && !choice_i32_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                             final_field,
-                            "Value does not match possible options."
+                            "Value does not match possible choices."
                         ));
                         continue;
                     }
@@ -1674,12 +1674,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_val = const_value.as_i64().unwrap();
                     //
                     if final_field["input_type"].as_str().unwrap() == "radio"
-                        && !option_i64_map.get(field_name).unwrap().contains(&curr_val)
+                        && !choice_i64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                             final_field,
-                            "Value does not match possible options."
+                            "Value does not match possible choices."
                         ));
                         continue;
                     }
@@ -1761,12 +1761,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     let curr_val = const_value.as_f64().unwrap();
                     //
                     if final_field["input_type"].as_str().unwrap() == "radio"
-                        && !option_f64_map.get(field_name).unwrap().contains(&curr_val)
+                        && !choice_f64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
                         *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
                             final_field,
-                            "Value does not match possible options."
+                            "Value does not match possible choices."
                         ));
                         continue;
                     }

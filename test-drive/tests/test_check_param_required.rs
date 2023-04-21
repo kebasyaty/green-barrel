@@ -262,7 +262,7 @@ mod models {
                 select_text: ChoiceText {
                     required: true,
                     default: Some("value".into()),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),
@@ -275,7 +275,7 @@ mod models {
                 select_text_mult: SelectTextMult {
                     required: true,
                     default: Some(vec!["value".into(), "value 2".into()]),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),
@@ -288,7 +288,7 @@ mod models {
                 select_i32: ChoiceI32 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -301,7 +301,7 @@ mod models {
                 select_i32_mult: SelectI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -314,7 +314,7 @@ mod models {
                 select_u32: ChoiceU32 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -327,7 +327,7 @@ mod models {
                 select_u32_mult: SelectI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -340,7 +340,7 @@ mod models {
                 select_i64: ChoiceI64 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -353,7 +353,7 @@ mod models {
                 select_i64_mult: SelectI64Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -366,7 +366,7 @@ mod models {
                 select_f64: ChoiceF64 {
                     required: true,
                     default: Some(0.0),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
@@ -379,7 +379,7 @@ mod models {
                 select_f64_mult: SelectF64Mult {
                     required: true,
                     default: Some(vec![0.0, 0.1]),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
