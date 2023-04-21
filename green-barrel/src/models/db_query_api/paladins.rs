@@ -158,10 +158,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Get metadata.
         let (
             model_name,
-            option_str_map,
-            option_i32_map,
-            option_i64_map,
-            option_f64_map,
+            choice_str_map,
+            choice_i32_map,
+            choice_i64_map,
+            choice_f64_map,
             ignore_fields,
             collection_name,
             field_type_map,
@@ -181,10 +181,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             if let Some(meta) = store.get(&key) {
                 (
                     meta.model_name.clone(),
-                    meta.option_str_map.clone(),
-                    meta.option_i32_map.clone(),
-                    meta.option_i64_map.clone(),
-                    meta.option_f64_map.clone(),
+                    meta.choice_str_map.clone(),
+                    meta.choice_i32_map.clone(),
+                    meta.choice_i64_map.clone(),
+                    meta.choice_f64_map.clone(),
                     meta.ignore_fields.clone(),
                     meta.collection_name.clone(),
                     meta.field_type_map.clone(),

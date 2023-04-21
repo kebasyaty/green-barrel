@@ -16,7 +16,7 @@ pub struct ChoiceU32 {
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub multiple: String, // Specifies that multiple options can be selected at once.
-    pub options: Vec<(u32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
+    pub choices: Vec<(u32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -40,7 +40,7 @@ impl Default for ChoiceU32 {
             disabled: false,
             readonly: false,
             multiple: String::new(),
-            options: Vec::new(),
+            choices: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),

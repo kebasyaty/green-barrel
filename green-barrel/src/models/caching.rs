@@ -15,10 +15,10 @@ use crate::{
     models::{converters::Converters, helpers::ControlArr, Main},
 };
 
-type OptionsStrMap = HashMap<String, Vec<String>>;
-type OptionsI32Map = HashMap<String, Vec<i32>>;
-type OptionsI64Map = HashMap<String, Vec<i64>>;
-type OptionsF64Map = HashMap<String, Vec<f64>>;
+type ChoicesStrMap = HashMap<String, Vec<String>>;
+type ChoicesI32Map = HashMap<String, Vec<i32>>;
+type ChoicesI64Map = HashMap<String, Vec<i64>>;
+type ChoicesF64Map = HashMap<String, Vec<f64>>;
 
 /// Caching inmodelation about Models for speed up work.
 // #################################################################################################
@@ -42,12 +42,12 @@ pub trait Caching: Main + Converters {
             &meta.fields_name,
         )
         .await?;
-        let (options_str_map, options_i32_map, options_i64_map, options_f64_map) =
-            Self::get_option_maps(&meta.model_json, &meta.field_type_map)?;
-        meta.option_str_map = options_str_map;
-        meta.option_i32_map = options_i32_map;
-        meta.option_i64_map = options_i64_map;
-        meta.option_f64_map = options_f64_map;
+        let (choices_str_map, choices_i32_map, choices_i64_map, choices_f64_map) =
+            Self::get_choice_maps(&meta.model_json, &meta.field_type_map)?;
+        meta.choice_str_map = choices_str_map;
+        meta.choice_i32_map = choices_i32_map;
+        meta.choice_i64_map = choices_i64_map;
+        meta.choice_f64_map = choices_f64_map;
         // Get metadata store.
         // Get a key to access the metadata store.
         let key = Self::key()?;
@@ -58,28 +58,28 @@ pub trait Caching: Main + Converters {
         Ok(())
     }
 
-    /// Get option maps for fields type `select`.
-    fn get_option_maps(
+    /// Get choice maps for fields type `choice`.
+    fn get_choice_maps(
         model_json: &Value,
         field_type_map: &HashMap<String, String>,
-    ) -> Result<(OptionsStrMap, OptionsI32Map, OptionsI64Map, OptionsF64Map), Box<dyn Error>> {
+    ) -> Result<(ChoicesStrMap, ChoicesI32Map, ChoicesI64Map, ChoicesF64Map), Box<dyn Error>> {
         //
-        let mut options_str_map = HashMap::<String, Vec<String>>::new();
-        let mut options_i32_map = HashMap::<String, Vec<i32>>::new();
-        let mut options_i64_map = HashMap::<String, Vec<i64>>::new();
-        let mut options_f64_map = HashMap::<String, Vec<f64>>::new();
+        let mut choices_str_map = HashMap::<String, Vec<String>>::new();
+        let mut choices_i32_map = HashMap::<String, Vec<i32>>::new();
+        let mut choices_i64_map = HashMap::<String, Vec<i64>>::new();
+        let mut choices_f64_map = HashMap::<String, Vec<f64>>::new();
         for (field_name, field_type) in field_type_map {
-            if let Some(options) = model_json.get(field_name).unwrap().get("options") {
+            if let Some(choices) = model_json.get(field_name).unwrap().get("choices") {
                 if field_type.contains("Text") {
-                    let options = options
+                    let choices = choices
                         .as_array()
                         .unwrap()
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_str().unwrap().to_string())
                         .collect::<Vec<String>>();
-                    options_str_map.insert(field_name.into(), options);
+                    choices_str_map.insert(field_name.into(), choices);
                 } else if field_type.contains("I32") {
-                    let options = options
+                    let choices = choices
                         .as_array()
                         .unwrap()
                         .iter()
@@ -87,31 +87,31 @@ pub trait Caching: Main + Converters {
                             i32::try_from(item.as_array().unwrap()[0].as_i64().unwrap()).unwrap()
                         })
                         .collect::<Vec<i32>>();
-                    options_i32_map.insert(field_name.into(), options);
+                    choices_i32_map.insert(field_name.into(), choices);
                 } else if field_type.contains("U32") || field_type.contains("I64") {
-                    let options = options
+                    let choices = choices
                         .as_array()
                         .unwrap()
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_i64().unwrap())
                         .collect::<Vec<i64>>();
-                    options_i64_map.insert(field_name.into(), options);
+                    choices_i64_map.insert(field_name.into(), choices);
                 } else if field_type.contains("F64") {
-                    let options = options
+                    let choices = choices
                         .as_array()
                         .unwrap()
                         .iter()
                         .map(|item| item.as_array().unwrap()[0].as_f64().unwrap())
                         .collect::<Vec<f64>>();
-                    options_f64_map.insert(field_name.into(), options);
+                    choices_f64_map.insert(field_name.into(), choices);
                 }
             }
         }
         Ok((
-            options_str_map,
-            options_i32_map,
-            options_i64_map,
-            options_f64_map,
+            choices_str_map,
+            choices_i32_map,
+            choices_i64_map,
+            choices_f64_map,
         ))
     }
 
