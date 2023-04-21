@@ -4,18 +4,18 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct SelectI64MultDyn {
+pub struct ChoiceI32Dyn {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
     pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<i64>>, // Sets the value of an element.
+    pub value: Option<i32>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub multiple: String, // Specifies that multiple options can be selected at once.
-    pub choices: Vec<(i64, String)>, // Elements are added via the ModelName::update_dyn_field() method.
+    pub choices: Vec<(i32, String)>, // Elements are added via the ModelName::update_dyn_field() method.
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -25,19 +25,19 @@ pub struct SelectI64MultDyn {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for SelectI64MultDyn {
+impl Default for ChoiceI32Dyn {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("SelectI64MultDyn"),
+            field_type: String::from("ChoiceI32Dyn"),
             name: String::new(),
             value: None,
             placeholder: String::new(),
             required: false,
             disabled: false,
             readonly: false,
-            multiple: String::from("multiple"),
+            multiple: String::new(),
             choices: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
@@ -45,16 +45,16 @@ impl Default for SelectI64MultDyn {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 7,
+            group: 5,
         }
     }
 }
 
-impl SelectI64MultDyn {
-    pub fn get(&self) -> Option<Vec<i64>> {
-        self.value.clone()
+impl ChoiceI32Dyn {
+    pub fn get(&self) -> Option<i32> {
+        self.value
     }
-    pub fn set(&mut self, value: Vec<i64>) {
+    pub fn set(&mut self, value: i32) {
         self.value = Some(value);
     }
 }
