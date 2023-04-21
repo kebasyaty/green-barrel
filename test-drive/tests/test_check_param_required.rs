@@ -155,7 +155,7 @@ mod models {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -181,7 +181,7 @@ mod models {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -207,7 +207,7 @@ mod models {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
@@ -233,7 +233,7 @@ mod models {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0.0),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
@@ -252,7 +252,7 @@ mod models {
                     input_type: "radio".into(),
                     required: true,
                     default: Some("value".to_string()),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),

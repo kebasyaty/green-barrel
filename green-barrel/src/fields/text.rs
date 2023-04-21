@@ -22,7 +22,7 @@ pub struct Text {
     pub unique: bool,    // The unique value of a field in a collection.
     pub disabled: bool,  // Blocks access and modification of the element.
     pub readonly: bool,  // Specifies that the field cannot be modified by the user.
-    pub options: Vec<(String, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
+    pub choices: Vec<(String, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
     pub is_hide: bool,                  // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -51,7 +51,7 @@ impl Default for Text {
             unique: false,
             disabled: false,
             readonly: false,
-            options: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
+            choices: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
