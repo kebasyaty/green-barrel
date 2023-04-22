@@ -35,73 +35,106 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: CheckBox,
+        pub checkbox: Bool,
         //
-        pub date: InputDate,
-        pub datetime: InputDateTime,
+        pub date: Date,
+        pub datetime: DateTime,
         //
-        pub file: InputFile,
-        pub image: InputImage,
+        pub file: File,
+        pub image: Image,
         //
-        pub number_i32: NumberI32,
-        pub radio_i32: RadioI32,
-        pub range_i32: RangeI32,
+        pub number_i32: I32,
+        pub radio_i32: I32,
+        pub range_i32: I32,
         //
-        pub number_u32: NumberU32,
-        pub radio_u32: RadioU32,
-        pub range_u32: RangeU32,
+        pub number_u32: U32,
+        pub radio_u32: U32,
+        pub range_u32: U32,
         //
-        pub number_i64: NumberI64,
-        pub radio_i64: RadioI64,
-        pub range_i64: RangeI64,
+        pub number_i64: I64,
+        pub radio_i64: I64,
+        pub range_i64: I64,
         //
-        pub number_f64: NumberF64,
-        pub radio_f64: RadioF64,
-        pub range_f64: RangeF64,
+        pub number_f64: F64,
+        pub radio_f64: F64,
+        pub range_f64: F64,
         //
-        pub radio_text: RadioText,
+        pub radio_text: Text,
         //
-        pub select_text: SelectText,
-        pub select_text_dyn: SelectTextDyn,
-        pub select_text_mult: SelectTextMult,
-        pub select_text_mult_dyn: SelectTextMultDyn,
+        pub select_text: ChoiceText,
+        pub select_text_dyn: ChoiceTextDyn,
+        pub select_text_mult: ChoiceTextMult,
+        pub select_text_mult_dyn: ChoiceTextMultDyn,
         //
-        pub select_i32: SelectI32,
-        pub select_i32_dyn: SelectI32Dyn,
-        pub select_i32_mult: SelectI32Mult,
-        pub select_i32_mult_dyn: SelectI32MultDyn,
+        pub select_i32: ChoiceI32,
+        pub select_i32_dyn: ChoiceI32Dyn,
+        pub select_i32_mult: ChoiceI32Mult,
+        pub select_i32_mult_dyn: ChoiceI32MultDyn,
         //
-        pub select_u32: SelectU32,
-        pub select_u32_dyn: SelectU32Dyn,
-        pub select_u32_mult: SelectI32Mult,
-        pub select_u32_mult_dyn: SelectU32MultDyn,
+        pub select_u32: ChoiceU32,
+        pub select_u32_dyn: ChoiceU32Dyn,
+        pub select_u32_mult: ChoiceI32Mult,
+        pub select_u32_mult_dyn: ChoiceU32MultDyn,
         //
-        pub select_i64: SelectI64,
-        pub select_i64_dyn: SelectI64Dyn,
-        pub select_i64_mult: SelectI64Mult,
-        pub select_i64_mult_dyn: SelectI64MultDyn,
+        pub select_i64: ChoiceI64,
+        pub select_i64_dyn: ChoiceI64Dyn,
+        pub select_i64_mult: ChoiceI64Mult,
+        pub select_i64_mult_dyn: ChoiceI64MultDyn,
         //
-        pub select_f64: SelectF64,
-        pub select_f64_dyn: SelectF64Dyn,
-        pub select_f64_mult: SelectF64Mult,
-        pub select_f64_mult_dyn: SelectF64MultDyn,
+        pub select_f64: ChoiceF64,
+        pub select_f64_dyn: ChoiceF64Dyn,
+        pub select_f64_mult: ChoiceF64Mult,
+        pub select_f64_mult_dyn: ChoiceF64MultDyn,
         //
-        pub text: InputText,
-        pub slug: AutoSlug,
-        pub color: InputColor,
-        pub email: InputEmail,
-        pub password: InputPassword,
-        pub phone: InputPhone,
-        pub url: InputUrl,
-        pub ip: InputIP,
-        pub ipv4: InputIPv4,
-        pub ipv6: InputIPv6,
-        pub textarea: TextArea,
+        pub text: Text,
+        pub slug: Slug,
+        pub color: Color,
+        pub email: Email,
+        pub password: Password,
+        pub phone: Phone,
+        pub url: Url,
+        pub ip: IP,
     }
 
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
+                radio_text: Text {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                radio_i32: I32 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_i32: I32 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_u32: U32 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_u32: U32 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_i64: I64 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_i64: I64 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
+                radio_f64: F64 {
+                    input_type: "radio".into(),
+                    ..Default::default()
+                },
+                range_f64: F64 {
+                    input_type: "range".into(),
+                    ..Default::default()
+                },
                 ..Default::default()
             }
         }
@@ -241,9 +274,6 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     test_model.phone.set("+1 202-918-2132");
     test_model.url.set("https://ru.wikipedia.org/wiki/URL");
     test_model.ip.set("192.168.123.132");
-    test_model.ipv4.set("192.168.50.1");
-    test_model.ipv6.set("1050:0:0:0:5:600:300c:326b");
-    test_model.textarea.set("Some text");
 
     let output_data = test_model.save(&client, None, None).await?;
     test_model = output_data.update()?;

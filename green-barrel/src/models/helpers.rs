@@ -31,11 +31,11 @@ pub struct Meta {
     pub default_value_map: HashMap<String, Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
-    // Option maps for fields type `select` - <field_name, options>
-    pub option_str_map: HashMap<String, Vec<String>>,
-    pub option_i32_map: HashMap<String, Vec<i32>>,
-    pub option_i64_map: HashMap<String, Vec<i64>>,
-    pub option_f64_map: HashMap<String, Vec<f64>>,
+    // Choice maps for fields type `choice`. Format: HashMap<field_name, choices>
+    pub choice_str_map: HashMap<String, Vec<String>>,
+    pub choice_i32_map: HashMap<String, Vec<i32>>,
+    pub choice_i64_map: HashMap<String, Vec<i64>>,
+    pub choice_f64_map: HashMap<String, Vec<f64>>,
     pub model_json: Value,
 }
 
@@ -61,10 +61,10 @@ impl Default for Meta {
             field_type_map: HashMap::new(),
             default_value_map: HashMap::new(),
             ignore_fields: Vec::new(),
-            option_str_map: HashMap::new(),
-            option_i32_map: HashMap::new(),
-            option_i64_map: HashMap::new(),
-            option_f64_map: HashMap::new(),
+            choice_str_map: HashMap::new(),
+            choice_i32_map: HashMap::new(),
+            choice_i64_map: HashMap::new(),
+            choice_f64_map: HashMap::new(),
             model_json: json!(null),
         }
     }

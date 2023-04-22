@@ -80,12 +80,9 @@ $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/ap
 $ sudo apt update
 ```
 
-## Usage:
-
-[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/green-barrel/examples/basic "Basic Example")
-
 ## Changelog
 
+- **v1.1.0** _Removed 12 types of fields, the remaining fields have been renamed. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
 - **v1.3.2-beta** _Fixed basic example and updated readme file._
 - **v1.3.0-beta** _Transition to asynchronous code._
 - **v1.2.0-beta** _Updated dependency mongodb to version 2._

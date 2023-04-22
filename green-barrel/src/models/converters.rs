@@ -41,7 +41,7 @@ pub trait Converters {
                         ))?
                     },
                 );
-            } else if field_type == "InputPassword" {
+            } else if field_type == "Password" {
                 let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -51,7 +51,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if field_type == "InputDate" {
+            } else if field_type == "Date" {
                 let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,
@@ -68,7 +68,7 @@ pub trait Converters {
                         Bson::Null
                     },
                 );
-            } else if field_type == "InputDateTime" {
+            } else if field_type == "DateTime" {
                 let val_bson = doc.get(field_name).unwrap();
                 accumula_doc.insert(
                     field_name,

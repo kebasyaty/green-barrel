@@ -36,92 +36,91 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: CheckBox,
+        pub checkbox: Bool,
         //
-        pub date: InputDate,
-        pub datetime: InputDateTime,
+        pub date: Date,
+        pub datetime: DateTime,
         //
-        pub file: InputFile,
-        pub image: InputImage,
+        pub file: File,
+        pub image: Image,
         //
-        pub number_i32: NumberI32,
-        pub radio_i32: RadioI32,
-        pub range_i32: RangeI32,
+        pub number_i32: I32,
+        pub radio_i32: I32,
+        pub range_i32: I32,
         //
-        pub number_u32: NumberU32,
-        pub radio_u32: RadioU32,
-        pub range_u32: RangeU32,
+        pub number_u32: U32,
+        pub radio_u32: U32,
+        pub range_u32: U32,
         //
-        pub number_i64: NumberI64,
-        pub radio_i64: RadioI64,
-        pub range_i64: RangeI64,
+        pub number_i64: I64,
+        pub radio_i64: I64,
+        pub range_i64: I64,
         //
-        pub number_f64: NumberF64,
-        pub radio_f64: RadioF64,
-        pub range_f64: RangeF64,
+        pub number_f64: F64,
+        pub radio_f64: F64,
+        pub range_f64: F64,
         //
-        pub radio_text: RadioText,
+        pub radio_text: Text,
         //
-        pub select_text: SelectText,
-        pub select_text_dyn: SelectTextDyn,
-        pub select_text_mult: SelectTextMult,
-        pub select_text_mult_dyn: SelectTextMultDyn,
+        pub select_text: ChoiceText,
+        pub select_text_dyn: ChoiceTextDyn,
+        pub select_text_mult: ChoiceTextMult,
+        pub select_text_mult_dyn: ChoiceTextMultDyn,
         //
-        pub select_i32: SelectI32,
-        pub select_i32_dyn: SelectI32Dyn,
-        pub select_i32_mult: SelectI32Mult,
-        pub select_i32_mult_dyn: SelectI32MultDyn,
+        pub select_i32: ChoiceI32,
+        pub select_i32_dyn: ChoiceI32Dyn,
+        pub select_i32_mult: ChoiceI32Mult,
+        pub select_i32_mult_dyn: ChoiceI32MultDyn,
         //
-        pub select_u32: SelectU32,
-        pub select_u32_dyn: SelectU32Dyn,
-        pub select_u32_mult: SelectI32Mult,
-        pub select_u32_mult_dyn: SelectU32MultDyn,
+        pub select_u32: ChoiceU32,
+        pub select_u32_dyn: ChoiceU32Dyn,
+        pub select_u32_mult: ChoiceI32Mult,
+        pub select_u32_mult_dyn: ChoiceU32MultDyn,
         //
-        pub select_i64: SelectI64,
-        pub select_i64_dyn: SelectI64Dyn,
-        pub select_i64_mult: SelectI64Mult,
-        pub select_i64_mult_dyn: SelectI64MultDyn,
+        pub select_i64: ChoiceI64,
+        pub select_i64_dyn: ChoiceI64Dyn,
+        pub select_i64_mult: ChoiceI64Mult,
+        pub select_i64_mult_dyn: ChoiceI64MultDyn,
         //
-        pub select_f64: SelectF64,
-        pub select_f64_dyn: SelectF64Dyn,
-        pub select_f64_mult: SelectF64Mult,
-        pub select_f64_mult_dyn: SelectF64MultDyn,
+        pub select_f64: ChoiceF64,
+        pub select_f64_dyn: ChoiceF64Dyn,
+        pub select_f64_mult: ChoiceF64Mult,
+        pub select_f64_mult_dyn: ChoiceF64MultDyn,
         //
-        pub text: InputText,
-        pub slug: AutoSlug,
-        pub color: InputColor,
-        pub email: InputEmail,
-        pub password: InputPassword,
-        pub phone: InputPhone,
-        pub url: InputUrl,
-        pub ip: InputIP,
-        pub ipv4: InputIPv4,
-        pub ipv6: InputIPv6,
-        pub textarea: TextArea,
+        pub text: Text,
+        pub slug: Slug,
+        pub color: Color,
+        pub email: Email,
+        pub password: Password,
+        pub phone: Phone,
+        pub url: Url,
+        pub ip: IP,
+        pub ipv4: IP,
+        pub ipv6: IP,
     }
 
     impl Control for TestModel {
         fn custom_default() -> Self {
             Self {
-                checkbox: CheckBox {
+                checkbox: Bool {
                     required: true,
                     ..Default::default()
                 },
-                date: InputDate {
+                date: Date {
                     required: true,
                     default: Some("1970-02-28".into()),
                     min: "1970-01-01".into(),
                     max: "1970-03-01".into(),
                     ..Default::default()
                 },
-                datetime: InputDateTime {
+                datetime: DateTime {
                     required: true,
                     default: Some("1970-02-28T00:00".into()),
                     min: "1970-01-01T00:00".into(),
                     max: "1970-03-01T00:00".into(),
                     ..Default::default()
                 },
-                file: InputFile {
+                file: File {
                     required: true,
                     default: Some(FileData {
                         path: "./resources/media/default/no_file.odt".into(),
@@ -130,7 +129,7 @@ mod models {
                     }),
                     ..Default::default()
                 },
-                image: InputImage {
+                image: Image {
                     required: true,
                     default: Some(ImageData {
                         path: "./resources/media/default/no_image.png".into(),
@@ -145,296 +144,302 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                number_i32: NumberI32 {
+                number_i32: I32 {
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                radio_i32: RadioI32 {
+                radio_i32: I32 {
+                    input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                range_i32: RangeI32 {
+                range_i32: I32 {
+                    input_type: "range".into(),
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                number_u32: NumberU32 {
+                number_u32: U32 {
                     required: true,
                     default: Some(0),
                     min: 0,
                     max: 1,
                     ..Default::default()
                 },
-                radio_u32: RadioU32 {
+                radio_u32: U32 {
+                    input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                range_u32: RangeU32 {
+                range_u32: U32 {
+                    input_type: "range".into(),
                     required: true,
                     default: Some(1),
                     min: 0,
                     max: 1,
                     ..Default::default()
                 },
-                number_i64: NumberI64 {
+                number_i64: I64 {
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                radio_i64: RadioI64 {
+                radio_i64: I64 {
+                    input_type: "radio".into(),
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                range_i64: RangeI64 {
+                range_i64: I64 {
+                    input_type: "range".into(),
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                number_f64: NumberF64 {
+                number_f64: F64 {
                     required: true,
                     default: Some(0.0),
                     min: 0.0,
                     max: 1.0,
                     ..Default::default()
                 },
-                radio_f64: RadioF64 {
+                radio_f64: F64 {
+                    input_type: "radio".into(),
                     required: true,
                     default: Some(0.0),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                range_f64: RangeF64 {
+                range_f64: F64 {
+                    input_type: "range".into(),
                     required: true,
                     default: Some(0.0),
                     min: -1.0,
                     max: 1.0,
                     ..Default::default()
                 },
-                radio_text: RadioText {
+                radio_text: Text {
+                    input_type: "radio".into(),
                     required: true,
                     default: Some("value".to_string()),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_text: SelectText {
+                select_text: ChoiceText {
                     required: true,
                     default: Some("value".into()),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_text_dyn: SelectTextDyn {
+                select_text_dyn: ChoiceTextDyn {
                     ..Default::default()
                 },
-                select_text_mult: SelectTextMult {
+                select_text_mult: ChoiceTextMult {
                     required: true,
                     default: Some(vec!["value".into(), "value 2".into()]),
-                    options: vec![
+                    choices: vec![
                         ("value".into(), "Title".into()),
                         ("value 1".into(), "Title 1".into()),
                         ("value 2".into(), "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_text_mult_dyn: SelectTextMultDyn {
+                select_text_mult_dyn: ChoiceTextMultDyn {
                     ..Default::default()
                 },
-                select_i32: SelectI32 {
+                select_i32: ChoiceI32 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_i32_dyn: SelectI32Dyn {
+                select_i32_dyn: ChoiceI32Dyn {
                     ..Default::default()
                 },
-                select_i32_mult: SelectI32Mult {
+                select_i32_mult: ChoiceI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_i32_mult_dyn: SelectI32MultDyn {
+                select_i32_mult_dyn: ChoiceI32MultDyn {
                     ..Default::default()
                 },
-                select_u32: SelectU32 {
+                select_u32: ChoiceU32 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_u32_dyn: SelectU32Dyn {
+                select_u32_dyn: ChoiceU32Dyn {
                     ..Default::default()
                 },
-                select_u32_mult: SelectI32Mult {
+                select_u32_mult: ChoiceI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_u32_mult_dyn: SelectU32MultDyn {
+                select_u32_mult_dyn: ChoiceU32MultDyn {
                     ..Default::default()
                 },
-                select_i64: SelectI64 {
+                select_i64: ChoiceI64 {
                     required: true,
                     default: Some(0),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_i64_dyn: SelectI64Dyn {
+                select_i64_dyn: ChoiceI64Dyn {
                     ..Default::default()
                 },
-                select_i64_mult: SelectI64Mult {
+                select_i64_mult: ChoiceI64Mult {
                     required: true,
                     default: Some(vec![0, 1]),
-                    options: vec![
+                    choices: vec![
                         (0, "Title".into()),
                         (1, "Title 1".into()),
                         (2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_i64_mult_dyn: SelectI64MultDyn {
+                select_i64_mult_dyn: ChoiceI64MultDyn {
                     ..Default::default()
                 },
-                select_f64: SelectF64 {
+                select_f64: ChoiceF64 {
                     required: true,
                     default: Some(0.0),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_f64_dyn: SelectF64Dyn {
+                select_f64_dyn: ChoiceF64Dyn {
                     ..Default::default()
                 },
-                select_f64_mult: SelectF64Mult {
+                select_f64_mult: ChoiceF64Mult {
                     required: true,
                     default: Some(vec![0.0, 0.1]),
-                    options: vec![
+                    choices: vec![
                         (0.0, "Title".into()),
                         (0.1, "Title 1".into()),
                         (0.2, "Title 2".into()),
                     ],
                     ..Default::default()
                 },
-                select_f64_mult_dyn: SelectF64MultDyn {
+                select_f64_mult_dyn: ChoiceF64MultDyn {
                     ..Default::default()
                 },
-                text: InputText {
+                text: Text {
                     required: true,
                     default: Some("Some text".to_string()),
                     ..Default::default()
                 },
-                slug: AutoSlug {
+                slug: Slug {
                     slug_sources: vec!["email".into(), "phone".into()],
                     ..Default::default()
                 },
-                color: InputColor {
+                color: Color {
                     required: true,
                     default: Some("#ffffff".to_string()),
                     ..Default::default()
                 },
-                email: InputEmail {
+                email: Email {
                     required: true,
                     ..Default::default()
                 },
-                password: InputPassword {
+                password: Password {
                     required: true,
                     ..Default::default()
                 },
-                phone: InputPhone {
+                phone: Phone {
                     required: true,
                     default: Some("+1 202-918-2132".to_string()),
                     ..Default::default()
                 },
-                url: InputUrl {
+                url: Url {
                     required: true,
                     default: Some("https://ru.wikipedia.org/wiki/URL".to_string()),
                     ..Default::default()
                 },
-                ip: InputIP {
+                ip: IP {
                     required: true,
                     default: Some("192.168.123.132".to_string()),
                     ..Default::default()
                 },
-                ipv4: InputIPv4 {
+                ipv4: IP {
+                    field_type: "IPv4".into(),
                     required: true,
                     default: Some("192.168.50.1".to_string()),
                     ..Default::default()
                 },
-                ipv6: InputIPv6 {
+                ipv6: IP {
+                    field_type: "IPv6".into(),
                     required: true,
                     default: Some("1050:0:0:0:5:600:300c:326b".to_string()),
                     ..Default::default()
                 },
-                textarea: TextArea {
-                    required: true,
-                    default: Some("Some text".to_string()),
-                    ..Default::default()
-                },
                 /*
-                hash: HiddenHash::default(),
+                hash: Hash::default(),
                 created_at: HiddenDateTime::default(),
                 updated_at: HiddenDateTime::default(),
                 */

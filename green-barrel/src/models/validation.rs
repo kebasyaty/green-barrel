@@ -45,12 +45,12 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
-            "InputEmail" => {
+            "Email" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?
                 }
             }
-            "InputColor" => {
+            "Color" => {
                 if !RegexBuilder::new(
                     r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
                 )
@@ -62,27 +62,27 @@ pub trait Validation {
                     Err("Invalid Color code.")?
                 }
             }
-            "InputUrl" => {
+            "Url" => {
                 if !validator::validate_url(value) {
                     Err("Invalid Url.")?
                 }
             }
-            "InputIP" => {
+            "IP" => {
                 if !validator::validate_ip(value) {
                     Err("Invalid IP address.")?
                 }
             }
-            "InputIPv4" => {
+            "IPv4" => {
                 if !validator::validate_ip_v4(value) {
                     Err("Invalid IPv4 address.")?
                 }
             }
-            "InputIPv6" => {
+            "IPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err("Invalid IPv6 address.")?
                 }
             }
-            "InputPassword" => {
+            "Password" => {
                 if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")
                     .unwrap()
                     .is_match(value)

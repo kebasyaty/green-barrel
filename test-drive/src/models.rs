@@ -18,22 +18,22 @@ use crate::settings::{
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: InputText,
-    pub slug: AutoSlug,
-    pub first_name: InputText,
-    pub last_name: InputText,
-    pub email: InputEmail,
-    pub phone: InputPhone,
-    pub password: InputPassword,
-    pub confirm_password: InputPassword,
-    pub is_staff: CheckBox,
-    pub is_active: CheckBox,
+    pub username: Text,
+    pub slug: Slug,
+    pub first_name: Text,
+    pub last_name: Text,
+    pub email: Email,
+    pub phone: Phone,
+    pub password: Password,
+    pub confirm_password: Password,
+    pub is_staff: Bool,
+    pub is_active: Bool,
 }
 
 impl Control for User {
     fn custom_default() -> Self {
         Self {
-            username: InputText {
+            username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
                 maxlength: 150,
@@ -42,25 +42,25 @@ impl Control for User {
                 hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
                 ..Default::default()
             },
-            slug: AutoSlug {
+            slug: Slug {
                 label: "Slug".into(),
                 hint: "To create a human readable url".into(),
                 slug_sources: vec!["hash".into(), "username".into()],
                 ..Default::default()
             },
-            first_name: InputText {
+            first_name: Text {
                 label: "First name".into(),
                 placeholder: "Enter your First name".into(),
                 maxlength: 150,
                 ..Default::default()
             },
-            last_name: InputText {
+            last_name: Text {
                 label: "Last name".into(),
                 placeholder: "Enter your Last name".into(),
                 maxlength: 150,
                 ..Default::default()
             },
-            email: InputEmail {
+            email: Email {
                 label: "E-mail".into(),
                 placeholder: "Please enter your email".into(),
                 required: true,
@@ -69,7 +69,7 @@ impl Control for User {
                 hint: "Your actual E-mail".into(),
                 ..Default::default()
             },
-            phone: InputPhone {
+            phone: Phone {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,
@@ -77,7 +77,7 @@ impl Control for User {
                 hint: "Your actual phone number".into(),
                 ..Default::default()
             },
-            password: InputPassword {
+            password: Password {
                 label: "Password".into(),
                 placeholder: "Enter your password".into(),
                 required: true,
@@ -86,20 +86,20 @@ impl Control for User {
                     .into(),
                 ..Default::default()
             },
-            confirm_password: InputPassword {
+            confirm_password: Password {
                 label: "Confirm password".into(),
                 placeholder: "Repeat your password".into(),
                 required: true,
                 minlength: 8,
                 ..Default::default()
             },
-            is_staff: CheckBox {
+            is_staff: Bool {
                 label: "is staff?".into(),
                 checked: Some(true),
                 hint: "User can access the admin site?".into(),
                 ..Default::default()
             },
-            is_active: CheckBox {
+            is_active: Bool {
                 label: "is active?".into(),
                 checked: Some(true),
                 hint: "Is this an active account?".into(),

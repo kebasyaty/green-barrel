@@ -196,7 +196,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
-                {pub hash: HiddenHash}
+                {pub hash: Hash}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
@@ -366,14 +366,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             ))?
                         }
                     }
-                    // For dynamic field types, the `options` parameter must be an empty vector.
+                    // For dynamic field types, the `choices` parameter must be an empty vector.
                     if let Some(field_type) = instance_json_val.get(field_name).unwrap().get("field_type") {
                         if field_type.as_str().unwrap().contains("Dyn") {
-                            if let Some(options) = instance_json_val.get(field_name).unwrap().get("options") {
+                            if let Some(options) = instance_json_val.get(field_name).unwrap().get("choices") {
                                 if options.as_array().unwrap().len() > 0 {
                                     Err(format!(
                                         "Field: `{}` => \
-                                            For dynamic field types, the `options` parameter must be an empty vector.",
+                                            For dynamic field types, the `choices` parameter must be an empty vector.",
                                         field_name
                                     ))?
                                 }
@@ -442,8 +442,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         serde_json::json!(null)
                     };
                     default_value_map.insert(field_name.to_string(), default);
-                    // Determine if there are fields of type AutoSlug and if they use a hash field as a source.
-                    if !meta.is_use_hash_slug && field_type == "AutoSlug" {
+                    // Determine if there are fields of type Slug and if they use a hash field as a source.
+                    if !meta.is_use_hash_slug && field_type == "Slug" {
                         let flag = model_json
                             .get(field_name)
                             .unwrap()
@@ -580,11 +580,11 @@ struct Meta {
     pub default_value_map: std::collections::HashMap<String, serde_json::Value>,
     // List of field names that will not be saved to the database
     pub ignore_fields: Vec<String>,
-    // Option maps for fields type `select` - <field_name, options>
-    pub option_str_map: std::collections::HashMap<String, Vec<String>>,
-    pub option_i32_map: std::collections::HashMap<String, Vec<i32>>,
-    pub option_i64_map: std::collections::HashMap<String, Vec<i64>>,
-    pub option_f64_map: std::collections::HashMap<String, Vec<f64>>,
+    // Choice maps for fields type `choice`. Format: <field_name, choices>
+    pub choice_str_map: std::collections::HashMap<String, Vec<String>>,
+    pub choice_i32_map: std::collections::HashMap<String, Vec<i32>>,
+    pub choice_i64_map: std::collections::HashMap<String, Vec<i64>>,
+    pub choice_f64_map: std::collections::HashMap<String, Vec<f64>>,
     pub model_json: serde_json::Value,
 }
 
@@ -610,10 +610,10 @@ impl Default for Meta {
             field_type_map: std::collections::HashMap::new(),
             default_value_map: std::collections::HashMap::new(),
             ignore_fields: Vec::new(),
-            option_str_map: std::collections::HashMap::new(),
-            option_i32_map: std::collections::HashMap::new(),
-            option_i64_map: std::collections::HashMap::new(),
-            option_f64_map: std::collections::HashMap::new(),
+            choice_str_map: std::collections::HashMap::new(),
+            choice_i32_map: std::collections::HashMap::new(),
+            choice_i64_map: std::collections::HashMap::new(),
+            choice_f64_map: std::collections::HashMap::new(),
             model_json: serde_json::json!(null),
         }
     }
@@ -627,56 +627,44 @@ fn get_field_info<'a>(
     field_type: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match field_type {
-        "CheckBox" => ("bool", "checkbox"),
-        "InputColor" => ("String", "color"),
-        "InputDate" => ("String", "date"),
-        "InputDateTime" => ("String", "datetime"),
-        "InputEmail" => ("String", "email"),
-        "InputFile" => ("String", "file"),
-        "InputImage" => ("String", "file"),
-        "NumberI32" => ("i32", "number"),
-        "NumberU32" => ("u32", "number"),
-        "NumberI64" => ("i64", "number"),
-        "NumberF64" => ("f64", "number"),
-        "InputPassword" => ("String", "password"),
-        "RadioText" => ("String", "radio"),
-        "RadioI32" => ("i32", "radio"),
-        "RadioU32" => ("u32", "radio"),
-        "RadioI64" => ("i64", "radio"),
-        "RadioF64" => ("f64", "radio"),
-        "RangeI32" => ("i32", "range"),
-        "RangeU32" => ("u32", "range"),
-        "RangeI64" => ("i64", "range"),
-        "RangeF64" => ("f64", "range"),
-        "InputPhone" => ("String", "tel"),
-        "InputText" => ("String", "text"),
-        "AutoSlug" => ("String", "text"),
-        "InputUrl" => ("String", "url"),
-        "InputIP" => ("String", "text"),
-        "InputIPv4" => ("String", "text"),
-        "InputIPv6" => ("String", "text"),
-        "TextArea" => ("String", "textarea"),
-        "SelectText" => ("String", "select"),
-        "SelectTextDyn" => ("String", "select"),
-        "SelectTextMult" => ("Vec<String>", "select"),
-        "SelectTextMultDyn" => ("Vec<String>", "select"),
-        "SelectI32" => ("i32", "select"),
-        "SelectI32Dyn" => ("i32", "select"),
-        "SelectI32Mult" => ("Vec<i32>", "select"),
-        "SelectI32MultDyn" => ("Vec<i32>", "select"),
-        "SelectU32" => ("u32", "select"),
-        "SelectU32Dyn" => ("u32", "select"),
-        "SelectU32Mult" => ("Vec<u32>", "select"),
-        "SelectU32MultDyn" => ("Vec<u32>", "select"),
-        "SelectI64" => ("i64", "select"),
-        "SelectI64Dyn" => ("i64", "select"),
-        "SelectI64Mult" => ("Vec<i64>", "select"),
-        "SelectI64MultDyn" => ("Vec<i64>", "select"),
-        "SelectF64" => ("f64", "select"),
-        "SelectF64Dyn" => ("f64", "select"),
-        "SelectF64Mult" => ("Vec<f64>", "select"),
-        "SelectF64MultDyn" => ("Vec<f64>", "select"),
-        "HiddenHash" => ("String", "text"),
+        "Bool" => ("bool", "checkbox"),
+        "Color" => ("String", "color"),
+        "Date" => ("String", "date"),
+        "DateTime" => ("String", "datetime"),
+        "Email" => ("String", "email"),
+        "File" => ("String", "file"),
+        "Image" => ("String", "file"),
+        "I32" => ("i32", "number"),
+        "U32" => ("u32", "number"),
+        "I64" => ("i64", "number"),
+        "F64" => ("f64", "number"),
+        "Password" => ("String", "password"),
+        "Phone" => ("String", "tel"),
+        "Text" => ("String", "text"),
+        "Slug" => ("String", "text"),
+        "Url" => ("String", "url"),
+        "IP" => ("String", "text"),
+        "ChoiceText" => ("String", "select"),
+        "ChoiceTextDyn" => ("String", "select"),
+        "ChoiceTextMult" => ("Vec<String>", "select"),
+        "ChoiceTextMultDyn" => ("Vec<String>", "select"),
+        "ChoiceI32" => ("i32", "select"),
+        "ChoiceI32Dyn" => ("i32", "select"),
+        "ChoiceI32Mult" => ("Vec<i32>", "select"),
+        "ChoiceI32MultDyn" => ("Vec<i32>", "select"),
+        "ChoiceU32" => ("u32", "select"),
+        "ChoiceU32Dyn" => ("u32", "select"),
+        "ChoiceU32Mult" => ("Vec<u32>", "select"),
+        "ChoiceU32MultDyn" => ("Vec<u32>", "select"),
+        "ChoiceI64" => ("i64", "select"),
+        "ChoiceI64Dyn" => ("i64", "select"),
+        "ChoiceI64Mult" => ("Vec<i64>", "select"),
+        "ChoiceI64MultDyn" => ("Vec<i64>", "select"),
+        "ChoiceF64" => ("f64", "select"),
+        "ChoiceF64Dyn" => ("f64", "select"),
+        "ChoiceF64Mult" => ("Vec<f64>", "select"),
+        "ChoiceF64MultDyn" => ("Vec<f64>", "select"),
+        "Hash" => ("String", "text"),
         "HiddenDateTime" => ("String", "datetime"),
         _ => Err(format!(
             "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \

@@ -8,14 +8,14 @@
 /// #[Model]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     title: InputText,
-///     slug: AutoSlug,
+///     title: Text,
+///     slug: Slug,
 /// }
 ///
 /// impl Control for ModelName {
 ///     fn custom_default() -> Self {
 ///         Self {
-///             title: InputText {
+///             title: Text {
 ///                 label: String::from("Title"),
 ///                 maxlength: 60,
 ///                 required: true,

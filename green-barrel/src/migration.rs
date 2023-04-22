@@ -348,17 +348,15 @@ impl<'a> Monitor<'a> {
                                 tmp_doc.insert(
                                     field_name.clone(),
                                     match field_type.as_str() {
-                                         "RadioText" | "InputColor"
-                                        | "InputEmail" | "InputPassword" | "InputPhone"
-                                        | "InputText" | "InputUrl" | "InputIP" | "InputIPv4"
-                                        | "InputIPv6" | "TextArea" | "SelectText" | "AutoSlug" => {
+                                         "Color" | "Email" | "Password" | "Phone"| "Text" 
+                                        | "Url" | "IP"  |"ChoiceText" | "Slug" => {
                                             if !default_value.is_null() {
                                                 Bson::String(default_value.as_str().unwrap().to_string())
                                             } else {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputDate" => {
+                                        "Date" => {
                                            if !default_value.is_null() {
                                                 let val = format!("{}T00:00",default_value.as_str().unwrap());
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( &val, "%Y-%m-%dT%H:%M")
@@ -377,7 +375,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputDateTime" | "HiddenDateTime" => {
+                                        "DateTime" | "HiddenDateTime" => {
                                             if !default_value.is_null() {
                                                 let val = default_value.as_str().unwrap();
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( val, "%Y-%m-%dT%H:%M")
@@ -396,7 +394,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioI32" | "NumberI32" | "RangeI32" | "SelectI32" => {
+                                        "I32" | "ChoiceI32" => {
                                             if !default_value.is_null() {
                                                 Bson::Int32(
                                                     i32::try_from(default_value.as_i64().unwrap())?
@@ -405,9 +403,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioU32" | "NumberU32" | "RangeU32"
-                                        | "SelectU32" | "RadioI64" | "NumberI64"
-                                        | "RangeI64" | "SelectI64" => {
+                                        "U32" | "ChoiceU32" | "I64" | "ChoiceI64" => {
                                             if !default_value.is_null() {
                                                 Bson::Int64(
                                                     default_value.as_i64().unwrap()
@@ -416,8 +412,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "RadioF64" | "NumberF64" | "RangeF64" 
-                                        | "SelectF64" => {
+                                        "F64" | "ChoiceF64" => {
                                             if !default_value.is_null() {
                                                 Bson::Double(
                                                    default_value.as_f64().unwrap()
@@ -426,7 +421,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "CheckBox" => {
+                                        "Bool" => {
                                             if !default_value.is_null() {
                                                 Bson::Boolean(
                                                     default_value.as_bool().unwrap()
@@ -435,7 +430,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Boolean(false)
                                             }
                                         }
-                                        "InputFile" => {
+                                        "File" => {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<FileData>(default_value.clone())?;
                                                 // Define flags to check.
@@ -468,7 +463,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "InputImage" => {
+                                        "Image" => {
                                             if !default_value.is_null() {
                                                 let mut file_data = serde_json::from_value::<ImageData>(default_value.clone())?;
                                                 // Define flags to check.
@@ -505,7 +500,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectTextMult" => {
+                                        "ChoiceTextMult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<String>>(default_value.clone())?
                                                     .iter().map(|item| Bson::String(item.clone()))
@@ -515,7 +510,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectI32Mult" => {
+                                        "ChoiceI32Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i32>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Int32(*item))
@@ -525,7 +520,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                         "SelectU32Mult" | "SelectI64Mult"  => {
+                                         "ChoiceU32Mult" | "ChoiceI64Mult"  => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i64>>(default_value.clone())?
                                                     .iter().map(|item| mongodb::bson::Bson::Int64(*item))
@@ -535,7 +530,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectF64Mult" => {
+                                        "ChoiceF64Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<f64>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Double(*item))
@@ -545,10 +540,10 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectTextDyn" | "SelectTextMultDyn" | "SelectI32Dyn"
-                                        | "SelectI32MultDyn" | "SelectU32Dyn" | "SelectU32MultDyn"
-                                        | "SelectI64Dyn" | "SelectI64MultDyn" | "SelectF64Dyn"
-                                        | "SelectF64MultDyn" => {
+                                        "ChoiceTextDyn" | "ChoiceTextMultDyn" | "ChoiceI32Dyn"
+                                        | "ChoiceI32MultDyn" | "ChoiceU32Dyn" | "ChoiceU32MultDyn"
+                                        | "ChoiceI64Dyn" | "ChoiceI64MultDyn" | "ChoiceF64Dyn"
+                                        | "ChoiceF64MultDyn" => {
                                             Bson::Null
                                         }
                                         _ => {
