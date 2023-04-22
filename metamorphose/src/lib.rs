@@ -366,14 +366,14 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             ))?
                         }
                     }
-                    // For dynamic field types, the `options` parameter must be an empty vector.
+                    // For dynamic field types, the `choices` parameter must be an empty vector.
                     if let Some(field_type) = instance_json_val.get(field_name).unwrap().get("field_type") {
                         if field_type.as_str().unwrap().contains("Dyn") {
-                            if let Some(options) = instance_json_val.get(field_name).unwrap().get("options") {
+                            if let Some(options) = instance_json_val.get(field_name).unwrap().get("choices") {
                                 if options.as_array().unwrap().len() > 0 {
                                     Err(format!(
                                         "Field: `{}` => \
-                                            For dynamic field types, the `options` parameter must be an empty vector.",
+                                            For dynamic field types, the `choices` parameter must be an empty vector.",
                                         field_name
                                     ))?
                                 }
@@ -442,8 +442,8 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                         serde_json::json!(null)
                     };
                     default_value_map.insert(field_name.to_string(), default);
-                    // Determine if there are fields of type AutoSlug and if they use a hash field as a source.
-                    if !meta.is_use_hash_slug && field_type == "AutoSlug" {
+                    // Determine if there are fields of type Slug and if they use a hash field as a source.
+                    if !meta.is_use_hash_slug && field_type == "Slug" {
                         let flag = model_json
                             .get(field_name)
                             .unwrap()
