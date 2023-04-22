@@ -15,27 +15,27 @@ version = "1.1.0"
 doctest = false
 
 [dependencies]
-async-lock = "2.6.0"
-async-trait = "0.1.59"
-chrono = "0.4.23"
-futures = "0.3.25"
-image = "0.24.5"
+async-lock = "2.7.0"
+async-trait = "0.1.68"
+chrono = "0.4.24"
+futures = "0.3.28"
+image = "0.24.6"
 lazy_static = "1.4.0"
 rand = "0.8.5"
-regex = "1.7.0"
+regex = "1.8.1"
 rust-argon2 = "1.0.0"
-serde_json = "1.0.89"
+serde_json = "1.0.96"
 slug = "0.1.4"
 validator = "0.16.0"
 
 [dependencies.mongodb]
 default-features = false
 features = ["tokio-runtime", "bson-chrono-0_4"]
-version = "2.3.1"
+version = "2.5.0"
 
 [dependencies.serde]
 features = ["derive"]
-version = "1.0.149"
+version = "1.0.160"
 
 [dependencies.uuid]
 features = [
@@ -43,7 +43,7 @@ features = [
   "fast-rng",
   "macro-diagnostics",
 ]
-version = "1.2.2"
+version = "1.3.1"
 
 [dev-dependencies]
-tokio = {version = "1.23.0", features = ["full"]}
+tokio = {version = "1.27.0", features = ["full"]}
