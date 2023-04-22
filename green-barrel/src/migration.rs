@@ -500,7 +500,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectTextMult" => {
+                                        "ChoiceTextMult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<String>>(default_value.clone())?
                                                     .iter().map(|item| Bson::String(item.clone()))
@@ -510,7 +510,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectI32Mult" => {
+                                        "ChoiceI32Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i32>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Int32(*item))
@@ -520,7 +520,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                         "SelectU32Mult" | "SelectI64Mult"  => {
+                                         "ChoiceU32Mult" | "ChoiceI64Mult"  => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<i64>>(default_value.clone())?
                                                     .iter().map(|item| mongodb::bson::Bson::Int64(*item))
@@ -530,7 +530,7 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectF64Mult" => {
+                                        "ChoiceF64Mult" => {
                                             if !default_value.is_null() {
                                                 let val = serde_json::from_value::<Vec<f64>>(default_value.clone())?
                                                     .iter().map(|item| Bson::Double(*item))
@@ -540,10 +540,10 @@ impl<'a> Monitor<'a> {
                                                 Bson::Null
                                             }
                                         }
-                                        "SelectTextDyn" | "SelectTextMultDyn" | "SelectI32Dyn"
-                                        | "SelectI32MultDyn" | "SelectU32Dyn" | "SelectU32MultDyn"
-                                        | "SelectI64Dyn" | "SelectI64MultDyn" | "SelectF64Dyn"
-                                        | "SelectF64MultDyn" => {
+                                        "ChoiceTextDyn" | "ChoiceTextMultDyn" | "ChoiceI32Dyn"
+                                        | "ChoiceI32MultDyn" | "ChoiceU32Dyn" | "ChoiceU32MultDyn"
+                                        | "ChoiceI64Dyn" | "ChoiceI64MultDyn" | "ChoiceF64Dyn"
+                                        | "ChoiceF64MultDyn" => {
                                             Bson::Null
                                         }
                                         _ => {

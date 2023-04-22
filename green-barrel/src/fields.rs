@@ -39,12 +39,12 @@ pub mod choice_i64_mult;
 pub mod choice_i64_mult_dyn;
 pub mod choice_text;
 pub mod choice_text_dyn;
+pub mod choice_text_mult;
+pub mod choice_text_mult_dyn;
 pub mod choice_u32;
-pub mod select_text_mult;
-pub mod select_text_mult_dyn;
-pub mod select_u32_dyn;
-pub mod select_u32_mult;
-pub mod select_u32_mult_dyn;
+pub mod choice_u32_dyn;
+pub mod choice_u32_mult;
+pub mod choice_u32_mult_dyn;
 
 pub use {
     crate::fields::bool::Bool, crate::fields::image::Image, crate::fields::slug::Slug,
@@ -53,10 +53,10 @@ pub use {
     choice_i32_mult::ChoiceI32Mult, choice_i32_mult_dyn::ChoiceI32MultDyn, choice_i64::ChoiceI64,
     choice_i64_dyn::ChoiceI64Dyn, choice_i64_mult::ChoiceI64Mult,
     choice_i64_mult_dyn::ChoiceI64MultDyn, choice_text::ChoiceText, choice_text_dyn::ChoiceTextDyn,
-    choice_u32::ChoiceU32, color::Color, date::Date, date_time::DateTime, email::Email, file::File,
-    hash::Hash, hidden_date_time::HiddenDateTime, ip::IP, number_f64::F64, number_i32::I32,
-    number_i64::I64, number_u32::U32, password::Password, phone::Phone,
-    select_text_mult::SelectTextMult, select_text_mult_dyn::SelectTextMultDyn,
-    select_u32_dyn::SelectU32Dyn, select_u32_mult::SelectU32Mult,
-    select_u32_mult_dyn::SelectU32MultDyn, text::Text, url::Url,
+    choice_text_mult::ChoiceTextMult, choice_text_mult_dyn::ChoiceTextMultDyn,
+    choice_u32::ChoiceU32, choice_u32_dyn::ChoiceU32Dyn, choice_u32_mult::ChoiceU32Mult,
+    choice_u32_mult_dyn::ChoiceU32MultDyn, color::Color, date::Date, date_time::DateTime,
+    email::Email, file::File, hash::Hash, hidden_date_time::HiddenDateTime, ip::IP,
+    number_f64::F64, number_i32::I32, number_i64::I64, number_u32::U32, password::Password,
+    phone::Phone, text::Text, url::Url,
 };

@@ -4,19 +4,20 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct SelectTextMultDyn {
+pub struct ChoiceTextMult {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
     pub name: String, // The value is determined automatically.
     pub value: Option<Vec<String>>, // Sets the value of an element.
+    pub default: Option<Vec<String>>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub multiple: String, // Specifies that multiple options can be selected at once.
-    pub choices: Vec<(String, String)>, // Elements are added via the ModelName::update_dyn_field() method.
+    pub choices: Vec<(String, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![("value", "Title"), ("value 2", "Title 2")].
     pub is_hide: bool,                  // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
@@ -26,14 +27,15 @@ pub struct SelectTextMultDyn {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for SelectTextMultDyn {
+impl Default for ChoiceTextMult {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("SelectTextMultDyn"),
+            field_type: String::from("ChoiceTextMult"),
             name: String::new(),
             value: None,
+            default: None,
             placeholder: String::new(),
             required: false,
             unique: false,
@@ -47,12 +49,12 @@ impl Default for SelectTextMultDyn {
             hint: String::new(),
             warning: String::new(),
             error: String::new(),
-            group: 7,
+            group: 6,
         }
     }
 }
 
-impl SelectTextMultDyn {
+impl ChoiceTextMult {
     pub fn get(&self) -> Option<Vec<String>> {
         self.value.clone()
     }

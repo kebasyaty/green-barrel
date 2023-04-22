@@ -103,7 +103,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 let mut model_json = model_json.clone();
                 for (field_name, field_type) in field_type_map.iter() {
                     if let Some(data) = fixture.get(field_name) {
-                        let value_key = if field_type == "CheckBox" {
+                        let value_key = if field_type == "Bool" {
                             "checked"
                         } else {
                             "value"

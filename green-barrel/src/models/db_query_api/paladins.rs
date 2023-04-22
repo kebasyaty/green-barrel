@@ -2069,7 +2069,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             let coll = client
                 .database(database_name.as_str())
                 .collection::<Document>(collection_name.as_str());
-            // Having fields with a controller of inputSlug type.
+            // Having fields with a controller of Slug type.
             if !is_update && is_no_error && is_use_hash_slug {
                 stop_step = 2;
             }
