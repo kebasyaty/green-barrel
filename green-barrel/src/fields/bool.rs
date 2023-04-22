@@ -14,14 +14,14 @@ pub struct Bool {
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
     pub checked: Option<bool>, // Use as the current value and default values.
-    pub disabled: bool,        // Blocks access and modification of the element.
-    pub readonly: bool,        // Specifies that the field cannot be modified by the user.
-    pub is_hide: bool,         // Hide field from user.
+    pub disabled: bool, // Blocks access and modification of the element.
+    pub readonly: bool, // Specifies that the field cannot be modified by the user.
+    pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some number""#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
-    pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // Warning information.
-    pub error: String,       // The value is determined automatically.
+    pub hint: String, // Additional explanation for the user.
+    pub warning: String, // Warning information.
+    pub error: String, // The value is determined automatically.
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
