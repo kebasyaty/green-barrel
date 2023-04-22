@@ -453,7 +453,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation in regular expression (email, password, etc...).
+                    // Validation in regular expression - Email, Color, Url, IP, IPv4, IPv6, Password.
                     Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
