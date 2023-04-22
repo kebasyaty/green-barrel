@@ -9,7 +9,7 @@ pub struct Text {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
+    pub input_type: String, // <input type="text|radio">.
     pub multiline: bool, // true - for textarea.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
@@ -38,8 +38,8 @@ impl Default for Text {
             id: String::new(),
             label: String::new(),
             field_type: String::from("Text"),
-            input_type: String::from("text"),
-            multiline: false, // true - for textarea.
+            input_type: String::from("text"), // text|radio
+            multiline: false,                 // true - for textarea.
             name: String::new(),
             value: None,
             default: None,

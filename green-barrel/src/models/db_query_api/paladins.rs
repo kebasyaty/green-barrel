@@ -356,7 +356,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     //
                     let curr_val = const_value.as_str().unwrap();
                     //
-                    if field_type == "RadioText"
+                    if final_field["input_type"].as_str().unwrap() == "radio"
                         && !choice_str_map
                             .get(field_name)
                             .unwrap()
