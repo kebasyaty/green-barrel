@@ -9,37 +9,37 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: InputText,
+    pub username: Text,
     //
-    //pub select_text: SelectText,
-    pub select_text_mult: SelectTextMult,
+    //pub select_text: ChoiceText,
+    pub select_text_mult: ChoiceTextMult,
     //
-    // pub select_i32: SelectI32,
+    //pub select_i32: ChoiceI32,
     //pub select_i32_mult: SelectI32Mult,
     //
-    // pub select_u32: SelectU32,
-    //pub select_u32_mult: SelectI32Mult,
+    //pub select_u32: ChoiceU32,
+    //pub select_u32_mult: ChoiceI32Mult,
     //
-    //pub select_i64: SelectI64,
-    //pub select_i64_mult: SelectI64Mult,
+    //pub select_i64: ChoiceI64,
+    //pub select_i64_mult: ChoiceI64Mult,
     //
-    //pub select_f64: SelectF64,
-    //pub select_f64_mult: SelectF64Mult,
+    //pub select_f64: ChoiceF64,
+    //pub select_f64_mult: ChoiceF64Mult,
 }
 
 impl Control for User {
     fn custom_default() -> Self {
         Self {
-            username: InputText {
+            username: Text {
                 maxlength: 150,
                 required: true,
                 unique: true,
                 ..Default::default()
             },
-            select_text_mult: SelectTextMult {
+            select_text_mult: ChoiceTextMult {
                 required: true,
                 default: Some(vec!["windows".into(), "linux".into(), "mac os".into()]),
-                options: vec![
+                choices: vec![
                     ("windows".into(), "Windows".into()),
                     ("linux".into(), "Linux".into()),
                     ("mac os".into(), "Mac OS".into()),
