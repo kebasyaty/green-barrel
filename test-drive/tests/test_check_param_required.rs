@@ -63,29 +63,29 @@ mod models {
         pub radio_text: Text,
         //
         pub select_text: ChoiceText,
-        pub select_text_dyn: SelectTextDyn,
-        pub select_text_mult: SelectTextMult,
-        pub select_text_mult_dyn: SelectTextMultDyn,
+        pub select_text_dyn: ChoiceTextDyn,
+        pub select_text_mult: ChoiceTextMult,
+        pub select_text_mult_dyn: ChoiceTextMultDyn,
         //
         pub select_i32: ChoiceI32,
-        pub select_i32_dyn: SelectI32Dyn,
-        pub select_i32_mult: SelectI32Mult,
-        pub select_i32_mult_dyn: SelectI32MultDyn,
+        pub select_i32_dyn: ChoiceI32Dyn,
+        pub select_i32_mult: ChoiceI32Mult,
+        pub select_i32_mult_dyn: ChoiceI32MultDyn,
         //
         pub select_u32: ChoiceU32,
-        pub select_u32_dyn: SelectU32Dyn,
-        pub select_u32_mult: SelectI32Mult,
-        pub select_u32_mult_dyn: SelectU32MultDyn,
+        pub select_u32_dyn: ChoiceU32Dyn,
+        pub select_u32_mult: ChoiceI32Mult,
+        pub select_u32_mult_dyn: ChoiceU32MultDyn,
         //
         pub select_i64: ChoiceI64,
-        pub select_i64_dyn: SelectI64Dyn,
-        pub select_i64_mult: SelectI64Mult,
-        pub select_i64_mult_dyn: SelectI64MultDyn,
+        pub select_i64_dyn: ChoiceI64Dyn,
+        pub select_i64_mult: ChoiceI64Mult,
+        pub select_i64_mult_dyn: ChoiceI64MultDyn,
         //
         pub select_f64: ChoiceF64,
-        pub select_f64_dyn: SelectF64Dyn,
-        pub select_f64_mult: SelectF64Mult,
-        pub select_f64_mult_dyn: SelectF64MultDyn,
+        pub select_f64_dyn: ChoiceF64Dyn,
+        pub select_f64_mult: ChoiceF64Mult,
+        pub select_f64_mult_dyn: ChoiceF64MultDyn,
         //
         pub text: Text,
         pub slug: Slug,
@@ -269,10 +269,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_text_dyn: SelectTextDyn {
+                select_text_dyn: ChoiceTextDyn {
                     ..Default::default()
                 },
-                select_text_mult: SelectTextMult {
+                select_text_mult: ChoiceTextMult {
                     required: true,
                     default: Some(vec!["value".into(), "value 2".into()]),
                     choices: vec![
@@ -282,7 +282,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_text_mult_dyn: SelectTextMultDyn {
+                select_text_mult_dyn: ChoiceTextMultDyn {
                     ..Default::default()
                 },
                 select_i32: ChoiceI32 {
@@ -295,10 +295,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i32_dyn: SelectI32Dyn {
+                select_i32_dyn: ChoiceI32Dyn {
                     ..Default::default()
                 },
-                select_i32_mult: SelectI32Mult {
+                select_i32_mult: ChoiceI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -308,7 +308,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i32_mult_dyn: SelectI32MultDyn {
+                select_i32_mult_dyn: ChoiceI32MultDyn {
                     ..Default::default()
                 },
                 select_u32: ChoiceU32 {
@@ -321,10 +321,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_u32_dyn: SelectU32Dyn {
+                select_u32_dyn: ChoiceU32Dyn {
                     ..Default::default()
                 },
-                select_u32_mult: SelectI32Mult {
+                select_u32_mult: ChoiceI32Mult {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -334,7 +334,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_u32_mult_dyn: SelectU32MultDyn {
+                select_u32_mult_dyn: ChoiceU32MultDyn {
                     ..Default::default()
                 },
                 select_i64: ChoiceI64 {
@@ -347,10 +347,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i64_dyn: SelectI64Dyn {
+                select_i64_dyn: ChoiceI64Dyn {
                     ..Default::default()
                 },
-                select_i64_mult: SelectI64Mult {
+                select_i64_mult: ChoiceI64Mult {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -360,7 +360,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i64_mult_dyn: SelectI64MultDyn {
+                select_i64_mult_dyn: ChoiceI64MultDyn {
                     ..Default::default()
                 },
                 select_f64: ChoiceF64 {
@@ -373,10 +373,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_f64_dyn: SelectF64Dyn {
+                select_f64_dyn: ChoiceF64Dyn {
                     ..Default::default()
                 },
-                select_f64_mult: SelectF64Mult {
+                select_f64_mult: ChoiceF64Mult {
                     required: true,
                     default: Some(vec![0.0, 0.1]),
                     choices: vec![
@@ -386,7 +386,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_f64_mult_dyn: SelectF64MultDyn {
+                select_f64_mult_dyn: ChoiceF64MultDyn {
                     ..Default::default()
                 },
                 text: Text {
