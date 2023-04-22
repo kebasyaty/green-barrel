@@ -13,7 +13,7 @@ pub struct Bool {
     pub name: String, // The value is determined automatically.
     pub placeholder: String, // Displays prompt text.
     pub required: bool, // Mandatory field.
-    pub checked: Option<bool>, // A pre-activated radio button or checkbox. Hint: Use as value by default.
+    pub checked: Option<bool>, // Use as the current value and default values.
     pub disabled: bool,        // Blocks access and modification of the element.
     pub readonly: bool,        // Specifies that the field cannot be modified by the user.
     pub is_hide: bool,         // Hide field from user.
@@ -35,7 +35,7 @@ impl Default for Bool {
             name: String::new(),
             placeholder: String::new(),
             required: false,
-            checked: Some(false), // Hint: Use as value by default.
+            checked: Some(false), // Use as the current value and default values.
             disabled: false,
             readonly: false,
             is_hide: false,
