@@ -9,15 +9,15 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: InputText,
-    pub email: InputEmail,
-    pub slug: AutoSlug,
+    pub username: Text,
+    pub email: Email,
+    pub slug: Slug,
 }
 
 impl Control for User {
     fn custom_default() -> Self {
         Self {
-            username: InputText {
+            username: Text {
                 label: "Username".into(),
                 unique: true,
                 required: true,
@@ -25,14 +25,14 @@ impl Control for User {
                 hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
                 ..Default::default()
             },
-            email: InputEmail {
+            email: Email {
                 label: "E-mail".into(),
                 required: true,
                 unique: true,
                 maxlength: 320,
                 ..Default::default()
             },
-            slug: AutoSlug {
+            slug: Slug {
                 label: "Slug".into(),
                 is_hide: true,
                 hint: "To create a human readable url".into(),
