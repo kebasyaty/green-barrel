@@ -1,5 +1,5 @@
-//! A field for entering a **text**|**textarea(is_multiline=true)** string.
-//! For Html <input type="**text**|**radio**"> and **textarea**(multiline=true)
+//! A field for entering a **text** string.
+//! For Html <input type="**text**|**radio**" and **textarea**(multiline=true)
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ pub struct Text {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
-    pub input_type: String, // <input type="text|radio">.
+    pub input_type: String, // <input type="text|radio".
     pub multiline: bool, // true - for textarea.
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.

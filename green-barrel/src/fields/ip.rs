@@ -1,4 +1,5 @@
-//! Field for entering **IP**|**IPv4**|**IPv6** addresses.
+//! Field for entering IP addresses.
+//! Parameter: field_type=**IP**|**IPv4**|**IPv6**
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

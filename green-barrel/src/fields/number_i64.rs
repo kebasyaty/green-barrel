@@ -1,5 +1,5 @@
 //! A field for entering integer 64-bit numbers.
-//! For Html <input type="**number**|**radio**|**range**">.
+//! For Html <input type="**number**|**radio**|**range**".
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
