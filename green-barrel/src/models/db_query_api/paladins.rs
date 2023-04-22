@@ -164,14 +164,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             choice_f64_map,
             ignore_fields,
             collection_name,
-            field_type_map,
+            fields_name,
             database_name,
             is_use_add_valid,
             is_add_doc,
             is_up_doc,
             app_name,
             unique_app_key,
-            fields_name,
         ) = {
             // Get a key to access the metadata store.
             let key = Self::key()?;
@@ -187,14 +186,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.choice_f64_map.clone(),
                     meta.ignore_fields.clone(),
                     meta.collection_name.clone(),
-                    meta.field_type_map.clone(),
+                    meta.fields_name.clone(),
                     meta.database_name.clone(),
                     meta.is_use_add_valid,
                     meta.is_add_doc,
                     meta.is_up_doc,
                     meta.app_name.clone(),
                     meta.unique_app_key.clone(),
-                    meta.fields_name.clone(),
                 )
             } else {
                 Err(format!(
@@ -277,7 +275,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             }
         }
         // Loop over fields for validation.
-        for (field_name, field_type) in field_type_map.iter() {
+        for field_name in fields_name.iter() {
             // Don't check the `hash` field.
             if field_name == "hash" {
                 continue;
@@ -320,7 +318,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 false
             };
             let is_hide = final_field["is_hide"].as_bool().unwrap();
-            let field_type = field_type.as_str();
+            //
+            let field_type_string = final_field["field_type"].as_str().unwrap().to_string();
+            let field_type = field_type_string.as_str();
 
             // Field validation.
             match const_group {
