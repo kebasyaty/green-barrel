@@ -835,7 +835,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 //
-                // "SelectTextDyn" | "SelectI32Dyn" | "SelectU32Dyn" | "SelectI64Dyn" | "SelectF64Dyn"
+                // "ChoiceTextDyn" | "ChoiceI32Dyn" | "ChoiceU32Dyn" | "ChoiceI64Dyn" | "ChoiceF64Dyn"
                 5 => {
                     //
                     if const_value.is_null() {
@@ -855,7 +855,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get selected items.
                     match field_type {
-                        "SelectTextDyn" => {
+                        "ChoiceTextDyn" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
                             if choice_str_map.get(field_name).unwrap().contains(&val) {
@@ -874,7 +874,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectI32Dyn" => {
+                        "ChoiceI32Dyn" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
                             if choice_i32_map.get(field_name).unwrap().contains(&val) {
@@ -893,7 +893,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectU32Dyn" | "SelectI64Dyn" => {
+                        "ChoiceU32Dyn" | "ChoiceI64Dyn" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
                             if choice_i64_map.get(field_name).unwrap().contains(&val) {
@@ -912,7 +912,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectF64Dyn" => {
+                        "ChoiceF64Dyn" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
                             if choice_f64_map.get(field_name).unwrap().contains(&val) {
@@ -938,7 +938,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                 }
                 //
-                // "SelectTextMult" | "SelectI32Mult" | "SelectU32Mult" | "SelectI64Mult" | "SelectF64Mult"
+                // "ChoiceTextMult" | "ChoiceI32Mult" | "ChoiceU32Mult" | "ChoiceI64Mult" | "ChoiceF64Mult"
                 6 => {
                     //
                     if const_value.is_null() {
@@ -958,7 +958,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get selected items.
                     match field_type {
-                        "SelectTextMult" => {
+                        "ChoiceTextMult" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -986,7 +986,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectI32Mult" => {
+                        "ChoiceI32Mult" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1014,7 +1014,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectU32Mult" | "SelectI64Mult" => {
+                        "ChoiceU32Mult" | "ChoiceI64Mult" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1042,7 +1042,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectF64Mult" => {
+                        "ChoiceF64Mult" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1079,8 +1079,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 }
                 //
                 /*
-                "SelectTextMultDyn" | "SelectI32MultDyn" | "SelectU32MultDyn"
-                | "SelectI64MultDyn" | "SelectF64MultDyn"
+                "ChoiceTextMultDyn" | "ChoiceI32MultDyn" | "ChoiceU32MultDyn"
+                | "ChoiceI64MultDyn" | "ChoiceF64MultDyn"
                 */
                 7 => {
                     //
@@ -1101,7 +1101,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     }
                     // Get selected items.
                     match field_type {
-                        "SelectTextMultDyn" => {
+                        "ChoiceTextMultDyn" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1129,7 +1129,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectI32MultDyn" => {
+                        "ChoiceI32MultDyn" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1157,7 +1157,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectU32MultDyn" | "SelectI64MultDyn" => {
+                        "ChoiceU32MultDyn" | "ChoiceI64MultDyn" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1185,7 +1185,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 );
                             }
                         }
-                        "SelectF64MultDyn" => {
+                        "ChoiceF64MultDyn" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
