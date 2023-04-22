@@ -95,7 +95,7 @@ pub trait Main {
         // Get a document with values for dynamic fields type.
         if let Some(doc) = collection.find_one(filter, None).await? {
             let dyn_values_doc = doc.get_document("fields")?;
-            // Updating the `options` parameter for fields with a dynamic field type.
+            // Updating the `choices` parameter for fields with a dynamic field type.
             for field_name in fields_name {
                 let field_type = model_json
                     .get(field_name)
@@ -108,7 +108,7 @@ pub trait Main {
                 if field_type.contains("Dyn") {
                     let arr = dyn_values_doc.get_array(field_name)?;
                     if field_type.contains("Text") {
-                        let options = arr
+                        let choices = arr
                             .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -121,10 +121,10 @@ pub trait Main {
                         *model_json
                             .get_mut(field_name)
                             .unwrap()
-                            .get_mut("options")
-                            .unwrap() = json!(options);
+                            .get_mut("choices")
+                            .unwrap() = json!(choices);
                     } else if field_type.contains("I32") {
-                        let options = arr
+                        let choices = arr
                             .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -137,10 +137,10 @@ pub trait Main {
                         *model_json
                             .get_mut(field_name)
                             .unwrap()
-                            .get_mut("options")
-                            .unwrap() = json!(options);
+                            .get_mut("choices")
+                            .unwrap() = json!(choices);
                     } else if field_type.contains("U32") || field_type.contains("I64") {
-                        let options = arr
+                        let choices = arr
                             .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -153,10 +153,10 @@ pub trait Main {
                         *model_json
                             .get_mut(field_name)
                             .unwrap()
-                            .get_mut("options")
-                            .unwrap() = json!(options);
+                            .get_mut("choices")
+                            .unwrap() = json!(choices);
                     } else if field_type.contains("F64") {
-                        let options = arr
+                        let choices = arr
                             .iter()
                             .map(|item| {
                                 let arr = item.as_array().unwrap();
@@ -169,8 +169,8 @@ pub trait Main {
                         *model_json
                             .get_mut(field_name)
                             .unwrap()
-                            .get_mut("options")
-                            .unwrap() = json!(options);
+                            .get_mut("choices")
+                            .unwrap() = json!(choices);
                     } else {
                         Err(format!(
                             "Model: {} > Method: `injection()` => \
