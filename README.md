@@ -10,6 +10,10 @@
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
 ![crates.io](https://img.shields.io/crates/d/green-barrel)
 ![crates.io](https://img.shields.io/crates/l/green-barrel)
+[![Green Barrel on docs.rs][docsrs-image]][docsrs]
+
+[docsrs-image]: https://docs.rs/green-barrel/badge.svg
+[docsrs]: https://docs.rs/green-barrel
 
 ## Attention
 
