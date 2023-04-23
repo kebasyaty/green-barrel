@@ -6,9 +6,9 @@
 
 [![crates.io](https://img.shields.io/crates/v/metamorphose "crates.io")](https://crates.io/crates/metamorphose "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
-![crates.io](https://img.shields.io/crates/d/metamorphose)
-![crates.io](https://img.shields.io/crates/l/metamorphose)
 [![Metamorphose on docs.rs][docsrs-image]][docsrs]
+![crates.io](https://img.shields.io/crates/l/metamorphose)
+![crates.io](https://img.shields.io/crates/d/metamorphose)
 
 [docsrs-image]: https://docs.rs/metamorphose/badge.svg
 [docsrs]: https://docs.rs/metamorphose

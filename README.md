@@ -8,9 +8,9 @@
 
 [![crates.io](https://img.shields.io/crates/v/green-barrel "crates.io")](https://crates.io/crates/green-barrel "crates.io")
 [![crates.io](https://img.shields.io/static/v1?label=rustc&message=v1.57%2B&color=red "crates.io")](https://www.rust-lang.org/ "crates.io")
-![crates.io](https://img.shields.io/crates/d/green-barrel)
-![crates.io](https://img.shields.io/crates/l/green-barrel)
 [![Green Barrel on docs.rs][docsrs-image]][docsrs]
+![crates.io](https://img.shields.io/crates/l/green-barrel)
+![crates.io](https://img.shields.io/crates/d/green-barrel)
 
 [docsrs-image]: https://docs.rs/green-barrel/badge.svg
 [docsrs]: https://docs.rs/green-barrel
