@@ -413,7 +413,7 @@ mod models {
                 },
                 phone: Phone {
                     required: true,
-                    default: Some("+1 202-918-2132".to_string()),
+                    default: Some("+12029182132".to_string()),
                     ..Default::default()
                 },
                 url: Url {

@@ -271,7 +271,7 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
     test_model.color.set("#ffffff");
     test_model.email.set("jane32@enhanceronly.com");
     test_model.password.set("j2972K4R3uQeVFPF");
-    test_model.phone.set("+1 202-918-2132");
+    test_model.phone.set("+12029182132");
     test_model.url.set("https://ru.wikipedia.org/wiki/URL");
     test_model.ip.set("192.168.123.132");
 
