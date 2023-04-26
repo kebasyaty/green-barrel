@@ -14,14 +14,15 @@ pub struct Hash {
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
-    pub pattern: String, // Validating a field using a client-side regex (Only for text, search, tel, url, email, and password controls).
+    pub pattern: String, // A regular expression to validate the value.
+    pub ptn_err_msg: String, // An error message for the pattern attribute.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
-    pub required: bool,  // Mandatory field.
-    pub unique: bool,    // The unique value of a field in a collection.
-    pub disabled: bool,  // Blocks access and modification of the element.
-    pub readonly: bool,  // Specifies that the field cannot be modified by the user.
-    pub is_hide: bool,   // Hide field from user.
+    pub required: bool, // Mandatory field.
+    pub unique: bool, // The unique value of a field in a collection.
+    pub disabled: bool, // Blocks access and modification of the element.
+    pub readonly: bool, // Specifies that the field cannot be modified by the user.
+    pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -42,6 +43,7 @@ impl Default for Hash {
             value: None,
             placeholder: String::new(),
             pattern: String::new(),
+            ptn_err_msg: String::new(),
             minlength: 12,
             maxlength: 12,
             required: false,

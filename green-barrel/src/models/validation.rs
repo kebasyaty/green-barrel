@@ -5,7 +5,7 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
     Client, Collection,
 };
-use regex::{Regex, RegexBuilder};
+use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
@@ -17,7 +17,7 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if minlength > 0 && value.encode_utf16().count() < minlength {
-            Err(format!("Exceeds limit, minlength={}.", minlength))?
+            Err(format!("Minimum {} characters.", minlength))?
         }
         Ok(())
     }
@@ -26,7 +26,7 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn check_maxlength(maxlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if maxlength > 0 && value.encode_utf16().count() > maxlength {
-            Err(format!("Exceeds limit, maxlength={}.", maxlength))?
+            Err(format!("Maximum {} characters.", maxlength))?
         }
         Ok(())
     }
@@ -35,10 +35,14 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn accumula_err(field: &Value, err: &str) -> String {
         let mut msg = field.get("error").unwrap().as_str().unwrap().to_string();
-        if !msg.is_empty() {
-            msg = format!("{}<br>", msg)
+        if !msg.contains(err) {
+            if !msg.is_empty() {
+                msg = format!("{}<\\br>{}", msg, err)
+            } else {
+                msg = err.to_string()
+            }
         }
-        format!("{}{}", msg, err)
+        msg
     }
 
     /// Validation in regular expression (email, password, etc...).
@@ -48,18 +52,6 @@ pub trait Validation {
             "Email" => {
                 if !validator::validate_email(value) {
                     Err("Invalid email address.")?
-                }
-            }
-            "Color" => {
-                if !RegexBuilder::new(
-                    r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
-                )
-                .case_insensitive(true)
-                .build()
-                .unwrap()
-                .is_match(value)
-                {
-                    Err("Invalid Color code.")?
                 }
             }
             "Url" => {
@@ -80,15 +72,6 @@ pub trait Validation {
             "IPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err("Invalid IPv6 address.")?
-                }
-            }
-            "Password" => {
-                if !Regex::new(r"^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$")
-                    .unwrap()
-                    .is_match(value)
-                {
-                    Err("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (\
-                        <br>Size 8-256 chars")?
                 }
             }
             _ => return Ok(()),
@@ -131,7 +114,7 @@ pub trait Validation {
     ) -> Result<(), Box<dyn Error>> {
         let pattern = Regex::new(regex_pattern)?;
         if !pattern.is_match(field_value) {
-            Err("Does not match the pattern attribute.")?
+            Err("")?
         }
         Ok(())
     }
