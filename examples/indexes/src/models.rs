@@ -19,10 +19,14 @@ impl Control for User {
         Self {
             username: Text {
                 label: "Username".into(),
-                unique: true,
-                required: true,
+                placeholder: "Enter your username".into(),
+                regex: r"^[a-z\d_@+.]+$".into(),
+                regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                minlength: 1,
                 maxlength: 150,
-                hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
+                required: true,
+                unique: true,
+                hint: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 ..Default::default()
             },
             email: Email {
