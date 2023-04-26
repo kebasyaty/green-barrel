@@ -43,46 +43,9 @@
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 
-## Install mongodb (if not installed)
+## Usage
 
-```shell
-### Ubuntu, Mint:
-$ sudo apt install mongodb
-## OR
-### Ubuntu 20.04, Mint 20.x:
-$ sudo apt update
-$ sudo apt install dirmngr gnupg apt-transport-https ca-certificates
-$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-$ sudo add-apt-repository 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse'
-$ sudo apt update
-$ sudo apt install mongodb-org
-$ sudo systemctl enable --now mongod
-# For check
-$ mongod --version
-$ mongo --eval 'db.runCommand({ connectionStatus: 1 })'
-$ reboot
-#
-### Configuration file:
-$ sudo nano /etc/mongod.conf
-#
-### Systemd:
-$ sudo systemctl status mongod
-$ sudo systemctl start mongod
-$ sudo systemctl stop mongod
-$ sudo systemctl restart mongod
-$ sudo systemctl enable mongod
-$ sudo systemctl disable mongod
-#
-### Uninstall:
-$ sudo systemctl stop mongod
-$ sudo systemctl disable mongod
-$ sudo apt --purge remove mongodb\*  # OR (for mongodb-org) - $ sudo apt --purge remove mongodb-org\**
-$ sudo rm -r /var/log/mongodb
-$ sudo rm -r /var/lib/mongodb
-$ sudo rm -f /etc/mongod.conf
-$ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
-$ sudo apt update
-```
+Follow the [Green Barrel](https://crates.io/crates/green-barrel "Green Barrel") link.
 
 ## Changelog
 
