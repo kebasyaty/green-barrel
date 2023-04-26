@@ -37,6 +37,56 @@ mod tests {
     }
 
     #[test]
+    fn regex_validate_phone() {
+        let re = Regex::new(r"^\+?[0-9]{8,15}$").unwrap();
+        // invalids
+        assert!(!re.is_match("789"));
+        assert!(!re.is_match("1-1-1"));
+        assert!(!re.is_match("+982"));
+        assert!(!re.is_match("1222333444455555"));
+        assert!(!re.is_match("+1222333444455555"));
+        // valids
+        assert!(re.is_match("+12223334444"));
+        assert!(re.is_match("+56667778888"));
+        assert!(re.is_match("56667778888"));
+        assert!(re.is_match("17184441122"));
+        assert!(re.is_match("7184441122"));
+        assert!(re.is_match("18005551234"));
+        assert!(re.is_match("1231231231"));
+        assert!(re.is_match("+991234567890"));
+        assert!(re.is_match("+923001234567"));
+        assert!(re.is_match("1234567890"));
+        assert!(re.is_match("+447222555555"));
+        assert!(re.is_match("0123456789"));
+        assert!(re.is_match("064423933023"));
+        assert!(re.is_match("09364211235"));
+        assert!(re.is_match("89076543"));
+        assert!(re.is_match("010123456781234"));
+        assert!(re.is_match("008618311006933"));
+        assert!(re.is_match("+8617888829981"));
+        assert!(re.is_match("19119255642"));
+        assert!(re.is_match("919578965389"));
+        assert!(re.is_match("121231234"));
+        assert!(re.is_match("015121231234"));
+        assert!(re.is_match("0732105432"));
+        assert!(re.is_match("1300333444"));
+        assert!(re.is_match("+31235256677"));
+        assert!(re.is_match("+310235256677"));
+        assert!(re.is_match("0235256677"));
+        assert!(re.is_match("+46812345678"));
+        assert!(re.is_match("0812345678"));
+        assert!(re.is_match("012345678"));
+        assert!(re.is_match("09754845789"));
+        assert!(re.is_match("9775876662"));
+        assert!(re.is_match("+919456211568"));
+        assert!(re.is_match("919857842356"));
+        assert!(re.is_match("010123456781234"));
+        assert!(re.is_match("0216254914479"));
+        assert!(re.is_match("+490222139938113"));
+        assert!(re.is_match("+330123456789"));
+    }
+
+    #[test]
     fn regex_validate_dated_path() {
         let re = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))").unwrap();
         // invalids
