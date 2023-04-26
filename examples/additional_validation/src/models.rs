@@ -2,7 +2,6 @@ use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
-use regex::RegexBuilder;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
@@ -34,10 +33,13 @@ impl Control for User {
             username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
+                regex: r"^[a-z\d_@+.]{1,150}$".into(),
+                regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                minlength: 1,
                 maxlength: 150,
                 required: true,
                 unique: true,
-                hint: "Valid characters: a-z A-Z 0-9 _ @ + .<br>Max size: 150".into(),
+                hint: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 ..Default::default()
             },
             slug: Slug {
@@ -73,7 +75,6 @@ impl Control for User {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,
-                maxlength: 30,
                 hint: "Your actual phone number".into(),
                 ..Default::default()
             },
@@ -81,8 +82,7 @@ impl Control for User {
                 label: "Password".into(),
                 placeholder: "Enter your password".into(),
                 required: true,
-                minlength: 8,
-                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (<br>Min size: 8"
+                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
                     .into(),
                 ..Default::default()
             },
@@ -90,7 +90,6 @@ impl Control for User {
                 label: "Confirm password".into(),
                 placeholder: "Repeat your password".into(),
                 required: true,
-                minlength: 8,
                 ..Default::default()
             },
             is_staff: Bool {
@@ -120,29 +119,14 @@ impl AdditionalValidation for User {
         let mut error_map = HashMap::<String, String>::new();
 
         // Get clean data
-        let hash = self.hash.get().unwrap_or_default();
         let password = self.password.get().unwrap_or_default();
         let confirm_password = self.confirm_password.get().unwrap_or_default();
-        let username = self.username.get().unwrap_or_default();
 
         // Fields validation
-        if hash.is_empty() && password != confirm_password {
+        if (password.is_empty() && confirm_password.is_empty()) && password != confirm_password {
             error_map.insert(
                 "confirm_password".into(),
                 "Password confirmation does not match.".into(),
-            );
-        }
-        if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
-            .case_insensitive(true)
-            .build()
-            .unwrap()
-            .is_match(username.as_str())
-        {
-            error_map.insert(
-                "username".into(),
-                "Invalid characters present.<br>\
-                 Valid characters: a-z A-Z 0-9 _ @ + ."
-                    .into(),
             );
         }
 

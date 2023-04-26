@@ -35,7 +35,7 @@ impl Control for User {
             username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
-                regex: r"^[a-z\d_@+.]+$".into(),
+                regex: r"^[a-z\d_@+.]{1,150}$".into(),
                 regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 minlength: 1,
                 maxlength: 150,
