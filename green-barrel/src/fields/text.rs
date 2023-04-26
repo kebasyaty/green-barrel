@@ -16,7 +16,7 @@ pub struct Text {
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub regex_err_msg: String, // An error message for the pattern attribute.
+    pub regex_err_msg: String, // An error message for the regex attribute.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
