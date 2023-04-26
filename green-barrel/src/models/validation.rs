@@ -110,9 +110,9 @@ pub trait Validation {
     // ----------------------------------------------------------------------------------------------
     fn regex_pattern_validation(
         field_value: &str,
-        regex_pattern: &str,
+        regex_str: &str,
     ) -> Result<(), Box<dyn Error>> {
-        let pattern = Regex::new(regex_pattern)?;
+        let pattern = Regex::new(regex_str)?;
         if !field_value.is_empty() && !pattern.is_match(field_value) {
             Err("")?
         }

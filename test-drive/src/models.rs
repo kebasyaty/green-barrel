@@ -35,8 +35,8 @@ impl Control for User {
             username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
-                pattern: r"^[a-z\d_@+.]+$".into(),
-                ptn_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                regex: r"^[a-z\d_@+.]+$".into(),
+                regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 minlength: 1,
                 maxlength: 150,
                 required: true,
@@ -74,7 +74,7 @@ impl Control for User {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,
-                maxlength: 30,
+                hint: "Format: +xxxxxxx...".into(),
                 ..Default::default()
             },
             password: Password {

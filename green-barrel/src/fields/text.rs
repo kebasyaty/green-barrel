@@ -15,8 +15,8 @@ pub struct Text {
     pub value: Option<String>, // Sets the value of an element.
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
-    pub pattern: String, // A regular expression to validate the value.
-    pub ptn_err_msg: String, // An error message for the pattern attribute.
+    pub regex: String, // A regular expression to validate the value.
+    pub regex_err_msg: String, // An error message for the pattern attribute.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -45,8 +45,8 @@ impl Default for Text {
             value: None,
             default: None,
             placeholder: String::new(),
-            pattern: String::new(),
-            ptn_err_msg: String::new(),
+            regex: String::new(),
+            regex_err_msg: String::new(),
             minlength: 0,
             maxlength: 256,
             required: false,

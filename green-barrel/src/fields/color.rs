@@ -15,8 +15,8 @@ pub struct Color {
     pub value: Option<String>, // Sets the value of an element.
     pub default: Option<String>, // Value by default
     pub placeholder: String, // Displays prompt text.
-    pub pattern: String, // A regular expression to validate the value.
-    pub ptn_err_msg: String, // An error message for the pattern attribute.
+    pub regex: String, // A regular expression to validate the value.
+    pub regex_err_msg: String, // An error message for the pattern attribute.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -43,10 +43,10 @@ impl Default for Color {
             value: None,
             default: Some("#000000".into()),
             placeholder: String::new(),
-            pattern: String::from(
+            regex: String::from(
                 r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
             ),
-            ptn_err_msg: String::from("Invalid Color code."),
+            regex_err_msg: String::from("Invalid Color code."),
             minlength: 0,
             maxlength: 256,
             required: false,
