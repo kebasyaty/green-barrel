@@ -376,18 +376,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Bson::Null
                     };
                     // Validation field attribute `pattern`.
-                    if let Some(pattern) = final_field.get("pattern") {
+                    if let Some(pattern) = final_field.get("regex") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
-                            .unwrap_or_else(|err| {
+                            .unwrap_or_else(|_err| {
                                 is_err_symptom = true;
+                                let regex_err_msg =
+                                    final_field["regex_err_msg"].as_str().unwrap().to_string();
                                 if !is_hide {
                                     *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, &err.to_string()));
+                                        json!(Self::accumula_err(final_field, &regex_err_msg));
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
-                                        err
+                                        regex_err_msg
                                     ))
                                     .unwrap()
                                 }

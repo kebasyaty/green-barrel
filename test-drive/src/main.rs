@@ -26,6 +26,7 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 async fn main() -> Result<(), Box<dyn Error>> {
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
+    //
     run_migration(&client).await?;
 
     // Convert Model
@@ -49,6 +50,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
+    user.phone.set("+1234567");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);
