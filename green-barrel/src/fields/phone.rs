@@ -41,7 +41,7 @@ impl Default for Phone {
             value: None,
             default: None,
             placeholder: String::new(),
-            pattern: String::from(r"^\+?[0-9]{8,15}$"),
+            pattern: String::from(r"^\+?[0-9]+$"),
             ptn_err_msg: String::from("Invalid Phone number."),
             minlength: 8,
             maxlength: 15,
