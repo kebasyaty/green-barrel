@@ -29,6 +29,10 @@
 - [syn](https://crates.io/crates/syn "syn")
 - [serde](https://crates.io/crates/serde "serde")
 
+## Usage
+
+Follow the [Green Barrel](https://crates.io/crates/green-barrel "Green Barrel") link.
+
 ## Model parameters
 
 **_( all parameters are optional )_**
@@ -42,10 +46,6 @@
 | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                  |
 | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
 | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
-
-## Usage
-
-Follow the [Green Barrel](https://crates.io/crates/green-barrel "Green Barrel") link.
 
 ## Changelog
 
