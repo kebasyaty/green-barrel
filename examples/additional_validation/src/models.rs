@@ -33,7 +33,7 @@ impl Control for User {
             username: Text {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
-                regex: r"^[a-z\d_@+.]{1,150}$".into(),
+                regex: r"^[a-zA-Z\d_@.+]{1,150}$".into(),
                 regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 minlength: 1,
                 maxlength: 150,
@@ -82,8 +82,7 @@ impl Control for User {
                 label: "Password".into(),
                 placeholder: "Enter your password".into(),
                 required: true,
-                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
-                    .into(),
+                hint: "Valid characters: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (".into(),
                 ..Default::default()
             },
             confirm_password: Password {
@@ -123,7 +122,7 @@ impl AdditionalValidation for User {
         let confirm_password = self.confirm_password.get().unwrap_or_default();
 
         // Fields validation
-        if (password.is_empty() && confirm_password.is_empty()) && password != confirm_password {
+        if (!password.is_empty() && !confirm_password.is_empty()) && password != confirm_password {
             error_map.insert(
                 "confirm_password".into(),
                 "Password confirmation does not match.".into(),
