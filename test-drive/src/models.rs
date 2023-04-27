@@ -74,7 +74,7 @@ impl Control for User {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,
-                hint: "Format: +xxxxxxx...".into(),
+                hint: "Format: +xxxxxxxx... or xxxxxxxx...".into(),
                 ..Default::default()
             },
             password: Password {
