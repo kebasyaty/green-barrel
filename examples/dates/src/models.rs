@@ -9,28 +9,28 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: InputText,
-    pub date: InputDate,
-    pub datetime: InputDateTime,
+    pub username: Text,
+    pub date: Date,
+    pub datetime: DateTime,
 }
 
 impl Control for User {
     fn custom_default() -> Self {
         Self {
-            username: InputText {
+            username: Text {
                 maxlength: 150,
                 required: true,
                 unique: true,
                 ..Default::default()
             },
-            date: InputDate {
+            date: Date {
                 required: true,
                 default: Some("1970-02-28".into()), // optional
                 max: "1970-03-01".into(),           // optional
                 min: "1970-01-01".into(),           // optional
                 ..Default::default()
             },
-            datetime: InputDateTime {
+            datetime: DateTime {
                 required: true,
                 default: Some("1970-02-28T00:00".into()), // optional
                 max: "1970-03-01T00:00".into(),           // optional
