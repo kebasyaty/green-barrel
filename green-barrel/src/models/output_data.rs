@@ -310,26 +310,25 @@ impl OutputData2 {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
             let field_type = self.final_model_json.get(field_name).unwrap();
-            let mut error = field_type
-                .get("error")
-                .unwrap()
-                .as_str()
-                .unwrap()
-                .to_string();
+            let mut error_vec = field_type["error"].as_array().unwrap().clone();
             if let Some(alert) = field_type.get("alert") {
                 let alert = alert.as_str().unwrap();
-                if !error.is_empty() && !alert.is_empty() {
-                    error = format!("{error} | {alert}");
-                } else if !alert.is_empty() {
-                    error = alert.to_string();
+                if !alert.is_empty() {
+                    error_vec.push(json!(alert));
                 }
             }
-            if !error.is_empty() {
-                errors = format!("{errors}\nField: `{field_name}` => {error}");
+            if !error_vec.is_empty() {
+                let error = error_vec
+                    .iter()
+                    .map(|err| err.as_str().unwrap())
+                    .collect::<Vec<&str>>()
+                    .join("  ");
+                if !errors.is_empty() {
+                    errors = format!("{errors}\nField: `{field_name}` => {error}");
+                } else {
+                    errors = format!("Field: `{field_name}` => {error}");
+                }
             }
-        }
-        if !errors.is_empty() {
-            errors = errors.replace("<br>", " | ");
         }
         errors
     }
@@ -354,7 +353,7 @@ impl OutputData2 {
     pub fn print_err(&self) {
         let errors = self.err_msg();
         if !errors.is_empty() {
-            println!("\nERRORS:{errors}\n");
+            println!("\nERRORS:\n{errors}\n");
         }
     }
 

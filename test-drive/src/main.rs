@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut user = models::User::new().await?;
     user.username.set("user_1");
     user.email.set("user_1_@noreply.net");
-    user.phone.set("+1234567");
+    user.phone.set("+12345678");
     user.password.set("12345678");
     user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
     user.is_staff.set(true);

@@ -33,16 +33,12 @@ pub trait Validation {
 
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
-    fn accumula_err(field: &Value, err: &str) -> String {
-        let mut msg = field.get("error").unwrap().as_str().unwrap().to_string();
-        if !msg.contains(err) {
-            if !msg.is_empty() {
-                msg = format!("{}<\\br>{}", msg, err)
-            } else {
-                msg = err.to_string()
-            }
+    fn accumula_err(field: &mut Value, err: &str) {
+        let err_vec = field["error"].as_array_mut().unwrap();
+        let err = serde_json::to_value(err).unwrap();
+        if !err_vec.contains(&err) {
+            err_vec.push(err);
         }
-        msg
     }
 
     /// Validation in regular expression (email, password, etc...).

@@ -21,7 +21,7 @@ pub struct ChoiceF64MultDyn {
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.
-    pub error: String,       // The value is determined automatically.
+    pub error: Vec<String>,  // The value is determined automatically.
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
@@ -44,7 +44,7 @@ impl Default for ChoiceF64MultDyn {
             css_classes: String::new(),
             hint: String::new(),
             warning: String::new(),
-            error: String::new(),
+            error: Vec::new(),
             group: 7,
         }
     }
