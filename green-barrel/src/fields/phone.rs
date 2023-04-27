@@ -52,7 +52,7 @@ impl Default for Phone {
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
-            hint: String::new(),
+            hint: "Format: +xxxxxxxx... or xxxxxxxx...".into(),
             warning: String::new(),
             error: Vec::new(),
             group: 1,
