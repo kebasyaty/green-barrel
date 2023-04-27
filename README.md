@@ -141,9 +141,10 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 ## Changelog
 
+- **v1.3.0** _Field types - Changed attribute type **error** from **String** to **Vec String**._
 - **v1.2.0** _Field types - Renamed **pattern** field attribute to **regex**. Added **regex_err_msg** attribute. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
 - **v1.1.0** _Removed 12 types of fields, the remaining fields have been renamed. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
-- **v1.3.23-beta** _**tz** parameter removed from methodsю._
+- **v1.3.23-beta** _**tz** parameter removed from methods._
 - **v1.3.21-beta** _Trait AdditionalValidation - Transition to asynchronous code._
 - **v1.3.20-beta** _In all methods, the client parameter has been moved to the first position._
 - **v1.3.10-beta** _Main changes - Added methods for indexing._
