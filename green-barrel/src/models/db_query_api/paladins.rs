@@ -225,8 +225,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 is_err_symptom = true;
                 for (field_name, err_msg) in error_map {
                     if let Some(final_field) = final_model_json.get_mut(field_name.clone()) {
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, &err_msg));
+                        Self::accumula_err(final_field, &err_msg);
                     } else {
                         Err(format!(
                             "Model: `{model_name}` ;  Method: `add_validation()` => \
@@ -341,8 +340,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -363,10 +361,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .contains(&curr_val.to_string())
                     {
                         is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                            final_field,
-                            "Value does not match possible choices."
-                        ));
+                        Self::accumula_err(final_field, "Value does not match possible choices.");
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -375,7 +370,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     } else {
                         Bson::Null
                     };
-                    // Validation field attribute `pattern`.
+                    // Validation field attribute `regex`.
                     if let Some(pattern) = final_field.get("regex") {
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|_err| {
@@ -383,8 +378,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 let regex_err_msg =
                                     final_field["regex_err_msg"].as_str().unwrap().to_string();
                                 if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, &regex_err_msg));
+                                    Self::accumula_err(final_field, &regex_err_msg);
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -402,8 +396,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, &err.to_string()));
+                                    Self::accumula_err(final_field, &err.to_string());
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -420,8 +413,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
                                 if !is_hide {
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, &err.to_string()));
+                                    Self::accumula_err(final_field, &err.to_string());
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -441,9 +433,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(final_field, &err.to_string())
-                                        );
+                                        Self::accumula_err(final_field, &err.to_string());
                                     } else {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -459,8 +449,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &err.to_string()));
+                            Self::accumula_err(final_field, &err.to_string());
                         } else {
                             Err(format!(
                                 "Model: `{model_name}` > Field: `{field_name}` ; \
@@ -525,8 +514,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if slug.is_empty() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -546,8 +534,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, &err.to_string()));
+                                Self::accumula_err(final_field, &err.to_string());
                             });
                     }
                     // Insert result.
@@ -568,8 +555,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -605,13 +591,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             Err(error) => {
                                 if error.kind() == ParseErrorKind::OutOfRange {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, err_msg));
+                                    Self::accumula_err(final_field, err_msg);
                                     continue;
                                 } else {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, err_msg_2));
+                                    Self::accumula_err(final_field, err_msg_2);
                                     continue;
                                 }
                             }
@@ -659,10 +643,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Match dates.
                         if curr_dt < min_dt {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            Self::accumula_err(
                                 final_field,
-                                "The entered date is less than the minimum."
-                            ));
+                                "The entered date is less than the minimum.",
+                            );
                             continue;
                         }
                     }
@@ -708,10 +692,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Match dates.
                         if curr_dt > max_dt {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            Self::accumula_err(
                                 final_field,
-                                "The entered date is greater than the maximum."
-                            ));
+                                "The entered date is greater than the maximum.",
+                            );
                             continue;
                         }
                     }
@@ -723,8 +707,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, &err.to_string()));
+                                Self::accumula_err(final_field, &err.to_string());
                             });
                     }
                     // Insert result.
@@ -740,8 +723,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -761,10 +743,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -780,10 +762,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -799,10 +781,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -818,10 +800,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -843,8 +825,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -864,10 +845,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -883,10 +864,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -902,10 +883,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -921,10 +902,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                                Self::accumula_err(
                                     final_field,
-                                    "Value does not match possible choices."
-                                ));
+                                    "Value does not match possible choices.",
+                                );
                             }
                             if is_save {
                                 final_doc.insert(
@@ -946,8 +927,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -972,11 +952,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1000,11 +979,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1028,11 +1006,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1056,11 +1033,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1089,8 +1065,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -1115,11 +1090,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1143,11 +1117,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1171,11 +1144,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1199,11 +1171,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(
-                                            final_field,
-                                            "Value does not match possible choices."
-                                        ));
+                                    Self::accumula_err(
+                                        final_field,
+                                        "Value does not match possible choices.",
+                                    );
                                     flag = false;
                                     break;
                                 }
@@ -1260,10 +1231,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await?;
                         } else {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            Self::accumula_err(
                                 final_field,
-                                "Upload a new file to delete the previous one."
-                            ));
+                                "Upload a new file to delete the previous one.",
+                            );
                         }
                     }
                     // Get the current information about file from database.
@@ -1278,8 +1249,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
+                                    Self::accumula_err(final_field, "Required field.");
                                 }
                                 if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
@@ -1400,10 +1370,10 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await?;
                         } else {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
+                            Self::accumula_err(
                                 final_field,
-                                "Upload a new file to delete the previous one."
-                            ));
+                                "Upload a new file to delete the previous one.",
+                            );
                         }
                     }
                     // Get the current information about file from database.
@@ -1418,8 +1388,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
-                                    *final_field.get_mut("error").unwrap() =
-                                        json!(Self::accumula_err(final_field, "Required field."));
+                                    Self::accumula_err(final_field, "Required field.");
                                 }
                                 if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
@@ -1574,8 +1543,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -1593,10 +1561,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_i32_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                            final_field,
-                            "Value does not match possible choices."
-                        ));
+                        Self::accumula_err(final_field, "Value does not match possible choices.");
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -1611,9 +1576,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(final_field, &err.to_string())
-                                        );
+                                        Self::accumula_err(final_field, &err.to_string());
                                     } else {
                                         Err(format!(
                                             "Model: `{}` > Field: `{}` ; \
@@ -1632,8 +1595,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be less than min=`{min}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Compare with `max`.
@@ -1643,8 +1605,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
 
@@ -1660,8 +1621,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, "Required field."));
+                            Self::accumula_err(final_field, "Required field.");
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -1679,10 +1639,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_i64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                            final_field,
-                            "Value does not match possible choices."
-                        ));
+                        Self::accumula_err(final_field, "Value does not match possible choices.");
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -1697,9 +1654,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(final_field, &err.to_string())
-                                        );
+                                        Self::accumula_err(final_field, &err.to_string());
                                     } else {
                                         Err(format!(
                                             "Model: `{}` > Field: `{}` ; \
@@ -1718,8 +1673,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be less than min=`{min}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Compare with `max`.
@@ -1729,8 +1683,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Insert result.
@@ -1746,8 +1699,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                *final_field.get_mut("error").unwrap() =
-                                    json!(Self::accumula_err(final_field, "Required field."));
+                                Self::accumula_err(final_field, "Required field.");
                             }
                         }
                         if is_save && !ignore_fields.contains(field_name) {
@@ -1766,10 +1718,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_f64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() = json!(Self::accumula_err(
-                            final_field,
-                            "Value does not match possible choices."
-                        ));
+                        Self::accumula_err(final_field, "Value does not match possible choices.");
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -1784,9 +1733,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 .unwrap_or_else(|err| {
                                     is_err_symptom = true;
                                     if !is_hide {
-                                        *final_field.get_mut("error").unwrap() = json!(
-                                            Self::accumula_err(final_field, &err.to_string())
-                                        );
+                                        Self::accumula_err(final_field, &err.to_string());
                                     } else {
                                         Err(format!(
                                             "Model: `{}` > Field: `{}` ; \
@@ -1805,8 +1752,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be less than min=`{min}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Compare with `max`.
@@ -1816,8 +1762,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             let msg = format!(
                                 "The number `{curr_val}` must not be greater than max=`{max}`."
                             );
-                            *final_field.get_mut("error").unwrap() =
-                                json!(Self::accumula_err(final_field, &msg));
+                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Insert result.
@@ -1834,8 +1779,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     // ( The default value is used whenever possible )
                     if const_value.is_null() && is_required {
                         is_err_symptom = true;
-                        *final_field.get_mut("error").unwrap() =
-                            json!(Self::accumula_err(final_field, "Required field."));
+                        Self::accumula_err(final_field, "Required field.");
                         continue;
                     }
 
