@@ -48,7 +48,7 @@ impl Default for Date {
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
-            hint: String::new(),
+            hint: String::from("Format: yyyy-mm-dd"),
             warning: String::new(),
             error: Vec::new(),
             group: 3,
