@@ -5,7 +5,7 @@ use green_barrel::*;
 use mongodb::Client;
 use std::error::Error;
 
-rust_i18n::i18n!("../locales");
+rust_i18n::i18n!("locales");
 
 // Migration
 async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
@@ -26,9 +26,10 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    //
-    rust_i18n::set_locale("ru"); // defaule = en-us
-                                 //
+    // Change globally current locale
+    // defaule = en-us
+    rust_i18n::set_locale("ru");
+    // Init Client
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
     //
