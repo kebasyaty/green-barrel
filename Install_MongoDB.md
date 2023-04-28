@@ -1,3 +1,6 @@
+## Install mongodb (if not installed)
+
+```shell
 ### Ubuntu, Mint:
 $ sudo apt install mongodb
 ## OR
@@ -34,3 +37,4 @@ $ sudo rm -r /var/lib/mongodb
 $ sudo rm -f /etc/mongod.conf
 $ sudo apt-add-repository --remove 'deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse' # for mongodb-org
 $ sudo apt update
+```

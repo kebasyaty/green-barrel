@@ -43,7 +43,7 @@
 
 ## Install mongodb (if not installed)
 
-Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/master/Install_MongoDB.txt "Install MongoDB").
+Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/master/Install_MongoDB.md "Install MongoDB").
 
 ## Usage:
 
@@ -141,62 +141,7 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 ## Changelog
 
-- **v1.3.0** _Field types - Changed attribute type **error** from **String** to **Vec String**._
-- **v1.2.0** _Field types - Renamed **pattern** field attribute to **regex**. Added **regex_err_msg** attribute. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
-- **v1.1.0** _Removed 12 types of fields, the remaining fields have been renamed. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
-- **v1.3.23-beta** _**tz** parameter removed from methods._
-- **v1.3.21-beta** _Trait AdditionalValidation - Transition to asynchronous code._
-- **v1.3.20-beta** _In all methods, the client parameter has been moved to the first position._
-- **v1.3.10-beta** _Main changes - Added methods for indexing._
-- **v1.3.6-beta** _Fixed checking of dates._
-- **v1.3.5-beta** _Improved dates checking._
-- **v1.3.2-beta** _Fixed basic example and updated readme file._
-- **v1.3.0-beta** _Transition to asynchronous code._
-- **v1.2.0-beta** _Updated dependency mongodb to version 2._
-- **v1.1.14-beta** _Rename Model parameters: **is_add_docs**, **is_up_docs**, **is_del_docs** to **is_add_doc**, **is_up_doc**, **is_del_doc**._
-- **v1.1.9-beta** _Tests updated and **README.md** file updated._
-- **v1.1.0-beta** _Added support for **Fixtures** - To populate the database with pre-created data._
-- **v1.0.16-beta** _Added parameter **target_dir** for field types **InputFile** and **InputImage**._
-- **v1.0.10-beta** _Updated comments for dynamic field types._
-- **v1.0.8-beta** _The 150 character limit has been removed from the **update_dyn_field()** method._
-- **v1.0.7-beta** _The **administrator** module has been removed and moved to a separate project._
-- **v1.0.0-beta** _Not compatible with **green-barrel v0.x.x** and **metamorphose v0.x.x**_
-- **v0.12.14** _Fixed **README.md**._
-- **v0.12.8** _The **db_update_dyn_widgets** method has been renamed to **update_dyn_wig** and has been heavily modernized. See documentation: **green-barrel > models > caching > Caching > update_dyn_wig**._
-- **v0.12.4** _Made two critical fixes to the **check** method and updated unit tests._
-- **v0.12.0** _Deep modernization of the **input_data** module and related modules._
-- **v0.11.4** _**output_data** module moved from **widgets** directory to **models**._
-- **v0.11.3** _**administrator** module moved from **db_query api** directory to **models**._
-- **v0.11.2** _Renamed methods in trait **Administrator** - **instance_for_admin** to **actix_instance_for_admin** and **result_for_admin** to **actix_result_for_admin**._
-- **v0.11.1** _Added enum **OutputDataAdmin** for easier registration of Models in the administration panel._
-- **v0.11.0** _Added trait **Administrator** for easier registration of Models in the administration panel._
-- **v0.10.100** _Added new type **UpdatePassword** to enum **OutputData**. Updated documentation._
-- **v0.10.97** _Added field attribute check - **pattern**._
-- **v0.10.95** _For optimization, the **output_data_to_html** mediator function has been excluded._
-- **v0.10.94** _Added the ability to customize html code for web forms. See documentation: **mango_orm > widgets > generate_html > GenerateHtml > generate_html() > source**._
-- **v0.10.93** _Rename trait **ToModel** to **Main**._
-- **v0.10.92** _Added arguments for **to_html** methods. Arguments: **url_action**, **http_method** and **enctype**. See documentation: **mango_orm > widgets > output_data > OutputData > to_html**._
-- **v0.10.90** _For the **OutputData** enum, the **output_data_to_html** method is extended with the **to_html** alias._
-- **v0.10.20** _Removed the ability to change the created_at field of a model instance._
-- **v0.10.0** _The **created_at** and **updated_at** fields are automatically added to the Model. The widget type is **inputDateTime** and **disabled = true, is_hide = true**. Updated **README.md**. Updated documentation._
-- **v0.9.4-v.0.9.15** _Import optimized._
-- **v0.9.0** _Added hook methods. See documentation: **mango_orm > models > hooks > Hooks**._
-- **v0.8.26** _Add find_one_to_wig method. See documentation: **mango_orm > models > db_query_api > commons > QCommons**._
-- **v0.8.0** _Deep modernization of common.rs and output_data.rs modules. See documentation: **mango_orm > models > db_query_api > commons > QCommons** and **mango_orm > models > output_data > Converters**._
-- **v0.7.4** _Updated **README.md**, added model attributes._
-- **v0.7.0** \*Added the ability to use the hash field in inputSlug - **slug_sources: r#"["hash", "username"]"#\***
-- **v0.6.30** _Renamed methods: **wig()**, **json()**, **html()** -> **to_wig()**, **to_json()**, **to_html()**. Updated **README.md**. Updated documentation. Updated versions of dependencies._
-- **v0.6.16** _Renamed the Forms module to Widgets._
-- **v0.6.15** _Updating by version of dependencies._
-- **v0.6.10** _Updated test for dynamic widgets._
-- **v0.6.7** _Removed **hiddenSlug** field._
-- **v0.6.6** _Added **is_hide** parameter for Widgets._
-- **v0.6.5** _In the check() method, errors are redirected to the console, for fields of hidden type._
-- **v0.6.4** _Fixes for fields of slug type._
-- **v0.6** _1) Added inputSlug and hiddenSlug fields. 2) Fix - Added fields of hidden type to migration._
-- **v0.5.4** _Optimization for creating thumbnails, for default images._
-- **v0.5.3** _Improved cleaning of orphaned files._
-- **v0.5** _Support for the Form macro has been removed._
+[View the change history.](https://github.com/kebasyaty/green-barrel/edit/master/Changelog.md "View the change history.")
 
 ## License
 
