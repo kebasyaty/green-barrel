@@ -34,7 +34,7 @@ pub trait Validation {
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
     fn accumula_err(field: &mut Value, err: &str) {
-        let err_vec = field["error"].as_array_mut().unwrap();
+        let err_vec = field["errors"].as_array_mut().unwrap();
         let err = serde_json::to_value(err).unwrap();
         if !err_vec.contains(&err) {
             err_vec.push(err);
