@@ -43,7 +43,7 @@
 
 ## Install mongodb (if not installed)
 
-Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/master/Install_MongoDB.txt "Install MongoDB").
+Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/master/Install_MongoDB.md "Install MongoDB").
 
 ## Usage:
 
