@@ -375,15 +375,14 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|_err| {
                                 is_err_symptom = true;
-                                let regex_err_msg =
-                                    final_field["regex_err_msg"].as_str().unwrap().to_string();
+                                let err_msg = final_field["err_msg"].as_str().unwrap().to_string();
                                 if !is_hide {
-                                    Self::accumula_err(final_field, &regex_err_msg);
+                                    Self::accumula_err(final_field, &err_msg);
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
-                                        regex_err_msg
+                                        err_msg
                                     ))
                                     .unwrap()
                                 }
@@ -445,16 +444,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation in regular expression - Email, Color, Url, IP, IPv4, IPv6, Password.
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
+                    // Validation in regular expression - Email, Color, Url, IP, IPv4, IPv6.
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|_err| {
                         is_err_symptom = true;
+                        let err_msg = final_field["err_msg"].as_str().unwrap().to_string();
                         if !is_hide {
-                            Self::accumula_err(final_field, &err.to_string());
+                            Self::accumula_err(final_field, &err_msg);
                         } else {
                             Err(format!(
                                 "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
-                                err
+                                err_msg
                             ))
                             .unwrap()
                         }

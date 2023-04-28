@@ -16,7 +16,7 @@ pub struct Color {
     pub default: Option<String>, // Value by default
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub regex_err_msg: String, // An error message for the regex attribute.
+    pub err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -46,7 +46,7 @@ impl Default for Color {
             regex: String::from(
                 r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
             ),
-            regex_err_msg: String::from("Invalid Color code."),
+            err_msg: String::from("Invalid Color code."),
             minlength: 0,
             maxlength: 256,
             required: false,
@@ -56,7 +56,9 @@ impl Default for Color {
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
-            hint: String::new(),
+            hint: String::from(
+                "Examples: #fff|#f2f2f2|#ffffff00|rgb(255,0,24)|rgba(255,0,24,0.5)|rgba(#fff,0.5)|hsl(120,100%,50%)|hsla(170,23%,25%,0.2)|0x00ffff",
+            ),
             warning: String::new(),
             errors: Vec::new(),
             group: 1,

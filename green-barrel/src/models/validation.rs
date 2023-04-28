@@ -47,27 +47,27 @@ pub trait Validation {
         match field_type {
             "Email" => {
                 if !validator::validate_email(value) {
-                    Err("Invalid email address.")?
+                    Err("")?
                 }
             }
             "Url" => {
                 if !validator::validate_url(value) {
-                    Err("Invalid Url.")?
+                    Err("")?
                 }
             }
             "IP" => {
                 if !validator::validate_ip(value) {
-                    Err("Invalid IP address.")?
+                    Err("")?
                 }
             }
             "IPv4" => {
                 if !validator::validate_ip_v4(value) {
-                    Err("Invalid IPv4 address.")?
+                    Err("")?
                 }
             }
             "IPv6" => {
                 if !validator::validate_ip_v6(value) {
-                    Err("Invalid IPv6 address.")?
+                    Err("")?
                 }
             }
             _ => return Ok(()),

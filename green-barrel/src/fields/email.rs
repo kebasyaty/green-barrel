@@ -12,6 +12,7 @@ pub struct Email {
     pub name: String, // The value is determined automatically.
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
+    pub err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -37,6 +38,7 @@ impl Default for Email {
             name: String::new(),
             value: None,
             placeholder: String::new(),
+            err_msg: String::from("Invalid email address."),
             minlength: 0,
             maxlength: 320,
             required: false,
