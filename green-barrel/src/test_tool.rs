@@ -3,7 +3,7 @@
 use mongodb::Client;
 use std::error::Error;
 
-use crate::store::META_STORE;
+use crate::meta_store::META_STORE;
 
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.

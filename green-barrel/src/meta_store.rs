@@ -8,7 +8,7 @@ use crate::models::helpers::Meta;
 
 // Store
 lazy_static! {
-    // Metadata for Models
+    // Storage of metadata
     pub static ref META_STORE: Mutex<HashMap<String, Meta>> = {
         Mutex::new(HashMap::new())
     };

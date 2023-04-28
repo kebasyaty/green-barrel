@@ -18,6 +18,7 @@ use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
+    meta_store::META_STORE,
     models::{
         caching::Caching,
         helpers::{FileData, ImageData},
@@ -26,7 +27,6 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::META_STORE,
 };
 
 #[async_trait(?Send)]
