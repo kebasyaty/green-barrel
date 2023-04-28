@@ -141,7 +141,7 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 ## Changelog
 
-[View the change history.](https://github.com/kebasyaty/green-barrel/edit/master/Changelog.md "View the change history.")
+[View the change history.](https://github.com/kebasyaty/green-barrel/blob/master/Changelog.md "View the change history.")
 
 ## License
 
