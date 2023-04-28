@@ -310,7 +310,7 @@ impl OutputData2 {
         let mut errors = String::new();
         for field_name in self.fields_name.iter() {
             let field_type = self.final_model_json.get(field_name).unwrap();
-            let mut error_vec = field_type["error"].as_array().unwrap().clone();
+            let mut error_vec = field_type["errors"].as_array().unwrap().clone();
             if let Some(alert) = field_type.get("alert") {
                 let alert = alert.as_str().unwrap();
                 if !alert.is_empty() {

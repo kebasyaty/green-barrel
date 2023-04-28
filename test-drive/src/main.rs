@@ -54,10 +54,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create model instance.
     // *********************************************************************************************
     let mut user = models::User::new().await?;
-    user.username.set("user_1");
-    user.email.set("user_1_@noreply.net");
-    user.phone.set("+12345678");
-    user.password.set("12345678");
+    user.username.set("user_1~");
+    user.email.set("user_1_@noreply.net.");
+    user.phone.set("+12345678~");
+    user.password.set("1234567.8");
     user.confirm_password.set("12345678");
     user.is_staff.set(true);
     user.is_active.set(true);
