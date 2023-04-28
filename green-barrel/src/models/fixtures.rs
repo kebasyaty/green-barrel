@@ -7,11 +7,11 @@ use serde_json::Value;
 use std::{error::Error, fs, io::ErrorKind};
 
 use crate::{
-    meta_store::META_STORE,
     models::{
         caching::Caching,
         db_query_api::{commons::QCommons, paladins::QPaladins},
     },
+    store::META_STORE,
 };
 
 /// To populate the database with pre-created data.
