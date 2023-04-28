@@ -39,7 +39,10 @@ impl Default for Password {
             value: None,
             placeholder: String::new(),
             regex: String::from("^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$"),
-            regex_err_msg: String::from("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("),
+            regex_err_msg: t!(
+                "allowed chars",
+                chars = "a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
+            ),
             minlength: 8,
             maxlength: 256,
             required: false,

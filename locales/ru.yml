@@ -1,0 +1,9 @@
+invalid color: Неправильный цветовой код
+allowed chars: Допустимые символы %{chars}
+invalid phone: Неправильный номер телефона
+invalid email: Неправильный адрес электронной почты
+invalid url: Неправильный URL-адрес
+invalid ip: Неправильный IP-адрес
+invalid ipv4: Неправильный IPv4-адрес
+invalid ipv6: Неправильный IPv6-адрес
+format: Формат - %{sample}

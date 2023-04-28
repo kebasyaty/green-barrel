@@ -5,6 +5,8 @@ use green_barrel::*;
 use mongodb::Client;
 use std::error::Error;
 
+rust_i18n::i18n!("../locales");
+
 // Migration
 async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
     // Caching metadata.
@@ -24,6 +26,9 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    //
+    rust_i18n::set_locale("ru"); // defaule = en-us
+                                 //
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
     //
@@ -52,7 +57,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     user.email.set("user_1_@noreply.net");
     user.phone.set("+12345678");
     user.password.set("12345678");
-    user.confirm_password.value = Some("12345678".to_string()); // Example without the set() method
+    user.confirm_password.set("12345678");
     user.is_staff.set(true);
     user.is_active.set(true);
 
