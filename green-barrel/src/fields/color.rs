@@ -46,7 +46,7 @@ impl Default for Color {
             regex: String::from(
                 r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
             ),
-            regex_err_msg: t!("invalid color"),
+            regex_err_msg: t!("invalid_color"),
             minlength: 0,
             maxlength: 256,
             required: false,
