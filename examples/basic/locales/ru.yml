@@ -21,6 +21,6 @@ non_existent_date_time: Несуществующие дата или время!
 date_less_min: Введенная дата меньше минимальной.
 date_greater_max: Введенная дата больше максимальной.
 upload_new_file: Загрузите новый файл, чтобы удалить предыдущий.
-number_not_less_min: Число `%{curr_num}` не должно быть меньше min=`%{min_num}`.
-number_not_greater_max: Число `%{curr_num}` не должно превышать max=`%{max_num}`.
+number_not_less_min: Число %{curr_num} не должно быть меньше min=%{min_num}.
+number_not_greater_max: Число %{curr_num} не должно превышать max=%{max_num}.
 password_mismatch: Подтверждение пароля не совпадает.
