@@ -39,6 +39,7 @@
 - [async-trait](https://crates.io/crates/async-trait "async-trait")
 - [futures](https://crates.io/crates/futures "futures")
 - [tokio](https://crates.io/crates/tokio "tokio")
+- [rust-i18n](https://crates.io/crates/rust-i18n "rust-i18n")
 - [metamorphose](https://crates.io/crates/metamorphose "metamorphose")
 
 ## Install mongodb (if not installed)
