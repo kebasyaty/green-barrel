@@ -340,7 +340,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -361,7 +361,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .contains(&curr_val.to_string())
                     {
                         is_err_symptom = true;
-                        Self::accumula_err(final_field, "Value does not match possible choices.");
+                        Self::accumula_err(final_field, &t!("not_match_choices"));
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -375,14 +375,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
                             .unwrap_or_else(|_err| {
                                 is_err_symptom = true;
-                                let err_msg = final_field["err_msg"].as_str().unwrap().to_string();
+                                let regex_err_msg =
+                                    final_field["regex_err_msg"].as_str().unwrap().to_string();
                                 if !is_hide {
-                                    Self::accumula_err(final_field, &err_msg);
+                                    Self::accumula_err(final_field, &regex_err_msg);
                                 } else {
                                     Err(format!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
-                                        err_msg
+                                        regex_err_msg
                                     ))
                                     .unwrap()
                                 }
@@ -444,17 +445,16 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation in regular expression - Email, Color, Url, IP, IPv4, IPv6.
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|_err| {
+                    // Validation in regular expression - Email, Url, IP, IPv4, IPv6.
+                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
-                        let err_msg = final_field["err_msg"].as_str().unwrap().to_string();
                         if !is_hide {
-                            Self::accumula_err(final_field, &err_msg);
+                            Self::accumula_err(final_field, &err.to_string());
                         } else {
                             Err(format!(
                                 "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
-                                err_msg
+                                err
                             ))
                             .unwrap()
                         }
@@ -514,7 +514,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if slug.is_empty() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -555,7 +555,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -574,16 +574,24 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         let (val, err_msg, err_msg_2) = if field_type == "Date" {
                             (
                                 format!("{curr_val}T00:00{tz}"),
-                                "Non-existent date!",
-                                "Incorrect date format.\
-                                <br>Example: 1970-02-28",
+                                t!("non_existent_date"),
+                                format!(
+                                    "{} {} {}",
+                                    t!("incorrect_date"),
+                                    t!("format", sample = "yyyy-mm-dd"),
+                                    t!("example", sample = "1970-02-28")
+                                ),
                             )
                         } else {
                             (
                                 format!("{curr_val}{tz}"),
-                                "Non-existent date or time!",
-                                "Incorrect date and time format.\
-                                <br>Example: 1970-01-01T00:00",
+                                t!("non_existent_date_time"),
+                                format!(
+                                    "{} {} {}",
+                                    t!("incorrect_date_time"),
+                                    t!("format", sample = "yyyy-mm-ddThh:mm"),
+                                    t!("example", sample = "1970-02-28T00:00")
+                                ),
                             )
                         };
                         match DateTime::parse_from_str(&val, "%Y-%m-%dT%H:%M%z") {
@@ -591,11 +599,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             Err(error) => {
                                 if error.kind() == ParseErrorKind::OutOfRange {
                                     is_err_symptom = true;
-                                    Self::accumula_err(final_field, err_msg);
+                                    Self::accumula_err(final_field, &err_msg);
                                     continue;
                                 } else {
                                     is_err_symptom = true;
-                                    Self::accumula_err(final_field, err_msg_2);
+                                    Self::accumula_err(final_field, &err_msg_2);
                                     continue;
                                 }
                             }
@@ -643,10 +651,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Match dates.
                         if curr_dt < min_dt {
                             is_err_symptom = true;
-                            Self::accumula_err(
-                                final_field,
-                                "The entered date is less than the minimum.",
-                            );
+                            Self::accumula_err(final_field, &t!("date_less_min"));
                             continue;
                         }
                     }
@@ -692,10 +697,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         // Match dates.
                         if curr_dt > max_dt {
                             is_err_symptom = true;
-                            Self::accumula_err(
-                                final_field,
-                                "The entered date is greater than the maximum.",
-                            );
+                            Self::accumula_err(final_field, &t!("date_greater_max"));
                             continue;
                         }
                     }
@@ -707,7 +709,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                Self::accumula_err(final_field, &err.to_string());
+                                Self::accumula_err(final_field, &t!("not_unique"));
                             });
                     }
                     // Insert result.
@@ -723,7 +725,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -743,10 +745,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -762,10 +761,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -781,10 +777,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -800,10 +793,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -825,7 +815,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -845,10 +835,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -864,10 +851,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -883,10 +867,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -902,10 +883,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 flag = true;
                             } else {
                                 is_err_symptom = true;
-                                Self::accumula_err(
-                                    final_field,
-                                    "Value does not match possible choices.",
-                                );
+                                Self::accumula_err(final_field, &t!("not_match_choices"));
                             }
                             if is_save {
                                 final_doc.insert(
@@ -927,7 +905,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -952,10 +930,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -979,10 +954,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1006,10 +978,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1033,10 +1002,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1065,7 +1031,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("not_unique"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -1090,10 +1056,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1117,10 +1080,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1144,10 +1104,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1171,10 +1128,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             for item in val.iter() {
                                 if !choices.contains(item) {
                                     is_err_symptom = true;
-                                    Self::accumula_err(
-                                        final_field,
-                                        "Value does not match possible choices.",
-                                    );
+                                    Self::accumula_err(final_field, &t!("not_match_choices"));
                                     flag = false;
                                     break;
                                 }
@@ -1231,10 +1185,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await?;
                         } else {
                             is_err_symptom = true;
-                            Self::accumula_err(
-                                final_field,
-                                "Upload a new file to delete the previous one.",
-                            );
+                            Self::accumula_err(final_field, &t!("upload_new_file"));
                         }
                     }
                     // Get the current information about file from database.
@@ -1249,7 +1200,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             } else {
                                 if is_required {
                                     is_err_symptom = true;
-                                    Self::accumula_err(final_field, "Required field.");
+                                    Self::accumula_err(final_field, &t!("required_field"));
                                 }
                                 if !is_update && !ignore_fields.contains(field_name) {
                                     final_doc.insert(field_name, Bson::Null);
@@ -1370,10 +1321,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await?;
                         } else {
                             is_err_symptom = true;
-                            Self::accumula_err(
-                                final_field,
-                                "Upload a new file to delete the previous one.",
-                            );
+                            Self::accumula_err(final_field, &t!("upload_new_file"));
                         }
                     }
                     // Get the current information about file from database.
@@ -1543,7 +1491,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);
@@ -1561,7 +1509,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_i32_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        Self::accumula_err(final_field, "Value does not match possible choices.");
+                        Self::accumula_err(final_field, &t!("not_match_choices"));
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -1592,20 +1540,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < i32::try_from(min.as_i64().unwrap())? {
                             is_err_symptom = true;
-                            let msg = format!(
-                                "The number `{curr_val}` must not be less than min=`{min}`."
+                            Self::accumula_err(
+                                final_field,
+                                &t!("number_not_less_min", curr_num = curr_val, min_num = min),
                             );
-                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > i32::try_from(max.as_i64().unwrap())? {
                             is_err_symptom = true;
-                            let msg = format!(
-                                "The number `{curr_val}` must not be greater than max=`{max}`."
+                            Self::accumula_err(
+                                final_field,
+                                &t!("number_not_greater_max", curr_num = curr_val, max_num = max),
                             );
-                            Self::accumula_err(final_field, &msg);
                         }
                     }
 
@@ -1621,7 +1569,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if const_value.is_null() {
                         if is_required {
                             is_err_symptom = true;
-                            Self::accumula_err(final_field, "Required field.");
+                            Self::accumula_err(final_field, &t!("required_field"));
                         }
                         if is_save && !ignore_fields.contains(field_name) {
                             final_doc.insert(field_name, Bson::Null);

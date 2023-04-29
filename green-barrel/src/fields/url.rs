@@ -13,7 +13,6 @@ pub struct Url {
     pub value: Option<String>, // Sets the value of an element.
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
-    pub err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -40,7 +39,6 @@ impl Default for Url {
             value: None,
             default: None,
             placeholder: String::new(),
-            err_msg: String::from("Invalid Url."),
             minlength: 0,
             maxlength: 256,
             required: false,

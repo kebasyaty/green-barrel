@@ -16,7 +16,7 @@ pub struct Text {
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub err_msg: String, // To customize error message.
+    pub regex_err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -46,7 +46,7 @@ impl Default for Text {
             default: None,
             placeholder: String::new(),
             regex: String::new(),
-            err_msg: String::new(),
+            regex_err_msg: String::new(),
             minlength: 0,
             maxlength: 256,
             required: false,

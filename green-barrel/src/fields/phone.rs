@@ -14,7 +14,7 @@ pub struct Phone {
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub err_msg: String, // To customize error message.
+    pub regex_err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -42,7 +42,7 @@ impl Default for Phone {
             default: None,
             placeholder: String::new(),
             regex: String::from(r"^\+?[0-9]{8,15}$"),
-            err_msg: String::from("Invalid Phone number."),
+            regex_err_msg: t!("invalid_phone"),
             minlength: 8,
             maxlength: 15,
             required: false,
@@ -52,7 +52,7 @@ impl Default for Phone {
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
-            hint: "Format: +xxxxxxxx... or xxxxxxxx...".into(),
+            hint: t!("format", sample = "+xxxxxxxx... or xxxxxxxx..."),
             warning: String::new(),
             errors: Vec::new(),
             group: 1,

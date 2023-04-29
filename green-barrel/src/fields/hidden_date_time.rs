@@ -49,7 +49,7 @@ impl Default for HiddenDateTime {
             is_hide: true,
             other_attrs: String::new(),
             css_classes: String::new(),
-            hint: String::from("Format: yyyy-mm-ddThh:mm"),
+            hint: t!("format", sample = "yyyy-mm-ddThh:mm"),
             warning: String::new(),
             errors: Vec::new(),
             group: 3,

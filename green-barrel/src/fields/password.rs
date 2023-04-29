@@ -13,7 +13,7 @@ pub struct Password {
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub err_msg: String, // To customize error message.
+    pub regex_err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -39,7 +39,10 @@ impl Default for Password {
             value: None,
             placeholder: String::new(),
             regex: String::from("^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$"),
-            err_msg: String::from("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("),
+            regex_err_msg: t!(
+                "allowed_chars",
+                chars = "a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
+            ),
             minlength: 8,
             maxlength: 256,
             required: false,
