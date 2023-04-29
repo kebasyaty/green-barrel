@@ -122,7 +122,7 @@ impl AdditionalValidation for User {
         let confirm_password = self.confirm_password.get().unwrap_or_default();
 
         // Fields validation
-        if (password.is_empty() && confirm_password.is_empty()) && password != confirm_password {
+        if (!password.is_empty() && !confirm_password.is_empty()) && password != confirm_password {
             error_map.insert("confirm_password".into(), t!("password_mismatch"));
         }
 

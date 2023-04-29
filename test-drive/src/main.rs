@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     user.email.set("user_1_@noreply.net");
     user.phone.set("+12345678");
     user.password.set("12345678");
-    user.confirm_password.set("12345678");
+    user.confirm_password.set("123456789");
     user.is_staff.set(true);
     user.is_active.set(true);
 
