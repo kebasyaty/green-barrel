@@ -709,7 +709,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                             .await
                             .unwrap_or_else(|err| {
                                 is_err_symptom = true;
-                                Self::accumula_err(final_field, &t!("not_unique"));
+                                Self::accumula_err(final_field, &err.to_string());
                             });
                     }
                     // Insert result.

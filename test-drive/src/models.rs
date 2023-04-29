@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
+use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
@@ -122,10 +123,7 @@ impl AdditionalValidation for User {
 
         // Fields validation
         if (password.is_empty() && confirm_password.is_empty()) && password != confirm_password {
-            error_map.insert(
-                "confirm_password".into(),
-                "Password confirmation does not match.".into(),
-            );
+            error_map.insert("confirm_password".into(), t!("password_mismatch"));
         }
 
         Ok(error_map)
