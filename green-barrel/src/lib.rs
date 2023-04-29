@@ -20,6 +20,11 @@
 //! | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 //!
 
+#[macro_use]
+extern crate rust_i18n;
+
+i18n!("locales");
+
 pub mod fields;
 pub mod meta_store;
 pub mod migration;

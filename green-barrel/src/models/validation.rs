@@ -17,7 +17,7 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn check_minlength(minlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if minlength > 0 && value.encode_utf16().count() < minlength {
-            Err(format!("Minimum {} characters.", minlength))?
+            Err(t!("min_chars", count = minlength))?
         }
         Ok(())
     }
@@ -26,7 +26,7 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn check_maxlength(maxlength: usize, value: &str) -> Result<(), Box<dyn Error>> {
         if maxlength > 0 && value.encode_utf16().count() > maxlength {
-            Err(format!("Maximum {} characters.", maxlength))?
+            Err(t!("max_chars", count = maxlength))?
         }
         Ok(())
     }
@@ -34,7 +34,7 @@ pub trait Validation {
     /// Accumulation of errors.
     // ---------------------------------------------------------------------------------------------
     fn accumula_err(field: &mut Value, err: &str) {
-        let err_vec = field["error"].as_array_mut().unwrap();
+        let err_vec = field["errors"].as_array_mut().unwrap();
         let err = serde_json::to_value(err).unwrap();
         if !err_vec.contains(&err) {
             err_vec.push(err);
@@ -47,27 +47,27 @@ pub trait Validation {
         match field_type {
             "Email" => {
                 if !validator::validate_email(value) {
-                    Err("Invalid email address.")?
+                    Err(t!("invalid_email"))?
                 }
             }
             "Url" => {
                 if !validator::validate_url(value) {
-                    Err("Invalid Url.")?
+                    Err(t!("invalid_url"))?
                 }
             }
             "IP" => {
                 if !validator::validate_ip(value) {
-                    Err("Invalid IP address.")?
+                    Err(t!("invalid_ip"))?
                 }
             }
             "IPv4" => {
                 if !validator::validate_ip_v4(value) {
-                    Err("Invalid IPv4 address.")?
+                    Err(t!("invalid_ipv4"))?
                 }
             }
             "IPv6" => {
                 if !validator::validate_ip_v6(value) {
-                    Err("Invalid IPv6 address.")?
+                    Err(t!("invalid_ipv6"))?
                 }
             }
             _ => return Ok(()),
@@ -97,7 +97,7 @@ pub trait Validation {
         }
         let count = coll.count_documents(filter, None).await?;
         if count > 0 {
-            Err("Is not unique.")?
+            Err(t!("not_unique"))?
         }
         Ok(())
     }

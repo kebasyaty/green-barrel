@@ -16,7 +16,7 @@ pub struct Text {
     pub default: Option<String>, // Value by default.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub regex_err_msg: String, // An error message for the regex attribute.
+    pub regex_err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -29,7 +29,7 @@ pub struct Text {
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.
-    pub error: Vec<String>,  // The value is determined automatically.
+    pub errors: Vec<String>, // The value is determined automatically.
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
@@ -59,7 +59,7 @@ impl Default for Text {
             css_classes: String::new(),
             hint: String::new(),
             warning: String::new(),
-            error: Vec::new(),
+            errors: Vec::new(),
             group: 1,
         }
     }

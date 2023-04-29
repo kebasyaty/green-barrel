@@ -13,7 +13,7 @@ pub struct Password {
     pub value: Option<String>, // Sets the value of an element.
     pub placeholder: String, // Displays prompt text.
     pub regex: String, // A regular expression to validate the value.
-    pub regex_err_msg: String, // An error message for the regex attribute.
+    pub regex_err_msg: String, // To customize error message.
     pub minlength: usize, // The minimum number of characters allowed in the text.
     pub maxlength: usize, // The maximum number of characters allowed in the text.
     pub required: bool, // Mandatory field.
@@ -24,7 +24,7 @@ pub struct Password {
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.
-    pub error: Vec<String>,  // The value is determined automatically.
+    pub errors: Vec<String>, // The value is determined automatically.
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
@@ -39,7 +39,10 @@ impl Default for Password {
             value: None,
             placeholder: String::new(),
             regex: String::from("^[a-zA-Z0-9@#$%^&+=*!~)(]{8,256}$"),
-            regex_err_msg: String::from("Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("),
+            regex_err_msg: t!(
+                "allowed_chars",
+                chars = "a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
+            ),
             minlength: 8,
             maxlength: 256,
             required: false,
@@ -50,7 +53,7 @@ impl Default for Password {
             css_classes: String::new(),
             hint: String::new(),
             warning: String::new(),
-            error: Vec::new(),
+            errors: Vec::new(),
             group: 1,
         }
     }

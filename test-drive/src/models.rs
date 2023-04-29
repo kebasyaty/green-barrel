@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
+use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
@@ -36,12 +37,12 @@ impl Control for User {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
                 regex: r"^[a-zA-Z\d_@.+]{1,150}$".into(),
-                regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                regex_err_msg: t!("allowed_chars", chars = "a-z A-Z 0-9 _ @ . +"),
                 minlength: 1,
                 maxlength: 150,
                 required: true,
                 unique: true,
-                hint: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                hint: t!("allowed_chars", chars = "a-z A-Z 0-9 _ @ . +"),
                 ..Default::default()
             },
             slug: Slug {
@@ -74,14 +75,16 @@ impl Control for User {
                 label: "Phone number".into(),
                 placeholder: "Please enter your phone number".into(),
                 unique: true,
-                hint: "Format: +xxxxxxxx... or xxxxxxxx...".into(),
                 ..Default::default()
             },
             password: Password {
                 label: "Password".into(),
                 placeholder: "Enter your password".into(),
                 required: true,
-                hint: "Allowed chars: a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) (".into(),
+                hint: t!(
+                    "allowed_chars",
+                    chars = "a-z A-Z 0-9 @ # $ % ^ & + = * ! ~ ) ("
+                ),
                 ..Default::default()
             },
             confirm_password: Password {
@@ -121,11 +124,8 @@ impl AdditionalValidation for User {
         let confirm_password = self.confirm_password.get().unwrap_or_default();
 
         // Fields validation
-        if (password.is_empty() && confirm_password.is_empty()) && password != confirm_password {
-            error_map.insert(
-                "confirm_password".into(),
-                "Password confirmation does not match.".into(),
-            );
+        if (!password.is_empty() && !confirm_password.is_empty()) && password != confirm_password {
+            error_map.insert("confirm_password".into(), t!("password_mismatch"));
         }
 
         Ok(error_map)
