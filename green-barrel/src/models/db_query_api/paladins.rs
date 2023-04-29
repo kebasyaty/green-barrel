@@ -1587,7 +1587,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_i64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        Self::accumula_err(final_field, "Value does not match possible choices.");
+                        Self::accumula_err(final_field, &t!("not_match_choices"));
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
@@ -1618,20 +1618,20 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     if let Some(min) = final_field.get("min") {
                         if !min.is_null() && curr_val < min.as_i64().unwrap() {
                             is_err_symptom = true;
-                            let msg = format!(
-                                "The number `{curr_val}` must not be less than min=`{min}`."
+                            Self::accumula_err(
+                                final_field,
+                                &t!("number_not_less_min", curr_num = curr_val, min_num = min),
                             );
-                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Compare with `max`.
                     if let Some(max) = final_field.get("max") {
                         if !max.is_null() && curr_val > max.as_i64().unwrap() {
                             is_err_symptom = true;
-                            let msg = format!(
-                                "The number `{curr_val}` must not be greater than max=`{max}`."
+                            Self::accumula_err(
+                                final_field,
+                                &t!("number_not_greater_max", curr_num = curr_val, max_num = max),
                             );
-                            Self::accumula_err(final_field, &msg);
                         }
                     }
                     // Insert result.
@@ -1647,7 +1647,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         if is_required {
                             is_err_symptom = true;
                             if !is_hide {
-                                Self::accumula_err(final_field, "Required field.");
+                                Self::accumula_err(final_field, &t!("required_field"));
                             }
                         }
                         if is_save && !ignore_fields.contains(field_name) {
@@ -1666,7 +1666,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         && !choice_f64_map.get(field_name).unwrap().contains(&curr_val)
                     {
                         is_err_symptom = true;
-                        Self::accumula_err(final_field, "Value does not match possible choices.");
+                        Self::accumula_err(final_field, &t!("not_match_choices"));
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
