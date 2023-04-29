@@ -23,4 +23,3 @@ date_greater_max: The entered date is greater than the maximum.
 upload_new_file: Upload a new file to delete the previous one.
 number_not_less_min: The number `%{curr_num}` must not be less than min=`%{min_num}`.
 number_not_greater_max: The number `%{curr_num}` must not be greater than max=`%{max_num}`.
-password_mismatch: Password confirmation does not match.
