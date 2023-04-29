@@ -21,5 +21,5 @@ non_existent_date_time: Non-existent date or time!
 date_less_min: The entered date is less than the minimum.
 date_greater_max: The entered date is greater than the maximum.
 upload_new_file: Upload a new file to delete the previous one.
-number_not_less_min: The number `%{curr_num}` must not be less than min=`%{min_num}`.
-number_not_greater_max: The number `%{curr_num}` must not be greater than max=`%{max_num}`.
+number_not_less_min: The number %{curr_num} must not be less than min=%{min_num}.
+number_not_greater_max: The number %{curr_num} must not be greater than max=%{max_num}.
