@@ -55,7 +55,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             return Ok(());
         }
         // Get metadata of Model
-        let (model_name, model_json, field_type_map) = {
+        let (model_name, model_json, fields_name) = {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
@@ -65,7 +65,7 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
                 (
                     meta.model_name.clone(),
                     meta.model_json.clone(),
-                    meta.field_type_map.clone(),
+                    meta.fields_name.clone(),
                 )
             } else {
                 Err(format!(
@@ -101,17 +101,12 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
         if let Some(fixtures_vec) = json_val.as_array() {
             for fixture in fixtures_vec {
                 let mut model_json = model_json.clone();
-                for (field_name, field_type) in field_type_map.iter() {
+                for field_name in fields_name.iter() {
                     if let Some(data) = fixture.get(field_name) {
-                        let value_key = if field_type == "Bool" {
-                            "checked"
-                        } else {
-                            "value"
-                        };
                         *model_json
                             .get_mut(field_name)
                             .unwrap()
-                            .get_mut(value_key)
+                            .get_mut("value")
                             .unwrap() = data.clone();
                     }
                 }

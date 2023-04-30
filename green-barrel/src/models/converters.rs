@@ -133,13 +133,11 @@ pub trait Converters {
         //
         for field_name in fields_name {
             if !ignore_fields.contains(field_name) {
-                let val_json = doc_json.get(field_name).unwrap().clone();
-                if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("value") {
-                    *val = val_json;
-                } else if let Some(val) = model_json.get_mut(field_name).unwrap().get_mut("checked")
-                {
-                    *val = val_json;
-                }
+                *model_json
+                    .get_mut(field_name)
+                    .unwrap()
+                    .get_mut("value")
+                    .unwrap() = doc_json.get(field_name).unwrap().clone();
             }
         }
         //
