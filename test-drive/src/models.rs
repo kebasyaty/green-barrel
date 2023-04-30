@@ -95,13 +95,13 @@ impl Control for User {
             },
             is_staff: Bool {
                 label: "is staff?".into(),
-                checked: Some(true),
+                default: Some(true),
                 hint: "User can access the admin site?".into(),
                 ..Default::default()
             },
             is_active: Bool {
                 label: "is active?".into(),
-                checked: Some(true),
+                default: Some(true),
                 hint: "Is this an active account?".into(),
                 ..Default::default()
             },
