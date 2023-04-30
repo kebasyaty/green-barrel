@@ -11,7 +11,7 @@ use crate::{
         caching::Caching,
         db_query_api::{commons::QCommons, paladins::QPaladins},
     },
-    store::META_STORE,
+    store::METADATA,
 };
 
 /// To populate the database with pre-created data.
@@ -59,9 +59,9 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.model_json.clone(),

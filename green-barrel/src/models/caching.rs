@@ -12,7 +12,7 @@ use std::{collections::HashMap, convert::TryFrom, error::Error};
 
 use crate::{
     models::{converters::Converters, helpers::ControlArr, Main},
-    store::META_STORE,
+    store::METADATA,
 };
 
 type ChoicesStrMap = HashMap<String, Vec<String>>;
@@ -51,9 +51,9 @@ pub trait Caching: Main + Converters {
         // Get metadata store.
         // Get a key to access the metadata store.
         let key = Self::key()?;
-        let mut store = META_STORE.lock().await;
+        let mut metadata = METADATA.lock().await;
         // Save the meta to storage.
-        store.insert(key, meta);
+        metadata.insert(key, meta);
         //
         Ok(())
     }
@@ -139,9 +139,9 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = META_STORE.lock().await;
+        let metadata = METADATA.lock().await;
         // Get meta of Model.
-        if let Some(meta) = store.get(&key) {
+        if let Some(meta) = metadata.get(&key) {
             let instance = serde_json::from_value(meta.model_json.clone())?;
             return Ok(instance);
         }
@@ -166,9 +166,9 @@ pub trait Caching: Main + Converters {
         // Get a key to access the metadata store.
         let key = Self::key()?;
         // Get metadata store.
-        let store = META_STORE.lock().await;
+        let metadata = METADATA.lock().await;
         // Get metadata of Model.
-        if let Some(meta) = store.get(&key) {
+        if let Some(meta) = metadata.get(&key) {
             let json_line = serde_json::to_string(&meta.model_json)?;
             return Ok(json_line);
         }
@@ -210,9 +210,9 @@ pub trait Caching: Main + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.model_json.clone(),

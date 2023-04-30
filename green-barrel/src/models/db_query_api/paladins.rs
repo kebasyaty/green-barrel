@@ -26,7 +26,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::META_STORE,
+    store::METADATA,
 };
 
 #[async_trait(?Send)]
@@ -175,9 +175,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.choice_str_map.clone(),
@@ -1945,9 +1945,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Get a key to access the metadata store.
                 let key = Self::key()?;
                 // Get metadata store.
-                let store = META_STORE.lock().await;
+                let metadata = METADATA.lock().await;
                 // Get metadata of Model.
-                if let Some(meta) = store.get(&key) {
+                if let Some(meta) = metadata.get(&key) {
                     (
                         meta.collection_name.clone(),
                         meta.is_use_hash_slug,
@@ -2046,9 +2046,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.database_name.clone(),
@@ -2225,9 +2225,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -2328,9 +2328,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Get a key to access the metadata store.
                 let key = Self::key()?;
                 // Get metadata store.
-                let store = META_STORE.lock().await;
+                let metadata = METADATA.lock().await;
                 // Get metadata of Model.
-                if let Some(meta) = store.get(&key) {
+                if let Some(meta) = metadata.get(&key) {
                     (meta.database_name.clone(), meta.collection_name.clone())
                 } else {
                     Err(format!(

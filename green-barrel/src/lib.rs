@@ -46,6 +46,6 @@ pub use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
-    store::META_STORE,
+    store::METADATA,
     test_tool::del_test_db,
 };

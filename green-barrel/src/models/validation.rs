@@ -9,7 +9,7 @@ use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
-use crate::store::VALIDATE_COLOR_CODE;
+use crate::store::REGEX_IS_COLOR_CODE;
 
 /// Helper methods to validate data before saving or updating to the database.
 // *************************************************************************************************
@@ -73,7 +73,7 @@ pub trait Validation {
                 }
             }
             "Color" => {
-                if !VALIDATE_COLOR_CODE.is_match(value) {
+                if !REGEX_IS_COLOR_CODE.is_match(value) {
                     Err(t!("invalid_color"))?
                 }
             }
