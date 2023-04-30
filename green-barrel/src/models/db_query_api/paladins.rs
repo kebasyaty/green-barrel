@@ -302,11 +302,6 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                         is_use_default = true;
                     }
                 }
-                if tmp.is_null() && !is_use_default {
-                    if let Some(val) = final_field.get("checked") {
-                        tmp = val.clone();
-                    }
-                }
                 tmp
             };
             let const_group = final_field["group"].as_i64().unwrap();
@@ -1724,23 +1719,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // *********************************************************************************
                 // "Bool"
                 13 => {
-                    // Validation, if the field is required and empty, accumulate the error.
-                    // ( The default value is used whenever possible )
-                    if const_value.is_null() && is_required {
-                        is_err_symptom = true;
-                        Self::accumula_err(final_field, "Required field.");
-                        continue;
-                    }
-
                     // Insert result.
                     // -----------------------------------------------------------------------------
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
-                        let is_checked = if !const_value.is_null() {
-                            const_value.as_bool().unwrap()
-                        } else {
-                            false
-                        };
-                        *final_field.get_mut("checked").unwrap() = json!(is_checked);
+                        let is_checked = const_value.as_bool().unwrap_or_default();
+                        *final_field.get_mut("value").unwrap() = json!(is_checked);
                         let field_value_bson = Bson::Boolean(is_checked);
                         final_doc.insert(field_name, field_value_bson);
                     }

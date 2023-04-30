@@ -11,9 +11,9 @@ pub struct Bool {
     pub field_type: String, // Field type.
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
+    pub value: Option<bool>, // Sets the value of an element.
+    pub default: bool, // Value by default
     pub placeholder: String, // Displays prompt text.
-    pub required: bool, // Mandatory field.
-    pub checked: Option<bool>, // Use as the current value and default values.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
     pub is_hide: bool, // Hide field from user.
@@ -33,9 +33,9 @@ impl Default for Bool {
             field_type: String::from("Bool"),
             input_type: String::from("checkbox"),
             name: String::new(),
+            value: None,
+            default: false,
             placeholder: String::new(),
-            required: false,
-            checked: Some(false), // Use as the current value and default values.
             disabled: false,
             readonly: false,
             is_hide: false,
@@ -51,9 +51,9 @@ impl Default for Bool {
 
 impl Bool {
     pub fn get(&self) -> Option<bool> {
-        self.checked
+        self.value
     }
     pub fn set(&mut self, value: bool) {
-        self.checked = Some(value);
+        self.value = Some(value);
     }
 }
