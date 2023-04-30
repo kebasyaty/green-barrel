@@ -12,7 +12,7 @@ pub struct Bool {
     pub input_type: String, // The value is determined automatically.
     pub name: String, // The value is determined automatically.
     pub value: Option<bool>, // Sets the value of an element.
-    pub default: bool, // Value by default
+    pub default: Option<bool>, // Value by default
     pub placeholder: String, // Displays prompt text.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
@@ -34,7 +34,7 @@ impl Default for Bool {
             input_type: String::from("checkbox"),
             name: String::new(),
             value: None,
-            default: false,
+            default: Some(false),
             placeholder: String::new(),
             disabled: false,
             readonly: false,

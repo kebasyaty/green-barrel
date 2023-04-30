@@ -103,7 +103,6 @@ mod models {
         fn custom_default() -> Self {
             Self {
                 checkbox: Bool {
-                    required: true,
                     ..Default::default()
                 },
                 date: Date {

@@ -436,8 +436,6 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 for (field_name, field_type) in meta.field_type_map.iter() {
                     let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
                             val.clone()
-                    } else if let Some(val) = model_json.get(field_name).unwrap().get("checked") {
-                            val.clone()
                     } else {
                         serde_json::json!(null)
                     };
