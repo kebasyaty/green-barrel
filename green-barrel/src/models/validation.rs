@@ -9,6 +9,8 @@ use regex::Regex;
 use serde_json::value::Value;
 use std::{collections::HashMap, error::Error};
 
+use crate::store::VALIDATE_COLOR_CODE;
+
 /// Helper methods to validate data before saving or updating to the database.
 // *************************************************************************************************
 #[async_trait(?Send)]
@@ -41,9 +43,9 @@ pub trait Validation {
         }
     }
 
-    /// Validation in regular expression (email, password, etc...).
+    /// Validation Email, Url, IP, IPv4, IPv6, Color.
     // ---------------------------------------------------------------------------------------------
-    fn regex_validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
+    fn validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
             "Email" => {
                 if !validator::validate_email(value) {
@@ -68,6 +70,11 @@ pub trait Validation {
             "IPv6" => {
                 if !validator::validate_ip_v6(value) {
                     Err(t!("invalid_ipv6"))?
+                }
+            }
+            "Color" => {
+                if !VALIDATE_COLOR_CODE.is_match(value) {
+                    Err(t!("invalid_color"))?
                 }
             }
             _ => return Ok(()),
@@ -102,9 +109,9 @@ pub trait Validation {
         Ok(())
     }
 
-    /// Field attribute check - pattern.
+    /// Validation field attribute `regex`.
     // ----------------------------------------------------------------------------------------------
-    fn regex_pattern_validation(field_value: &str, regex_str: &str) -> Result<(), Box<dyn Error>> {
+    fn regex_validation(field_value: &str, regex_str: &str) -> Result<(), Box<dyn Error>> {
         let pattern = Regex::new(regex_str)?;
         if !field_value.is_empty() && !pattern.is_match(field_value) {
             Err("")?

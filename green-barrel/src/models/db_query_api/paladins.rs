@@ -18,7 +18,6 @@ use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    meta_store::META_STORE,
     models::{
         caching::Caching,
         helpers::{FileData, ImageData},
@@ -27,6 +26,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
+    store::META_STORE,
 };
 
 #[async_trait(?Send)]
@@ -372,8 +372,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     // Validation field attribute `regex`.
                     if let Some(pattern) = final_field.get("regex") {
-                        Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
-                            .unwrap_or_else(|_err| {
+                        Self::regex_validation(curr_val, pattern.as_str().unwrap()).unwrap_or_else(
+                            |_err| {
                                 is_err_symptom = true;
                                 let regex_err_msg =
                                     final_field["regex_err_msg"].as_str().unwrap().to_string();
@@ -387,7 +387,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))
                                     .unwrap()
                                 }
-                            });
+                            },
+                        );
                     }
                     // Validation in regular expression.
                     // Checking `minlength`.
@@ -445,8 +446,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation in regular expression - Email, Url, IP, IPv4, IPv6.
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
+                    // Validation Email, Url, IP, IPv4, IPv6, Color.
+                    Self::validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
                             Self::accumula_err(final_field, &err.to_string());

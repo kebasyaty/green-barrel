@@ -20,8 +20,8 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::{
-    meta_store::META_STORE,
     models::helpers::{FileData, ImageData},
+    store::META_STORE,
 };
 
 // MIGRATION
