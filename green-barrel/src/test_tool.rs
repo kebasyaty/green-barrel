@@ -3,7 +3,7 @@
 use mongodb::Client;
 use std::error::Error;
 
-use crate::meta_store::META_STORE;
+use crate::store::METADATA;
 
 /// Remove test databases
 /// Hint: See the tests in the `test-drive` section for an example.
@@ -14,13 +14,13 @@ pub async fn del_test_db(
     model_key_list: Vec<String>,
 ) -> Result<(), Box<dyn Error>> {
     // Get metadata store
-    let store = { META_STORE.lock().await.clone() };
+    let metadata = { METADATA.lock().await.clone() };
     // Name of the technical database for testing
     let db_green_tech = format!("green_tech__{app_name}__{unique_app_key}");
     // Removing databases
     for model_key in model_key_list.iter() {
         // Get metadata of Model.
-        let meta = if let Some(meta) = store.get(model_key) {
+        let meta = if let Some(meta) = metadata.get(model_key) {
             meta
         } else {
             Err(format!(

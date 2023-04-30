@@ -16,8 +16,8 @@ use serde::{de::DeserializeOwned, ser::Serialize};
 use std::error::Error;
 
 use crate::{
-    meta_store::META_STORE,
     models::{caching::Caching, converters::Converters, output_data::OutputData, Main},
+    store::METADATA,
 };
 
 /// Common query methods.
@@ -53,9 +53,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -94,9 +94,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -142,9 +142,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -181,9 +181,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -224,9 +224,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -273,9 +273,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -319,9 +319,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -386,9 +386,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -453,9 +453,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -495,9 +495,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -554,9 +554,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -598,9 +598,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -669,9 +669,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -742,9 +742,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -794,9 +794,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -869,9 +869,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -938,9 +938,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -985,9 +985,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
@@ -1022,9 +1022,9 @@ pub trait QCommons: Main + Caching + Converters {
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(

@@ -20,8 +20,8 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error, path::Path};
 
 use crate::{
-    meta_store::META_STORE,
     models::helpers::{FileData, ImageData},
+    store::METADATA,
 };
 
 // MIGRATION
@@ -176,9 +176,9 @@ impl<'a> Monitor<'a> {
             // Get metadata of Model
             let meta = {
                 // Get metadata store.
-                let store = META_STORE.lock().await;
+                let metadata = METADATA.lock().await;
                 // Get metadata of Model.
-                if let Some(meta) = store.get(model_key) {
+                if let Some(meta) = metadata.get(model_key) {
                     meta.clone()
                 } else {
                     Err(format!(

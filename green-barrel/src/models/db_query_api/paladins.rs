@@ -18,7 +18,6 @@ use std::{convert::TryFrom, error::Error, fs, fs::Metadata, path::Path};
 use uuid::Uuid;
 
 use crate::{
-    meta_store::META_STORE,
     models::{
         caching::Caching,
         helpers::{FileData, ImageData},
@@ -27,6 +26,7 @@ use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
+    store::METADATA,
 };
 
 #[async_trait(?Send)]
@@ -175,9 +175,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.choice_str_map.clone(),
@@ -372,8 +372,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     };
                     // Validation field attribute `regex`.
                     if let Some(pattern) = final_field.get("regex") {
-                        Self::regex_pattern_validation(curr_val, pattern.as_str().unwrap())
-                            .unwrap_or_else(|_err| {
+                        Self::regex_validation(curr_val, pattern.as_str().unwrap()).unwrap_or_else(
+                            |_err| {
                                 is_err_symptom = true;
                                 let regex_err_msg =
                                     final_field["regex_err_msg"].as_str().unwrap().to_string();
@@ -387,7 +387,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                     ))
                                     .unwrap()
                                 }
-                            });
+                            },
+                        );
                     }
                     // Validation in regular expression.
                     // Checking `minlength`.
@@ -445,8 +446,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                                 });
                         }
                     }
-                    // Validation in regular expression - Email, Url, IP, IPv4, IPv6.
-                    Self::regex_validation(field_type, curr_val).unwrap_or_else(|err| {
+                    // Validation Email, Url, IP, IPv4, IPv6, Color.
+                    Self::validation(field_type, curr_val).unwrap_or_else(|err| {
                         is_err_symptom = true;
                         if !is_hide {
                             Self::accumula_err(final_field, &err.to_string());
@@ -1944,9 +1945,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Get a key to access the metadata store.
                 let key = Self::key()?;
                 // Get metadata store.
-                let store = META_STORE.lock().await;
+                let metadata = METADATA.lock().await;
                 // Get metadata of Model.
-                if let Some(meta) = store.get(&key) {
+                if let Some(meta) = metadata.get(&key) {
                     (
                         meta.collection_name.clone(),
                         meta.is_use_hash_slug,
@@ -2045,9 +2046,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.model_name.clone(),
                     meta.database_name.clone(),
@@ -2224,9 +2225,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             // Get a key to access the metadata store.
             let key = Self::key()?;
             // Get metadata store.
-            let store = META_STORE.lock().await;
+            let metadata = METADATA.lock().await;
             // Get metadata of Model.
-            if let Some(meta) = store.get(&key) {
+            if let Some(meta) = metadata.get(&key) {
                 (
                     meta.database_name.clone(),
                     meta.collection_name.clone(),
@@ -2327,9 +2328,9 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                 // Get a key to access the metadata store.
                 let key = Self::key()?;
                 // Get metadata store.
-                let store = META_STORE.lock().await;
+                let metadata = METADATA.lock().await;
                 // Get metadata of Model.
-                if let Some(meta) = store.get(&key) {
+                if let Some(meta) = metadata.get(&key) {
                     (meta.database_name.clone(), meta.collection_name.clone())
                 } else {
                     Err(format!(

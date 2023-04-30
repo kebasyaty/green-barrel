@@ -26,14 +26,13 @@ extern crate rust_i18n;
 i18n!("locales");
 
 pub mod fields;
-pub mod meta_store;
 pub mod migration;
 pub mod models;
+pub mod store;
 pub mod test_tool;
 
 pub use crate::{
     fields::*,
-    meta_store::META_STORE,
     migration::Monitor,
     models::{
         caching::Caching,
@@ -47,5 +46,6 @@ pub use crate::{
         validation::{AdditionalValidation, Validation},
         Main,
     },
+    store::METADATA,
     test_tool::del_test_db,
 };
