@@ -34,12 +34,12 @@ impl Control for User {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
                 regex: r"^[a-zA-Z\d_@.+]{1,150}$".into(),
-                regex_err_msg: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                regex_err_msg: t!("allowed_chars", chars = "a-z A-Z 0-9 _ @ . +"),
                 minlength: 1,
                 maxlength: 150,
                 required: true,
                 unique: true,
-                hint: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
+                hint: t!("allowed_chars", chars = "a-z A-Z 0-9 _ @ . +"),
                 ..Default::default()
             },
             slug: Slug {

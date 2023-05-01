@@ -1,3 +1,4 @@
+# Standard translations for Green-Barrel:
 invalid_color: Invalid Color code.
 allowed_chars: Allowed chars %{chars}
 min_chars: Minimum %{count} characters.
@@ -23,4 +24,6 @@ date_greater_max: The entered date is greater than the maximum.
 upload_new_file: Upload a new file to delete the previous one.
 number_not_less_min: The number %{curr_num} must not be less than min=%{min_num}.
 number_not_greater_max: The number %{curr_num} must not be greater than max=%{max_num}.
+#
+# Custom translations for your project:
 password_mismatch: Password confirmation does not match.
