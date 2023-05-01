@@ -10,7 +10,7 @@ use crate::settings::{
 };
 
 #[Model(
-    is_use_add_valid = true,
+    is_use_addition = true,
     ignore_fields = "confirm_password" // Example: "field_name, field_name_2"
 )]
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -109,7 +109,18 @@ impl Control for User {
 }
 
 #[async_trait(?Send)]
-impl AdditionalValidation for User {
+impl Addition for User {
+    // It is supposed to be use for additional validation of fields.
+    // Hint: This method is executed first.
+    async fn add_actions(&mut self, _client: &Client) -> Result<(), Box<dyn Error>> {
+        // Get clean data.
+        let username = self.username.get().unwrap_or_default();
+        // Field processing.
+        self.username.set(&username.to_uppercase());
+        Ok(())
+    }
+    // It is supposed to be use to additional validation of fields.
+    // Hint: This method is performed second.
     async fn add_validation(
         &self,
         _client: &Client,
@@ -117,16 +128,13 @@ impl AdditionalValidation for User {
         // Hint: error_map.insert("field_name", "Error message.")
         let mut error_map = HashMap::<String, String>::new();
 
-        // Get clean data
+        // Get clean data.
         let password = self.password.get().unwrap_or_default();
         let confirm_password = self.confirm_password.get().unwrap_or_default();
 
-        // Fields validation
+        // Fields validation.
         if (!password.is_empty() && !confirm_password.is_empty()) && password != confirm_password {
-            error_map.insert(
-                "confirm_password".into(),
-                "Password confirmation does not match.".into(),
-            );
+            error_map.insert("confirm_password".into(), t!("password_mismatch"));
         }
 
         Ok(error_map)

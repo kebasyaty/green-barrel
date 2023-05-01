@@ -3,11 +3,11 @@
 use async_trait::async_trait;
 use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
-    Client, Collection,
+    Collection,
 };
 use regex::Regex;
 use serde_json::value::Value;
-use std::{collections::HashMap, error::Error};
+use std::error::Error;
 
 use crate::store::REGEX_IS_COLOR_CODE;
 
@@ -117,73 +117,5 @@ pub trait Validation {
             Err("")?
         }
         Ok(())
-    }
-}
-
-/// Methods for additional validation.
-/// Hint: For custom use, add the Model/Form attribute `is_use_add_valid = true`.
-/// Hint (for models): Remember to use for validate of ignored fields.
-// *************************************************************************************************
-///
-/// # Example:
-///
-/// ```
-/// use async_trait::async_trait;
-///
-/// #[Model(
-///     is_use_add_valid = true,
-/// )]
-/// #[derive(Serialize, Deserialize, Default, Debug)]
-/// pub struct ModelName {
-///     Your fields ...
-/// }
-///
-/// #[async_trait(?Send)]
-/// impl AdditionalValidation for ModelName {
-///     async fn add_validation(
-///         &self,
-///     ) -> Result<std::collections::HashMap<String, String>, Box<dyn std::error::Error>> {
-///         // Hint: error_map.insert("field_name", "Error message.")
-///         let mut error_map: std::collections::HashMap<String, String> =
-///             std::collections::HashMap::new();
-///
-///         // Get clean data
-///         let hash = self.hash.clone().unwrap_or_default();
-///         let password = self.password.clone().unwrap_or_default();
-///         let confirm_password = self.confirm_password.clone().unwrap_or_default();
-///         let username = self.username.clone().unwrap_or_default();
-///
-///         // Fields validation
-///         if hash.is_empty() && password != confirm_password {
-///             error_map.insert("confirm_password".into(), "Password confirmation does not match.".into());
-///         }
-///         if !RegexBuilder::new(r"^[a-z\d_@+.]+$")
-///             .case_insensitive(true)
-///             .build()
-///             .unwrap()
-///             .is_match(username.as_str())
-///         {
-///             error_map.insert(
-///                 "username".into(),
-///                 "Invalid characters present.<br>\
-///                  Valid characters: a-z A-Z 0-9 _ @ + .".into(),
-///             );
-///         }
-///
-///         Ok(error_map)
-///     }
-/// }
-/// ```
-///
-#[async_trait(?Send)]
-pub trait AdditionalValidation {
-    // Default implementation as a stub.
-    async fn add_validation(
-        &self,
-        _client: &Client,
-    ) -> Result<HashMap<String, String>, Box<dyn Error>> {
-        // error_map.insert("field_name", "Error message.")
-        let error_map = HashMap::<String, String>::new();
-        Ok(error_map)
     }
 }

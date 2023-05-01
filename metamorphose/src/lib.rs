@@ -59,7 +59,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
     //
     let mut html_id_map = std::collections::HashMap::<String, String>::new();
     //
-    let mut add_trait_custom_valid = quote! {impl AdditionalValidation for #model_name_ident {}};
+    let mut add_trait_addition = quote! {impl Addition for #model_name_ident {}};
     let mut add_trait_hooks = quote! {impl Hooks for #model_name_ident {}};
     let add_trait_fixtures = quote! {impl Fixtures for #model_name_ident {}};
 
@@ -129,16 +129,16 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                             the format - <field_name, field_name>."
                         )
                     }
-                } else if mnv.path.is_ident("is_use_add_valid") {
+                } else if mnv.path.is_ident("is_use_addition") {
                     if let syn::Lit::Bool(lit_bool) = &mnv.lit {
-                        trans_meta.is_use_add_valid = lit_bool.value;
+                        trans_meta.is_use_addition = lit_bool.value;
                         if lit_bool.value {
-                            add_trait_custom_valid = quote! {};
+                            add_trait_addition = quote! {};
                         }
                     } else {
                         panic!(
                             "Model: `{model_name_str}` => Could not determine value for \
-                            parameter `is_use_add_valid`. Use the `bool` type."
+                            parameter `is_use_addition`. Use the `bool` type."
                         )
                     }
                 } else if mnv.path.is_ident("is_use_hooks") {
@@ -516,7 +516,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
         /// A set of methods for custom validation.
         // *****************************************************************************************
-        #add_trait_custom_valid
+        #add_trait_addition
 
         /// Methods that are called at different stages when accessing the database.
         /// ****************************************************************************************
@@ -567,7 +567,7 @@ struct Meta {
     pub is_add_doc: bool,
     pub is_up_doc: bool,
     pub is_del_doc: bool,
-    pub is_use_add_valid: bool,
+    pub is_use_addition: bool,
     pub is_use_hooks: bool,
     pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
@@ -601,7 +601,7 @@ impl Default for Meta {
             is_add_doc: true,
             is_up_doc: true,
             is_del_doc: true,
-            is_use_add_valid: false,
+            is_use_addition: false,
             is_use_hooks: false,
             is_use_hash_slug: false,
             field_value_type_map: std::collections::HashMap::new(),
