@@ -23,7 +23,7 @@
 #[macro_use]
 extern crate rust_i18n;
 
-i18n!("locales");
+i18n!("../locales");
 
 pub mod fields;
 pub mod migration;
