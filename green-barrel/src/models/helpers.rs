@@ -20,7 +20,7 @@ pub struct Meta {
     pub is_add_doc: bool,
     pub is_up_doc: bool,
     pub is_del_doc: bool,
-    pub is_use_add_valid: bool,
+    pub is_use_addition: bool,
     pub is_use_hooks: bool,
     pub is_use_hash_slug: bool,
     // <field_name, field_value_type>
@@ -54,7 +54,7 @@ impl Default for Meta {
             is_add_doc: true,
             is_up_doc: true,
             is_del_doc: true,
-            is_use_add_valid: false,
+            is_use_addition: false,
             is_use_hooks: false,
             is_use_hash_slug: false,
             field_value_type_map: HashMap::new(),

@@ -1,5 +1,6 @@
 //! Adapts the Structure for database queries using a programmatic or web interface.
 
+pub mod addition;
 pub mod caching;
 pub mod control;
 pub mod converters;
@@ -9,6 +10,7 @@ pub mod helpers;
 pub mod hooks;
 pub mod output_data;
 pub mod validation;
+
 use async_trait::async_trait;
 
 use mongodb::{

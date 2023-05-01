@@ -35,6 +35,7 @@ pub use crate::{
     fields::*,
     migration::Monitor,
     models::{
+        addition::Addition,
         caching::Caching,
         control::Control,
         converters::Converters,
@@ -43,7 +44,7 @@ pub use crate::{
         helpers::{ControlArr, FileData, ImageData, Meta},
         hooks::Hooks,
         output_data::{OutputData, OutputData2},
-        validation::{AdditionalValidation, Validation},
+        validation::Validation,
         Main,
     },
     store::METADATA,

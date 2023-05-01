@@ -19,18 +19,19 @@ use uuid::Uuid;
 
 use crate::{
     models::{
+        addition::Addition,
         caching::Caching,
         helpers::{FileData, ImageData},
         hooks::Hooks,
         output_data::{OutputData, OutputData2},
-        validation::{AdditionalValidation, Validation},
+        validation::Validation,
         Main,
     },
     store::METADATA,
 };
 
 #[async_trait(?Send)]
-pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation {
+pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
     /// Deleting a file in the database and in the file system.
     // *********************************************************************************************
     async fn delete_file(
@@ -166,7 +167,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
             collection_name,
             fields_name,
             database_name,
-            is_use_add_valid,
+            is_use_addition,
             is_add_doc,
             is_up_doc,
             app_name,
@@ -188,7 +189,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
                     meta.collection_name.clone(),
                     meta.fields_name.clone(),
                     meta.database_name.clone(),
-                    meta.is_use_add_valid,
+                    meta.is_use_addition,
                     meta.is_add_doc,
                     meta.is_up_doc,
                     meta.app_name.clone(),
@@ -219,7 +220,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + AdditionalValidation 
         // Document for the final result.
         let mut final_doc = Document::new();
         // Apply additional validation.
-        if is_use_add_valid {
+        if is_use_addition {
+            self.add_actions(client).await?;
             let error_map = self.add_validation(client).await?;
             if !error_map.is_empty() {
                 is_err_symptom = true;
