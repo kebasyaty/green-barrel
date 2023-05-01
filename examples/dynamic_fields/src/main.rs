@@ -15,8 +15,8 @@ i18n!("locales");
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Change globally current locale
-    // defaule = en-us
-    rust_i18n::set_locale("ru");
+    // defaule = en
+    rust_i18n::set_locale("zh");
     // Init Client
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;
