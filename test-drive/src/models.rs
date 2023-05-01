@@ -2,7 +2,6 @@ use async_trait::async_trait;
 use green_barrel::*;
 use metamorphose::Model;
 use mongodb::Client;
-use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
