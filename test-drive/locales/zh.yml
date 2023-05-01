@@ -1,3 +1,4 @@
+# Standard translations for Green-Barrel:
 invalid_color: 颜色代码无效。
 allowed_chars: 允许的字符 %{chars}
 min_chars: 最少 %{count} 个字符。
@@ -23,4 +24,6 @@ date_greater_max: 输入的日期大于最大值。
 upload_new_file: 上传一个新文件以删除前一个文件。
 number_not_less_min: 数量 %{curr_num} 不得小于 min=%{min_num}。
 number_not_greater_max: 数字 %{curr_num} 不得大于 max=%{max_num}。
+#
+# Custom translations for your project:
 password_mismatch: 密码确认不匹配。
