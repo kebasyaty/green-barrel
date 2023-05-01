@@ -7,7 +7,10 @@ use mongodb::{bson::doc, Client};
 use serde_json::json;
 use std::error::Error;
 
-rust_i18n::i18n!("locales");
+#[macro_use]
+extern crate rust_i18n;
+
+i18n!("locales");
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
