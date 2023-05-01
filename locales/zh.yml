@@ -1,0 +1,26 @@
+invalid_color: 颜色代码无效。
+allowed_chars: 允许的字符 %{chars}
+min_chars: 最少 %{count} 个字符。
+max_chars: 最多 %{count} 个字符。
+invalid_phone: 无效的电话号码。
+invalid_email: 无效的邮件地址。
+invalid_url: 无效的网址。
+invalid_ip: IP 地址无效。
+invalid_ipv4: 无效的 IPv4 地址。
+invalid_ipv6: 无效的 IPv6 地址。
+format: 格式 %{sample}
+example: 例子 %{sample}
+examples: 例子 %{samples}
+not_unique: 不是唯一的。
+required_field: 必填项目。
+not_match_choices: 值与可能的选择不匹配。
+incorrect_date: 日期不正确。
+non_existent_date: 不存在的日期！
+incorrect_date_time: 日期和时间不正确。
+non_existent_date_time: 不存在的日期或时间！
+date_less_min: 输入的日期小于最小日期。
+date_greater_max: 输入的日期大于最大值。
+upload_new_file: 上传一个新文件以删除前一个文件。
+number_not_less_min: 数量 %{curr_num} 不得小于 min=%{min_num}。
+number_not_greater_max: 数字 %{curr_num} 不得大于 max=%{max_num}。
+password_mismatch: 密码确认不匹配。
