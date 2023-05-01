@@ -64,7 +64,7 @@ pub trait Addition {
     /// It is supposed to be use for additional validation of fields.
     /// Hint: This method is executed first.
     async fn add_actions(&mut self, _client: &Client) -> Result<(), Box<dyn Error>> {
-        // ...
+        // your code...
         Ok(())
     }
     /// It is supposed to be use to additional validation of fields.
@@ -74,6 +74,7 @@ pub trait Addition {
         _client: &Client,
     ) -> Result<HashMap<String, String>, Box<dyn Error>> {
         // Hint: error_map.insert("field_name", "Error message.")
+        // your code...
         Ok(HashMap::new())
     }
 }
