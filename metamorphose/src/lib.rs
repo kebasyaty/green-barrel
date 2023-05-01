@@ -16,7 +16,7 @@
 //! | is_up_doc           | true         | Update documents in the database.                                                                    |
 //! | is_del_doc          | true         | Delete documents from the database.                                                                  |
 //! | ignore_fields       | empty string | Fields that are not included in the database (separated by commas).                                  |
-//! | is_use_add_valid    | false        | Allows additional validation - **impl AdditionalValidation for ModelName**.                          |
+//! | is_use_addition     | false        | Allows methods for additional actions and additional validation.                                     |
 //! | is_use_hooks        | false        | Allows hooks methods - **impl Hooks for ModelName**.                                                 |
 //!
 
