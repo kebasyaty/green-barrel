@@ -1,0 +1,29 @@
+# Standard translations for Green-Barrel:
+invalid_color: Geçersiz Renk kodu.
+allowed_chars: İzin verilen karakterler %{chars}
+min_chars: Minimum %{count} karakter.
+max_chars: Maksimum %{count} karakter.
+invalid_phone: Geçersiz telefon numarası.
+invalid_email: Geçersiz e-posta adresi.
+invalid_url: Geçersiz URL.
+invalid_ip: Geçersiz IP adresi.
+invalid_ipv4: Geçersiz IPv4 adresi.
+invalid_ipv6: Geçersiz IPv6 adresi.
+format: Biçim %{sample}
+example: Örnek %{sample}
+examples: Örnekler %{samples}
+not_unique: benzersiz değil
+required_field: Gerekli alan.
+not_match_choices: Değer, olası seçeneklerle eşleşmiyor.
+incorrect_date: yanlış tarih
+non_existent_date: Olmayan tarih!
+incorrect_date_time: Yanlış tarih ve saat.
+non_existent_date_time: Olmayan tarih veya saat!
+date_less_min: Girilen tarih minimum değerden daha az.
+date_greater_max: Girilen tarih maksimumdan daha büyük.
+upload_new_file: Bir öncekini silmek için yeni bir dosya yükleyin.
+number_not_less_min: (%{curr_num}) sayısı min=%{min_num} değerinden küçük olmamalıdır.
+number_not_greater_max: (%{curr_num}) sayısı max=%{max_num} değerinden büyük olmamalıdır.
+#
+# Custom translations for your project:
+password_mismatch: Parola onayı eşleşmiyor.
