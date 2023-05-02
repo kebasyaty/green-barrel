@@ -1,0 +1,25 @@
+invalid_color: Ógildur litakóði.
+allowed_chars: Leyfilegar stafir %{chars}
+min_chars: Lágmarks %{count} stafir.
+max_chars: Hámark %{count} stafir.
+invalid_phone: Ógilt símanúmer.
+invalid_email: Ógilt netfang.
+invalid_url: Ógild vefslóð.
+invalid_ip: Ógilt IP-tala.
+invalid_ipv4: Ógilt IPv4 vistfang.
+invalid_ipv6: Ógilt IPv6 vistfang.
+format: Snið %{sample}
+example: Dæmi %{sample}
+examples: Dæmi %{samples}
+not_unique: Er ekki einsdæmi.
+required_field: Nauðsynlegur reitur.
+not_match_choices: Gildi passar ekki við mögulega valkosti.
+incorrect_date: Röng dagsetning.
+non_existent_date: Engin dagsetning!
+incorrect_date_time: Röng dagsetning og tími.
+non_existent_date_time: Engin dagsetning eða tími!
+date_less_min: Slá inn dagsetning er minni en lágmarkið.
+date_greater_max: Slá inn dagsetning er hærri en hámarkið.
+upload_new_file: Hladdu upp nýrri skrá til að eyða þeirri fyrri.
+number_not_less_min: Talan %{curr_num} má ekki vera minni en min=%{min_num}.
+number_not_greater_max: Talan %{curr_num} má ekki vera hærri en max=%{max_num}.

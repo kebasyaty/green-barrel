@@ -1,0 +1,25 @@
+invalid_color: Virheellinen värikoodi.
+allowed_chars: Sallitut merkit %{chars}
+min_chars: Vähintään %{count} merkkiä.
+max_chars: Enintään %{count} merkkiä.
+invalid_phone: Väärä puhelinnumero.
+invalid_email: Epäkelpo sähköpostiosoite.
+invalid_url: Virheellinen URL.
+invalid_ip: Virheellinen IP-osoite.
+invalid_ipv4: Virheellinen IPv4-osoite.
+invalid_ipv6: Virheellinen IPv6-osoite.
+format: Muoto %{sample}
+example: Esimerkki %{sample}
+examples: Esimerkkejä %{samples}
+not_unique: Ei ole ainutlaatuinen.
+required_field: Vaadittu kenttä.
+not_match_choices: Arvo ei vastaa mahdollisia vaihtoehtoja.
+incorrect_date: Väärä päivämäärä.
+non_existent_date: Olematon päivämäärä!
+incorrect_date_time: Väärä päivämäärä ja aika.
+non_existent_date_time: Olematon päivämäärä tai kellonaika!
+date_less_min: Syötetty päivämäärä on pienempi kuin vähimmäispäivämäärä.
+date_greater_max: Syötetty päivämäärä on suurempi kuin enimmäispäivämäärä.
+upload_new_file: Lataa uusi tiedosto poistaaksesi edellisen.
+number_not_less_min: Luku %{curr_num} ei saa olla pienempi kuin min=%{min_num}.
+number_not_greater_max: Luku %{curr_num} ei saa olla suurempi kuin max=%{max_num}.

@@ -1,0 +1,25 @@
+invalid_color: Cód Dath Neamhbhailí.
+allowed_chars: Carachtair ceadaithe %{ chars}
+min_chars: %{count} carachtar ar a laghad.
+max_chars: %{count} carachtar ar a mhéad.
+invalid_phone: Uimhir Theileafóin Neamhbhailí.
+invalid_email: Sheoladh ríomhphoist neamhbhailí.
+invalid_url: URL neamhbhailí.
+invalid_ip: Seoladh IP neamhbhailí.
+invalid_ipv4: Seoladh IPv4 neamhbhailí.
+invalid_ipv6: Seoladh IPv6 neamhbhailí.
+format: Formáid %{sample}
+example: Sampla %{sample}
+examples: Samplaí %{samples}
+not_unique: Nach bhfuil uathúil.
+required_field: Réimse riachtanach.
+not_match_choices: Ní hionann luach agus roghanna féideartha.
+incorrect_date: Dáta mícheart.
+non_existent_date: Dáta nach bhfuil ann!
+incorrect_date_time: Dáta agus am mícheart.
+non_existent_date_time: Dáta nó am nach bhfuil ann!
+date_less_min: Tá an dáta iontrála níos lú ná an t-íosmhéid.
+date_greater_max: Tá an dáta iontrála níos mó ná an t-uasmhéid.
+upload_new_file: Uaslódáil comhad nua chun an ceann roimhe seo a scriosadh.
+number_not_less_min: Níor cheart go mbeadh an uimhir %{curr_num} níos lú ná min=%{min_num}.
+number_not_greater_max: Níor cheart go mbeadh an uimhir %{curr_num} níos mó ná max=%{max_num}.
