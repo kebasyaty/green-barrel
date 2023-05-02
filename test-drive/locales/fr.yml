@@ -1,7 +1,7 @@
 # Standard translations for Green-Barrel:
 invalid_color: Code couleur invalide.
 allowed_chars: Caractères autorisés %{chars}
-min_chars: %{count} caractères au minimum.
+min_chars: (%{count}) caractères au minimum.
 max_chars: Maximum %{count} caractères.
 invalid_phone: Numéro de téléphone invalide.
 invalid_email: Adresse e-mail invalide.

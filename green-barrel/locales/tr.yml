@@ -21,5 +21,5 @@ non_existent_date_time: Olmayan tarih veya saat!
 date_less_min: Girilen tarih minimum değerden daha az.
 date_greater_max: Girilen tarih maksimumdan daha büyük.
 upload_new_file: Bir öncekini silmek için yeni bir dosya yükleyin.
-number_not_less_min: %{curr_num} sayısı min=%{min_num} değerinden küçük olmamalıdır.
-number_not_greater_max: %{curr_num} sayısı max=%{max_num} değerinden büyük olmamalıdır.
+number_not_less_min: (%{curr_num}) sayısı min=%{min_num} değerinden küçük olmamalıdır.
+number_not_greater_max: (%{curr_num}) sayısı max=%{max_num} değerinden büyük olmamalıdır.

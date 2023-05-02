@@ -1,8 +1,8 @@
 # Standard translations for Green-Barrel:
 invalid_color: Cód Dath Neamhbhailí.
 allowed_chars: Carachtair ceadaithe %{ chars}
-min_chars: %{count} carachtar ar a laghad.
-max_chars: %{count} carachtar ar a mhéad.
+min_chars: (%{count}) carachtar ar a laghad.
+max_chars: (%{count}) carachtar ar a mhéad.
 invalid_phone: Uimhir Theileafóin Neamhbhailí.
 invalid_email: Sheoladh ríomhphoist neamhbhailí.
 invalid_url: URL neamhbhailí.
