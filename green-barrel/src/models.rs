@@ -34,7 +34,7 @@ pub trait Main {
     /// Model instance from `create` method, convert to intermediate state `serde_json::value::Value`,
     /// with the addition of Html-ID and data validation.
     // ---------------------------------------------------------------------------------------------
-    fn custom_default_to_json_val() -> Result<Value, Box<dyn Error>>
+    fn custom_to_json_val() -> Result<Value, Box<dyn Error>>
     where
         Self: serde::de::DeserializeOwned + Sized;
 

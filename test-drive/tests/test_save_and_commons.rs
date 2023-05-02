@@ -98,7 +98,7 @@ mod models {
     }
 
     impl Control for TestModel {
-        fn custom_default() -> Self {
+        fn custom() -> Self {
             Self {
                 email: Email {
                     unique: true,

@@ -20,7 +20,7 @@ pub struct User {
 }
 
 impl Control for User {
-    fn custom_default() -> Self {
+    fn custom() -> Self {
         Self {
             ..Default::default()
         }

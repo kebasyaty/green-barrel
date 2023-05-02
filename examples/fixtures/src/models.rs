@@ -14,7 +14,7 @@ pub struct City {
 }
 
 impl Control for City {
-    fn custom_default() -> Self {
+    fn custom() -> Self {
         Self {
             descriptione: Text {
                 multiline: true, // for <textarea><textarea/>

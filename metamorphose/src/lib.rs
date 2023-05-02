@@ -312,11 +312,11 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             /// Get a new model instance with custom settings.
             // -------------------------------------------------------------------------------------
-            fn custom_default_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
+            fn custom_to_json_val() -> Result<serde_json::Value, Box<dyn std::error::Error>>
             where
                 Self: serde::de::DeserializeOwned + Sized,
             {
-                let mut instance_json_val = serde_json::to_value(Self::custom_default())?;
+                let mut instance_json_val = serde_json::to_value(Self::custom())?;
                 let html_id_map =
                     serde_json::from_str::<std::collections::HashMap<&str, &str>>(&#html_id_map_json)?;
                 for (field_name, id_name) in html_id_map {
@@ -432,7 +432,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                 .to_lowercase();
                 // Add default_value_map
                 let mut default_value_map = std::collections::HashMap::<String, serde_json::Value>::new();
-                let model_json = Self::custom_default_to_json_val()?;
+                let model_json = Self::custom_to_json_val()?;
                 for (field_name, field_type) in meta.field_type_map.iter() {
                     let default = if let Some(val) = model_json.get(field_name).unwrap().get("default") {
                             val.clone()

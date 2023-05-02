@@ -1,6 +1,6 @@
-//! For customizing fields controls.
+//! For customizing field types.
 
-/// For customizing fields controls.
+/// For customizing field types.
 ///
 /// # Example:
 ///
@@ -13,7 +13,7 @@
 /// }
 ///
 /// impl Control for ModelName {
-///     fn custom_default() -> Self {
+///     fn custom() -> Self {
 ///         Self {
 ///             title: Text {
 ///                 label: String::from("Title"),
@@ -29,5 +29,5 @@
 /// ```
 ///
 pub trait Control {
-    fn custom_default() -> Self;
+    fn custom() -> Self;
 }
