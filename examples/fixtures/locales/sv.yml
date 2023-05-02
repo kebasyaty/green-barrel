@@ -1,0 +1,29 @@
+# Standard translations for Green-Barrel:
+invalid_color: Ogiltig färgkod.
+allowed_chars: Tillåtna tecken %{chars}
+min_chars: Minsta %{count} tecken.
+max_chars: Max %{count} tecken.
+invalid_phone: Ogiltigt telefonnummer.
+invalid_email: Ogiltig e-postadress.
+invalid_url: Ogiltig URL.
+invalid_ip: Ogiltig IP-adress.
+invalid_ipv4: Ogiltig IPv4-adress.
+invalid_ipv6: Ogiltig IPv6-adress.
+format: Formatera %{sample}
+example: Exempel %{sample}
+examples: Exempel %{samples}
+not_unique: Är inte unik.
+required_field: Obligatoriskt fält.
+not_match_choices: Värdet matchar inte möjliga val.
+incorrect_date: Felaktigt datum.
+non_existent_date: Ej existerande datum!
+incorrect_date_time: Felaktigt datum och tid.
+non_existent_date_time: Ej existerande datum eller tid!
+date_less_min: Det angivna datumet är mindre än minimum.
+date_greater_max: Det angivna datumet är större än det maximala.
+upload_new_file: Ladda upp en ny fil för att radera den föregående.
+number_not_less_min: Antalet %{curr_num} får inte vara mindre än min=%{min_num}.
+number_not_greater_max: Antalet %{curr_num} får inte vara större än max=%{max_num}.
+#
+# Custom translations for your project:
+password_mismatch: Lösenordsbekräftelsen matchar inte.

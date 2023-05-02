@@ -1,0 +1,29 @@
+# Standard translations for Green-Barrel:
+invalid_color: Ungültiger Farbcode.
+allowed_chars: Erlaubte Zeichen %{chars}
+min_chars: Mindestens %{count} Zeichen.
+max_chars: Maximal %{count} Zeichen.
+invalid_phone: Ungültige Telefonnummer.
+invalid_email: Ungültige E-Mail-Adresse.
+invalid_url: Ungültige URL.
+invalid_ip: Ungültige IP-Adresse.
+invalid_ipv4: Ungültige IPv4-Adresse.
+invalid_ipv6: Ungültige IPv6-Adresse.
+format: Format %{sample}
+example: Beispiel %{sample}
+examples: Beispiele %{samples}
+not_unique: Ist nicht einzigartig.
+required_field: Pflichtfeld.
+not_match_choices: Der Wert stimmt nicht mit den möglichen Optionen überein.
+incorrect_date: Falsches Datum.
+non_existent_date: Nicht vorhandenes Datum!
+incorrect_date_time: Falsches Datum und Uhrzeit.
+non_existent_date_time: Datum oder Uhrzeit nicht vorhanden!
+date_less_min: Das eingegebene Datum ist kleiner als das Minimum.
+date_greater_max: Das eingegebene Datum ist größer als das Maximum.
+upload_new_file: Laden Sie eine neue Datei hoch, um die vorherige zu löschen.
+number_not_less_min: Die Zahl %{curr_num} darf nicht kleiner als min=%{min_num} sein.
+number_not_greater_max: Die Zahl %{curr_num} darf nicht größer als max=%{max_num} sein.
+#
+# Custom translations for your project:
+password_mismatch: Passwortbestätigung stimmt nicht überein.
