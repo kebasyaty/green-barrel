@@ -1,5 +1,6 @@
 ## Changelog
 
+- **v1.6.0** _Renamed **custom_default** method to **custom**. Added 11 localizations. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/models/control/trait.Control.html_
 - **v1.5.0** _Replaced AdditionalValidation trait to Addition. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/models/addition/trait.Addition.html_
 - **v1.4.0** _Added support for localizations._
 - **v1.3.0** _Field types - Changed attribute type **error** from **String** to **Vec String**._

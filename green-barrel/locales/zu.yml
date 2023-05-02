@@ -1,0 +1,25 @@
+invalid_color: Ikhodi yombala engavumelekile.
+allowed_chars: Izinhlamvu ezivunyelwe %{chars}
+min_chars: Ubuncane bezinhlamvu ezingu- %{count}.
+max_chars: Ubuningi bezinhlamvu ezingu- %{count}.
+invalid_phone: Inombolo yocingo engavumelekile.
+invalid_email: Ikheli le-imeyili elingavumelekile.
+invalid_url: I-Url engavumelekile.
+invalid_ip: Ikheli le-IP elingavumelekile.
+invalid_ipv4: Ikheli le-IPv4 elingavumelekile.
+invalid_ipv6: Ikheli le-IPv6 elingavumelekile.
+format: Ifomethi %{sample}
+example: Isibonelo %{sample}
+examples: Izibonelo %{samples}
+not_unique: Ayihlukile.
+required_field: Inkambu edingekayo.
+not_match_choices: Inani alifani nokukhetha okungenzeka.
+incorrect_date: Idethi engalungile.
+non_existent_date: Idethi engekho!
+incorrect_date_time: Idethi nesikhathi okungalungile.
+non_existent_date_time: Idethi noma isikhathi esingekho!
+date_less_min: Idethi efakiwe incane kunobuncane.
+date_greater_max: Idethi efakiwe inkulu kunomkhawulo.
+upload_new_file: Layisha ifayela elisha ukuze ususe elidlule.
+number_not_less_min: Inombolo %{curr_num} akumele ibe ngaphansi kuka-min=%{min_num}.
+number_not_greater_max: Inombolo %{curr_num} akumele ibe nkulu kuno-max=%{max_num}.

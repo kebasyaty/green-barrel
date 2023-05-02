@@ -30,7 +30,7 @@ pub struct User {
 }
 
 impl Control for User {
-    fn custom_default() -> Self {
+    fn custom() -> Self {
         Self {
             username: Text {
                 label: "Username".into(),

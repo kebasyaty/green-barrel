@@ -98,7 +98,7 @@ mod models {
     }
 
     impl Control for TestModel {
-        fn custom_default() -> Self {
+        fn custom() -> Self {
             Self {
                 radio_text: Text {
                     input_type: "radio".into(),

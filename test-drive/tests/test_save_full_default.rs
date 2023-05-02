@@ -100,7 +100,7 @@ mod models {
     }
 
     impl Control for TestModel {
-        fn custom_default() -> Self {
+        fn custom() -> Self {
             Self {
                 image: Image {
                     required: true,

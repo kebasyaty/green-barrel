@@ -1,0 +1,25 @@
+invalid_color: Code couleur invalide.
+allowed_chars: Caractères autorisés %{chars}
+min_chars: (%{count}) caractères au minimum.
+max_chars: Maximum %{count} caractères.
+invalid_phone: Numéro de téléphone invalide.
+invalid_email: Adresse e-mail invalide.
+invalid_url: URL invalide.
+invalid_ip: Adresse IP invalide.
+invalid_ipv4: Adresse IPv4 non valide.
+invalid_ipv6: Adresse IPv6 non valide.
+format: Format %{sample}
+example: Exemple %{sample}
+examples: Exemples %{samples}
+not_unique: N'est pas unique.
+required_field: Champs requis.
+not_match_choices: La valeur ne correspond pas aux choix possibles.
+incorrect_date: Date incorrecte.
+non_existent_date: Date inexistante !
+incorrect_date_time: Date et heure incorrectes.
+non_existent_date_time: Date ou heure inexistante !
+date_less_min: La date saisie est inférieure au minimum.
+date_greater_max: La date saisie est supérieure au maximum.
+upload_new_file: Téléchargez un nouveau fichier pour supprimer le précédent.
+number_not_less_min: Le nombre %{curr_num} ne doit pas être inférieur à min=%{min_num}.
+number_not_greater_max: Le nombre %{curr_num} ne doit pas être supérieur à max=%{max_num}.
