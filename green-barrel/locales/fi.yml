@@ -1,3 +1,5 @@
+# Finnish
+#
 invalid_color: Virheellinen värikoodi.
 allowed_chars: Sallitut merkit %{chars}
 min_chars: Vähintään %{count} merkkiä.

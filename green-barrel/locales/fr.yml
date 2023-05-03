@@ -1,3 +1,5 @@
+# French
+#
 invalid_color: Code couleur invalide.
 allowed_chars: Caractères autorisés %{chars}
 min_chars: (%{count}) caractères au minimum.

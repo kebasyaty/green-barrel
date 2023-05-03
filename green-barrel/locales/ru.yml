@@ -1,3 +1,5 @@
+# Russian
+#
 invalid_color: Неправильный цветовой код
 allowed_chars: Допустимые символы %{chars}
 min_chars: Минимум %{count} символов.
