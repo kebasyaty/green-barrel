@@ -1,3 +1,5 @@
+# English
+#
 invalid_color: Invalid Color code.
 allowed_chars: Allowed chars %{chars}
 min_chars: Minimum %{count} characters.

@@ -1,3 +1,5 @@
+# Swedish
+#
 invalid_color: Ogiltig färgkod.
 allowed_chars: Tillåtna tecken %{chars}
 min_chars: Minsta %{count} tecken.

@@ -1,3 +1,5 @@
+# Irish
+#
 invalid_color: Cód Dath Neamhbhailí.
 allowed_chars: Carachtair ceadaithe %{ chars}
 min_chars: (%{count}) carachtar ar a laghad.

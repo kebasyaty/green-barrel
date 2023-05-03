@@ -1,3 +1,5 @@
+# Chinese
+#
 # Standard translations for Green-Barrel:
 invalid_color: 颜色代码无效。
 allowed_chars: 允许的字符 %{chars}

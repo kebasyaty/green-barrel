@@ -1,3 +1,5 @@
+# Italian
+#
 invalid_color: Codice colore non valido.
 allowed_chars: Caratteri consentiti %{chars}
 min_chars: Minimo %{count} caratteri.

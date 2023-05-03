@@ -1,3 +1,5 @@
+# German
+#
 invalid_color: Ungültiger Farbcode.
 allowed_chars: Erlaubte Zeichen %{chars}
 min_chars: Mindestens %{count} Zeichen.
