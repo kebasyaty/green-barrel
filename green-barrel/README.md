@@ -90,10 +90,11 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 [Control](https://docs.rs/green-barrel/latest/green_barrel/models/control/trait.Control.html "Control")
 
-- custom_default()
+- custom()
 
-[AdditionalValidation](https://docs.rs/green-barrel/latest/green_barrel/models/validation/trait.AdditionalValidation.html "AdditionalValidation")
+[Addition](https://docs.rs/green-barrel/latest/green_barrel/models/addition/trait.Addition.html "Addition")
 
+- add_actions()
 - add_validation()
 
 [Hooks](https://docs.rs/green-barrel/latest/green_barrel/models/hooks/trait.Hooks.html "Hooks")
