@@ -640,7 +640,7 @@ fn get_field_info<'a>(
         "Phone" => ("String", "tel"),
         "Text" => ("String", "text"),
         "Slug" => ("String", "text"),
-        "Url" => ("String", "url"),
+        "URL" => ("String", "url"),
         "IP" => ("String", "text"),
         "ChoiceText" => ("String", "select"),
         "ChoiceTextDyn" => ("String", "select"),

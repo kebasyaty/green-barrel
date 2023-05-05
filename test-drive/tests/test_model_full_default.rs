@@ -83,7 +83,7 @@ mod models {
         pub email: Email,
         pub password: Password,
         pub phone: Phone,
-        pub url: Url,
+        pub url: URL,
         pub ip: IP,
     }
 

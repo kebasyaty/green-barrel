@@ -58,5 +58,5 @@ pub use {
     choice_u32_mult_dyn::ChoiceU32MultDyn, color::Color, date::Date, date_time::DateTime,
     email::Email, file::File, hash::Hash, hidden_date_time::HiddenDateTime, ip::IP,
     number_f64::F64, number_i32::I32, number_i64::I64, number_u32::U32, password::Password,
-    phone::Phone, text::Text, url::Url,
+    phone::Phone, text::Text, url::URL,
 };
