@@ -5,11 +5,9 @@ use mongodb::{
     bson::{doc, oid::ObjectId, Bson, Document},
     Collection,
 };
-use regex::Regex;
+use regex::{Regex, RegexBuilder};
 use serde_json::value::Value;
 use std::error::Error;
-
-use crate::store::REGEX_IS_COLOR_CODE;
 
 /// Helper methods to validate data before saving or updating to the database.
 // *************************************************************************************************
@@ -52,7 +50,7 @@ pub trait Validation {
                     Err(t!("invalid_email"))?
                 }
             }
-            "Url" => {
+            "URL" => {
                 if !validator::validate_url(value) {
                     Err(t!("invalid_url"))?
                 }
@@ -73,7 +71,14 @@ pub trait Validation {
                 }
             }
             "Color" => {
-                if !REGEX_IS_COLOR_CODE.is_match(value) {
+                if !(RegexBuilder::new(
+                    r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
+                )
+                .case_insensitive(true)
+                .build()
+                .unwrap()
+                .is_match(value))
+                {
                     Err(t!("invalid_color"))?
                 }
             }
