@@ -61,14 +61,14 @@ use std::{collections::HashMap, error::Error};
 ///
 #[async_trait(?Send)]
 pub trait Addition {
-    /// It is supposed to be use for additional validation of fields.
-    /// Hint: This method is executed first.
+    /// It is intended for additional actions with fields.
+    /// Hint: This method is execute first.
     async fn add_actions(&mut self, _client: &Client) -> Result<(), Box<dyn Error>> {
         // your code...
         Ok(())
     }
     /// It is supposed to be use to additional validation of fields.
-    /// Hint: This method is performed second.
+    /// Hint: This method is execute second.
     async fn add_validation(
         &self,
         _client: &Client,
