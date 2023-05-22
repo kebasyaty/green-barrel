@@ -1,0 +1,27 @@
+# Japanese
+#
+invalid_color: カラーコードが無効です。
+allowed_chars: 許可される文字 %{chars}
+min_chars: 最小 %{count} 文字。
+max_chars: 最大 %{count} 文字数。
+invalid_phone: 電話番号が無効です。
+invalid_email: メールアドレスが無効です。
+invalid_url: 無効な URL です。
+invalid_ip: IP アドレスが無効です。
+invalid_ipv4: 無効な IPv4 アドレスです。
+invalid_ipv6: 無効な IPv6 アドレスです。
+format: 形式 %{sample}
+example: 例 %{sample}
+examples: 例 %{samples}
+not_unique: 一意ではありません。
+required_field: 必須フィールドです。
+not_match_choices: 値が可能な選択肢と一致しません。
+incorrect_date: 日付が正しくありません。
+non_existent_date: 存在しない日付!
+incorrect_date_time: 日付と時刻が正しくありません。
+non_existent_date_time: 存在しない日付または時刻!
+date_less_min: 入力された日付が最小値より小さいです。
+date_greater_max: 入力された日付が最大値を超えています。
+upload_new_file: 新しいファイルをアップロードして、前のファイルを削除します。
+number_not_less_min: 数値 %{curr_num} は min=%{min_num} より小さくすることはできません。
+number_not_greater_max: 数値 %{curr_num} は、max=%{max_num} より大きくすることはできません。
