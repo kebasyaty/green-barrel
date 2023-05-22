@@ -26,6 +26,6 @@ features = ["derive"]
 version = "1.0.149"
 
 [package.metadata.i18n]
-available-locales = ["en", "ru", "zh", "es", "it", "pt", "de", "fr", "eo", "ga", "is", "fi", "sv", "tr", "zu"]
+available-locales = ["en", "ru", "zh", "es", "it", "pt", "de", "fr", "eo", "ga", "is", "fi", "ja", "sv", "tr", "zu"]
 default-locale = "en"
 load-path = "locales"
