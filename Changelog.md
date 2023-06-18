@@ -1,5 +1,6 @@
 ## Changelog
 
+- **v1.6.7** _Added Slovenian localization._
 - **v1.6.6** _Added Japanese localization._
 - **v1.6.3** _Renamed field type - From **Url** to **URL**._
 - **v1.6.0** _Renamed **custom_default** method to **custom**. Added 11 localizations. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/models/control/trait.Control.html_
