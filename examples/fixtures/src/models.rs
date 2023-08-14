@@ -9,14 +9,14 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct City {
-    pub city_name: Text,
-    pub descriptione: Text, // multiline
+    pub city_name: TextField,
+    pub descriptione: TextField, // multiline
 }
 
 impl Control for City {
     fn custom() -> Self {
         Self {
-            descriptione: Text {
+            descriptione: TextField {
                 multiline: true, // for <textarea><textarea/>
                 ..Default::default()
             },

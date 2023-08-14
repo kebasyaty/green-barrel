@@ -9,15 +9,15 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: Text,
-    pub email: Email,
-    pub slug: Slug,
+    pub username: TextField,
+    pub email: EmailField,
+    pub slug: SlugField,
 }
 
 impl Control for User {
     fn custom() -> Self {
         Self {
-            username: Text {
+            username: TextField {
                 label: "Username".into(),
                 placeholder: "Enter your username".into(),
                 regex: r"^[a-zA-Z\d_@.+]{1,150}$".into(),
@@ -29,14 +29,14 @@ impl Control for User {
                 hint: "Allowed chars: a-z A-Z 0-9 _ @ . +".into(),
                 ..Default::default()
             },
-            email: Email {
+            email: EmailField {
                 label: "E-mail".into(),
                 required: true,
                 unique: true,
                 maxlength: 320,
                 ..Default::default()
             },
-            slug: Slug {
+            slug: SlugField {
                 label: "Slug".into(),
                 is_hide: true,
                 hint: "To create a human readable url".into(),

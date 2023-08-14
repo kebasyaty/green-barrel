@@ -9,21 +9,21 @@ use crate::settings::{
 #[Model()]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: Text,
-    pub avatar: Image,
-    pub resume: File,
+    pub username: TextField,
+    pub avatar: ImageField,
+    pub resume: FileField,
 }
 
 impl Control for User {
     fn custom() -> Self {
         Self {
-            username: Text {
+            username: TextField {
                 unique: true,
                 required: true,
                 maxlength: 150,
                 ..Default::default()
             },
-            avatar: Image {
+            avatar: ImageField {
                 label: "Avatar".into(),
                 default: Some(ImageData {
                     path: "./resources/media/default/no_image.png".into(),
@@ -35,7 +35,7 @@ impl Control for User {
                 is_quality: false, // Create thumbnails - Fast=false or qualitatively=true ; Default = true.
                 ..Default::default()
             },
-            resume: File {
+            resume: FileField {
                 default: Some(FileData {
                     path: "./resources/media/default/no_file.odt".into(),
                     url: "/media/default/no_file.odt".into(),
