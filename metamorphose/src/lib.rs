@@ -441,7 +441,7 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
                     };
                     default_value_map.insert(field_name.to_string(), default);
                     // Determine if there are fields of type Slug and if they use a hash field as a source.
-                    if !meta.is_use_hash_slug && field_type == "Slug" {
+                    if !meta.is_use_hash_slug && field_type == "SlugField" {
                         let flag = model_json
                             .get(field_name)
                             .unwrap()
