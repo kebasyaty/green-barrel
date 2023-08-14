@@ -35,7 +35,7 @@ pub trait Converters {
                         Bson::String(val_bson.as_object_id().unwrap().to_hex())
                     } else {
                         Err(format!(
-                            "Model: `{}` > Field: `hash` ; Method: `find_one()` => \
+                            "Model: `{}` > Field: `hash` ; Method: `to_prepared_doc()` => \
                                 Missing document identifier `_id`.",
                             model_name
                         ))?
