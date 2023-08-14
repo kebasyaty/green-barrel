@@ -31,7 +31,7 @@ async fn run_migration(client: &Client) -> Result<(), Box<dyn Error>> {
 async fn main() -> Result<(), Box<dyn Error>> {
     // Change globally current locale
     // defaule = en
-    rust_i18n::set_locale("zh");
+    rust_i18n::set_locale("ru");
     // Init Client
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await?;

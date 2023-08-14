@@ -1,7 +1,7 @@
 # Swedish
 #
 invalid_color: Ogiltig färgkod.
-allowed_chars: Tillåtna tecken %{chars}
+allowed_chars: "Tillåtna tecken: %{chars}"
 min_chars: Minsta %{count} tecken.
 max_chars: Max %{count} tecken.
 invalid_phone: Ogiltigt telefonnummer.
@@ -10,9 +10,9 @@ invalid_url: Ogiltig URL.
 invalid_ip: Ogiltig IP-adress.
 invalid_ipv4: Ogiltig IPv4-adress.
 invalid_ipv6: Ogiltig IPv6-adress.
-format: Formatera %{sample}
-example: Exempel %{sample}
-examples: Exempel %{samples}
+format: "Formatera: %{sample}"
+example: "Exempel: %{sample}"
+examples: "Exempel: %{samples}"
 not_unique: Är inte unik.
 required_field: Obligatoriskt fält.
 not_match_choices: Värdet matchar inte möjliga val.
