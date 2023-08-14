@@ -2,7 +2,7 @@
 #
 # Standard translations for Green-Barrel:
 invalid_color: Ikhodi yombala engavumelekile.
-allowed_chars: Izinhlamvu ezivunyelwe %{chars}
+allowed_chars: "Izinhlamvu ezivunyelwe: %{chars}"
 min_chars: Ubuncane bezinhlamvu ezingu- %{count}.
 max_chars: Ubuningi bezinhlamvu ezingu- %{count}.
 invalid_phone: Inombolo yocingo engavumelekile.
@@ -11,9 +11,9 @@ invalid_url: I-Url engavumelekile.
 invalid_ip: Ikheli le-IP elingavumelekile.
 invalid_ipv4: Ikheli le-IPv4 elingavumelekile.
 invalid_ipv6: Ikheli le-IPv6 elingavumelekile.
-format: Ifomethi %{sample}
-example: Isibonelo %{sample}
-examples: Izibonelo %{samples}
+format: "Ifomethi: %{sample}"
+example: "Isibonelo: %{sample}"
+examples: "Izibonelo: %{samples}"
 not_unique: Ayihlukile.
 required_field: Inkambu edingekayo.
 not_match_choices: Inani alifani nokukhetha okungenzeka.

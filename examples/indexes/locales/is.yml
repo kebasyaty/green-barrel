@@ -2,7 +2,7 @@
 #
 # Standard translations for Green-Barrel:
 invalid_color: Ógildur litakóði.
-allowed_chars: Leyfilegar stafir %{chars}
+allowed_chars: "Leyfilegar stafir: %{chars}"
 min_chars: Lágmarks %{count} stafir.
 max_chars: Hámark %{count} stafir.
 invalid_phone: Ógilt símanúmer.
@@ -11,9 +11,9 @@ invalid_url: Ógild vefslóð.
 invalid_ip: Ógilt IP-tala.
 invalid_ipv4: Ógilt IPv4 vistfang.
 invalid_ipv6: Ógilt IPv6 vistfang.
-format: Snið %{sample}
-example: Dæmi %{sample}
-examples: Dæmi %{samples}
+format: "Snið: %{sample}"
+example: "Dæmi: %{sample}"
+examples: "Dæmi: %{samples}"
 not_unique: Er ekki einsdæmi.
 required_field: Nauðsynlegur reitur.
 not_match_choices: Gildi passar ekki við mögulega valkosti.
