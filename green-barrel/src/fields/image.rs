@@ -41,7 +41,7 @@ impl Default for ImageField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Image"),
+            field_type: String::from("ImageField"),
             input_type: String::from("file"),
             name: String::new(),
             value: None,

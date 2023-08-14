@@ -323,12 +323,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 // Validation of Text type fields.
                 // *********************************************************************************
                 /*
-                "Color" | "Email" | "Password" | "Phone"
-                | "Text" | "Hash" | "Url" | "IP"
+                "ColorField" | "EmailField" | "PasswordField" | "PhoneField"
+                | "TextField" | "HashField" | "URLField" | "IPField"
                 */
                 1 => {
                     // When updating, we skip field password type.
-                    if is_update && field_type == "Password" {
+                    if is_update && field_type == "PasswordField" {
                         *final_field.get_mut("value").unwrap() = json!(null);
                         continue;
                     }
@@ -362,7 +362,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         continue;
                     }
                     // Used to validation uniqueness and in the final result.
-                    let field_value_bson = if field_type != "Password" {
+                    let field_value_bson = if field_type != "PasswordField" {
                         Bson::String(curr_val.to_string())
                     } else {
                         Bson::Null
@@ -425,7 +425,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     // Validation of `unique`.
                     if let Some(unique) = final_field.get("unique") {
                         let is_unique = unique.as_bool().unwrap();
-                        if field_type != "Password" && is_unique {
+                        if field_type != "PasswordField" && is_unique {
                             Self::check_unique(hash, field_name, &field_value_bson, &coll)
                                 .await
                                 .unwrap_or_else(|err| {
@@ -460,7 +460,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     // Insert result.
                     if is_save && !is_err_symptom && !ignore_fields.contains(field_name) {
                         match field_type {
-                            "Password" => {
+                            "PasswordField" => {
                                 if !curr_val.is_empty() && !is_update {
                                     // Generate password hash and add to result document.
                                     let password_hash: String =
@@ -569,7 +569,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     let tz = "+00:00";
                     // Create a Date object for the current value.
                     let curr_dt = {
-                        let (val, err_msg, err_msg_2) = if field_type == "Date" {
+                        let (val, err_msg, err_msg_2) = if field_type == "DateField" {
                             (
                                 format!("{curr_val}T00:00{tz}"),
                                 t!("non_existent_date"),
@@ -612,7 +612,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     if !min.is_empty() {
                         // Get the minimum date object.
                         let min_dt = {
-                            let (val, err_msg, err_msg_2) = if field_type == "Date" {
+                            let (val, err_msg, err_msg_2) = if field_type == "DateField" {
                                 (
                                     format!("{min}T00:00{tz}"),
                                     "Non-existent date!",
@@ -658,7 +658,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     if !max.is_empty() {
                         // Get the maximum date object.
                         let max_dt = {
-                            let (val, err_msg, err_msg_2) = if field_type == "Date" {
+                            let (val, err_msg, err_msg_2) = if field_type == "DateField" {
                                 (
                                     format!("{max}T00:00{tz}"),
                                     "Non-existent date!",
@@ -736,7 +736,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                     // Get selected items.
                     match field_type {
-                        "ChoiceText" => {
+                        "ChoiceTextField" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
                             if choice_str_map.get(field_name).unwrap().contains(&val) {
@@ -752,7 +752,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceI32" => {
+                        "ChoiceI32Field" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
                             if choice_i32_map.get(field_name).unwrap().contains(&val) {
@@ -768,7 +768,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceU32" | "ChoiceI64" => {
+                        "ChoiceU32Field" | "ChoiceI64Field" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
                             if choice_i64_map.get(field_name).unwrap().contains(&val) {
@@ -784,7 +784,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceF64" => {
+                        "ChoiceF64Field" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
                             if choice_f64_map.get(field_name).unwrap().contains(&val) {
@@ -826,7 +826,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                     // Get selected items.
                     match field_type {
-                        "ChoiceTextDyn" => {
+                        "ChoiceTextDynField" => {
                             let val = const_value.as_str().unwrap().to_string();
                             let mut flag = true;
                             if choice_str_map.get(field_name).unwrap().contains(&val) {
@@ -842,7 +842,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceI32Dyn" => {
+                        "ChoiceI32DynField" => {
                             let val = i32::try_from(const_value.as_i64().unwrap())?;
                             let mut flag = true;
                             if choice_i32_map.get(field_name).unwrap().contains(&val) {
@@ -858,7 +858,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceU32Dyn" | "ChoiceI64Dyn" => {
+                        "ChoiceU32DynField" | "ChoiceI64DynField" => {
                             let val = const_value.as_i64().unwrap();
                             let mut flag = true;
                             if choice_i64_map.get(field_name).unwrap().contains(&val) {
@@ -874,7 +874,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceF64Dyn" => {
+                        "ChoiceF64DynField" => {
                             let val = const_value.as_f64().unwrap();
                             let mut flag = true;
                             if choice_f64_map.get(field_name).unwrap().contains(&val) {
@@ -916,7 +916,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                     // Get selected items.
                     match field_type {
-                        "ChoiceTextMult" => {
+                        "ChoiceTextMultField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -940,7 +940,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceI32Mult" => {
+                        "ChoiceI32MultField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -964,7 +964,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceU32Mult" | "ChoiceI64Mult" => {
+                        "ChoiceU32MultField" | "ChoiceI64MultField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -988,7 +988,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceF64Mult" => {
+                        "ChoiceF64MultField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1042,7 +1042,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                     // Get selected items.
                     match field_type {
-                        "ChoiceTextMultDyn" => {
+                        "ChoiceTextMultDynField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1066,7 +1066,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceI32MultDyn" => {
+                        "ChoiceI32MultDynField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1090,7 +1090,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceU32MultDyn" | "ChoiceI64MultDyn" => {
+                        "ChoiceU32MultDynField" | "ChoiceI64MultDynField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()
@@ -1114,7 +1114,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 );
                             }
                         }
-                        "ChoiceF64MultDyn" => {
+                        "ChoiceF64MultDynField" => {
                             let val = const_value
                                 .as_array()
                                 .unwrap()

@@ -36,7 +36,7 @@ impl Default for U32Field {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("U32"),
+            field_type: String::from("U32Field"),
             input_type: String::from("number"), // number|radio|range
             name: String::new(),
             value: None,

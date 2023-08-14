@@ -36,7 +36,7 @@ impl Default for F64Field {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("F64"),
+            field_type: String::from("F64Field"),
             input_type: String::from("number"), // number|radio|range
             name: String::new(),
             value: None,

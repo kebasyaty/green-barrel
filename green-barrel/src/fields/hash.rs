@@ -35,7 +35,7 @@ impl Default for HashField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Hash"),
+            field_type: String::from("HashField"),
             input_type: String::from("hidden"),
             name: String::new(),
             value: None,

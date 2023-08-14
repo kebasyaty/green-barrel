@@ -33,7 +33,7 @@ impl Default for PasswordField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Password"),
+            field_type: String::from("PasswordField"),
             input_type: String::from("password"),
             name: String::new(),
             value: None,

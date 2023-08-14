@@ -31,7 +31,7 @@ impl Default for SlugField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Slug"),
+            field_type: String::from("SlugField"),
             input_type: String::from("text"),
             name: String::new(),
             value: None,

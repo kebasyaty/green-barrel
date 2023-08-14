@@ -34,7 +34,7 @@ impl Default for IPField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("IP"), // IP|IPv4|IPv6
+            field_type: String::from("IPField"), // IPField | IPv4Field | IPv6Field
             input_type: String::from("text"),
             name: String::new(),
             value: None,

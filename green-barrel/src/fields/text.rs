@@ -38,7 +38,7 @@ impl Default for TextField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Text"),
+            field_type: String::from("TextField"),
             input_type: String::from("text"), // text|radio
             multiline: false,                 // true - for textarea.
             name: String::new(),

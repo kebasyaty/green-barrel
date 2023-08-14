@@ -35,7 +35,7 @@ impl Default for ColorField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Color"),
+            field_type: String::from("ColorField"),
             input_type: String::from("text"), // type=color - only seven-character hexadecimal notation. Example: #000000 (black).
             name: String::new(),
             value: None,

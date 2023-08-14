@@ -31,7 +31,7 @@ impl Default for ChoiceTextDynField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceTextDyn"),
+            field_type: String::from("ChoiceTextDynField"),
             name: String::new(),
             value: None,
             placeholder: String::new(),

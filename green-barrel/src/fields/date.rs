@@ -33,7 +33,7 @@ impl Default for DateField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Date"),
+            field_type: String::from("DateField"),
             input_type: String::from("date"),
             name: String::new(),
             value: None,

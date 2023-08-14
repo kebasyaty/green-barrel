@@ -31,7 +31,7 @@ impl Default for ChoiceF64MultField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceF64Mult"),
+            field_type: String::from("ChoiceF64MultField"),
             name: String::new(),
             value: None,
             default: None,

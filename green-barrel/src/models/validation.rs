@@ -60,12 +60,12 @@ pub trait Validation {
                     Err(t!("invalid_ip"))?
                 }
             }
-            "IPv4" => {
+            "IPv4Field" => {
                 if !validator::validate_ip_v4(value) {
                     Err(t!("invalid_ipv4"))?
                 }
             }
-            "IPv6" => {
+            "IPv6Field" => {
                 if !validator::validate_ip_v6(value) {
                     Err(t!("invalid_ipv6"))?
                 }

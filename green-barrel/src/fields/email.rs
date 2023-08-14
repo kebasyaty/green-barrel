@@ -32,7 +32,7 @@ impl Default for EmailField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Email"),
+            field_type: String::from("EmailField"),
             input_type: String::from("email"),
             name: String::new(),
             value: None,

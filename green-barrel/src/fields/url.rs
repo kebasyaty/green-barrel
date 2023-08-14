@@ -33,7 +33,7 @@ impl Default for URLField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("URL"),
+            field_type: String::from("URLField"),
             input_type: String::from("url"),
             name: String::new(),
             value: None,

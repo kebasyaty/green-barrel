@@ -30,7 +30,7 @@ impl Default for BoolField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Bool"),
+            field_type: String::from("BoolField"),
             input_type: String::from("checkbox"),
             name: String::new(),
             value: None,

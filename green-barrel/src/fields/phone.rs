@@ -35,7 +35,7 @@ impl Default for PhoneField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Phone"),
+            field_type: String::from("PhoneField"),
             input_type: String::from("tel"),
             name: String::new(),
             value: None,

@@ -31,7 +31,7 @@ impl Default for ChoiceU32Field {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceU32"),
+            field_type: String::from("ChoiceU32Field"),
             name: String::new(),
             value: None,
             default: None,

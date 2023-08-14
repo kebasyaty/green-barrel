@@ -30,7 +30,7 @@ impl Default for ChoiceI64MultDynField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceI64MultDyn"),
+            field_type: String::from("ChoiceI64MultDynField"),
             name: String::new(),
             value: None,
             placeholder: String::new(),

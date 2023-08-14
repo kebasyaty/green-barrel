@@ -32,7 +32,7 @@ impl Default for ChoiceTextField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceText"),
+            field_type: String::from("ChoiceTextField"),
             name: String::new(),
             value: None,
             default: None,

@@ -34,7 +34,7 @@ impl Default for HiddenDateTimeField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("HiddenDateTime"),
+            field_type: String::from("HiddenDateTimeField"),
             input_type: String::from("hidden"), // "hidden | datetime"
             name: String::new(),
             value: None,

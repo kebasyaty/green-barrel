@@ -39,7 +39,7 @@ impl Default for FileField {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("File"),
+            field_type: String::from("FileField"),
             input_type: String::from("file"),
             name: String::new(),
             value: None,
