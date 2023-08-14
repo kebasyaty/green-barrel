@@ -45,17 +45,17 @@ pub trait Validation {
     // ---------------------------------------------------------------------------------------------
     fn validation(field_type: &str, value: &str) -> Result<(), Box<dyn Error>> {
         match field_type {
-            "Email" => {
+            "EmailField" => {
                 if !validator::validate_email(value) {
                     Err(t!("invalid_email"))?
                 }
             }
-            "URL" => {
+            "URLField" => {
                 if !validator::validate_url(value) {
                     Err(t!("invalid_url"))?
                 }
             }
-            "IP" => {
+            "IPField" => {
                 if !validator::validate_ip(value) {
                     Err(t!("invalid_ip"))?
                 }
@@ -70,7 +70,7 @@ pub trait Validation {
                     Err(t!("invalid_ipv6"))?
                 }
             }
-            "Color" => {
+            "ColorField" => {
                 if !(RegexBuilder::new(
                     r"^(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6}|[a-f0-9]{8})\b|(?:rgb|hsl)a?\([^\)]*\)$",
                 )
