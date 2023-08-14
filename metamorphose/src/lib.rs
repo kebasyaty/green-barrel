@@ -196,21 +196,21 @@ fn impl_create_model(args: &Vec<NestedMeta>, ast: &mut DeriveInput) -> TokenStre
 
             // Add new field `hash`.
             let new_hash_field: syn::FieldsNamed = parse2(quote! {
-                {pub hash: Hash}
+                {pub hash: HashField}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_hash_field = new_hash_field.named.first().unwrap().to_owned();
             fields.push(new_hash_field);
             // Add new field `created_at`.
             let new_created_at_field: syn::FieldsNamed = parse2(quote! {
-                {pub created_at: HiddenDateTime}
+                {pub created_at: HiddenDateTimeField}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_created_at_field = new_created_at_field.named.first().unwrap().to_owned();
             fields.push(new_created_at_field);
             // Add new field `updated_at`.
             let new_updated_at_field: syn::FieldsNamed = parse2(quote! {
-                {pub updated_at: HiddenDateTime}
+                {pub updated_at: HiddenDateTimeField}
             })
             .unwrap_or_else(|err| panic!("{}", err.to_string()));
             let new_updated_at_field = new_updated_at_field.named.first().unwrap().to_owned();
@@ -625,45 +625,45 @@ fn get_field_info<'a>(
     field_type: &'a str,
 ) -> Result<(&'a str, &'a str), Box<dyn std::error::Error>> {
     let info: (&'a str, &'a str) = match field_type {
-        "Bool" => ("bool", "checkbox"),
-        "Color" => ("String", "color"),
-        "Date" => ("String", "date"),
-        "DateTime" => ("String", "datetime"),
-        "Email" => ("String", "email"),
-        "File" => ("String", "file"),
-        "Image" => ("String", "file"),
-        "I32" => ("i32", "number"),
-        "U32" => ("u32", "number"),
-        "I64" => ("i64", "number"),
-        "F64" => ("f64", "number"),
-        "Password" => ("String", "password"),
-        "Phone" => ("String", "tel"),
-        "Text" => ("String", "text"),
-        "Slug" => ("String", "text"),
-        "URL" => ("String", "url"),
-        "IP" => ("String", "text"),
-        "ChoiceText" => ("String", "select"),
-        "ChoiceTextDyn" => ("String", "select"),
-        "ChoiceTextMult" => ("Vec<String>", "select"),
-        "ChoiceTextMultDyn" => ("Vec<String>", "select"),
-        "ChoiceI32" => ("i32", "select"),
-        "ChoiceI32Dyn" => ("i32", "select"),
-        "ChoiceI32Mult" => ("Vec<i32>", "select"),
-        "ChoiceI32MultDyn" => ("Vec<i32>", "select"),
-        "ChoiceU32" => ("u32", "select"),
-        "ChoiceU32Dyn" => ("u32", "select"),
-        "ChoiceU32Mult" => ("Vec<u32>", "select"),
-        "ChoiceU32MultDyn" => ("Vec<u32>", "select"),
-        "ChoiceI64" => ("i64", "select"),
-        "ChoiceI64Dyn" => ("i64", "select"),
-        "ChoiceI64Mult" => ("Vec<i64>", "select"),
-        "ChoiceI64MultDyn" => ("Vec<i64>", "select"),
-        "ChoiceF64" => ("f64", "select"),
-        "ChoiceF64Dyn" => ("f64", "select"),
-        "ChoiceF64Mult" => ("Vec<f64>", "select"),
-        "ChoiceF64MultDyn" => ("Vec<f64>", "select"),
-        "Hash" => ("String", "text"),
-        "HiddenDateTime" => ("String", "datetime"),
+        "BoolField" => ("bool", "checkbox"),
+        "ColorField" => ("String", "color"),
+        "DateField" => ("String", "date"),
+        "DateTimeField" => ("String", "datetime"),
+        "EmailField" => ("String", "email"),
+        "FileField" => ("String", "file"),
+        "ImageField" => ("String", "file"),
+        "I32Field" => ("i32", "number"),
+        "U32Field" => ("u32", "number"),
+        "I64Field" => ("i64", "number"),
+        "F64Field" => ("f64", "number"),
+        "PasswordField" => ("String", "password"),
+        "PhoneField" => ("String", "tel"),
+        "TextField" => ("String", "text"),
+        "SlugField" => ("String", "text"),
+        "URLField" => ("String", "url"),
+        "IPField" => ("String", "text"),
+        "ChoiceTextField" => ("String", "select"),
+        "ChoiceTextDynField" => ("String", "select"),
+        "ChoiceTextMultField" => ("Vec<String>", "select"),
+        "ChoiceTextMultDynField" => ("Vec<String>", "select"),
+        "ChoiceI32Field" => ("i32", "select"),
+        "ChoiceI32DynField" => ("i32", "select"),
+        "ChoiceI32MultField" => ("Vec<i32>", "select"),
+        "ChoiceI32MultDynField" => ("Vec<i32>", "select"),
+        "ChoiceU32Field" => ("u32", "select"),
+        "ChoiceU32DynField" => ("u32", "select"),
+        "ChoiceU32MultField" => ("Vec<u32>", "select"),
+        "ChoiceU32MultDynField" => ("Vec<u32>", "select"),
+        "ChoiceI64Field" => ("i64", "select"),
+        "ChoiceI64DynField" => ("i64", "select"),
+        "ChoiceI64MultField" => ("Vec<i64>", "select"),
+        "ChoiceI64MultDynField" => ("Vec<i64>", "select"),
+        "ChoiceF64Field" => ("f64", "select"),
+        "ChoiceF64DynField" => ("f64", "select"),
+        "ChoiceF64MultField" => ("Vec<f64>", "select"),
+        "ChoiceF64MultDynField" => ("Vec<f64>", "select"),
+        "HashField" => ("String", "text"),
+        "HiddenDateTimeField" => ("String", "datetime"),
         _ => Err(format!(
             "Model: `{model_name}` > Field: `{field_name}` > Field type: `{field_type}` => \
             Invalid field type."
