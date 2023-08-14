@@ -542,7 +542,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 }
                 // Validation of date type fields.
                 // *********************************************************************************
-                // "Date" | "DateTime" | "HiddenDateTime"
+                // "DatField" | "DateTimeField" | "HiddenDateTimeField"
                 3 => {
                     // Don't check the `created_at`and updated_at fields.
                     if field_name == "created_at" || field_name == "updated_at" {
@@ -717,7 +717,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 }
                 // Validation of `choice` type fields.
                 // *********************************************************************************
-                // "ChoiceText" | "ChoiceI32" | "ChoiceU32" | "ChoiceI64" | "ChoiceF64"
+                // "ChoiceTextField" | "ChoiceI32Field" | "ChoiceU32Field"
+                // | "ChoiceI64Field" | "ChoiceF64Field"
                 4 => {
                     //
                     if const_value.is_null() {
@@ -807,7 +808,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                 }
                 //
-                // "ChoiceTextDyn" | "ChoiceI32Dyn" | "ChoiceU32Dyn" | "ChoiceI64Dyn" | "ChoiceF64Dyn"
+                // "ChoiceTextDynField" | "ChoiceI32DynField" | "ChoiceU32DynField"
+                // | "ChoiceI64DynField" | "ChoiceF64DynField"
                 5 => {
                     //
                     if const_value.is_null() {
@@ -897,7 +899,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                 }
                 //
-                // "ChoiceTextMult" | "ChoiceI32Mult" | "ChoiceU32Mult" | "ChoiceI64Mult" | "ChoiceF64Mult"
+                // "ChoiceTextMultField" | "ChoiceI32MultField" | "ChoiceU32MultField"
+                // | "ChoiceI64MultField" | "ChoiceF64MultField"
                 6 => {
                     //
                     if const_value.is_null() {
@@ -1021,8 +1024,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 }
                 //
                 /*
-                "ChoiceTextMultDyn" | "ChoiceI32MultDyn" | "ChoiceU32MultDyn"
-                | "ChoiceI64MultDyn" | "ChoiceF64MultDyn"
+                "ChoiceTextMultDynField" | "ChoiceI32MultDynField" | "ChoiceU32MultDynField"
+                | "ChoiceI64MultDynField" | "ChoiceF64MultDynField"
                 */
                 7 => {
                     //
@@ -1147,7 +1150,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 }
                 // Validation of file type fields.
                 // *********************************************************************************
-                // "File"
+                // "FileField"
                 8 => {
                     //
                     if !is_save {
@@ -1283,7 +1286,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                     }
                 }
                 //
-                // "Image"
+                // "ImageField"
                 9 => {
                     //
                     if !is_save {
@@ -1482,7 +1485,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 }
                 // Validation of number type fields.
                 // *********************************************************************************
-                //  "I32"
+                //  "I32Field"
                 10 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1560,7 +1563,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "U32" | "I64"
+                // "U32Field" | "I64Field"
                 11 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1637,7 +1640,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         final_doc.insert(field_name, field_value_bson);
                     }
                 }
-                // "F64"
+                // "F64Field"
                 12 => {
                     // Validation, if the field is required and empty, accumulate the error.
                     // ( The default value is used whenever possible )
@@ -1719,7 +1722,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
 
                 // Validation of boolean type fields.
                 // *********************************************************************************
-                // "Bool"
+                // "BoolField"
                 13 => {
                     // Insert result.
                     // -----------------------------------------------------------------------------
