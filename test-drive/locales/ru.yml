@@ -1,16 +1,16 @@
 # Russian
 #
 # Standard translations for Green-Barrel:
-invalid_color: Неправильный цветовой код
+invalid_color: Неправильный цветовой код.
 allowed_chars: "Допустимые символы: %{chars}"
 min_chars: Минимум %{count} символов.
 max_chars: Максимум %{count} символов.
-invalid_phone: Неправильный номер телефона
-invalid_email: Неправильный адрес электронной почты
-invalid_url: Неправильный URL-адрес
+invalid_phone: Неправильный номер телефона.
+invalid_email: Неправильный адрес электронной почты.
+invalid_url: Неправильный URL-адрес.
 invalid_ip: Неправильный IP-адрес
-invalid_ipv4: Неправильный IPv4-адрес
-invalid_ipv6: Неправильный IPv6-адрес
+invalid_ipv4: Неправильный IPv4-адрес.
+invalid_ipv6: Неправильный IPv6-адрес.
 format: "Формат: %{sample}"
 example: "Пример: %{sample}"
 examples: "Примеры: %{samples}"
