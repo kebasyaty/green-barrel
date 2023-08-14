@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct URL {
+pub struct URLField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -28,7 +28,7 @@ pub struct URL {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for URL {
+impl Default for URLField {
     fn default() -> Self {
         Self {
             id: String::new(),
@@ -56,7 +56,7 @@ impl Default for URL {
     }
 }
 
-impl URL {
+impl URLField {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }

@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ChoiceU32Mult {
+pub struct ChoiceU32MultField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -26,7 +26,7 @@ pub struct ChoiceU32Mult {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for ChoiceU32Mult {
+impl Default for ChoiceU32MultField {
     fn default() -> Self {
         Self {
             id: String::new(),
@@ -52,7 +52,7 @@ impl Default for ChoiceU32Mult {
     }
 }
 
-impl ChoiceU32Mult {
+impl ChoiceU32MultField {
     pub fn get(&self) -> Option<Vec<u32>> {
         self.value.clone()
     }

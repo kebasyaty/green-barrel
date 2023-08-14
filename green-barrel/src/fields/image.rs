@@ -9,7 +9,7 @@ use uuid::Uuid;
 use crate::models::helpers::ImageData;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Image {
+pub struct ImageField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -36,7 +36,7 @@ pub struct Image {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for Image {
+impl Default for ImageField {
     fn default() -> Self {
         Self {
             id: String::new(),
@@ -67,7 +67,7 @@ impl Default for Image {
     }
 }
 
-impl Image {
+impl ImageField {
     pub fn get(&self) -> Option<ImageData> {
         self.value.clone()
     }

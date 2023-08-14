@@ -5,7 +5,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct F64 {
+pub struct F64Field {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -31,7 +31,7 @@ pub struct F64 {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for F64 {
+impl Default for F64Field {
     fn default() -> Self {
         Self {
             id: String::new(),
@@ -61,7 +61,7 @@ impl Default for F64 {
     }
 }
 
-impl F64 {
+impl F64Field {
     pub fn get(&self) -> Option<f64> {
         self.value
     }

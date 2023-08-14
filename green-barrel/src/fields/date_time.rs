@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct DateTime {
+pub struct DateTimeField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -28,7 +28,7 @@ pub struct DateTime {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for DateTime {
+impl Default for DateTimeField {
     fn default() -> Self {
         Self {
             id: String::new(),
@@ -56,7 +56,7 @@ impl Default for DateTime {
     }
 }
 
-impl DateTime {
+impl DateTimeField {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }
