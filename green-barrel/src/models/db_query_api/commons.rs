@@ -279,7 +279,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `count_documents()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -329,7 +329,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `delete_many()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -396,7 +396,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `delete_one()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -459,7 +459,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `distinct()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -505,7 +505,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `drop()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -560,7 +560,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `estimated_document_count()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -608,7 +608,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_many_to_doc_list()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -682,7 +682,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_many_to_json()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -748,7 +748,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_one_to_doc()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -808,7 +808,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_one_to_json()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -883,7 +883,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_one_to_instance()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -948,7 +948,7 @@ pub trait QCommons: Main + Caching + Converters {
                 )
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `find_one_and_delete()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -991,7 +991,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `collection_name()` => \
                     Failed to get data from cache.",
                 ))?
             }
@@ -1028,7 +1028,7 @@ pub trait QCommons: Main + Caching + Converters {
                 (meta.database_name.clone(), meta.collection_name.clone())
             } else {
                 Err(format!(
-                    "Model key: `{key}` ; Method: `aggregate()` => \
+                    "Model key: `{key}` ; Method: `namespace()` => \
                     Failed to get data from cache.",
                 ))?
             }
