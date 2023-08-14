@@ -1816,7 +1816,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                 let field = final_model_json.get(field_name).unwrap();
                 let field_type = field.get("field_type").unwrap().as_str().unwrap();
                 //
-                if field_type == "File" {
+                if field_type == "FileField" {
                     let value = field.get("value").unwrap();
                     let default = field.get("default").unwrap();
                     if !value.is_null() {
@@ -1840,7 +1840,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 .unwrap() = json!(null);
                         }
                     }
-                } else if field_type == "Image" {
+                } else if field_type == "ImageField" {
                     let value = field.get("value").unwrap();
                     let default = field.get("default").unwrap();
                     if !value.is_null() {
@@ -2083,7 +2083,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         let field = model_json.get(field_name).unwrap();
                         let field_type = field.get("field_type").unwrap().as_str().unwrap();
                         //
-                        if field_type == "File" {
+                        if field_type == "FileField" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
@@ -2107,7 +2107,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     Method: `delete()` => Document (info file) not found."
                                 ))?
                             }
-                        } else if field_type == "Image" {
+                        } else if field_type == "ImageField" {
                             if let Some(info_file) = document.get(field_name).unwrap().as_document()
                             {
                                 let path = info_file.get_str("path")?;
