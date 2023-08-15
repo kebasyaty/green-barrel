@@ -49,7 +49,7 @@ Follow the [Green Barrel](https://crates.io/crates/green-barrel "Green Barrel") 
 
 ## Changelog
 
-- **v1.3.2** _Renamed field names - Added **Field** word._
+- **v1.4.0** _Renamed field names - Added **Field** word._
 - **v1.1.0** _Removed 12 types of fields, the remaining fields have been renamed. See the documentation - https://docs.rs/green-barrel/latest/green_barrel/fields/index.html_
 - **v1.3.2-beta** _Fixed basic example and updated readme file._
 - **v1.3.0-beta** _Transition to asynchronous code._
