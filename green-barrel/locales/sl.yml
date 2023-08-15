@@ -1,8 +1,7 @@
 # Slovenian
 #
-# Standard translations for Green-Barrel:
 invalid_color: Neveljavna barvna koda.
-allowed_chars: Dovoljeni čari %{chars}
+allowed_chars: "Dovoljeni čari: %{chars}"
 min_chars: Najmanj %{count} znakov.
 max_chars: Največ %{count} znakov.
 invalid_phone: Neveljavna telefonska številka.
@@ -11,9 +10,9 @@ invalid_url: Neveljaven URL.
 invalid_ip: Neveljaven IP naslov.
 invalid_ipv4: Neveljaven IPv4 naslov.
 invalid_ipv6: Neveljaven IPv6 naslov.
-format: Oblikuj %{sample}
-example: Primer %{sample}
-examples: Primeri %{samples}
+format: "Oblikuj: %{sample}"
+example: "Primer: %{sample}"
+examples: "Primeri: %{samples}"
 not_unique: Ni edinstveno.
 required_field: Zahtevano polje.
 not_match_choices: Vrednost se ne ujema z možnimi izbirami.

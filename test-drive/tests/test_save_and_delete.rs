@@ -36,90 +36,90 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: Bool,
+        pub checkbox: BoolField,
         //
-        pub date: Date,
-        pub datetime: DateTime,
+        pub date: DateField,
+        pub datetime: DateTimeField,
         //
-        pub file: File,
-        pub image: Image,
+        pub file: FileField,
+        pub image: ImageField,
         //
-        pub number_i32: I32,
-        pub radio_i32: I32,
-        pub range_i32: I32,
+        pub number_i32: I32Field,
+        pub radio_i32: I32Field,
+        pub range_i32: I32Field,
         //
-        pub number_u32: U32,
-        pub radio_u32: U32,
-        pub range_u32: U32,
+        pub number_u32: U32Field,
+        pub radio_u32: U32Field,
+        pub range_u32: U32Field,
         //
-        pub number_i64: I64,
-        pub radio_i64: I64,
-        pub range_i64: I64,
+        pub number_i64: I64Field,
+        pub radio_i64: I64Field,
+        pub range_i64: I64Field,
         //
-        pub number_f64: F64,
-        pub radio_f64: F64,
-        pub range_f64: F64,
+        pub number_f64: F64Field,
+        pub radio_f64: F64Field,
+        pub range_f64: F64Field,
         //
-        pub radio_text: Text,
+        pub radio_text: TextField,
         //
-        pub select_text: ChoiceText,
-        pub select_text_dyn: ChoiceTextDyn,
-        pub select_text_mult: ChoiceTextMult,
-        pub select_text_mult_dyn: ChoiceTextMultDyn,
+        pub select_text: ChoiceTextField,
+        pub select_text_dyn: ChoiceTextDynField,
+        pub select_text_mult: ChoiceTextMultField,
+        pub select_text_mult_dyn: ChoiceTextMultDynField,
         //
-        pub select_i32: ChoiceI32,
-        pub select_i32_dyn: ChoiceI32Dyn,
-        pub select_i32_mult: ChoiceI32Mult,
-        pub select_i32_mult_dyn: ChoiceI32MultDyn,
+        pub select_i32: ChoiceI32Field,
+        pub select_i32_dyn: ChoiceI32DynField,
+        pub select_i32_mult: ChoiceI32MultField,
+        pub select_i32_mult_dyn: ChoiceI32MultDynField,
         //
-        pub select_u32: ChoiceU32,
-        pub select_u32_dyn: ChoiceU32Dyn,
-        pub select_u32_mult: ChoiceI32Mult,
-        pub select_u32_mult_dyn: ChoiceU32MultDyn,
+        pub select_u32: ChoiceU32Field,
+        pub select_u32_dyn: ChoiceU32DynField,
+        pub select_u32_mult: ChoiceI32MultField,
+        pub select_u32_mult_dyn: ChoiceU32MultDynField,
         //
-        pub select_i64: ChoiceI64,
-        pub select_i64_dyn: ChoiceI64Dyn,
-        pub select_i64_mult: ChoiceI64Mult,
-        pub select_i64_mult_dyn: ChoiceI64MultDyn,
+        pub select_i64: ChoiceI64Field,
+        pub select_i64_dyn: ChoiceI64DynField,
+        pub select_i64_mult: ChoiceI64MultField,
+        pub select_i64_mult_dyn: ChoiceI64MultDynField,
         //
-        pub select_f64: ChoiceF64,
-        pub select_f64_dyn: ChoiceF64Dyn,
-        pub select_f64_mult: ChoiceF64Mult,
-        pub select_f64_mult_dyn: ChoiceF64MultDyn,
+        pub select_f64: ChoiceF64Field,
+        pub select_f64_dyn: ChoiceF64DynField,
+        pub select_f64_mult: ChoiceF64MultField,
+        pub select_f64_mult_dyn: ChoiceF64MultDynField,
         //
-        pub text: Text,
-        pub slug: Slug,
-        pub color: Color,
-        pub email: Email,
-        pub password: Password,
-        pub phone: Phone,
-        pub url: URL,
-        pub ip: IP,
-        pub ipv4: IP,
-        pub ipv6: IP,
+        pub text: TextField,
+        pub slug: SlugField,
+        pub color: ColorField,
+        pub email: EmailField,
+        pub password: PasswordField,
+        pub phone: PhoneField,
+        pub url: URLField,
+        pub ip: IPField,
+        pub ipv4: IPField,
+        pub ipv6: IPField,
     }
 
     impl Control for TestModel {
         fn custom() -> Self {
             Self {
-                checkbox: Bool {
+                checkbox: BoolField {
                     ..Default::default()
                 },
-                date: Date {
+                date: DateField {
                     required: true,
                     default: Some("1970-02-28".into()),
                     min: "1970-01-01".into(),
                     max: "1970-03-01".into(),
                     ..Default::default()
                 },
-                datetime: DateTime {
+                datetime: DateTimeField {
                     required: true,
                     default: Some("1970-02-28T00:00".into()),
                     min: "1970-01-01T00:00".into(),
                     max: "1970-03-01T00:00".into(),
                     ..Default::default()
                 },
-                file: File {
+                file: FileField {
                     required: true,
                     default: Some(FileData {
                         path: "./resources/media/default/no_file.odt".into(),
@@ -128,7 +128,7 @@ mod models {
                     }),
                     ..Default::default()
                 },
-                image: Image {
+                image: ImageField {
                     required: true,
                     default: Some(ImageData {
                         path: "./resources/media/default/no_image.png".into(),
@@ -143,14 +143,14 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                number_i32: I32 {
+                number_i32: I32Field {
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                radio_i32: I32 {
+                radio_i32: I32Field {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
@@ -161,7 +161,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                range_i32: I32 {
+                range_i32: I32Field {
                     input_type: "range".into(),
                     required: true,
                     default: Some(0),
@@ -169,14 +169,14 @@ mod models {
                     max: 1,
                     ..Default::default()
                 },
-                number_u32: U32 {
+                number_u32: U32Field {
                     required: true,
                     default: Some(0),
                     min: 0,
                     max: 1,
                     ..Default::default()
                 },
-                radio_u32: U32 {
+                radio_u32: U32Field {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
@@ -187,7 +187,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                range_u32: U32 {
+                range_u32: U32Field {
                     input_type: "range".into(),
                     required: true,
                     default: Some(1),
@@ -195,14 +195,14 @@ mod models {
                     max: 1,
                     ..Default::default()
                 },
-                number_i64: I64 {
+                number_i64: I64Field {
                     required: true,
                     default: Some(0),
                     min: -1,
                     max: 1,
                     ..Default::default()
                 },
-                radio_i64: I64 {
+                radio_i64: I64Field {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0),
@@ -213,7 +213,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                range_i64: I64 {
+                range_i64: I64Field {
                     input_type: "range".into(),
                     required: true,
                     default: Some(0),
@@ -221,14 +221,14 @@ mod models {
                     max: 1,
                     ..Default::default()
                 },
-                number_f64: F64 {
+                number_f64: F64Field {
                     required: true,
                     default: Some(0.0),
                     min: 0.0,
                     max: 1.0,
                     ..Default::default()
                 },
-                radio_f64: F64 {
+                radio_f64: F64Field {
                     input_type: "radio".into(),
                     required: true,
                     default: Some(0.0),
@@ -239,7 +239,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                range_f64: F64 {
+                range_f64: F64Field {
                     input_type: "range".into(),
                     required: true,
                     default: Some(0.0),
@@ -247,7 +247,7 @@ mod models {
                     max: 1.0,
                     ..Default::default()
                 },
-                radio_text: Text {
+                radio_text: TextField {
                     input_type: "radio".into(),
                     required: true,
                     default: Some("value".to_string()),
@@ -258,7 +258,7 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_text: ChoiceText {
+                select_text: ChoiceTextField {
                     required: true,
                     default: Some("value".into()),
                     choices: vec![
@@ -268,10 +268,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_text_dyn: ChoiceTextDyn {
+                select_text_dyn: ChoiceTextDynField {
                     ..Default::default()
                 },
-                select_text_mult: ChoiceTextMult {
+                select_text_mult: ChoiceTextMultField {
                     required: true,
                     default: Some(vec!["value".into(), "value 2".into()]),
                     choices: vec![
@@ -281,10 +281,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_text_mult_dyn: ChoiceTextMultDyn {
+                select_text_mult_dyn: ChoiceTextMultDynField {
                     ..Default::default()
                 },
-                select_i32: ChoiceI32 {
+                select_i32: ChoiceI32Field {
                     required: true,
                     default: Some(0),
                     choices: vec![
@@ -294,10 +294,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i32_dyn: ChoiceI32Dyn {
+                select_i32_dyn: ChoiceI32DynField {
                     ..Default::default()
                 },
-                select_i32_mult: ChoiceI32Mult {
+                select_i32_mult: ChoiceI32MultField {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -307,10 +307,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i32_mult_dyn: ChoiceI32MultDyn {
+                select_i32_mult_dyn: ChoiceI32MultDynField {
                     ..Default::default()
                 },
-                select_u32: ChoiceU32 {
+                select_u32: ChoiceU32Field {
                     required: true,
                     default: Some(0),
                     choices: vec![
@@ -320,10 +320,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_u32_dyn: ChoiceU32Dyn {
+                select_u32_dyn: ChoiceU32DynField {
                     ..Default::default()
                 },
-                select_u32_mult: ChoiceI32Mult {
+                select_u32_mult: ChoiceI32MultField {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -333,10 +333,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_u32_mult_dyn: ChoiceU32MultDyn {
+                select_u32_mult_dyn: ChoiceU32MultDynField {
                     ..Default::default()
                 },
-                select_i64: ChoiceI64 {
+                select_i64: ChoiceI64Field {
                     required: true,
                     default: Some(0),
                     choices: vec![
@@ -346,10 +346,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i64_dyn: ChoiceI64Dyn {
+                select_i64_dyn: ChoiceI64DynField {
                     ..Default::default()
                 },
-                select_i64_mult: ChoiceI64Mult {
+                select_i64_mult: ChoiceI64MultField {
                     required: true,
                     default: Some(vec![0, 1]),
                     choices: vec![
@@ -359,10 +359,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_i64_mult_dyn: ChoiceI64MultDyn {
+                select_i64_mult_dyn: ChoiceI64MultDynField {
                     ..Default::default()
                 },
-                select_f64: ChoiceF64 {
+                select_f64: ChoiceF64Field {
                     required: true,
                     default: Some(0.0),
                     choices: vec![
@@ -372,10 +372,10 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_f64_dyn: ChoiceF64Dyn {
+                select_f64_dyn: ChoiceF64DynField {
                     ..Default::default()
                 },
-                select_f64_mult: ChoiceF64Mult {
+                select_f64_mult: ChoiceF64MultField {
                     required: true,
                     default: Some(vec![0.0, 0.1]),
                     choices: vec![
@@ -385,54 +385,54 @@ mod models {
                     ],
                     ..Default::default()
                 },
-                select_f64_mult_dyn: ChoiceF64MultDyn {
+                select_f64_mult_dyn: ChoiceF64MultDynField {
                     ..Default::default()
                 },
-                text: Text {
+                text: TextField {
                     required: true,
                     default: Some("Some text".to_string()),
                     ..Default::default()
                 },
-                slug: Slug {
+                slug: SlugField {
                     slug_sources: vec!["email".into(), "phone".into()],
                     ..Default::default()
                 },
-                color: Color {
+                color: ColorField {
                     required: true,
                     default: Some("#ffffff".to_string()),
                     ..Default::default()
                 },
-                email: Email {
+                email: EmailField {
                     required: true,
                     ..Default::default()
                 },
-                password: Password {
+                password: PasswordField {
                     required: true,
                     ..Default::default()
                 },
-                phone: Phone {
+                phone: PhoneField {
                     required: true,
                     default: Some("+12029182132".to_string()),
                     ..Default::default()
                 },
-                url: URL {
+                url: URLField {
                     required: true,
                     default: Some("https://ru.wikipedia.org/wiki/URL".to_string()),
                     ..Default::default()
                 },
-                ip: IP {
+                ip: IPField {
                     required: true,
                     default: Some("192.168.123.132".to_string()),
                     ..Default::default()
                 },
-                ipv4: IP {
-                    field_type: "IPv4".into(),
+                ipv4: IPField {
+                    field_type: "IPv4Field".into(),
                     required: true,
                     default: Some("192.168.50.1".to_string()),
                     ..Default::default()
                 },
-                ipv6: IP {
-                    field_type: "IPv6".into(),
+                ipv6: IPField {
+                    field_type: "IPv6Field".into(),
                     required: true,
                     default: Some("1050:0:0:0:5:600:300c:326b".to_string()),
                     ..Default::default()
@@ -510,6 +510,10 @@ async fn test_save_and_delete() -> Result<(), Box<dyn Error>> {
         output_data.is_valid(),
         "Create document - is_valid(): {}",
         output_data.err_msg()
+    );
+    assert!(
+        test_model.slug.get().is_some(),
+        "test_model.slug.get() != is_some()"
     );
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");

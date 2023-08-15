@@ -39,16 +39,16 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub select_text_dyn: ChoiceTextDyn,
-        pub select_text_mult_dyn: ChoiceTextMultDyn,
-        pub select_i32_dyn: ChoiceI32Dyn,
-        pub select_i32_mult_dyn: ChoiceI32MultDyn,
-        pub select_u32_dyn: ChoiceU32Dyn,
-        pub select_u32_mult_dyn: ChoiceU32MultDyn,
-        pub select_i64_dyn: ChoiceI64Dyn,
-        pub select_i64_mult_dyn: ChoiceI64MultDyn,
-        pub select_f64_dyn: ChoiceF64Dyn,
-        pub select_f64_mult_dyn: ChoiceF64MultDyn,
+        pub select_text_dyn: ChoiceTextDynField,
+        pub select_text_mult_dyn: ChoiceTextMultDynField,
+        pub select_i32_dyn: ChoiceI32DynField,
+        pub select_i32_mult_dyn: ChoiceI32MultDynField,
+        pub select_u32_dyn: ChoiceU32DynField,
+        pub select_u32_mult_dyn: ChoiceU32MultDynField,
+        pub select_i64_dyn: ChoiceI64DynField,
+        pub select_i64_mult_dyn: ChoiceI64MultDynField,
+        pub select_f64_dyn: ChoiceF64DynField,
+        pub select_f64_mult_dyn: ChoiceF64MultDynField,
     }
 
     impl Control for TestModel {

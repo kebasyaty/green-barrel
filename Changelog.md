@@ -1,5 +1,6 @@
 ## Changelog
 
+- **v1.6.11** _Renamed field names - Added **Field** word. Fixed in migration. Updated tests and examples. Fixed error mesages._
 - **v1.6.7** _Added Slovenian localization._
 - **v1.6.6** _Added Japanese localization._
 - **v1.6.3** _Renamed field type - From **Url** to **URL**._

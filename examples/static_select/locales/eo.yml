@@ -2,7 +2,7 @@
 #
 # Standard translations for Green-Barrel:
 invalid_color: Nevalida Kolorkodo.
-allowed_chars: Permesitaj signoj %{chars}
+allowed_chars: "Permesitaj signoj: %{chars}"
 min_chars: Minimume %{count} signoj.
 max_chars: Maksimumo %{count} signoj.
 invalid_phone: Nevalida Telefonnumero.
@@ -11,9 +11,9 @@ invalid_url: Nevalida URL.
 invalid_ip: Nevalida IP-adreso.
 invalid_ipv4: Nevalida IPv4-adreso.
 invalid_ipv6: Nevalida IPv6-adreso.
-format: Formato %{sample}
-example: Ekzemplo %{sample}
-examples: Ekzemploj %{samples}
+format: "Formato: %{sample}"
+example: "Ekzemplo: %{sample}"
+examples: "Ekzemploj: %{samples}"
 not_unique: Ne estas unika.
 required_field: Bezonata kampo.
 not_match_choices: Valoro ne kongruas kun eblaj elektoj.

@@ -5,7 +5,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Text {
+pub struct TextField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -33,12 +33,12 @@ pub struct Text {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for Text {
+impl Default for TextField {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Text"),
+            field_type: String::from("TextField"),
             input_type: String::from("text"), // text|radio
             multiline: false,                 // true - for textarea.
             name: String::new(),
@@ -65,7 +65,7 @@ impl Default for Text {
     }
 }
 
-impl Text {
+impl TextField {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }

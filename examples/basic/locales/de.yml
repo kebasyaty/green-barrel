@@ -2,7 +2,7 @@
 #
 # Standard translations for Green-Barrel:
 invalid_color: Ungültiger Farbcode.
-allowed_chars: Erlaubte Zeichen %{chars}
+allowed_chars: "Erlaubte Zeichen: %{chars}"
 min_chars: Mindestens %{count} Zeichen.
 max_chars: Maximal %{count} Zeichen.
 invalid_phone: Ungültige Telefonnummer.
@@ -11,9 +11,9 @@ invalid_url: Ungültige URL.
 invalid_ip: Ungültige IP-Adresse.
 invalid_ipv4: Ungültige IPv4-Adresse.
 invalid_ipv6: Ungültige IPv6-Adresse.
-format: Format %{sample}
-example: Beispiel %{sample}
-examples: Beispiele %{samples}
+format: "Format: %{sample}"
+example: "Beispiel: %{sample}"
+examples: "Beispiele: %{samples}"
 not_unique: Ist nicht einzigartig.
 required_field: Pflichtfeld.
 not_match_choices: Der Wert stimmt nicht mit den möglichen Optionen überein.

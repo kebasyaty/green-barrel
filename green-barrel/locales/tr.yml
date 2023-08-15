@@ -1,7 +1,7 @@
 # Turkish
 #
 invalid_color: Geçersiz Renk kodu.
-allowed_chars: İzin verilen karakterler %{chars}
+allowed_chars: "İzin verilen karakterler: %{chars}"
 min_chars: Minimum %{count} karakter.
 max_chars: Maksimum %{count} karakter.
 invalid_phone: Geçersiz telefon numarası.
@@ -10,9 +10,9 @@ invalid_url: Geçersiz URL.
 invalid_ip: Geçersiz IP adresi.
 invalid_ipv4: Geçersiz IPv4 adresi.
 invalid_ipv6: Geçersiz IPv6 adresi.
-format: Biçim %{sample}
-example: Örnek %{sample}
-examples: Örnekler %{samples}
+format: "Biçim: %{sample}"
+example: "Örnek: %{sample}"
+examples: "Örnekler: %{samples}"
 not_unique: benzersiz değil
 required_field: Gerekli alan.
 not_match_choices: Değer, olası seçeneklerle eşleşmiyor.

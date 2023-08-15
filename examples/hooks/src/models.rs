@@ -11,12 +11,12 @@ use crate::settings::{
 #[Model(is_use_hooks = true)]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct User {
-    pub username: Text,
-    pub slug: Slug,
-    pub first_name: Text,
-    pub last_name: Text,
-    pub email: Email,
-    pub phone: Phone,
+    pub username: TextField,
+    pub slug: SlugField,
+    pub first_name: TextField,
+    pub last_name: TextField,
+    pub email: EmailField,
+    pub phone: PhoneField,
 }
 
 impl Control for User {

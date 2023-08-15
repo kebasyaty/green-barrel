@@ -16,14 +16,14 @@ use std::{collections::HashMap, error::Error};
 /// use std::{collections::HashMap, error::Error};
 ///
 /// #[Model(
-///     username: Text,
 ///     is_use_addition = true,
 ///     ignore_fields = "confirm_password"
 /// )]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     password: Password,
-///     confirm_password: Password,
+///     username: TextField
+///     password: PasswordField,
+///     confirm_password: PasswordField,
 /// }
 ///
 /// #[async_trait(?Send)]

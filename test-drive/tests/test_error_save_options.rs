@@ -35,103 +35,103 @@ mod models {
     #[Model]
     #[derive(Serialize, Deserialize, Default)]
     pub struct TestModel {
-        pub checkbox: Bool,
+        pub checkbox: BoolField,
         //
-        pub date: Date,
-        pub datetime: DateTime,
+        pub date: DateField,
+        pub datetime: DateTimeField,
         //
-        pub file: File,
-        pub image: Image,
+        pub file: FileField,
+        pub image: ImageField,
         //
-        pub number_i32: I32,
-        pub radio_i32: I32,
-        pub range_i32: I32,
+        pub number_i32: I32Field,
+        pub radio_i32: I32Field,
+        pub range_i32: I32Field,
         //
-        pub number_u32: U32,
-        pub radio_u32: U32,
-        pub range_u32: U32,
+        pub number_u32: U32Field,
+        pub radio_u32: U32Field,
+        pub range_u32: U32Field,
         //
-        pub number_i64: I64,
-        pub radio_i64: I64,
-        pub range_i64: I64,
+        pub number_i64: I64Field,
+        pub radio_i64: I64Field,
+        pub range_i64: I64Field,
         //
-        pub number_f64: F64,
-        pub radio_f64: F64,
-        pub range_f64: F64,
+        pub number_f64: F64Field,
+        pub radio_f64: F64Field,
+        pub range_f64: F64Field,
         //
-        pub radio_text: Text,
+        pub radio_text: TextField,
         //
-        pub select_text: ChoiceText,
-        pub select_text_dyn: ChoiceTextDyn,
-        pub select_text_mult: ChoiceTextMult,
-        pub select_text_mult_dyn: ChoiceTextMultDyn,
+        pub select_text: ChoiceTextField,
+        pub select_text_dyn: ChoiceTextDynField,
+        pub select_text_mult: ChoiceTextMultField,
+        pub select_text_mult_dyn: ChoiceTextMultDynField,
         //
-        pub select_i32: ChoiceI32,
-        pub select_i32_dyn: ChoiceI32Dyn,
-        pub select_i32_mult: ChoiceI32Mult,
-        pub select_i32_mult_dyn: ChoiceI32MultDyn,
+        pub select_i32: ChoiceI32Field,
+        pub select_i32_dyn: ChoiceI32DynField,
+        pub select_i32_mult: ChoiceI32MultField,
+        pub select_i32_mult_dyn: ChoiceI32MultDynField,
         //
-        pub select_u32: ChoiceU32,
-        pub select_u32_dyn: ChoiceU32Dyn,
-        pub select_u32_mult: ChoiceI32Mult,
-        pub select_u32_mult_dyn: ChoiceU32MultDyn,
+        pub select_u32: ChoiceU32Field,
+        pub select_u32_dyn: ChoiceU32DynField,
+        pub select_u32_mult: ChoiceI32MultField,
+        pub select_u32_mult_dyn: ChoiceU32MultDynField,
         //
-        pub select_i64: ChoiceI64,
-        pub select_i64_dyn: ChoiceI64Dyn,
-        pub select_i64_mult: ChoiceI64Mult,
-        pub select_i64_mult_dyn: ChoiceI64MultDyn,
+        pub select_i64: ChoiceI64Field,
+        pub select_i64_dyn: ChoiceI64DynField,
+        pub select_i64_mult: ChoiceI64MultField,
+        pub select_i64_mult_dyn: ChoiceI64MultDynField,
         //
-        pub select_f64: ChoiceF64,
-        pub select_f64_dyn: ChoiceF64Dyn,
-        pub select_f64_mult: ChoiceF64Mult,
-        pub select_f64_mult_dyn: ChoiceF64MultDyn,
+        pub select_f64: ChoiceF64Field,
+        pub select_f64_dyn: ChoiceF64DynField,
+        pub select_f64_mult: ChoiceF64MultField,
+        pub select_f64_mult_dyn: ChoiceF64MultDynField,
         //
-        pub text: Text,
-        pub slug: Slug,
-        pub color: Color,
-        pub email: Email,
-        pub password: Password,
-        pub phone: Phone,
-        pub url: URL,
-        pub ip: IP,
+        pub text: TextField,
+        pub slug: SlugField,
+        pub color: ColorField,
+        pub email: EmailField,
+        pub password: PasswordField,
+        pub phone: PhoneField,
+        pub url: URLField,
+        pub ip: IPField,
     }
 
     impl Control for TestModel {
         fn custom() -> Self {
             Self {
-                radio_text: Text {
+                radio_text: TextField {
                     input_type: "radio".into(),
                     ..Default::default()
                 },
-                radio_i32: I32 {
+                radio_i32: I32Field {
                     input_type: "radio".into(),
                     ..Default::default()
                 },
-                range_i32: I32 {
+                range_i32: I32Field {
                     input_type: "range".into(),
                     ..Default::default()
                 },
-                radio_u32: U32 {
+                radio_u32: U32Field {
                     input_type: "radio".into(),
                     ..Default::default()
                 },
-                range_u32: U32 {
+                range_u32: U32Field {
                     input_type: "range".into(),
                     ..Default::default()
                 },
-                radio_i64: I64 {
+                radio_i64: I64Field {
                     input_type: "radio".into(),
                     ..Default::default()
                 },
-                range_i64: I64 {
+                range_i64: I64Field {
                     input_type: "range".into(),
                     ..Default::default()
                 },
-                radio_f64: F64 {
+                radio_f64: F64Field {
                     input_type: "radio".into(),
                     ..Default::default()
                 },
-                range_f64: F64 {
+                range_f64: F64Field {
                     input_type: "range".into(),
                     ..Default::default()
                 },
@@ -201,10 +201,12 @@ async fn test_error_save_options() -> Result<(), Box<dyn Error>> {
         "is_valid(): {}",
         output_data.err_msg()
     );
+
     assert!(
         test_model.slug.get().is_some(),
-        "test_model.slug.get() != is_some()"
+        "test_model.slug.get() != is_some()",
     );
+
     assert!(output_data.get_doc().is_none(), "get_doc() != is_none()");
     assert!(!output_data.hash().is_empty(), "hash() == is_empty()");
     assert!(

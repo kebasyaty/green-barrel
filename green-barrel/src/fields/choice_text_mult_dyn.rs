@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ChoiceTextMultDyn {
+pub struct ChoiceTextMultDynField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -26,12 +26,12 @@ pub struct ChoiceTextMultDyn {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for ChoiceTextMultDyn {
+impl Default for ChoiceTextMultDynField {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("ChoiceTextMultDyn"),
+            field_type: String::from("ChoiceTextMultDynField"),
             name: String::new(),
             value: None,
             placeholder: String::new(),
@@ -52,7 +52,7 @@ impl Default for ChoiceTextMultDyn {
     }
 }
 
-impl ChoiceTextMultDyn {
+impl ChoiceTextMultDynField {
     pub fn get(&self) -> Option<Vec<String>> {
         self.value.clone()
     }

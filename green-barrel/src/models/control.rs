@@ -8,14 +8,14 @@
 /// #[Model]
 /// #[derive(Serialize, Deserialize, Default, Debug)]
 /// pub struct ModelName {
-///     title: Text,
-///     slug: Slug,
+///     title: TextField,
+///     slug: SlugField,
 /// }
 ///
 /// impl Control for ModelName {
 ///     fn custom() -> Self {
 ///         Self {
-///             title: Text {
+///             title: TextField {
 ///                 label: String::from("Title"),
 ///                 maxlength: 60,
 ///                 required: true,

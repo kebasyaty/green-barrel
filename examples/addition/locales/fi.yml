@@ -2,7 +2,7 @@
 #
 # Standard translations for Green-Barrel:
 invalid_color: Virheellinen värikoodi.
-allowed_chars: Sallitut merkit %{chars}
+allowed_chars: "Sallitut merkit: %{chars}"
 min_chars: Vähintään %{count} merkkiä.
 max_chars: Enintään %{count} merkkiä.
 invalid_phone: Väärä puhelinnumero.
@@ -11,9 +11,9 @@ invalid_url: Virheellinen URL.
 invalid_ip: Virheellinen IP-osoite.
 invalid_ipv4: Virheellinen IPv4-osoite.
 invalid_ipv6: Virheellinen IPv6-osoite.
-format: Muoto %{sample}
-example: Esimerkki %{sample}
-examples: Esimerkkejä %{samples}
+format: "Muoto: %{sample}"
+example: "Esimerkki: %{sample}"
+examples: "Esimerkkejä: %{samples}"
 not_unique: Ei ole ainutlaatuinen.
 required_field: Vaadittu kenttä.
 not_match_choices: Arvo ei vastaa mahdollisia vaihtoehtoja.

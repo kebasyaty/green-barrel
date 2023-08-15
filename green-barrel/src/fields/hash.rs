@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Hash {
+pub struct HashField {
     pub id: String, // The value is determined automatically. Format: "model-name--field-name".
     pub label: String, // Web form field name.
     pub field_type: String, // Field type.
@@ -30,12 +30,12 @@ pub struct Hash {
     pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
 }
 
-impl Default for Hash {
+impl Default for HashField {
     fn default() -> Self {
         Self {
             id: String::new(),
             label: String::new(),
-            field_type: String::from("Hash"),
+            field_type: String::from("HashField"),
             input_type: String::from("hidden"),
             name: String::new(),
             value: None,
@@ -58,7 +58,7 @@ impl Default for Hash {
     }
 }
 
-impl Hash {
+impl HashField {
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }
