@@ -9,7 +9,7 @@ name = "green-barrel"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/green-barrel"
 rust-version = "1.57"
-version = "1.7.0"
+version = "1.7.1"
 
 [lib]
 doctest = false
@@ -48,7 +48,7 @@ features = [
 version = "1.4.1"
 
 [dev-dependencies]
-tokio = {version = "1.27.0", features = ["full"]}
+tokio = {version = "1.31.0", features = ["full"]}
 
 [package.metadata.i18n]
 available-locales = ["en", "ru", "zh", "es", "it", "pt", "de", "fr", "eo", "ga", "is", "fi", "ja", "sl", "sv", "tr", "zu"]
