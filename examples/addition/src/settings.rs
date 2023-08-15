@@ -18,7 +18,7 @@ pub const DATABASE_NAME: &str = "app_name";
 // Size: 16
 // Example: "7rzgacfqQB3B7q7T"
 // To generate a key (This is not an advertisement): https://randompasswordgen.com/
-pub const UNIQUE_APP_KEY: &str = "Q77zigWfq4I5ktw8";
+pub const UNIQUE_APP_KEY: &str = "Q77zigWfq4I5ktw9";
 //
 pub const DB_QUERY_DOCS_LIMIT: u32 = 1000;
 

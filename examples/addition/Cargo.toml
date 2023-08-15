@@ -15,7 +15,7 @@ rust-i18n = "2.1.0"
 
 [dependencies.tokio]
 features = ["full"]
-version = "1.27.0"
+version = "1.31.0"
 
 [dependencies.mongodb]
 default-features = false
