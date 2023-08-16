@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ChoiceF64DynField {
-    /// The value is determined automatically. Format: "model-name--field-name".
+    /// The value is determined automatically.
+    /// Format: "model-name--field-name".
     pub id: String,
     /// Web form field name.
     pub label: String,
@@ -39,7 +40,8 @@ pub struct ChoiceF64DynField {
     pub warning: String,
     /// The value is determined automatically.
     pub errors: Vec<String>,
-    /// To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    /// To optimize field traversal in the `paladins/check()` method. 
+    /// Hint: It is recommended not to change.
     pub group: u32,
 }
 
