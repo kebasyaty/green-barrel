@@ -48,7 +48,7 @@ Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob
 
 ## Usage:
 
-[Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
+### [Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
 
 ## Model parameters
 
