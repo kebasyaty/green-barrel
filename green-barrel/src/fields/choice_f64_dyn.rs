@@ -40,7 +40,7 @@ pub struct ChoiceF64DynField {
     pub warning: String,
     /// The value is determined automatically.
     pub errors: Vec<String>,
-    /// To optimize field traversal in the `paladins/check()` method. 
+    /// To optimize field traversal in the `paladins/check()` method.
     /// Hint: It is recommended not to change.
     pub group: u32,
 }
