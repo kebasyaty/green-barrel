@@ -5,24 +5,42 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ChoiceF64MultDynField {
-    pub id: String, // The value is determined automatically. Format: "model-name--field-name".
-    pub label: String, // Web form field name.
-    pub field_type: String, // Field type.
-    pub name: String, // The value is determined automatically.
-    pub value: Option<Vec<f64>>, // Sets the value of an element.
-    pub placeholder: String, // Displays prompt text.
-    pub required: bool, // Mandatory field.
-    pub disabled: bool, // Blocks access and modification of the element.
-    pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub multiple: String, // Specifies that multiple options can be selected at once.
-    pub choices: Vec<(f64, String)>, // Elements are added via the ModelName::update_dyn_field() method.
-    pub is_hide: bool,               // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
-    pub css_classes: String, // Example: "class-name-1 class-name-2".
-    pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // Warning information.
-    pub errors: Vec<String>, // The value is determined automatically.
-    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    /// The value is determined automatically. Format: "model-name--field-name".
+    pub id: String,
+    /// Web form field name.
+    pub label: String,
+    /// Field type.
+    pub field_type: String,
+    /// The value is determined automatically.
+    pub name: String,
+    /// Sets the value of an element.
+    pub value: Option<Vec<f64>>,
+    /// Displays prompt text.
+    pub placeholder: String,
+    /// Mandatory field.
+    pub required: bool,
+    /// Blocks access and modification of the element.
+    pub disabled: bool,
+    /// Specifies that the field cannot be modified by the user.
+    pub readonly: bool,
+    /// Specifies that multiple options can be selected at once.
+    pub multiple: String,
+    /// Elements are added via the ModelName::update_dyn_field() method.
+    pub choices: Vec<(f64, String)>,
+    /// Hide field from user.
+    pub is_hide: bool,
+    /// Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
+    pub other_attrs: String,
+    /// Example: "class-name-1 class-name-2".
+    pub css_classes: String,
+    /// Additional explanation for the user.
+    pub hint: String,
+    /// Warning information.
+    pub warning: String,
+    /// The value is determined automatically.
+    pub errors: Vec<String>,
+    /// To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    pub group: u32,
 }
 
 impl Default for ChoiceF64MultDynField {
@@ -51,9 +69,11 @@ impl Default for ChoiceF64MultDynField {
 }
 
 impl ChoiceF64MultDynField {
+    /// Getter
     pub fn get(&self) -> Option<Vec<f64>> {
         self.value.clone()
     }
+    /// Setter
     pub fn set(&mut self, value: Vec<f64>) {
         self.value = Some(value);
     }
