@@ -17,7 +17,7 @@
 
 ## Attention
 
-#### [MongoDB](https://www.mongodb.com/ "MongoDB") tested on versions **4.2**, **4.4**, **5.0**, **6.0**
+#### [MongoDB](https://www.mongodb.com/ "MongoDB") tested on versions 4.2, 4.4, 5.0, 6.0
 
 - Support for [GreenPanel](https://github.com/kebasyaty/green-panel "Green Panel") is temporarily unavailable.
 
