@@ -66,11 +66,11 @@ impl Default for BoolField {
 }
 
 impl BoolField {
-    // Getter
+    /// Getter
     pub fn get(&self) -> Option<bool> {
         self.value
     }
-    // Setter
+    /// Setter
     pub fn set(&mut self, value: bool) {
         self.value = Some(value);
     }
