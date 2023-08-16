@@ -33,7 +33,7 @@ validator = "0.16.1"
 [dependencies.mongodb]
 default-features = false
 features = ["tokio-runtime", "bson-chrono-0_4"]
-version = "2.6.0"
+version = "2.6.1"
 
 [dependencies.serde]
 features = ["derive"]
