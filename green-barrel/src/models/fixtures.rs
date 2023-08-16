@@ -36,7 +36,7 @@ use crate::{
 /// ]
 ///
 /// // Run fixtures
-/// fn run_migration() -> Result<(), Box<dyn Error>> {
+/// async fn run_migration() -> Result<(), Box<dyn Error>> {
 ///     ...
 ///     let fixture_name = "cities";
 ///     ModelName::run_fixture(&client, fixture_name).await?;
