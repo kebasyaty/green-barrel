@@ -27,6 +27,7 @@ pub struct ChoiceF64MultField {
     /// Specifies that the field cannot be modified by the user.
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
+    /// Changing the default value is not recommended.
     pub multiple: String,
     /// Elements are added via the ModelName::update_dyn_field() method.
     /// Html tag: `<select multiple><option value="value">Title</option></select>`.
@@ -62,6 +63,7 @@ impl Default for ChoiceF64MultField {
             required: false,
             disabled: false,
             readonly: false,
+            // Changing the default value is not recommended.
             multiple: String::from("multiple"),
             choices: Vec::new(),
             is_hide: false,

@@ -16,7 +16,7 @@ pub struct ChoiceI64MultDynField {
     pub required: bool, // Mandatory field.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub multiple: String, // Specifies that multiple options can be selected at once.
+    pub multiple: String, // Specifies that multiple options can be selected at once. Changing the default value is not recommended.
     pub choices: Vec<(i64, String)>, // Elements are added via the ModelName::update_dyn_field() method.
     pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
@@ -39,6 +39,7 @@ impl Default for ChoiceI64MultDynField {
             required: false,
             disabled: false,
             readonly: false,
+            // Changing the default value is not recommended.
             multiple: String::from("multiple"),
             choices: Vec::new(),
             is_hide: false,

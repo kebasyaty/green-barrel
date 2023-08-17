@@ -28,6 +28,7 @@ pub struct ChoiceF64Field {
     /// Specifies that the field cannot be modified by the user.
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
+    /// Changing the default value is not recommended.
     pub multiple: String,
     /// Html tag: `<select><option value="value">Title</option></select>`.
     /// Example: `vec![(5.0, "Title"), (25.0, "Title 2")]`.
@@ -62,6 +63,7 @@ impl Default for ChoiceF64Field {
             required: false,
             disabled: false,
             readonly: false,
+            // Changing the default value is not recommended.
             multiple: String::new(),
             choices: Vec::new(),
             is_hide: false,
