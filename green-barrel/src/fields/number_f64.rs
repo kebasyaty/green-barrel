@@ -21,7 +21,8 @@ pub struct F64Field {
     pub step: f64,  // Increment step for numeric fields.
     pub min: f64,   // The lower value for entering a number or date.
     pub max: f64, // The top value for entering a number or date. For Html <input type="range" /> default = 100.0
-    pub is_hide: bool, // Hide field from user.
+    pub choices: Vec<(f64, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
+    pub is_hide: bool,               // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -47,7 +48,8 @@ impl Default for F64Field {
             readonly: false,
             step: 1.0,
             min: 0.0,
-            max: f64::MAX, // For Html <input type="range" /> default = 100.0
+            max: f64::MAX,       // For Html <input type="range" /> default = 100.0
+            choices: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
