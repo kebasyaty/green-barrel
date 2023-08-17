@@ -1,4 +1,5 @@
-//! -
+//! Type of selective field with static of elements.
+//! With multiple choice.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
