@@ -35,7 +35,7 @@ pub struct ChoiceI32DynField {
     pub choices: Vec<(i32, String)>,
     /// Hide field from user.
     pub is_hide: bool,
-    /// Example: r# "autofocus tabindex="some number" size="some numberString::new()#.     
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
     pub other_attrs: String,
     /// Example: "class-name-1 class-name-2".
     pub css_classes: String,

@@ -21,7 +21,8 @@ pub struct HiddenDateTimeField {
     pub min: String, // The lower value for entering a date and time.
     pub max: String, // The top value for entering a date and time.
     pub is_hide: bool, // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
+    pub other_attrs: String,
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.

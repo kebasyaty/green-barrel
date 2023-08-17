@@ -19,7 +19,8 @@ pub struct ChoiceI32MultDynField {
     pub multiple: String, // Specifies that multiple options can be selected at once. Changing the default value is not recommended.
     pub choices: Vec<(i32, String)>, // Elements are added via the ModelName::update_dyn_field() method.
     pub is_hide: bool,               // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
+    pub other_attrs: String,
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.
