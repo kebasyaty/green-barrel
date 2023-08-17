@@ -9,7 +9,7 @@ name = "green-barrel"
 readme = "README.md"
 repository = "https://github.com/kebasyaty/green-barrel"
 rust-version = "1.57"
-version = "1.7.4"
+version = "1.7.5"
 
 [lib]
 doctest = false
