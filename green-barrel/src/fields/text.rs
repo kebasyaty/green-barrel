@@ -46,7 +46,7 @@ pub struct TextField {
     pub choices: Vec<(String, String)>,
     /// Hide field from user.
     pub is_hide: bool,
-    /// Example: `r# "autofocus tabindex="some number" size="some numberString::new()#`.
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.
     pub other_attrs: String,
     /// Example: "class-name-1 class-name-2".
     pub css_classes: String,
@@ -96,9 +96,11 @@ impl Default for TextField {
 }
 
 impl TextField {
+    /// Getter
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }
+    /// Setter
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }
