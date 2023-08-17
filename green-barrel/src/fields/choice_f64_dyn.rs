@@ -1,4 +1,6 @@
-//! -
+//! Type of selective field with dynamic addition of elements.
+//! For simulate relationship Many-to-One.
+//! Elements are added via the `ModelName::update_dyn_field()` method.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -26,7 +28,9 @@ pub struct ChoiceF64DynField {
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
     pub multiple: String,
-    /// /// Elements are added via the ModelName::update_dyn_field() method.
+    /// Elements are added via the `ModelName::update_dyn_field()` method.
+    /// Html tag: `<select><option value="value">Title</option></select>`.
+    /// Example: `vec![(5.0, "Title"), (25.0, "Title 2")]`.
     pub choices: Vec<(f64, String)>,
     /// Hide field from user.
     pub is_hide: bool,

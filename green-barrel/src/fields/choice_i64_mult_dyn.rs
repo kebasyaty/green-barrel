@@ -1,4 +1,6 @@
-//! -
+//! Type of selective field with dynamic addition of elements.
+//! For simulate relationship Many-to-Many.
+//! Elements are added via the `ModelName::update_dyn_field()` method.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};

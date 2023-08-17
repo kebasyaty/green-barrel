@@ -1,4 +1,5 @@
-//! -
+//! Type of selective field with static of elements.
+//! With a single choice.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -28,8 +29,8 @@ pub struct ChoiceF64Field {
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
     pub multiple: String,
-    /// Html tag: <option value="value">Title</option> .
-    /// Example: vec![(5, "Title"), (25, "Title 2")].
+    /// Html tag: `<select><option value="value">Title</option></select>`.
+    /// Example: `vec![(5.0, "Title"), (25.0, "Title 2")]`.
     pub choices: Vec<(f64, String)>,
     /// Hide field from user.
     pub is_hide: bool,

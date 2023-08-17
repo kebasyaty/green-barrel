@@ -1,48 +1,52 @@
-//! -
+//! Type of selective field with dynamic addition of elements.
+//! For simulate relationship Many-to-One.
+//! Elements are added via the `ModelName::update_dyn_field()` method.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ChoiceI32DynField {
-    /// The value is determined automatically. 
+    /// The value is determined automatically.
     /// Format: "model-name--field-name".
     pub id: String,
     /// Web form field name.
-    pub label: String, 
+    pub label: String,
     /// Field type.
-    pub field_type: String, 
+    pub field_type: String,
     /// The value is determined automatically.
-    pub name: String, 
+    pub name: String,
     /// Sets the value of an element.
-    pub value: Option<i32>, 
+    pub value: Option<i32>,
     /// Displays prompt text.
-    pub placeholder: String, 
+    pub placeholder: String,
     /// Mandatory field.
-    pub required: bool, 
+    pub required: bool,
     /// Blocks access and modification of the element.
-    pub disabled: bool, 
+    pub disabled: bool,
     /// Specifies that the field cannot be modified by the user.
-    pub readonly: bool, 
+    pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
-    pub multiple: String, 
-    /// Elements are added via the ModelName::update_dyn_field() method.
-    pub choices: Vec<(i32, String)>, 
+    pub multiple: String,
+    /// Elements are added via the `ModelName::update_dyn_field()` method.
+    /// Html tag: `<select><option value="value">Title</option></select>`.
+    /// Example: `vec![(5, "Title"), (25, "Title 2")]`.
+    pub choices: Vec<(i32, String)>,
     /// Hide field from user.
-    pub is_hide: bool,          
+    pub is_hide: bool,
     /// Example: r# "autofocus tabindex="some number" size="some numberString::new()#.     
-    pub other_attrs: String, 
+    pub other_attrs: String,
     /// Example: "class-name-1 class-name-2".
-    pub css_classes: String, 
+    pub css_classes: String,
     /// Additional explanation for the user.
-    pub hint: String,        
+    pub hint: String,
     /// Warning information.
-    pub warning: String,     
+    pub warning: String,
     /// The value is determined automatically.
-    pub errors: Vec<String>, 
-    /// To optimize field traversal in the `paladins/check()` method. 
+    pub errors: Vec<String>,
+    /// To optimize field traversal in the `paladins/check()` method.
     /// Hint: It is recommended not to change.
-    pub group: u32, 
+    pub group: u32,
 }
 
 impl Default for ChoiceI32DynField {

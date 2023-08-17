@@ -28,8 +28,9 @@ pub struct ChoiceF64MultField {
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
     pub multiple: String,
-    /// Html tag: `<option value="value">Title</option>`.
-    /// Example: vec![(5.0, "Title"), (25.0, "Title 2")].
+    /// Elements are added via the ModelName::update_dyn_field() method.
+    /// Html tag: `<select multiple><option value="value">Title</option></select>`.
+    /// Example: `vec![(5.0, "Title"), (25.0, "Title 2")]`.
     pub choices: Vec<(f64, String)>,
     /// Hide field from user.
     pub is_hide: bool,
