@@ -21,8 +21,7 @@ pub struct I32Field {
     pub step: i32,  // Increment step for numeric fields.
     pub min: i32,   // The lower value for entering a number or date.
     pub max: i32,   // The top value for entering a number or date.
-    pub choices: Vec<(i32, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
-    pub is_hide: bool,               // Hide field from user.
+    pub is_hide: bool, // Hide field from user.
     pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
@@ -48,8 +47,7 @@ impl Default for I32Field {
             readonly: false,
             step: 1,
             min: 0,
-            max: i32::MAX,       // For Html <input type="range" /> default = 100
-            choices: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
+            max: i32::MAX, // For Html <input type="range" /> default = 100
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
