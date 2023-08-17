@@ -19,7 +19,7 @@ pub struct ChoiceI32Field {
     pub multiple: String, // Specifies that multiple options can be selected at once. Changing the default value is not recommended.
     pub choices: Vec<(i32, String)>, // Html tag: <option value="value">Title</option> ; Example: vec![(5, "Title"), (25, "Title 2")].
     pub is_hide: bool,               // Hide field from user.
-     /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
     pub other_attrs: String,
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
