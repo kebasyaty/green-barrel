@@ -1,4 +1,6 @@
-//! -
+//! Type of selective field with dynamic addition of elements.
+//! For simulate relationship Many-to-Many.
+//! Elements are added via the `ModelName::update_dyn_field()` method.
 
 use core::fmt::Debug;
 use serde::{Deserialize, Serialize};
@@ -15,10 +17,11 @@ pub struct ChoiceTextMultDynField {
     pub unique: bool, // The unique value of a field in a collection.
     pub disabled: bool, // Blocks access and modification of the element.
     pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub multiple: String, // Specifies that multiple options can be selected at once.
+    pub multiple: String, // Specifies that multiple options can be selected at once. Changing the default value is not recommended.
     pub choices: Vec<(String, String)>, // Elements are added via the ModelName::update_dyn_field() method.
     pub is_hide: bool,                  // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
+    pub other_attrs: String,
     pub css_classes: String, // Example: "class-name-1 class-name-2".
     pub hint: String,        // Additional explanation for the user.
     pub warning: String,     // Warning information.
@@ -39,6 +42,7 @@ impl Default for ChoiceTextMultDynField {
             unique: false,
             disabled: false,
             readonly: false,
+            // Changing the default value is not recommended.
             multiple: String::from("multiple"),
             choices: Vec::new(),
             is_hide: false,

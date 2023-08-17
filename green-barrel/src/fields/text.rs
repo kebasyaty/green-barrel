@@ -6,31 +6,59 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct TextField {
-    pub id: String, // The value is determined automatically. Format: "model-name--field-name".
-    pub label: String, // Web form field name.
-    pub field_type: String, // Field type.
-    pub input_type: String, // <input type="text|radio".
-    pub multiline: bool, // true - for textarea.
-    pub name: String, // The value is determined automatically.
-    pub value: Option<String>, // Sets the value of an element.
-    pub default: Option<String>, // Value by default.
-    pub placeholder: String, // Displays prompt text.
-    pub regex: String, // A regular expression to validate the value.
-    pub regex_err_msg: String, // To customize error message.
-    pub minlength: usize, // The minimum number of characters allowed in the text.
-    pub maxlength: usize, // The maximum number of characters allowed in the text.
-    pub required: bool, // Mandatory field.
-    pub unique: bool, // The unique value of a field in a collection.
-    pub disabled: bool, // Blocks access and modification of the element.
-    pub readonly: bool, // Specifies that the field cannot be modified by the user.
-    pub choices: Vec<(String, String)>, // For Html <input type="radio" />. Format: [(Value, Title), ...]
-    pub is_hide: bool,                  // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
-    pub css_classes: String, // Example: "class-name-1 class-name-2".
-    pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // Warning information.
-    pub errors: Vec<String>, // The value is determined automatically.
-    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    /// The value is determined automatically.
+    /// Format: "model-name--field-name".
+    pub id: String,
+    /// Web form field name.
+    pub label: String,
+    /// Field type.
+    pub field_type: String,
+    /// `<input type="text|radio">`.
+    pub input_type: String,
+    /// true - for textarea.
+    pub multiline: bool,
+    /// The value is determined automatically.
+    pub name: String,
+    /// Sets the value of an element.
+    pub value: Option<String>,
+    /// Value by default.
+    pub default: Option<String>,
+    /// Displays prompt text.
+    pub placeholder: String,
+    /// A regular expression to validate the value.
+    pub regex: String,
+    /// To customize error message.
+    pub regex_err_msg: String,
+    /// The minimum number of characters allowed in the text.
+    pub minlength: usize,
+    /// The maximum number of characters allowed in the text.
+    pub maxlength: usize,
+    /// Mandatory field.
+    pub required: bool,
+    /// The unique value of a field in a collection.
+    pub unique: bool,
+    /// Blocks access and modification of the element.
+    pub disabled: bool,
+    /// Specifies that the field cannot be modified by the user.
+    pub readonly: bool,
+    /// For Html `<input type="radio" />`.
+    /// Format: [(Value, Title), ...]
+    pub choices: Vec<(String, String)>,
+    /// Hide field from user.
+    pub is_hide: bool,
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.
+    pub other_attrs: String,
+    /// Example: "class-name-1 class-name-2".
+    pub css_classes: String,
+    /// Additional explanation for the user.
+    pub hint: String,
+    /// Warning information.
+    pub warning: String,
+    /// The value is determined automatically.
+    pub errors: Vec<String>,
+    /// To optimize field traversal in the `paladins/check()` method.
+    /// Hint: It is recommended not to change.
+    pub group: u32,
 }
 
 impl Default for TextField {
@@ -53,7 +81,9 @@ impl Default for TextField {
             unique: false,
             disabled: false,
             readonly: false,
-            choices: Vec::new(), // For Html <input type="radio" />. Format: [(Value, Title), ...]
+            // For Html <input type="radio" />.
+            // Format: [(value, Title), ...]
+            choices: Vec::new(),
             is_hide: false,
             other_attrs: String::new(),
             css_classes: String::new(),
@@ -66,9 +96,11 @@ impl Default for TextField {
 }
 
 impl TextField {
+    /// Getter
     pub fn get(&self) -> Option<String> {
         self.value.clone()
     }
+    /// Setter
     pub fn set(&mut self, value: &str) {
         self.value = Some(String::from(value));
     }

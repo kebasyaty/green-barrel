@@ -27,13 +27,15 @@ pub struct ChoiceF64MultField {
     /// Specifies that the field cannot be modified by the user.
     pub readonly: bool,
     /// Specifies that multiple options can be selected at once.
+    /// Changing the default value is not recommended.
     pub multiple: String,
-    /// Html tag: <option value="value">Title</option>.
-    /// Example: vec![(5.0, "Title"), (25.0, "Title 2")].
+    /// Elements are added via the ModelName::update_dyn_field() method.
+    /// Html tag: `<select multiple><option value="value">Title</option></select>`.
+    /// Example: `vec![(5.0, "Title"), (25.0, "Title 2")]`.
     pub choices: Vec<(f64, String)>,
     /// Hide field from user.
     pub is_hide: bool,
-    /// Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
     pub other_attrs: String,
     /// Example: "class-name-1 class-name-2".
     pub css_classes: String,
@@ -61,6 +63,7 @@ impl Default for ChoiceF64MultField {
             required: false,
             disabled: false,
             readonly: false,
+            // Changing the default value is not recommended.
             multiple: String::from("multiple"),
             choices: Vec::new(),
             is_hide: false,

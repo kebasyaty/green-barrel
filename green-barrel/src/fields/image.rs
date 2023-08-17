@@ -10,30 +10,59 @@ use crate::models::helpers::ImageData;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ImageField {
-    pub id: String, // The value is determined automatically. Format: "model-name--field-name".
-    pub label: String, // Web form field name.
-    pub field_type: String, // Field type.
-    pub input_type: String, // The value is determined automatically.
-    pub name: String, // The value is determined automatically.
-    pub value: Option<ImageData>, // Sets the value of an element.
-    pub default: Option<ImageData>, // Value by default
-    pub media_root: String, // Root partition for storing files.
-    pub media_url: String, // Url address to the root section.
-    pub target_dir: String, // Directory for images inside media directory (inner path). Example: "images/avatars".
-    pub accept: String,     // Example: "image/jpeg,image/png,image/gif"
-    pub placeholder: String, // Displays prompt text.
-    pub required: bool,     // Mandatory field.
-    pub disabled: bool,     // Blocks access and modification of the element.
-    pub readonly: bool,     // Specifies that the field cannot be modified by the user.
-    pub thumbnails: Vec<(String, u32)>, // From one to four inclusive. Example: vec![("xs", 150),("sm", 300),("md", 600),("lg", 1200)] Hint: An Intel i7-4770 processor or better is recommended.
-    pub is_quality: bool, // Create thumbnails - Fast=false or qualitatively=true? Default = true.
-    pub is_hide: bool,    // Hide field from user.
-    pub other_attrs: String, // Example: r# "autofocus tabindex="some number" size="some numberString::new()#.
-    pub css_classes: String, // Example: "class-name-1 class-name-2".
-    pub hint: String,        // Additional explanation for the user.
-    pub warning: String,     // Warning information.
-    pub errors: Vec<String>, // The value is determined automatically.
-    pub group: u32, // To optimize field traversal in the `paladins/check()` method. Hint: It is recommended not to change.
+    /// The value is determined automatically.
+    /// Format: "model-name--field-name".
+    pub id: String,
+    /// Web form field name.
+    pub label: String,
+    /// Field type.
+    pub field_type: String,
+    /// The value is determined automatically.
+    pub input_type: String,
+    /// The value is determined automatically.
+    pub name: String,
+    /// Sets the value of an element.
+    pub value: Option<ImageData>,
+    /// Value by default
+    pub default: Option<ImageData>,
+    /// Root partition for storing files.
+    pub media_root: String,
+    /// Url address to the root section.
+    pub media_url: String,
+    /// Directory for images inside media directory (inner path).
+    /// Example: "images/avatars".
+    pub target_dir: String,
+    /// Example: "image/jpeg,image/png,image/gif"
+    pub accept: String,
+    /// Displays prompt text.
+    pub placeholder: String,
+    /// Mandatory field.
+    pub required: bool,
+    /// Blocks access and modification of the element.
+    pub disabled: bool,
+    /// Specifies that the field cannot be modified by the user.   
+    pub readonly: bool,
+    /// From one to four inclusive.
+    /// Example: `vec![("xs", 150),("sm", 300),("md", 600),("lg", 1200)]`.
+    /// Hint: An Intel i7-4770 processor or better is recommended.
+    pub thumbnails: Vec<(String, u32)>,
+    /// Create thumbnails - Fast=false or qualitatively=true? Default = true.
+    pub is_quality: bool,
+    /// Hide field from user.
+    pub is_hide: bool,
+    /// Example: `r# "autofocus tabindex="some number" size="some number"#`.    
+    pub other_attrs: String,
+    /// Example: "class-name-1 class-name-2".
+    pub css_classes: String,
+    /// Additional explanation for the user.
+    pub hint: String,
+    /// Warning information.   
+    pub warning: String,
+    /// The value is determined automatically.
+    pub errors: Vec<String>,
+    /// To optimize field traversal in the `paladins/check()` method.
+    /// Hint: It is recommended not to change.
+    pub group: u32,
 }
 
 impl Default for ImageField {
@@ -68,9 +97,11 @@ impl Default for ImageField {
 }
 
 impl ImageField {
+    /// Getter
     pub fn get(&self) -> Option<ImageData> {
         self.value.clone()
     }
+    /// Setter
     pub fn set(&mut self, image_path: &str, is_delete: bool, media_root: Option<&str>) {
         if Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
             .unwrap()

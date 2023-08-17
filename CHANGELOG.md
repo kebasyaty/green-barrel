@@ -1,5 +1,6 @@
 ## Changelog
 
+- **v1.7.4** _Corrected and updated comments for documentation._
 - **v1.7.3** _MongoDB tested on versions 4.2, 4.4, 5.0, 6.0. Updated documentation._
 - **v1.7.2** _Fixed doc test for Fixtures. Update comments for BoolField._
 - **v1.7.0** _Renamed field names - Added **Field** word. Fixed in migration. Updated tests and examples. Fixed error mesages._
