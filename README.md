@@ -15,7 +15,7 @@
 [docsrs-image]: https://docs.rs/green-barrel/badge.svg
 [docsrs]: https://docs.rs/green-barrel
 
-<h2 style="color:tomato;">Attention</h2>
+## Attention
 
 #### [MongoDB](https://www.mongodb.com/ "MongoDB") tested on versions 4.2, 4.4, 5.0, 6.0
 
