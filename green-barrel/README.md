@@ -50,6 +50,8 @@ Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob
 
 ### [Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
 
+#### [Tests for examples](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "Tests for examples")
+
 ## Model parameters
 
 **_( all parameters are optional )_**
