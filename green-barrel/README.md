@@ -149,4 +149,4 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 ## License
 
-#### This project is licensed under the [MIT](https://github.com/kebasyaty/green-barrel/blob/v1/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-APACHE "Apache Version 2.0")
+#### This project is licensed under the [MIT](https://github.com/kebasyaty/green-barrel/blob/v1/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/green-barrel/blob/v1/LICENSE-APACHE "Apache Version 2.0")
