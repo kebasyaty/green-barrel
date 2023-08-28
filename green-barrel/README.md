@@ -44,13 +44,13 @@
 
 ## Install mongodb (if not installed)
 
-Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/master/Install_MongoDB.md "Install MongoDB").
+Follow the link [Install MongoDB](https://github.com/kebasyaty/green-barrel/blob/v1/Install_MongoDB.md "Install MongoDB").
 
 ## Usage:
 
-### [Basic Example](https://github.com/kebasyaty/green-barrel/tree/master/examples/basic "Basic Example")
+### [Basic Example](https://github.com/kebasyaty/green-barrel/tree/v1/examples/basic "Basic Example")
 
-#### [Tests for examples](https://github.com/kebasyaty/green-barrel/tree/master/test-drive/tests "Tests for examples")
+#### [Tests for examples](https://github.com/kebasyaty/green-barrel/tree/v1/test-drive/tests "Tests for examples")
 
 ## Model parameters
 
@@ -145,8 +145,8 @@ See documentation -[fields](https://docs.rs/green-barrel/latest/green_barrel/fie
 
 ## Changelog
 
-[View the change history.](https://github.com/kebasyaty/green-barrel/blob/master/CHANGELOG.md "View the change history.")
+[View the change history.](https://github.com/kebasyaty/green-barrel/blob/v1/CHANGELOG.md "View the change history.")
 
 ## License
 
-#### This project is licensed under the [MIT](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-APACHE "Apache Version 2.0")
+#### This project is licensed under the [MIT](https://github.com/kebasyaty/green-barrel/blob/v1/LICENSE-MIT "MIT") and [Apache Version 2.0](https://github.com/kebasyaty/green-barrel/blob/master/LICENSE-APACHE "Apache Version 2.0")
