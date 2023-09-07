@@ -81,18 +81,16 @@ pub trait Fixtures: Caching + QPaladins + QCommons {
             // Get json-line
             let json_str = fs::read_to_string(fixture_path.clone()).unwrap_or_else(|error| {
                 if error.kind() == ErrorKind::NotFound {
-                    Err(format!(
+                    panic!(
                         "Model: `{model_name}` > Method: \
                         `run_fixture()` => File is missing - {fixture_path}"
-                    ))
-                    .unwrap()
+                    )
                 } else {
-                    Err(format!(
+                    panic!(
                         "Model: `{model_name}` > Method: \
                         `run_fixture()` => Problem opening the file: {0:?}",
                         error
-                    ))
-                    .unwrap()
+                    )
                 }
             });
             serde_json::from_str::<Value>(json_str.as_str())?

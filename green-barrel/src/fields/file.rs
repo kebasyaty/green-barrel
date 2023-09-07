@@ -69,14 +69,11 @@ impl FileField {
         self.value.clone()
     }
     pub fn set(&mut self, file_path: &str, is_delete: bool, media_root: Option<&str>) {
-        if Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
+        if Regex::new(r"(?:(?:/|\\)\d{4}(?:/|\\)\d{2}(?:/|\\)\d{2}\-barrel(?:/|\\))")
             .unwrap()
             .is_match(file_path)
         {
-            Err(format!(
-                "This file is not allowed to be reused - {file_path}"
-            ))
-            .unwrap()
+            panic!("This file is not allowed to be reused - {file_path}")
         }
         let file_path = if !file_path.is_empty() {
             Self::copy_file_to_tmp(file_path, media_root).unwrap()

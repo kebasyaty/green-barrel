@@ -210,7 +210,8 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
         // User input error detection symptom.
         let mut is_err_symptom = false;
         // To block the reuse of previously saved files and images in the media directory.
-        let regex_is_dated_path = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")?;
+        let regex_is_dated_path =
+            Regex::new(r"(?:(?:/|\\)\d{4}(?:/|\\)\d{2}(?:/|\\)\d{2}\-barrel(?:/|\\))")?;
         // Access the collection.
         let coll = client
             .database(&database_name)
@@ -377,12 +378,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &regex_err_msg);
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         regex_err_msg
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             },
                         );
@@ -396,12 +396,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &err.to_string());
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         err
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             });
                     }
@@ -413,12 +412,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &err.to_string());
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         err
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             });
                     }
@@ -433,12 +431,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
                                             Method: `check()` => {0:?}",
                                             err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }
@@ -449,12 +446,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         if !is_hide {
                             Self::accumula_err(final_field, &err.to_string());
                         } else {
-                            Err(format!(
+                            panic!(
                                 "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
                                 err
-                            ))
-                            .unwrap()
+                            )
                         }
                     });
                     // Insert result.
@@ -634,14 +630,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` > \
                                             Param: `min` ; Method: `check()` => {err_msg}"
-                                        ))
-                                        .unwrap()
+                                        ))?
                                     } else {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
                                             Method: `check()` => {err_msg_2}"
-                                        ))
-                                        .unwrap()
+                                        ))?
                                     }
                                 }
                             }
@@ -677,17 +671,15 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 Ok(dt) => DateTime::<Utc>::from(dt),
                                 Err(error) => {
                                     if error.kind() == ParseErrorKind::OutOfRange {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{model_name}` > Field: `{field_name}` > \
                                             Param: `max` ; Method: `check()` => {err_msg}"
-                                        ))
-                                        .unwrap()
+                                        )
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
                                             Method: `check()` => {err_msg_2}"
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 }
                             }
@@ -1240,8 +1232,13 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-barrel", Utc::now().format("%Y-%m-%d"));
-                        let file_dir_path = format!("{media_root}/{target_dir}/{date_slug}");
+                        let date_arr = format!("{}", Utc::now().format("%Y-%m-%d"))
+                            .split('-')
+                            .map(|item| item.to_string())
+                            .collect::<Vec<String>>();
+                        let date_path =
+                            format!("{}/{}/{}-barrel", date_arr[0], date_arr[1], date_arr[2]);
+                        let file_dir_path = format!("{media_root}/{target_dir}/{date_path}");
                         let extension = {
                             let path = Path::new(file_data.path.as_str());
                             path.extension().unwrap().to_str().unwrap()
@@ -1263,7 +1260,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         file_data.name = new_file_name.clone();
                         file_data.path = new_file_path;
                         file_data.url =
-                            format!("{media_url}/{target_dir}/{date_slug}/{new_file_name}");
+                            format!("{media_url}/{target_dir}/{date_path}/{new_file_name}");
                     }
                     //
                     let f_path = Path::new(file_data.path.as_str());
@@ -1384,12 +1381,17 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         let media_root = final_field["media_root"].as_str().unwrap();
                         let media_url = final_field["media_url"].as_str().unwrap();
                         let target_dir = final_field["target_dir"].as_str().unwrap();
-                        let date_slug = format!("{}-barrel", Utc::now().format("%Y-%m-%d"));
+                        let date_arr = format!("{}", Utc::now().format("%Y-%m-%d"))
+                            .split('-')
+                            .map(|item| item.to_string())
+                            .collect::<Vec<String>>();
+                        let date_path =
+                            format!("{}/{}/{}-barrel", date_arr[0], date_arr[1], date_arr[2]);
                         let new_img_name = format!("main.{extension}");
                         let mut uuid;
                         loop {
                             uuid = Uuid::new_v4().to_string();
-                            img_dir_path = format!("{media_root}/{target_dir}/{date_slug}/{uuid}");
+                            img_dir_path = format!("{media_root}/{target_dir}/{date_path}/{uuid}");
                             if !Path::new(&img_dir_path).is_dir() {
                                 fs::create_dir_all(img_dir_path.clone())?;
                                 break;
@@ -1402,7 +1404,7 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         }
                         image_data.name = new_img_name.clone();
                         image_data.path = new_img_path;
-                        img_dir_url = format!("{media_url}/{target_dir}/{date_slug}/{uuid}");
+                        img_dir_url = format!("{media_url}/{target_dir}/{date_path}/{uuid}");
                         image_data.url = format!("{img_dir_url}/{new_img_name}");
                     }
                     // Get image path.
@@ -1527,12 +1529,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}",
                                             model_name, field_name, err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }
@@ -1605,12 +1606,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}",
                                             model_name, field_name, err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }
@@ -1684,12 +1684,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}",
                                             model_name, field_name, err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }

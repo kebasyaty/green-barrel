@@ -103,14 +103,11 @@ impl ImageField {
     }
     /// Setter
     pub fn set(&mut self, image_path: &str, is_delete: bool, media_root: Option<&str>) {
-        if Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
+        if Regex::new(r"(?:(?:/|\\)\d{4}(?:/|\\)\d{2}(?:/|\\)\d{2}\-barrel(?:/|\\))")
             .unwrap()
             .is_match(image_path)
         {
-            Err(format!(
-                "This image is not allowed to be reused - {image_path}"
-            ))
-            .unwrap()
+            panic!("This image is not allowed to be reused - {image_path}")
         }
         let image_path = if !image_path.is_empty() {
             Self::copy_file_to_tmp(image_path, media_root).unwrap()

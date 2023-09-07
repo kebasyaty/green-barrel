@@ -361,7 +361,7 @@ impl<'a> Monitor<'a> {
                                                 let val = format!("{}T00:00",default_value.as_str().unwrap());
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( &val, "%Y-%m-%dT%H:%M")
                                                 {
-                                                    let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
+                                                    let dt = chrono::DateTime::<Utc>::from_naive_utc_and_offset(ndt,Utc);
                                                     Bson::DateTime(dt.into())
                                                 } else {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
@@ -380,7 +380,7 @@ impl<'a> Monitor<'a> {
                                                 let val = default_value.as_str().unwrap();
                                                 if let Ok(ndt) = chrono::NaiveDateTime::parse_from_str( val, "%Y-%m-%dT%H:%M")
                                                 {
-                                                    let dt = chrono::DateTime::<Utc>::from_utc(ndt, Utc);
+                                                    let dt = chrono::DateTime::<Utc>::from_naive_utc_and_offset(ndt,Utc);
                                                     Bson::DateTime(dt.into())
                                                 } else {
                                                     Err(format!("Service: `{}` > Model: `{}` ; \
