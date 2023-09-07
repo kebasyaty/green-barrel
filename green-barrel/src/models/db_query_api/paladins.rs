@@ -378,12 +378,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &regex_err_msg);
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         regex_err_msg
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             },
                         );
@@ -397,12 +396,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &err.to_string());
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         err
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             });
                     }
@@ -414,12 +412,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                 if !is_hide {
                                     Self::accumula_err(final_field, &err.to_string());
                                 } else {
-                                    Err(format!(
+                                    panic!(
                                         "Model: `{model_name}` > Field: `{field_name}` ; \
                                         Method: `check()` => {0:?}",
                                         err
-                                    ))
-                                    .unwrap()
+                                    )
                                 }
                             });
                     }
@@ -434,12 +431,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
                                             Method: `check()` => {0:?}",
                                             err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }
@@ -450,12 +446,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                         if !is_hide {
                             Self::accumula_err(final_field, &err.to_string());
                         } else {
-                            Err(format!(
+                            panic!(
                                 "Model: `{model_name}` > Field: `{field_name}` ; \
                                 Method: `check()` => {0:?}",
                                 err
-                            ))
-                            .unwrap()
+                            )
                         }
                     });
                     // Insert result.
