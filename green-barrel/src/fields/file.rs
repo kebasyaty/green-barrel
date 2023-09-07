@@ -73,10 +73,7 @@ impl FileField {
             .unwrap()
             .is_match(file_path)
         {
-            Err(format!(
-                "This file is not allowed to be reused - {file_path}"
-            ))
-            .unwrap()
+            panic!("This file is not allowed to be reused - {file_path}")
         }
         let file_path = if !file_path.is_empty() {
             Self::copy_file_to_tmp(file_path, media_root).unwrap()
