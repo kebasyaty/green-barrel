@@ -88,7 +88,9 @@ mod tests {
 
     #[test]
     fn regex_validate_dated_path() {
-        let re = Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))").unwrap();
+        // let v: Vec<&str> = "Mary had a little lamb".split(' ').collect();
+        let re =
+            Regex::new(r"(?:(?:/|\\)\d{4}(?:/|\\)\d{2}(?:/|\\)\d{2}\-barrel(?:/|\\))").unwrap();
         // invalids
         assert!(!re.is_match(""));
         assert!(!re.is_match("-barrel"));
@@ -123,30 +125,34 @@ mod tests {
         assert!(!re.is_match(r#"\-00-00-barrel\"#));
         assert!(!re.is_match(r#"\-00-barrel\"#));
         // valids
-        assert!(re.is_match("/0000-00-00-barrel/"));
-        assert!(re.is_match("./2022-10-27-barrel/"));
-        assert!(re.is_match("/media/0000-00-00-barrel/"));
-        assert!(re.is_match("./media/2022-10-27-barrel/"));
-        assert!(re.is_match("/media/files/0000-00-00-barrel/"));
-        assert!(re.is_match("./media/images/2022-10-27-barrel/"));
-        assert!(re.is_match("/media/files/0000-00-00-barrel/123e4567-e89b-12d3-a456-426655440000"));
-        assert!(re.is_match("./media/files/0000-00-00-barrel/123e4567-e89b-12d3-a456-426655440000"));
-        assert!(
-            re.is_match(r#"/media/images/2022-10-27-barrel/123e4567-e89b-12d3-a456-426655440000/"#)
-        );
+        assert!(re.is_match("/0000/00/00-barrel/"));
+        assert!(re.is_match("\\0000\\00\\00-barrel\\"));
+        assert!(re.is_match("./2022/10/27-barrel/"));
+        assert!(re.is_match(".\\2022\\10\\27-barrel\\"));
+        assert!(re.is_match("/media/0000/00/00-barrel/"));
+        assert!(re.is_match("\\media\\0000\\00\\00-barrel\\"));
+        assert!(re.is_match("./media/2022/10/27-barrel/"));
+        assert!(re.is_match(".\\media\\2022\\10/27-barrel\\"));
+        assert!(re.is_match("/media/files/0000/00/00-barrel/"));
+        assert!(re.is_match("\\media\\files\\0000\\00\\00-barrel\\"));
+        assert!(re.is_match("./media/images/2022/10/27-barrel/"));
+        assert!(re.is_match(".\\media\\images\\2022\\10\\27-barrel\\"));
+        assert!(re.is_match("/media/files/0000/00/00-barrel/123e4567-e89b-12d3-a456-426655440000"));
         assert!(re
-            .is_match(r#"./media/images/2022-10-27-barrel/123e4567-e89b-12d3-a456-426655440000/"#));
-        assert!(re.is_match(r#"\0000-00-00-barrel\"#));
-        assert!(re.is_match(r#".\2022-10-27-barrel\"#));
-        assert!(re.is_match(r#"\media\0000-00-00-barrel\"#));
-        assert!(re.is_match(r#".\media\2022-10-27-barrel\"#));
-        assert!(re.is_match(r#"\media\files\0000-00-00-barrel\"#));
-        assert!(re.is_match(r#".\media\images\2022-10-27-barrel\"#));
+            .is_match("\\media\\files\\0000\\00\\00-barrel\\123e4567-e89b-12d3-a456-426655440000"));
+        assert!(re.is_match("./media/files/0000/00/00-barrel/123e4567-e89b-12d3-a456-426655440000"));
+        assert!(re.is_match(".\\files\\0000\\00\\00-barrel\\123e4567-e89b-12d3-a456-426655440000"));
         assert!(
-            re.is_match(r#"\media\files\0000-00-00-barrel\123e4567-e89b-12d3-a456-426655440000"#)
+            re.is_match(r#"/media/images/2022/10/27-barrel/123e4567-e89b-12d3-a456-426655440000/"#)
         );
+        assert!(re.is_match(
+            "\\media\\images\\2022\\10\\27-barrel\\123e4567-e89b-12d3-a456-426655440000\\"
+        ));
         assert!(re
-            .is_match(r#".\media\images\2022-10-27-barrel\123e4567-e89b-12d3-a456-426655440000\"#));
+            .is_match(r#"./media/images/2022/10/27-barrel/123e4567-e89b-12d3-a456-426655440000/"#));
+        assert!(re.is_match(
+            ".\\media\\images\\2022\\10\\27-barrel\\123e4567-e89b-12d3-a456-426655440000\\"
+        ));
     }
 
     #[test]
