@@ -630,14 +630,12 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` > \
                                             Param: `min` ; Method: `check()` => {err_msg}"
-                                        ))
-                                        .unwrap()
+                                        ))?
                                     } else {
                                         Err(format!(
                                             "Model: `{model_name}` > Field: `{field_name}` ; \
                                             Method: `check()` => {err_msg_2}"
-                                        ))
-                                        .unwrap()
+                                        ))?
                                     }
                                 }
                             }
@@ -1533,12 +1531,11 @@ pub trait QPaladins: Main + Caching + Hooks + Validation + Addition {
                                     if !is_hide {
                                         Self::accumula_err(final_field, &err.to_string());
                                     } else {
-                                        Err(format!(
+                                        panic!(
                                             "Model: `{}` > Field: `{}` ; \
                                                 Method: `check()` => {}",
                                             model_name, field_name, err
-                                        ))
-                                        .unwrap()
+                                        )
                                     }
                                 });
                         }
