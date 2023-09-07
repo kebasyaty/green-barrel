@@ -103,7 +103,7 @@ impl ImageField {
     }
     /// Setter
     pub fn set(&mut self, image_path: &str, is_delete: bool, media_root: Option<&str>) {
-        if Regex::new(r"(?:(?:/|\\)\d{4}\-\d{2}\-\d{2}\-barrel(?:/|\\))")
+        if Regex::new(r"(?:(?:/|\\)\d{4}(?:/|\\)\d{2}(?:/|\\)\d{2}\-barrel(?:/|\\))")
             .unwrap()
             .is_match(image_path)
         {
